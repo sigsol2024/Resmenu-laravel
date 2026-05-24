@@ -62,6 +62,7 @@ class SecurityHardeningTest extends TestCase
             'customer_name' => 'Jane',
             'customer_phone' => '08000000000',
             'customer_email' => 'jane@test.com',
+            'delivery_address' => '123 Test Street',
             'status' => 'pending',
             'subtotal' => 10,
             'delivery_fee' => 0,
@@ -92,6 +93,7 @@ class SecurityHardeningTest extends TestCase
             'customer_name' => 'Jane',
             'customer_phone' => '08000000000',
             'customer_email' => 'jane@test.com',
+            'delivery_address' => '123 Test Street',
             'status' => 'pending',
             'subtotal' => 10,
             'delivery_fee' => 0,
@@ -133,9 +135,17 @@ class SecurityHardeningTest extends TestCase
             'api.paystack.co/*' => Http::response(['data' => ['status' => 'failed']], 200),
         ]);
 
+        $restaurant = Restaurant::create([
+            'name' => 'Paystack Test',
+            'slug' => 'paystack-test-'.uniqid(),
+            'email' => 'paystack@test.com',
+            'is_active' => 1,
+            'template_id' => 4,
+        ]);
+
         DB::table('pending_online_payments')->insert([
             'reference' => 'POP_test_ref',
-            'restaurant_id' => 1,
+            'restaurant_id' => $restaurant->id,
             'payment_type' => 'order',
             'gateway' => 'paystack',
             'cart_json' => '[]',

@@ -1,0 +1,1560 @@
+{
+    "version": "schema-baseline-v1",
+    "generated_at": "2026-05-24T10:18:06+00:00",
+    "source_dump": "database/schema/sigsolmenu_laravel.sql",
+    "tables": {
+        "admins": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "username": {
+                    "definition": "varchar(100) NOT NULL"
+                },
+                "email": {
+                    "definition": "varchar(255) NOT NULL"
+                },
+                "password_hash": {
+                    "definition": "varchar(255) NOT NULL"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                },
+                "updated_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "username",
+                "email"
+            ],
+            "foreign_keys": []
+        },
+        "categories": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "restaurant_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "section_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "name": {
+                    "definition": "varchar(255) NOT NULL"
+                },
+                "slug": {
+                    "definition": "varchar(255) NOT NULL"
+                },
+                "image": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "description": {
+                    "definition": "text DEFAULT NULL"
+                },
+                "display_order": {
+                    "definition": "int(11) DEFAULT 0"
+                },
+                "is_active": {
+                    "definition": "tinyint(1) DEFAULT 1"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                },
+                "updated_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "unique_restaurant_slug",
+                "idx_restaurant_id",
+                "idx_slug",
+                "idx_display_order",
+                "idx_section_id"
+            ],
+            "foreign_keys": [
+                "categories_ibfk_1",
+                "categories_section_fk"
+            ]
+        },
+        "category_secondary_sections": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "category_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "section_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "is_active": {
+                    "definition": "tinyint(1) NOT NULL DEFAULT 1"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                },
+                "updated_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "uniq_category_secondary",
+                "idx_secondary_section"
+            ],
+            "foreign_keys": [
+                "fk_css_category",
+                "fk_css_section"
+            ]
+        },
+        "customization_settings": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "restaurant_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "template_id": {
+                    "definition": "int(11) NOT NULL DEFAULT 1"
+                },
+                "menu_title_color": {
+                    "definition": "varchar(7) DEFAULT '#000000'"
+                },
+                "menu_title_size": {
+                    "definition": "int(11) DEFAULT 24"
+                },
+                "menu_title_font": {
+                    "definition": "varchar(100) DEFAULT 'Inter'"
+                },
+                "price_color": {
+                    "definition": "varchar(7) DEFAULT '#000000'"
+                },
+                "price_size": {
+                    "definition": "int(11) DEFAULT 18"
+                },
+                "price_font": {
+                    "definition": "varchar(100) DEFAULT 'Inter'"
+                },
+                "description_color": {
+                    "definition": "varchar(7) DEFAULT '#666666'"
+                },
+                "description_size": {
+                    "definition": "int(11) DEFAULT 14"
+                },
+                "description_font": {
+                    "definition": "varchar(100) DEFAULT 'Inter'"
+                },
+                "category_title_color": {
+                    "definition": "varchar(7) DEFAULT '#000000'"
+                },
+                "category_title_size": {
+                    "definition": "int(11) DEFAULT 20"
+                },
+                "category_title_font": {
+                    "definition": "varchar(100) DEFAULT 'Inter'"
+                },
+                "background_color": {
+                    "definition": "varchar(7) DEFAULT '#FFFFFF'"
+                },
+                "header_background_color": {
+                    "definition": "varchar(7) DEFAULT '#FFFFFF'"
+                },
+                "primary_color": {
+                    "definition": "varchar(7) DEFAULT '#111111'"
+                },
+                "secondary_color": {
+                    "definition": "varchar(7) DEFAULT '#FFFFFF'"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                },
+                "updated_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "restaurant_template"
+            ],
+            "foreign_keys": [
+                "customization_settings_ibfk_1"
+            ]
+        },
+        "email_delivery_suppressions": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "email_sha256": {
+                    "definition": "char(64) NOT NULL"
+                },
+                "reason": {
+                    "definition": "varchar(64) NOT NULL DEFAULT 'hard_bounce'"
+                },
+                "source": {
+                    "definition": "varchar(64) NOT NULL DEFAULT 'manual'"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "uniq_email_sha256",
+                "idx_created"
+            ],
+            "foreign_keys": []
+        },
+        "login_attempts": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "ip_address": {
+                    "definition": "varchar(45) NOT NULL"
+                },
+                "identifier": {
+                    "definition": "varchar(255) NOT NULL DEFAULT ''"
+                },
+                "attempted_at": {
+                    "definition": "datetime NOT NULL DEFAULT current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "idx_login_attempts_ip_time",
+                "idx_login_attempts_identifier_time"
+            ],
+            "foreign_keys": []
+        },
+        "managers": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "username": {
+                    "definition": "varchar(100) NOT NULL"
+                },
+                "email": {
+                    "definition": "varchar(255) NOT NULL"
+                },
+                "password_hash": {
+                    "definition": "varchar(255) NOT NULL"
+                },
+                "restaurant_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                },
+                "updated_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "username",
+                "email",
+                "idx_restaurant_id"
+            ],
+            "foreign_keys": [
+                "managers_ibfk_1"
+            ]
+        },
+        "menu_items": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "restaurant_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "category_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "name": {
+                    "definition": "varchar(255) NOT NULL"
+                },
+                "slug": {
+                    "definition": "varchar(255) NOT NULL"
+                },
+                "description": {
+                    "definition": "text DEFAULT NULL"
+                },
+                "price": {
+                    "definition": "decimal(10,2) NOT NULL"
+                },
+                "image": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "display_order": {
+                    "definition": "int(11) DEFAULT 0"
+                },
+                "is_available": {
+                    "definition": "tinyint(1) DEFAULT 1"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                },
+                "updated_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "unique_restaurant_category_slug",
+                "idx_restaurant_id",
+                "idx_category_id",
+                "idx_slug",
+                "idx_display_order"
+            ],
+            "foreign_keys": [
+                "menu_items_ibfk_1",
+                "menu_items_ibfk_2"
+            ]
+        },
+        "orders": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "order_number": {
+                    "definition": "varchar(10) DEFAULT NULL"
+                },
+                "restaurant_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "customer_name": {
+                    "definition": "varchar(255) NOT NULL"
+                },
+                "customer_phone": {
+                    "definition": "varchar(50) NOT NULL"
+                },
+                "customer_email": {
+                    "definition": "varchar(255) NOT NULL"
+                },
+                "delivery_address": {
+                    "definition": "text NOT NULL"
+                },
+                "payment_method": {
+                    "definition": "varchar(50) DEFAULT NULL"
+                },
+                "status": {
+                    "definition": "varchar(50) NOT NULL DEFAULT 'pending' COMMENT 'pending, confirmed, on_hold, cancelled, completed'"
+                },
+                "subtotal": {
+                    "definition": "decimal(10,2) NOT NULL DEFAULT 0.00"
+                },
+                "delivery_fee": {
+                    "definition": "decimal(10,2) NOT NULL DEFAULT 0.00"
+                },
+                "tax": {
+                    "definition": "decimal(10,2) NOT NULL DEFAULT 0.00"
+                },
+                "total": {
+                    "definition": "decimal(10,2) NOT NULL DEFAULT 0.00"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                },
+                "updated_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "restaurant_id",
+                "status",
+                "created_at"
+            ],
+            "foreign_keys": [
+                "orders_ibfk_1"
+            ]
+        },
+        "order_items": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "order_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "menu_item_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "name": {
+                    "definition": "varchar(255) NOT NULL"
+                },
+                "price": {
+                    "definition": "decimal(10,2) NOT NULL"
+                },
+                "quantity": {
+                    "definition": "int(11) NOT NULL DEFAULT 1"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "order_id",
+                "menu_item_id"
+            ],
+            "foreign_keys": [
+                "order_items_ibfk_1",
+                "order_items_ibfk_2"
+            ]
+        },
+        "password_reset_tokens": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "user_type": {
+                    "definition": "enum('admin','manager') NOT NULL"
+                },
+                "user_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "identifier": {
+                    "definition": "varchar(191) NOT NULL"
+                },
+                "email": {
+                    "definition": "varchar(255) NOT NULL"
+                },
+                "token_hash": {
+                    "definition": "char(64) NOT NULL"
+                },
+                "expires_at": {
+                    "definition": "datetime NOT NULL"
+                },
+                "used_at": {
+                    "definition": "datetime DEFAULT NULL"
+                },
+                "request_ip": {
+                    "definition": "varchar(45) DEFAULT NULL"
+                },
+                "user_agent": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "uniq_token_hash",
+                "idx_user_active",
+                "idx_identifier_created",
+                "idx_ip_created"
+            ],
+            "foreign_keys": []
+        },
+        "payments": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "restaurant_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "subscription_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "amount": {
+                    "definition": "decimal(10,2) NOT NULL"
+                },
+                "currency": {
+                    "definition": "varchar(3) NOT NULL DEFAULT 'NGN'"
+                },
+                "payment_gateway": {
+                    "definition": "enum('paystack','flutterwave','manual') NOT NULL"
+                },
+                "transaction_reference": {
+                    "definition": "varchar(100) DEFAULT NULL COMMENT 'Gateway reference'"
+                },
+                "gateway_response": {
+                    "definition": "longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'Full gateway response'"
+                },
+                "status": {
+                    "definition": "enum('pending','success','failed','refunded') NOT NULL DEFAULT 'pending'"
+                },
+                "paid_at": {
+                    "definition": "datetime DEFAULT NULL"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "restaurant_id",
+                "subscription_id",
+                "status",
+                "transaction_reference"
+            ],
+            "foreign_keys": [
+                "payments_ibfk_1",
+                "payments_ibfk_2"
+            ]
+        },
+        "payment_settings": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "gateway": {
+                    "definition": "varchar(50) NOT NULL COMMENT 'paystack or flutterwave'"
+                },
+                "is_active": {
+                    "definition": "tinyint(1) NOT NULL DEFAULT 0 COMMENT 'Enable/disable gateway'"
+                },
+                "test_mode": {
+                    "definition": "tinyint(1) NOT NULL DEFAULT 1 COMMENT 'Use test or live keys'"
+                },
+                "public_key_live": {
+                    "definition": "varchar(255) DEFAULT NULL COMMENT 'Live public key'"
+                },
+                "secret_key_live": {
+                    "definition": "text DEFAULT NULL COMMENT 'Live secret key (encrypted)'"
+                },
+                "webhook_secret_live": {
+                    "definition": "varchar(255) DEFAULT NULL COMMENT 'Live webhook secret'"
+                },
+                "public_key_test": {
+                    "definition": "varchar(255) DEFAULT NULL COMMENT 'Test public key'"
+                },
+                "secret_key_test": {
+                    "definition": "text DEFAULT NULL COMMENT 'Test secret key (encrypted)'"
+                },
+                "webhook_secret_test": {
+                    "definition": "varchar(255) DEFAULT NULL COMMENT 'Test webhook secret'"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                },
+                "updated_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "gateway"
+            ],
+            "foreign_keys": []
+        },
+        "pending_bank_transfers": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "token": {
+                    "definition": "varchar(64) NOT NULL"
+                },
+                "restaurant_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "payment_type": {
+                    "definition": "varchar(20) NOT NULL DEFAULT 'order'"
+                },
+                "reservation_id": {
+                    "definition": "int(11) DEFAULT NULL"
+                },
+                "cart_json": {
+                    "definition": "text NOT NULL"
+                },
+                "customer_name": {
+                    "definition": "varchar(255) NOT NULL"
+                },
+                "customer_phone": {
+                    "definition": "varchar(50) NOT NULL"
+                },
+                "customer_email": {
+                    "definition": "varchar(255) NOT NULL"
+                },
+                "delivery_address": {
+                    "definition": "text NOT NULL"
+                },
+                "subtotal": {
+                    "definition": "decimal(10,2) NOT NULL DEFAULT 0.00"
+                },
+                "delivery_fee": {
+                    "definition": "decimal(10,2) NOT NULL DEFAULT 0.00"
+                },
+                "tax": {
+                    "definition": "decimal(10,2) NOT NULL DEFAULT 0.00"
+                },
+                "total": {
+                    "definition": "decimal(10,2) NOT NULL DEFAULT 0.00"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "token",
+                "restaurant_id",
+                "created_at"
+            ],
+            "foreign_keys": [
+                "pending_bank_transfers_ibfk_1"
+            ]
+        },
+        "pending_online_payments": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "reference": {
+                    "definition": "varchar(80) NOT NULL"
+                },
+                "restaurant_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "payment_type": {
+                    "definition": "varchar(20) NOT NULL DEFAULT 'order'"
+                },
+                "reservation_id": {
+                    "definition": "int(11) DEFAULT NULL"
+                },
+                "gateway": {
+                    "definition": "varchar(50) NOT NULL"
+                },
+                "cart_json": {
+                    "definition": "text NOT NULL"
+                },
+                "customer_name": {
+                    "definition": "varchar(255) NOT NULL"
+                },
+                "customer_phone": {
+                    "definition": "varchar(50) NOT NULL"
+                },
+                "customer_email": {
+                    "definition": "varchar(255) NOT NULL"
+                },
+                "delivery_address": {
+                    "definition": "text NOT NULL"
+                },
+                "subtotal": {
+                    "definition": "decimal(10,2) NOT NULL DEFAULT 0.00"
+                },
+                "delivery_fee": {
+                    "definition": "decimal(10,2) NOT NULL DEFAULT 0.00"
+                },
+                "tax": {
+                    "definition": "decimal(10,2) NOT NULL DEFAULT 0.00"
+                },
+                "total": {
+                    "definition": "decimal(10,2) NOT NULL DEFAULT 0.00"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "reference",
+                "restaurant_id",
+                "created_at"
+            ],
+            "foreign_keys": [
+                "pending_online_payments_ibfk_1"
+            ]
+        },
+        "public_api_rate_events": {
+            "columns": {
+                "id": {
+                    "definition": "bigint(20) UNSIGNED NOT NULL"
+                },
+                "action": {
+                    "definition": "varchar(64) NOT NULL"
+                },
+                "ip_address": {
+                    "definition": "varchar(45) NOT NULL"
+                },
+                "created_at": {
+                    "definition": "datetime NOT NULL"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "idx_action_ip_time"
+            ],
+            "foreign_keys": []
+        },
+        "qr_code_scans": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "restaurant_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "ip_address": {
+                    "definition": "varchar(45) DEFAULT NULL"
+                },
+                "user_agent": {
+                    "definition": "text DEFAULT NULL"
+                },
+                "device_type": {
+                    "definition": "varchar(50) DEFAULT NULL"
+                },
+                "browser": {
+                    "definition": "varchar(100) DEFAULT NULL"
+                },
+                "os": {
+                    "definition": "varchar(100) DEFAULT NULL"
+                },
+                "country": {
+                    "definition": "varchar(100) DEFAULT NULL"
+                },
+                "city": {
+                    "definition": "varchar(100) DEFAULT NULL"
+                },
+                "latitude": {
+                    "definition": "decimal(10,8) DEFAULT NULL"
+                },
+                "longitude": {
+                    "definition": "decimal(11,8) DEFAULT NULL"
+                },
+                "scanned_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "restaurant_id",
+                "scanned_at"
+            ],
+            "foreign_keys": [
+                "qr_code_scans_ibfk_1"
+            ]
+        },
+        "qr_templates": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "name": {
+                    "definition": "varchar(255) NOT NULL"
+                },
+                "description": {
+                    "definition": "text DEFAULT NULL"
+                },
+                "preview_image": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "has_text": {
+                    "definition": "tinyint(1) DEFAULT 0"
+                },
+                "config_json": {
+                    "definition": "longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`config_json`))"
+                },
+                "is_active": {
+                    "definition": "tinyint(1) DEFAULT 1"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                },
+                "updated_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY"
+            ],
+            "foreign_keys": []
+        },
+        "restaurants": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "name": {
+                    "definition": "varchar(255) NOT NULL"
+                },
+                "slug": {
+                    "definition": "varchar(255) NOT NULL"
+                },
+                "logo": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "hero_image": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "description": {
+                    "definition": "text DEFAULT NULL"
+                },
+                "phone": {
+                    "definition": "varchar(50) DEFAULT NULL"
+                },
+                "email": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "address": {
+                    "definition": "text DEFAULT NULL"
+                },
+                "website": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "whatsapp_link": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "instagram_url": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "facebook_url": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "twitter_url": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "enable_food_ordering": {
+                    "definition": "tinyint(1) NOT NULL DEFAULT 1"
+                },
+                "enable_table_reservations": {
+                    "definition": "tinyint(1) NOT NULL DEFAULT 1"
+                },
+                "map_latitude": {
+                    "definition": "decimal(10,8) DEFAULT NULL"
+                },
+                "map_longitude": {
+                    "definition": "decimal(11,8) DEFAULT NULL"
+                },
+                "header_menu_items": {
+                    "definition": "text DEFAULT NULL"
+                },
+                "footer_content": {
+                    "definition": "text DEFAULT NULL"
+                },
+                "manager_email": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "google_rating": {
+                    "definition": "decimal(3,1) DEFAULT 4.5"
+                },
+                "rating_source": {
+                    "definition": "varchar(50) DEFAULT 'Google'"
+                },
+                "template_id": {
+                    "definition": "int(11) DEFAULT 1"
+                },
+                "is_active": {
+                    "definition": "tinyint(1) DEFAULT 1"
+                },
+                "available_items_count": {
+                    "definition": "int(11) DEFAULT 0"
+                },
+                "unavailable_items_count": {
+                    "definition": "int(11) DEFAULT 0"
+                },
+                "subscription_id": {
+                    "definition": "int(11) DEFAULT NULL"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                },
+                "updated_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "slug",
+                "idx_slug",
+                "idx_is_active",
+                "subscription_id"
+            ],
+            "foreign_keys": [
+                "restaurants_subscription_fk"
+            ]
+        },
+        "restaurant_payment_settings": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "restaurant_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "gateway": {
+                    "definition": "varchar(50) NOT NULL"
+                },
+                "is_active": {
+                    "definition": "tinyint(1) DEFAULT 0"
+                },
+                "test_mode": {
+                    "definition": "tinyint(1) DEFAULT 1"
+                },
+                "public_key_test": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "secret_key_test": {
+                    "definition": "text DEFAULT NULL"
+                },
+                "webhook_secret_test": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "public_key_live": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "secret_key_live": {
+                    "definition": "text DEFAULT NULL"
+                },
+                "webhook_secret_live": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "bank_name": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "account_number": {
+                    "definition": "varchar(100) DEFAULT NULL"
+                },
+                "account_name": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                },
+                "updated_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "restaurant_id_gateway"
+            ],
+            "foreign_keys": [
+                "restaurant_payment_settings_ibfk_1"
+            ]
+        },
+        "restaurant_qr_codes": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "restaurant_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "qr_template_id": {
+                    "definition": "int(11) DEFAULT 1"
+                },
+                "override_json": {
+                    "definition": "longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`override_json`))"
+                },
+                "final_config_json": {
+                    "definition": "longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`final_config_json`))"
+                },
+                "background_color": {
+                    "definition": "varchar(7) DEFAULT '#FFFFFF'"
+                },
+                "qr_color": {
+                    "definition": "varchar(7) DEFAULT '#000000'"
+                },
+                "text_content": {
+                    "definition": "text DEFAULT NULL"
+                },
+                "text_color": {
+                    "definition": "varchar(7) DEFAULT '#000000'"
+                },
+                "text_size": {
+                    "definition": "int(11) DEFAULT 16"
+                },
+                "text_font": {
+                    "definition": "varchar(100) DEFAULT 'Arial'"
+                },
+                "qr_size": {
+                    "definition": "int(11) DEFAULT 300"
+                },
+                "margin": {
+                    "definition": "int(11) DEFAULT 20"
+                },
+                "is_active": {
+                    "definition": "tinyint(1) DEFAULT 1"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                },
+                "updated_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "restaurant_id",
+                "qr_template_id"
+            ],
+            "foreign_keys": [
+                "restaurant_qr_codes_ibfk_1",
+                "restaurant_qr_codes_ibfk_2"
+            ]
+        },
+        "restaurant_reservation_settings": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "restaurant_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "deposit_amount": {
+                    "definition": "decimal(10,2) NOT NULL DEFAULT 0.00"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                },
+                "updated_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "restaurant_id"
+            ],
+            "foreign_keys": [
+                "restaurant_reservation_settings_ibfk_1"
+            ]
+        },
+        "sections": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "restaurant_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "name": {
+                    "definition": "varchar(255) NOT NULL"
+                },
+                "slug": {
+                    "definition": "varchar(255) NOT NULL"
+                },
+                "image": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "display_order": {
+                    "definition": "int(11) NOT NULL DEFAULT 0"
+                },
+                "is_active": {
+                    "definition": "tinyint(1) NOT NULL DEFAULT 1"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                },
+                "updated_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "unique_restaurant_section_slug",
+                "idx_sections_restaurant",
+                "idx_sections_display_order"
+            ],
+            "foreign_keys": [
+                "sections_ibfk_1"
+            ]
+        },
+        "site_settings": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "site_name": {
+                    "definition": "varchar(255) NOT NULL DEFAULT 'Resmenu'"
+                },
+                "site_logo": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "favicon": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "contact_sales_email": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "contact_sales_phone": {
+                    "definition": "varchar(50) DEFAULT NULL"
+                },
+                "contact_support_email": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "contact_support_phone": {
+                    "definition": "varchar(50) DEFAULT NULL"
+                },
+                "contact_partners_email": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "contact_form_recipient": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "contact_hq_title": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "contact_hq_address": {
+                    "definition": "text DEFAULT NULL"
+                },
+                "contact_map_embed": {
+                    "definition": "text DEFAULT NULL"
+                },
+                "contact_social_facebook": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "contact_social_twitter": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "contact_social_instagram": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                },
+                "updated_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY"
+            ],
+            "foreign_keys": []
+        },
+        "subscriptions": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "restaurant_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "plan_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "billing_cycle": {
+                    "definition": "enum('monthly','annual') NOT NULL DEFAULT 'monthly'"
+                },
+                "status": {
+                    "definition": "enum('trial','active','expired','cancelled','pending') NOT NULL DEFAULT 'trial'"
+                },
+                "trial_ends_at": {
+                    "definition": "datetime DEFAULT NULL COMMENT '7 days from creation'"
+                },
+                "current_period_start": {
+                    "definition": "datetime DEFAULT NULL"
+                },
+                "current_period_end": {
+                    "definition": "datetime DEFAULT NULL"
+                },
+                "cancelled_at": {
+                    "definition": "datetime DEFAULT NULL"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                },
+                "updated_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "restaurant_id",
+                "plan_id",
+                "status",
+                "current_period_end"
+            ],
+            "foreign_keys": [
+                "subscriptions_ibfk_1",
+                "subscriptions_ibfk_2"
+            ]
+        },
+        "subscription_change_requests": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "restaurant_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "subscription_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "from_plan_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "to_plan_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "from_billing_cycle": {
+                    "definition": "varchar(20) NOT NULL"
+                },
+                "to_billing_cycle": {
+                    "definition": "varchar(20) NOT NULL"
+                },
+                "change_type": {
+                    "definition": "varchar(50) NOT NULL"
+                },
+                "effective_at": {
+                    "definition": "datetime NOT NULL"
+                },
+                "status": {
+                    "definition": "varchar(20) NOT NULL DEFAULT 'pending'"
+                },
+                "requested_by": {
+                    "definition": "varchar(20) DEFAULT 'manager'"
+                },
+                "applied_at": {
+                    "definition": "datetime DEFAULT NULL"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                },
+                "updated_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "idx_subscription_pending",
+                "idx_effective_pending",
+                "idx_restaurant_pending",
+                "subscription_change_requests_ibfk_3",
+                "subscription_change_requests_ibfk_4"
+            ],
+            "foreign_keys": [
+                "subscription_change_requests_ibfk_1",
+                "subscription_change_requests_ibfk_2",
+                "subscription_change_requests_ibfk_3",
+                "subscription_change_requests_ibfk_4"
+            ]
+        },
+        "subscription_emails": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "subscription_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "email_type": {
+                    "definition": "varchar(50) NOT NULL COMMENT 'trial_ending, payment_reminder, payment_success, expired'"
+                },
+                "days_before": {
+                    "definition": "int(11) DEFAULT NULL COMMENT '30, 15, 7, 3, 1 for reminders'"
+                },
+                "sent_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "subscription_id",
+                "idx_subscription_email_lookup"
+            ],
+            "foreign_keys": [
+                "subscription_emails_ibfk_1"
+            ]
+        },
+        "subscription_plans": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "name": {
+                    "definition": "varchar(50) NOT NULL COMMENT 'Basic, Professional, Enterprise'"
+                },
+                "slug": {
+                    "definition": "varchar(50) NOT NULL COMMENT 'basic, professional, enterprise'"
+                },
+                "description": {
+                    "definition": "text DEFAULT NULL"
+                },
+                "monthly_price": {
+                    "definition": "decimal(10,2) NOT NULL DEFAULT 0.00 COMMENT 'Price in NGN'"
+                },
+                "annual_price": {
+                    "definition": "decimal(10,2) NOT NULL DEFAULT 0.00 COMMENT 'Price in NGN (20% discount)'"
+                },
+                "yearly_discount_percent": {
+                    "definition": "decimal(5,2) NOT NULL DEFAULT 20.00 COMMENT 'Discount % applied to yearly plan (annual price = monthly*12*(1 - this/100))'"
+                },
+                "max_categories": {
+                    "definition": "int(11) NOT NULL DEFAULT 5 COMMENT '-1 for unlimited'"
+                },
+                "max_menu_items": {
+                    "definition": "int(11) NOT NULL DEFAULT 50 COMMENT '-1 for unlimited'"
+                },
+                "max_qr_styles": {
+                    "definition": "int(11) NOT NULL DEFAULT 3 COMMENT '-1 for unlimited'"
+                },
+                "max_templates": {
+                    "definition": "int(11) NOT NULL DEFAULT 3 COMMENT '-1 for unlimited'"
+                },
+                "features": {
+                    "definition": "longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT 'Additional features as JSON'"
+                },
+                "is_active": {
+                    "definition": "tinyint(1) NOT NULL DEFAULT 1"
+                },
+                "display_order": {
+                    "definition": "int(11) NOT NULL DEFAULT 0"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                },
+                "updated_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "slug"
+            ],
+            "foreign_keys": []
+        },
+        "table_inventory_daily": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "restaurant_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "inventory_date": {
+                    "definition": "date NOT NULL"
+                },
+                "total_tables": {
+                    "definition": "int(11) NOT NULL DEFAULT 10"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                },
+                "updated_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "restaurant_date",
+                "restaurant_id",
+                "inventory_date"
+            ],
+            "foreign_keys": [
+                "table_inventory_daily_ibfk_1"
+            ]
+        },
+        "table_reservations": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "reservation_number": {
+                    "definition": "varchar(10) DEFAULT NULL"
+                },
+                "restaurant_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "reservation_date": {
+                    "definition": "date NOT NULL"
+                },
+                "reservation_time": {
+                    "definition": "time NOT NULL"
+                },
+                "party_size": {
+                    "definition": "int(11) NOT NULL DEFAULT 1"
+                },
+                "guest_name": {
+                    "definition": "varchar(255) NOT NULL"
+                },
+                "guest_email": {
+                    "definition": "varchar(255) NOT NULL"
+                },
+                "guest_phone": {
+                    "definition": "varchar(50) NOT NULL"
+                },
+                "special_occasion": {
+                    "definition": "varchar(50) DEFAULT NULL"
+                },
+                "notes": {
+                    "definition": "text DEFAULT NULL"
+                },
+                "deposit_amount": {
+                    "definition": "decimal(10,2) NOT NULL DEFAULT 0.00"
+                },
+                "deposit_paid": {
+                    "definition": "tinyint(1) NOT NULL DEFAULT 0"
+                },
+                "status": {
+                    "definition": "varchar(50) NOT NULL DEFAULT 'pending' COMMENT 'pending, confirmed, cancelled, completed'"
+                },
+                "is_walkin": {
+                    "definition": "tinyint(1) NOT NULL DEFAULT 0"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                },
+                "updated_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "restaurant_id",
+                "reservation_date",
+                "status"
+            ],
+            "foreign_keys": [
+                "table_reservations_ibfk_1"
+            ]
+        },
+        "templates": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "name": {
+                    "definition": "varchar(255) NOT NULL"
+                },
+                "slug": {
+                    "definition": "varchar(100) DEFAULT NULL"
+                },
+                "description": {
+                    "definition": "text DEFAULT NULL"
+                },
+                "preview_image": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "listing_image": {
+                    "definition": "varchar(255) DEFAULT NULL"
+                },
+                "is_active": {
+                    "definition": "tinyint(1) DEFAULT 1"
+                },
+                "is_private": {
+                    "definition": "tinyint(1) NOT NULL DEFAULT 0"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                },
+                "updated_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "idx_is_active"
+            ],
+            "foreign_keys": []
+        },
+        "template_customizations": {
+            "columns": {
+                "id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "template_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "menu_title_color": {
+                    "definition": "varchar(7) DEFAULT '#000000'"
+                },
+                "menu_title_size": {
+                    "definition": "int(11) DEFAULT 24"
+                },
+                "menu_title_font": {
+                    "definition": "varchar(50) DEFAULT 'Inter'"
+                },
+                "price_color": {
+                    "definition": "varchar(7) DEFAULT '#000000'"
+                },
+                "price_size": {
+                    "definition": "int(11) DEFAULT 18"
+                },
+                "price_font": {
+                    "definition": "varchar(50) DEFAULT 'Inter'"
+                },
+                "description_color": {
+                    "definition": "varchar(7) DEFAULT '#666666'"
+                },
+                "description_size": {
+                    "definition": "int(11) DEFAULT 14"
+                },
+                "description_font": {
+                    "definition": "varchar(50) DEFAULT 'Inter'"
+                },
+                "category_title_color": {
+                    "definition": "varchar(7) DEFAULT '#000000'"
+                },
+                "category_title_size": {
+                    "definition": "int(11) DEFAULT 20"
+                },
+                "category_title_font": {
+                    "definition": "varchar(50) DEFAULT 'Inter'"
+                },
+                "background_color": {
+                    "definition": "varchar(7) DEFAULT '#fffffc'"
+                },
+                "header_background_color": {
+                    "definition": "varchar(7) DEFAULT '#fffffc'"
+                },
+                "primary_color": {
+                    "definition": "varchar(7) DEFAULT '#111111'"
+                },
+                "secondary_color": {
+                    "definition": "varchar(7) DEFAULT '#FFFFFF'"
+                },
+                "created_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp()"
+                },
+                "updated_at": {
+                    "definition": "timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "template_id"
+            ],
+            "foreign_keys": [
+                "template_customizations_ibfk_1"
+            ]
+        },
+        "template_plans": {
+            "columns": {
+                "template_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "plan_id": {
+                    "definition": "int(11) NOT NULL"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "plan_id"
+            ],
+            "foreign_keys": [
+                "template_plans_ibfk_1",
+                "template_plans_ibfk_2"
+            ]
+        },
+        "template_restaurants": {
+            "columns": {
+                "template_id": {
+                    "definition": "int(11) NOT NULL"
+                },
+                "restaurant_id": {
+                    "definition": "int(11) NOT NULL"
+                }
+            },
+            "indexes": [
+                "PRIMARY",
+                "restaurant_id"
+            ],
+            "foreign_keys": [
+                "template_restaurants_ibfk_1",
+                "template_restaurants_ibfk_2"
+            ]
+        }
+    }
+}

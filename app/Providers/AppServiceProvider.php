@@ -22,6 +22,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $baseline = database_path('migrations/baseline');
+        if (is_dir($baseline)) {
+            $this->loadMigrationsFrom($baseline);
+        }
+
         $this->guardStagingDatabase();
         $this->validateProductionConfig();
         $this->guardDebugRoutesInProduction();

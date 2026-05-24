@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "description": "Ordered seed-sql files. Restaurant seeds require matching restaurants (email/slug) from dump or admin setup.",
+  "files": [
+    "_shared/00_restaurants_bootstrap.sql",
+    "_shared/01_subscription_plans.sql",
+    "_shared/02_site_settings.sql",
+    "_shared/03_templates.sql",
+    "_shared/04_qr_templates.sql",
+    "_shared/05_staging_auth_bootstrap.sql",
+    "restaurants/seed_lusso_drinks.sql",
+    "restaurants/seed_maniahouse_menu.sql",
+    "restaurants/seed_opal_menu.sql",
+    "restaurants/seed_saltandsocial_menu.sql",
+    "restaurants/seed_swissvistana_menu.sql",
+    "restaurants/seed_vendomecafe_menu.sql"
+  ],
+  "restaurants": {
+    "seed_lusso_drinks.sql": {
+      "lookup": "restaurant@lussohotelsabuja.com",
+      "field": "email"
+    },
+    "seed_maniahouse_menu.sql": {
+      "lookup": "admin@maniahouse.our-menu.online",
+      "field": "email"
+    },
+    "seed_opal_menu.sql": {
+      "lookup": "opallagos1@gmail.com",
+      "field": "email"
+    },
+    "seed_saltandsocial_menu.sql": {
+      "lookup": "salt-and-social",
+      "field": "slug"
+    },
+    "seed_swissvistana_menu.sql": {
+      "lookup": "swiss-vistana",
+      "field": "slug"
+    },
+    "seed_vendomecafe_menu.sql": {
+      "lookup": "vendome-cafe",
+      "field": "slug"
+    }
+  }
+}
