@@ -12,7 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        if (config('resmenu.trust_proxy_headers')) {
+        // IMPORTANT: During bootstrap, the config repository is not yet bound.
+        // Using config() here can crash with "Target class [config] does not exist."
+        // Read directly from env instead.
+        if (filter_var(env('TRUST_PROXY_HEADERS', false), FILTER_VALIDATE_BOOLEAN)) {
             $middleware->trustProxies(at: '*');
         }
 
