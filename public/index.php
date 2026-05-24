@@ -6,7 +6,8 @@ define('LARAVEL_START', microtime(true));
 
 // #region agent log (fef746) - web boot diagnostics
 try {
-    $logFile = dirname(__DIR__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'debug-fef746.log';
+    // Write into Laravel project root (sibling of public/).
+    $logFile = dirname(__DIR__).DIRECTORY_SEPARATOR.'debug-fef746.log';
     $emit = static function (string $message, array $data = []) use ($logFile): void {
         // Never log secrets; keep data minimal.
         $payload = [
