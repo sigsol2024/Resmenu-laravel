@@ -7,10 +7,9 @@ namespace App\Http\Controllers\Auth;
 
 
 use App\Http\Controllers\Controller;
-
 use App\Models\Manager;
-
 use App\Services\RecaptchaService;
+use App\Services\SiteSettingsService;
 
 use Illuminate\Http\Request;
 
@@ -76,20 +75,18 @@ class PasswordResetController extends Controller
 
 
 
-    public function showReset(string $token)
-
+    public function showReset(string $token, SiteSettingsService $siteSettings)
     {
-
         if (! Cache::has('pwd_reset:'.$token)) {
-
             abort(404);
-
         }
 
-
-
-        return view('auth.reset-password', ['token' => $token]);
-
+        return view('auth.reset-password', [
+            'token' => $token,
+            'siteName' => $siteSettings->siteName(),
+            'siteLogoUrl' => $siteSettings->siteLogoUrl(),
+            'marketingHomeUrl' => 'https://resmenu.net/',
+        ]);
     }
 
 

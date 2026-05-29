@@ -14,7 +14,7 @@
     <title>Secure Checkout - {{ $restaurant->name }}</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('assets/css/resmenu-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('legacy/assets/css/resmenu-icons.css') }}">
     <script>
         tailwind.config = {
             darkMode: "class",
@@ -240,7 +240,7 @@
     </div>
 </footer>
 
-<script src="{{ asset('assets/js/cart.js') }}"></script>
+<script src="{{ asset('legacy/assets/js/cart.js') }}"></script>
 <script>
 (function() {
     const isReservation = @json($isReservationCheckout);

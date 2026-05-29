@@ -1,22 +1,85 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Set new password — Resmenu</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
-<div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
-    <h1 class="text-xl font-bold mb-6">Choose a new password</h1>
-    @if($errors->any())<div class="text-red-600 text-sm mb-4">@foreach($errors->all() as $e)<p>{{ $e }}</p>@endforeach</div>@endif
-    <form method="post" action="{{ route('password.update') }}" class="space-y-4">
-        @csrf
-        <input type="hidden" name="token" value="{{ $token }}">
-        <div><label class="block text-sm font-medium">New password</label><input type="password" name="password" required class="w-full border rounded px-3 py-2"></div>
-        <div><label class="block text-sm font-medium">Confirm password</label><input type="password" name="password_confirmation" required class="w-full border rounded px-3 py-2"></div>
-        <button type="submit" class="w-full bg-slate-900 text-white py-2 rounded font-semibold">Update password</button>
-    </form>
+@extends('layouts.auth-marketing')
+
+@section('title', 'Reset Password')
+@section('auth_layout', 'centered')
+
+@section('content')
+<div class="w-full max-w-md rounded-2xl bg-white shadow-xl border border-slate-200 p-6 sm:p-8">
+    <div class="mb-6 flex items-center justify-between gap-4">
+        <a href="{{ $marketingHomeUrl ?? 'https://resmenu.net/' }}" class="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-primary transition-colors">
+            @resmenuIcon('arrow_back', ['size' => 16, 'class' => 'text-base'])
+            Back to Home
+        </a>
+        <a href="{{ $marketingHomeUrl ?? 'https://resmenu.net/' }}" class="inline-flex items-center gap-2">
+            @if(!empty($siteLogoUrl))
+                <img src="{{ $siteLogoUrl }}" alt="{{ $siteName }}" class="h-9 w-auto">
+            @else
+                @resmenuIcon('restaurant_menu', ['size' => 28, 'class' => 'text-primary text-3xl'])
+            @endif
+        </a>
+    </div>
+
+    <h1 class="text-2xl font-bold text-slate-900 mb-2">Reset Password</h1>
+    <p class="text-sm text-slate-600 mb-6">Create a new password for your account.</p>
+
+    @if($errors->any())
+        <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            @foreach($errors->all() as $e)<div>{{ $e }}</div>@endforeach
+        </div>
+    @endif
+
+    @if(session('success'))
+        <div class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+            {{ session('success') }}
+        </div>
+        <a href="{{ route('login') }}" class="inline-flex w-full items-center justify-center rounded-lg bg-primary px-4 py-3 font-semibold text-white hover:bg-primary/90 transition-colors">Go to Login</a>
+    @elseif(empty($token))
+        <div class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+            Missing reset token. Please request a new password reset link.
+        </div>
+        <a href="{{ route('password.request') }}" class="mt-4 inline-flex w-full items-center justify-center rounded-lg bg-primary px-4 py-3 font-semibold text-white hover:bg-primary/90 transition-colors">Request New Link</a>
+    @else
+        <form method="post" action="{{ route('password.update') }}" class="space-y-4">
+            @csrf
+            <input type="hidden" name="token" value="{{ $token }}">
+            <div>
+                <label for="password" class="block text-sm font-semibold text-slate-700 mb-2">New Password</label>
+                <div class="relative">
+                    <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        minlength="{{ config('resmenu.password_min_length', 8) }}"
+                        class="block w-full rounded-lg border-slate-200 bg-slate-50 pl-4 pr-12 py-3 text-slate-900 focus:border-primary focus:ring-primary"
+                        placeholder="Enter new password"
+                        required
+                    />
+                    <button type="button" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-primary transition-colors" aria-label="Toggle password visibility" data-password-toggle="password">
+                        @resmenuPasswordToggle(20, 'text-xl')
+                    </button>
+                </div>
+            </div>
+            <div>
+                <label for="password_confirmation" class="block text-sm font-semibold text-slate-700 mb-2">Confirm New Password</label>
+                <div class="relative">
+                    <input
+                        id="password_confirmation"
+                        name="password_confirmation"
+                        type="password"
+                        minlength="{{ config('resmenu.password_min_length', 8) }}"
+                        class="block w-full rounded-lg border-slate-200 bg-slate-50 pl-4 pr-12 py-3 text-slate-900 focus:border-primary focus:ring-primary"
+                        placeholder="Confirm new password"
+                        required
+                    />
+                    <button type="button" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-primary transition-colors" aria-label="Toggle password visibility" data-password-toggle="password_confirmation">
+                        @resmenuPasswordToggle(20, 'text-xl')
+                    </button>
+                </div>
+            </div>
+            <button type="submit" class="w-full rounded-lg bg-primary px-4 py-3 font-semibold text-white hover:bg-primary/90 transition-colors">
+                Update Password
+            </button>
+        </form>
+    @endif
 </div>
-</body>
-</html>
+@endsection

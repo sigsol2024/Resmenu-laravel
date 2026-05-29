@@ -31,7 +31,7 @@
     </svg>
 </button>
 <div class="sidebar-overlay" onclick="toggleMobile()"></div>
-<aside class="sidebar-modern open" id="sidebar">
+<aside class="sidebar-modern" id="sidebar">
     <div class="sidebar-header-modern">
         <div class="sidebar-logo-wrapper">
             <div class="sidebar-logo">

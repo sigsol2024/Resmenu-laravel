@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\Manager;
+use App\Services\SiteSettingsService;
 use App\Models\Restaurant;
 use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
@@ -25,7 +26,7 @@ class RegisterController extends Controller
         private DisposableEmailService $disposableEmail,
     ) {}
 
-    public function show(Request $request)
+    public function show(Request $request, SiteSettingsService $siteSettings)
     {
         if (Auth::guard('manager')->check()) {
             return redirect()->route('manager.dashboard');
@@ -36,6 +37,10 @@ class RegisterController extends Controller
             'plan' => $request->query('plan'),
             'cycle' => $request->query('cycle', 'monthly'),
             'recaptchaSiteKey' => config('resmenu.recaptcha_site_key'),
+            'siteName' => $siteSettings->siteName(),
+            'siteLogoUrl' => $siteSettings->siteLogoUrl(),
+            'marketingHomeUrl' => 'https://resmenu.net/',
+            'showcaseRestaurantLogos' => $siteSettings->showcaseRestaurantLogos(),
         ]);
     }
 
