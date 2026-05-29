@@ -42,6 +42,9 @@ class AppServiceProvider extends ServiceProvider
         });
 
         \Illuminate\Support\Facades\Gate::policy(\App\Models\Restaurant::class, \App\Policies\RestaurantPolicy::class);
+
+        \Illuminate\Pagination\Paginator::defaultView('vendor.pagination.legacy');
+        \Illuminate\Pagination\Paginator::defaultSimpleView('vendor.pagination.legacy-simple');
     }
 
     private function guardStagingDatabase(): void

@@ -128,7 +128,7 @@
                 </tbody>
             </table>
             @if($menuItems->hasPages())
-                <div class="table-pagination">{{ $menuItems->links() }}</div>
+                {{ $menuItems->links() }}
             @endif
         </div>
 

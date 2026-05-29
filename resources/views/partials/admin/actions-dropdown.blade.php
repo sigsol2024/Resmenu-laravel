@@ -1,5 +1,8 @@
 {{-- Three-dot actions menu. Items: link|form|divider. Pass onclick stopPropagation via wrapper class. --}}
-@props(['items' => [], 'stopPropagation' => true])
+@php
+    $items = $items ?? [];
+    $stopPropagation = $stopPropagation ?? true;
+@endphp
 
 <div class="actions-cell" @if($stopPropagation) onclick="event.stopPropagation()" @endif>
     <button class="actions-btn" type="button" title="Actions" aria-label="Actions">

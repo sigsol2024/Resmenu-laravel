@@ -290,7 +290,7 @@
                 </tbody>
             </table>
             @if($restaurants->hasPages())
-                <div style="padding: 16px 24px;">{{ $restaurants->links() }}</div>
+                {{ $restaurants->links() }}
             @endif
         </div>
     

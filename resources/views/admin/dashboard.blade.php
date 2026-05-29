@@ -68,7 +68,7 @@
     </div>
   @endif
   @forelse($recentRestaurants as $restaurant)
-    <div class="restaurant" onclick="toggleRestaurantMobile(event, this)">
+    <div class="restaurant" data-restaurant-row>
       <div class="restaurant-header">
         <span class="restaurant-name">{{ $restaurant->name }}</span>
         <span class="restaurant-slug">{{ $restaurant->slug }}</span>
@@ -77,26 +77,24 @@
         @else
           <span class="restaurant-date">—</span>
         @endif
-        <div class="restaurant-actions" onclick="event.stopPropagation()">
+        <div class="restaurant-actions">
           @include('partials.admin.actions-dropdown', [
             'items' => [
               ['label' => 'Manage', 'url' => route('admin.restaurants.hub', $restaurant)],
               ['label' => 'Edit', 'url' => route('admin.restaurants.edit', $restaurant)],
               ['label' => 'View Menu', 'url' => route('public.menu', $restaurant->slug), 'target' => '_blank', 'rel' => 'noopener'],
             ],
-            'stopPropagation' => false,
           ])
         </div>
         <span class="restaurant-toggle" aria-hidden="true">▼</span>
       </div>
-      <div class="restaurant-body" onclick="event.stopPropagation()">
+      <div class="restaurant-body">
         @include('partials.admin.actions-dropdown', [
           'items' => [
             ['label' => 'Manage', 'url' => route('admin.restaurants.hub', $restaurant)],
             ['label' => 'Edit', 'url' => route('admin.restaurants.edit', $restaurant)],
             ['label' => 'View Menu', 'url' => route('public.menu', $restaurant->slug), 'target' => '_blank', 'rel' => 'noopener'],
           ],
-          'stopPropagation' => false,
         ])
       </div>
     </div>
@@ -117,10 +115,12 @@
 @endsection
 @push('scripts')
 <script>
-function toggleRestaurantMobile(event, el) {
-  if (window.innerWidth > 768) return;
-  if (event.target.closest('.actions-cell, .actions-btn, .actions-dropdown, a, button')) return;
-  el.classList.toggle('open');
-}
+document.querySelectorAll('[data-restaurant-row]').forEach(function (row) {
+  row.addEventListener('click', function (e) {
+    if (window.innerWidth > 768) return;
+    if (e.target.closest('.actions-cell, .actions-btn, .actions-dropdown, a, button')) return;
+    row.classList.toggle('open');
+  });
+});
 </script>
 @endpush

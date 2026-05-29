@@ -146,7 +146,7 @@
     @endif
   </div>
   @if($subscriptions->hasPages())
-    <div style="padding:16px 24px">{{ $subscriptions->links() }}</div>
+    {{ $subscriptions->links() }}
   @endif
 </div>
 @endsection

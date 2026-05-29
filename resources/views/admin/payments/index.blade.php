@@ -146,7 +146,7 @@
             </tbody>
         </table>
         @if($payments->hasPages())
-            <div class="pagination">{{ $payments->links() }}</div>
+            {{ $payments->links() }}
         @endif
     @endif
 </div>

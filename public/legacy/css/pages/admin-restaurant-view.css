@@ -24,7 +24,7 @@
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     margin-bottom: 24px;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .card-header {
@@ -45,13 +45,15 @@
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     margin-bottom: 24px;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .tabs-nav {
     display: flex;
     border-bottom: 1px solid #e5e7eb;
     background: #f9fafb;
+    overflow: hidden;
+    border-radius: 8px 8px 0 0;
 }
 
 .tab-button {
@@ -123,46 +125,6 @@
 
 .tab-content.active {
     display: block;
-}
-
-.table-pagination {
-    padding: 16px 24px;
-    border-top: 1px solid #e5e7eb;
-    background: #fff;
-}
-
-.table-pagination nav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    align-items: center;
-    justify-content: flex-end;
-}
-
-.table-pagination a,
-.table-pagination span {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 36px;
-    height: 36px;
-    padding: 0 10px;
-    border-radius: 6px;
-    font-size: 0.875rem;
-    text-decoration: none;
-    color: #374151;
-    border: 1px solid #e5e7eb;
-    background: #fff;
-}
-
-.table-pagination a:hover {
-    background: #f9fafb;
-}
-
-.table-pagination span[aria-current="page"] {
-    background: #111827;
-    color: #fff;
-    border-color: #111827;
 }
 
 .search-filter-bar {
