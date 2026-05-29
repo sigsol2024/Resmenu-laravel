@@ -12,6 +12,19 @@ Deterministic, idempotent SQL seeds for platform reference data and restaurant m
   - `menu_items (restaurant_id, category_id, slug)`
 - Large menu files: **no** single transaction wrapping the entire file (MariaDB implicit commits).
 
+## Production sync (live dump → Laravel)
+
+For **full parity** with the live legacy database (all 10 active restaurants, menus, subscriptions, orders), generate and import slug-based SQL:
+
+```bash
+php artisan resmenu:build:sync-sql
+# Import database/seed-sql/production/sync_part_*.sql in order (staging first!)
+```
+
+See [docs/SYNC_FROM_LIVE_DUMP.md](../docs/SYNC_FROM_LIVE_DUMP.md) for staging workflow, uploads checklist, and verification queries.
+
+Generated `sync_part_*.sql` files may be large; regenerate on the server from `sigsolmenu_resmenu.sql` rather than committing every export.
+
 ## Usage
 
 ```bash

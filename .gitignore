@@ -21,4 +21,7 @@ yarn-error.log
 /.idea
 /.vscode
 
+# Generated live-dump sync SQL (regenerate via resmenu:build:sync-sql)
+/database/seed-sql/production/sync_part_*.sql
+
 # vendor/ is intentionally tracked for first-deploy simplicity (see docs/STANDALONE_DEPLOYMENT.md)
