@@ -10,17 +10,21 @@
 @section('title', $isEdit ? 'Edit QR Template' : 'Create QR Template')
 
 @section('content')
-<div class="page-header">
-    <h1 class="page-title">{{ $isEdit ? 'Edit QR Template' : 'Create QR Template' }}</h1>
-    <p class="page-subtitle">Design QR code appearance with live preview</p>
-</div>
-
 <div class="card qr-editor-page">
     <form method="post"
           action="{{ $isEdit ? route('admin.qr-templates.update', $template->id) : route('admin.qr-templates.store') }}"
-          id="qrTemplateForm">
+          id="qrTemplateForm"
+          class="qr-editor-form">
         @csrf
         @if($isEdit) @method('PUT') @endif
+
+        <div class="qr-editor-header">
+            <div class="qr-editor-header-text">
+                <h2 class="qr-editor-title">{{ $isEdit ? 'Edit QR Template' : 'Create QR Template' }}</h2>
+                <p class="qr-editor-desc">Adjust colors, frame, and text — preview updates as you edit.</p>
+            </div>
+            <a href="{{ route('admin.qr-templates.index') }}" class="btn btn-secondary btn-small qr-editor-back">Back to list</a>
+        </div>
 
         <div class="qr-editor-grid">
             <div class="template-editor-controls">
@@ -73,7 +77,7 @@
 
                 <div class="form-group">
                     <label class="form-label">Text Below QR Code</label>
-                    <input type="text" name="frame_text" class="form-input" value="{{ old('frame_text', $frame['text'] ?? '') }}" placeholder="e.g., SCAN ME" oninput="updateQrPreview()">
+                    <input type="text" name="frame_text" class="form-input frame-text-input" value="{{ old('frame_text', $frame['text'] ?? '') }}" placeholder="e.g., SCAN ME" oninput="updateQrPreview()">
 
                     <div class="qr-editor-inline-grid">
                         <div>
@@ -88,7 +92,7 @@
 
                     <label class="checkbox-inline">
                         <input type="checkbox" name="frame_bg_enabled" id="frame_bg_enabled" value="1" @checked(old('frame_bg_enabled', $frame['bg_enabled'] ?? true)) onchange="toggleFrameBgOptions(); updateQrPreview();">
-                        Text Background
+                        <span>Text Background</span>
                     </label>
                     <div id="frameBgOptions" class="frame-options" style="display: {{ old('frame_bg_enabled', $frame['bg_enabled'] ?? true) ? 'block' : 'none' }};">
                         <label class="form-label form-label-sm">Background Color</label>
@@ -97,35 +101,39 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Foreground Color</label>
-                    <input type="color" name="foreground_color" value="{{ old('foreground_color', $colors['foreground'] ?? '#000000') }}" onchange="updateQrPreview()" class="color-input">
+                    <span class="form-label">QR Colors</span>
+                    <div class="qr-editor-colors-grid">
+                        <div>
+                            <label class="form-label form-label-sm" for="foreground_color">Foreground</label>
+                            <input type="color" id="foreground_color" name="foreground_color" value="{{ old('foreground_color', $colors['foreground'] ?? '#000000') }}" onchange="updateQrPreview()" class="color-input">
+                        </div>
+                        <div>
+                            <label class="form-label form-label-sm" for="background_color">Background</label>
+                            <input type="color" id="background_color" name="background_color" value="{{ old('background_color', $colors['background'] ?? '#FFFFFF') }}" onchange="updateQrPreview()" class="color-input">
+                        </div>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Background Color</label>
-                    <input type="color" name="background_color" value="{{ old('background_color', $colors['background'] ?? '#FFFFFF') }}" onchange="updateQrPreview()" class="color-input">
-                </div>
-
-                <div class="form-group">
+                <div class="form-group @if(!$isEdit) form-group-last @endif">
                     <label class="checkbox-inline">
                         <input type="checkbox" name="logo_enabled" id="logo_enabled" value="1" @checked(old('logo_enabled', $logo['enabled'] ?? false)) onchange="toggleLogoOptions(); updateQrPreview();">
-                        Enable Logo <span class="field-note">(Preview only)</span>
+                        <span>Enable Logo <span class="field-note">(Preview only)</span></span>
                     </label>
                     <div id="logoOptions" class="frame-options" style="display: {{ old('logo_enabled', $logo['enabled'] ?? false) ? 'block' : 'none' }};">
                         <label class="form-label">Logo Size (10% - 30%)</label>
-                        <input type="range" name="logo_size" min="0.1" max="0.3" step="0.05" value="{{ old('logo_size', $logo['size'] ?? 0.2) }}" onchange="updateQrPreview()">
-                        <label class="checkbox-inline">
+                        <input type="range" name="logo_size" class="form-range" min="0.1" max="0.3" step="0.05" value="{{ old('logo_size', $logo['size'] ?? 0.2) }}" onchange="updateQrPreview()">
+                        <label class="checkbox-inline checkbox-inline-nested">
                             <input type="checkbox" name="logo_center_only" value="1" @checked(old('logo_center_only', $logo['center_only'] ?? true))>
-                            Center only
+                            <span>Center only</span>
                         </label>
                     </div>
                 </div>
 
                 @if($isEdit)
-                    <div class="form-group">
+                    <div class="form-group form-group-last">
                         <label class="checkbox-inline">
                             <input type="checkbox" name="is_active" value="1" @checked(old('is_active', $template->is_active ?? 1))>
-                            Active
+                            <span>Active</span>
                         </label>
                     </div>
                 @endif

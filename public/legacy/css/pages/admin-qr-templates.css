@@ -207,50 +207,167 @@
 }
 
 .qr-editor-page {
-    overflow: visible;
+    overflow: hidden;
+    padding: 0 !important;
+    margin-bottom: 24px;
+}
+
+.qr-editor-page:hover {
+    border-color: var(--border-light, #e5e7eb);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.qr-editor-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.qr-editor-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 24px 32px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fff;
+}
+
+.qr-editor-title {
+    margin: 0 0 6px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.qr-editor-desc {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.qr-editor-back {
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .qr-editor-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    padding: 24px;
+    gap: 32px;
+    padding: 32px;
+    align-items: start;
+}
+
+.template-editor-controls {
+    min-width: 0;
+    padding-right: 8px;
+}
+
+.template-editor-preview {
+    position: sticky;
+    top: 24px;
+}
+
+.qr-editor-colors-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
 }
 
 .qr-editor-inline-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin: 12px 0;
+    gap: 16px;
+    margin: 16px 0 12px;
+}
+
+.qr-editor-page .form-group {
+    margin-bottom: 22px;
+}
+
+.qr-editor-page .form-group-last {
+    margin-bottom: 0;
+}
+
+.qr-editor-page .form-label {
+    display: block;
+    align-items: unset;
+    gap: 0;
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 0.875rem;
+    color: #374151;
+}
+
+.qr-editor-page .form-label-sm {
+    font-size: 0.75rem;
+    margin-bottom: 6px;
+}
+
+.qr-editor-page .form-input,
+.qr-editor-page .form-textarea,
+.qr-editor-page .form-select {
+    width: 100%;
+    max-width: none;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    background: #fff;
+    box-shadow: none;
+}
+
+.qr-editor-page .form-input:focus,
+.qr-editor-page .form-textarea:focus,
+.qr-editor-page .form-select:focus {
+    outline: none;
+    border-color: #111827;
+    box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
+}
+
+.qr-editor-page .form-textarea {
+    min-height: 72px;
+    resize: vertical;
+}
+
+.qr-editor-page .form-range {
+    width: 100%;
+    margin: 8px 0 12px;
+    cursor: pointer;
 }
 
 .preview-title {
     margin: 0 0 16px;
     font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
 }
 
 .preview-panel {
     background: #fff;
     border: 2px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 20px;
-    min-height: 300px;
+    border-radius: 10px;
+    padding: 24px;
+    min-height: 320px;
 }
 
 .preview-note {
     color: #6b7280;
     font-size: 12px;
-    margin-bottom: 12px;
-    padding: 8px;
+    line-height: 1.5;
+    margin: 0 0 20px;
+    padding: 12px 14px;
     background: #f0f9ff;
-    border-radius: 4px;
+    border-radius: 6px;
 }
 
 .qr-preview-wrap {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
+    padding: 8px 0 16px;
 }
 
 .qr-preview-canvas {
@@ -258,12 +375,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 250px;
+    min-height: 260px;
+    width: 100%;
 }
 
 .preview-placeholder,
 .preview-error {
     color: #6b7280;
+    text-align: center;
+    margin: 0;
 }
 
 .qr-preview-text {
@@ -273,26 +393,83 @@
 .qr-editor-footer {
     display: flex;
     justify-content: flex-end;
-    gap: 12px;
-    padding: 20px 24px;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 32px;
     border-top: 1px solid #e5e7eb;
+    background: #f9fafb;
+    margin: 0;
+}
+
+.checkbox-inline {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    margin-top: 12px;
+    font-size: 0.875rem;
+    color: #374151;
+}
+
+.checkbox-inline-nested {
+    margin-top: 10px;
+}
+
+.checkbox-inline input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    flex-shrink: 0;
+    cursor: pointer;
+    accent-color: #111827;
+}
+
+.color-input {
+    width: 100%;
+    height: 44px;
+    cursor: pointer;
+    padding: 4px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.color-input-sm {
+    height: 40px;
 }
 
 .radio-group {
     display: flex;
-    gap: 16px;
-    margin-top: 8px;
+    gap: 12px;
+    margin-top: 10px;
     flex-wrap: wrap;
 }
 
 .radio-option {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     cursor: pointer;
-    padding: 8px 12px;
+    padding: 10px 16px;
     border: 2px solid #e5e7eb;
     border-radius: 8px;
+    flex: 1;
+    min-width: 120px;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.radio-option:hover {
+    border-color: #9ca3af;
+    background: #f9fafb;
+}
+
+.radio-option input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: #111827;
 }
 
 .radio-option:has(input:checked) {
@@ -301,12 +478,66 @@
 }
 
 .frame-options {
-    margin-top: 12px;
+    margin-top: 14px;
+    padding: 14px 16px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
 }
 
-@media (max-width: 900px) {
+.frame-text-input {
+    margin-bottom: 4px;
+}
+
+@media (max-width: 1024px) {
     .qr-editor-grid {
         grid-template-columns: 1fr;
+        gap: 28px;
+        padding: 24px;
+    }
+
+    .template-editor-preview {
+        position: static;
+    }
+
+    .template-editor-controls {
+        padding-right: 0;
+    }
+}
+
+@media (max-width: 640px) {
+    .qr-editor-header {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 20px;
+    }
+
+    .qr-editor-back {
+        align-self: flex-start;
+    }
+
+    .qr-editor-grid {
+        padding: 20px;
+    }
+
+    .qr-editor-footer {
+        flex-direction: column-reverse;
+        align-items: stretch;
+        padding: 16px 20px;
+    }
+
+    .qr-editor-footer .btn {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .qr-editor-inline-grid,
+    .qr-editor-colors-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .radio-option {
+        min-width: 100%;
     }
 }
 
