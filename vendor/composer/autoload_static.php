@@ -42,6 +42,7 @@ class ComposerStaticInite5fbbe6137dc77bcd5b6646b5dd75b52
         'a1cfe24d14977df6878b9bf804af2d1c' => __DIR__ . '/..' . '/nunomaduro/collision/src/Adapters/Phpunit/Autoload.php',
         'ec07570ca5a812141189b1fa81503674' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert/Functions.php',
         '320163ac6b93aebe3dc25b60a0533d56' => __DIR__ . '/..' . '/spatie/laravel-ignition/src/helpers.php',
+        'd1852035ca5ede3a526b60fa82c9cdf3' => __DIR__ . '/../..' . '/app/Support/legacy_menu_helpers.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -563,6 +564,8 @@ class ComposerStaticInite5fbbe6137dc77bcd5b6646b5dd75b52
 
     public static $classMap = array (
         'App\\Console\\Commands\\BaselineLockCommand' => __DIR__ . '/../..' . '/app/Console/Commands/BaselineLockCommand.php',
+        'App\\Console\\Commands\\BuildSyncSqlCommand' => __DIR__ . '/../..' . '/app/Console/Commands/BuildSyncSqlCommand.php',
+        'App\\Console\\Commands\\ImportProductionDataCommand' => __DIR__ . '/../..' . '/app/Console/Commands/ImportProductionDataCommand.php',
         'App\\Console\\Commands\\SchemaSnapshotCommand' => __DIR__ . '/../..' . '/app/Console/Commands/SchemaSnapshotCommand.php',
         'App\\Console\\Commands\\SchemaValidateFreezeCommand' => __DIR__ . '/../..' . '/app/Console/Commands/SchemaValidateFreezeCommand.php',
         'App\\Console\\Commands\\SchemaVerifyCommand' => __DIR__ . '/../..' . '/app/Console/Commands/SchemaVerifyCommand.php',
@@ -575,6 +578,7 @@ class ComposerStaticInite5fbbe6137dc77bcd5b6646b5dd75b52
         'App\\Http\\Controllers\\Admin\\PaymentSettingsController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/PaymentSettingsController.php',
         'App\\Http\\Controllers\\Admin\\QrTemplateController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/QrTemplateController.php',
         'App\\Http\\Controllers\\Admin\\RestaurantController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/RestaurantController.php',
+        'App\\Http\\Controllers\\Admin\\RestaurantHubController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/RestaurantHubController.php',
         'App\\Http\\Controllers\\Admin\\RestaurantSearchController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/RestaurantSearchController.php',
         'App\\Http\\Controllers\\Admin\\SettingsController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/SettingsController.php',
         'App\\Http\\Controllers\\Admin\\SubscriptionController' => __DIR__ . '/../..' . '/app/Http/Controllers/Admin/SubscriptionController.php',
@@ -614,6 +618,7 @@ class ComposerStaticInite5fbbe6137dc77bcd5b6646b5dd75b52
         'App\\Http\\Controllers\\Public\\OrderConfirmationController' => __DIR__ . '/../..' . '/app/Http/Controllers/Public/OrderConfirmationController.php',
         'App\\Http\\Controllers\\Public\\OrderPaymentCallbackController' => __DIR__ . '/../..' . '/app/Http/Controllers/Public/OrderPaymentCallbackController.php',
         'App\\Http\\Controllers\\Public\\PaymentFailedController' => __DIR__ . '/../..' . '/app/Http/Controllers/Public/PaymentFailedController.php',
+        'App\\Http\\Controllers\\Public\\QrImageController' => __DIR__ . '/../..' . '/app/Http/Controllers/Public/QrImageController.php',
         'App\\Http\\Controllers\\Public\\QrRedirectController' => __DIR__ . '/../..' . '/app/Http/Controllers/Public/QrRedirectController.php',
         'App\\Http\\Controllers\\Public\\ReservationConfirmationController' => __DIR__ . '/../..' . '/app/Http/Controllers/Public/ReservationConfirmationController.php',
         'App\\Http\\Controllers\\Public\\ReservationController' => __DIR__ . '/../..' . '/app/Http/Controllers/Public/ReservationController.php',
@@ -638,6 +643,7 @@ class ComposerStaticInite5fbbe6137dc77bcd5b6646b5dd75b52
         'App\\Services\\CategorySecondarySectionService' => __DIR__ . '/../..' . '/app/Services/CategorySecondarySectionService.php',
         'App\\Services\\CustomizationService' => __DIR__ . '/../..' . '/app/Services/CustomizationService.php',
         'App\\Services\\DisposableEmailService' => __DIR__ . '/../..' . '/app/Services/DisposableEmailService.php',
+        'App\\Services\\EmailDeliverabilityService' => __DIR__ . '/../..' . '/app/Services/EmailDeliverabilityService.php',
         'App\\Services\\MailService' => __DIR__ . '/../..' . '/app/Services/MailService.php',
         'App\\Services\\ManagerFeatureAccess' => __DIR__ . '/../..' . '/app/Services/ManagerFeatureAccess.php',
         'App\\Services\\MenuService' => __DIR__ . '/../..' . '/app/Services/MenuService.php',
@@ -648,6 +654,7 @@ class ComposerStaticInite5fbbe6137dc77bcd5b6646b5dd75b52
         'App\\Services\\PendingOnlinePaymentService' => __DIR__ . '/../..' . '/app/Services/PendingOnlinePaymentService.php',
         'App\\Services\\QrAnalyticsService' => __DIR__ . '/../..' . '/app/Services/QrAnalyticsService.php',
         'App\\Services\\QrCodeService' => __DIR__ . '/../..' . '/app/Services/QrCodeService.php',
+        'App\\Services\\QrGeneratorService' => __DIR__ . '/../..' . '/app/Services/QrGeneratorService.php',
         'App\\Services\\RecaptchaService' => __DIR__ . '/../..' . '/app/Services/RecaptchaService.php',
         'App\\Services\\RegistrationOtpService' => __DIR__ . '/../..' . '/app/Services/RegistrationOtpService.php',
         'App\\Services\\ReservationBookingService' => __DIR__ . '/../..' . '/app/Services/ReservationBookingService.php',
@@ -656,6 +663,7 @@ class ComposerStaticInite5fbbe6137dc77bcd5b6646b5dd75b52
         'App\\Services\\RestaurantPaymentSettingsService' => __DIR__ . '/../..' . '/app/Services/RestaurantPaymentSettingsService.php',
         'App\\Services\\RestaurantPaymentVerificationService' => __DIR__ . '/../..' . '/app/Services/RestaurantPaymentVerificationService.php',
         'App\\Services\\RestaurantQrService' => __DIR__ . '/../..' . '/app/Services/RestaurantQrService.php',
+        'App\\Services\\RestaurantTransactionalMailService' => __DIR__ . '/../..' . '/app/Services/RestaurantTransactionalMailService.php',
         'App\\Services\\SiteSettingsService' => __DIR__ . '/../..' . '/app/Services/SiteSettingsService.php',
         'App\\Services\\SubscriptionService' => __DIR__ . '/../..' . '/app/Services/SubscriptionService.php',
         'App\\Services\\TableInventoryService' => __DIR__ . '/../..' . '/app/Services/TableInventoryService.php',
@@ -668,6 +676,7 @@ class ComposerStaticInite5fbbe6137dc77bcd5b6646b5dd75b52
         'App\\Support\\OrderCancelToken' => __DIR__ . '/../..' . '/app/Support/OrderCancelToken.php',
         'App\\Support\\OrderConfirmationToken' => __DIR__ . '/../..' . '/app/Support/OrderConfirmationToken.php',
         'App\\Support\\PriceFormatter' => __DIR__ . '/../..' . '/app/Support/PriceFormatter.php',
+        'App\\Support\\ReservationNumberGenerator' => __DIR__ . '/../..' . '/app/Support/ReservationNumberGenerator.php',
         'App\\Support\\ResmenuIcons' => __DIR__ . '/../..' . '/app/Support/ResmenuIcons.php',
         'App\\Support\\SafeRedirect' => __DIR__ . '/../..' . '/app/Support/SafeRedirect.php',
         'App\\Support\\Schema\\SchemaComparer' => __DIR__ . '/../..' . '/app/Support/Schema/SchemaComparer.php',

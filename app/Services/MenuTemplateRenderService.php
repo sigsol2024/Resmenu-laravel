@@ -12,7 +12,7 @@ class MenuTemplateRenderService
 {
     public function render(int $templateId, array $viewData): Response
     {
-        MenuViewHelpers::register();
+        MenuViewHelpers::register($viewData);
 
         $templateId = max(1, (int) $templateId);
         $path = resource_path('views/menu/php-templates/template'.$templateId.'/index.php');
