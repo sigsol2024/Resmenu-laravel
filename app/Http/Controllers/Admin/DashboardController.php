@@ -34,7 +34,9 @@ class DashboardController extends Controller
 
     $maxValue = max(array_column($chartData, 'value')) ?: 1;
     foreach ($chartData as &$item) {
-      $item['percentage'] = ($item['value'] / $maxValue) * 100;
+      $pct = ($item['value'] / $maxValue) * 100;
+      // Keep a visible sliver for any non-zero stat so color always shows
+      $item['percentage'] = $item['value'] > 0 ? max($pct, 4) : 0;
     }
     unset($item);
 

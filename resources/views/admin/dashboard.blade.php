@@ -45,7 +45,7 @@
   </h2>
   <div class="simple-bar-chart gradient-bars">
     @foreach($chartData as $item)
-      <div class="item" style="--clr: {{ $item['color'] }}; --val: {{ round($item['percentage'], 1) }}">
+      <div class="item{{ $item['value'] > 0 ? ' item-has-value' : '' }}" style="--clr: {{ $item['color'] }}; --val: {{ round($item['percentage'], 1) }}">
         <div class="label">{{ $item['label'] }}</div>
         <div class="value">{{ number_format($item['value']) }}</div>
       </div>
@@ -59,32 +59,36 @@
   <div class="list-card-header">
     <h2 class="list-card-title">Recent Restaurants</h2>
   </div>
+  @if($recentRestaurants->isNotEmpty())
+    <div class="restaurant-list-head">
+      <span>Name</span>
+      <span>Slug</span>
+      <span>Created</span>
+      <span>Actions</span>
+    </div>
+  @endif
   @forelse($recentRestaurants as $restaurant)
-    <div class="restaurant" onclick="toggleRestaurant(this)">
+    <div class="restaurant" onclick="toggleRestaurantMobile(event, this)">
       <div class="restaurant-header">
-        <div class="restaurant-info">
-          <span class="restaurant-name">{{ $restaurant->name }}</span>
-          <span class="restaurant-slug">{{ $restaurant->slug }}</span>
-          @if($restaurant->created_at)
-            <span class="restaurant-date" style="font-size: 0.75rem; color: #6b7280; margin-top: 4px;">
-              Created: {{ $restaurant->created_at->format('M d, Y g:i A') }}
-            </span>
-          @endif
+        <span class="restaurant-name">{{ $restaurant->name }}</span>
+        <span class="restaurant-slug">{{ $restaurant->slug }}</span>
+        @if($restaurant->created_at)
+          <span class="restaurant-date">Created: {{ $restaurant->created_at->format('M d, Y g:i A') }}</span>
+        @else
+          <span class="restaurant-date">—</span>
+        @endif
+        <div class="restaurant-actions actions" onclick="event.stopPropagation()">
+          <a href="{{ route('admin.restaurants.hub', $restaurant) }}" class="btn-manage">Manage</a>
+          <a href="{{ route('admin.restaurants.edit', $restaurant) }}" class="btn-edit">Edit</a>
+          <a href="{{ route('public.menu', $restaurant->slug) }}" target="_blank" rel="noopener" class="btn-view">View Menu</a>
         </div>
-        <span class="restaurant-toggle">▼</span>
+        <span class="restaurant-toggle" aria-hidden="true">▼</span>
       </div>
       <div class="restaurant-body">
-        <div class="actions-cell">
-          <button class="actions-btn" type="button" title="Actions">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-            </svg>
-          </button>
-          <div class="actions-dropdown">
-            <a href="{{ route('admin.restaurants.hub', $restaurant) }}" class="actions-dropdown-item">Manage</a>
-            <a href="{{ route('admin.restaurants.edit', $restaurant) }}" class="actions-dropdown-item">Edit</a>
-            <a href="{{ route('public.menu', $restaurant->slug) }}" target="_blank" class="actions-dropdown-item">View Menu</a>
-          </div>
+        <div class="actions">
+          <a href="{{ route('admin.restaurants.hub', $restaurant) }}" class="btn-manage">Manage</a>
+          <a href="{{ route('admin.restaurants.edit', $restaurant) }}" class="btn-edit">Edit</a>
+          <a href="{{ route('public.menu', $restaurant->slug) }}" target="_blank" rel="noopener" class="btn-view">View Menu</a>
         </div>
       </div>
     </div>
@@ -105,7 +109,9 @@
 @endsection
 @push('scripts')
 <script>
-function toggleRestaurant(el){
+function toggleRestaurantMobile(event, el) {
+  if (window.innerWidth > 768) return;
+  if (event.target.closest('a, button')) return;
   el.classList.toggle('open');
 }
 </script>
