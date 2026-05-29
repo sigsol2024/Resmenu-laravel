@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\LegacyMenuViewData;
 use App\Models\Category;
 use App\Models\MenuItem;
 use App\Models\Restaurant;
@@ -150,21 +151,43 @@ class MenuService
     {
         $category->loadMissing(['menuItems' => fn ($q) => $q->where('is_available', 1)->orderBy('display_order')]);
         $data = $category->toArray();
-        $data['menu_items'] = $category->menuItems->map(fn (MenuItem $item) => $item->toArray())->all();
+        $data['menu_items'] = LegacyMenuViewData::normalizeMenuItems(
+            $category->menuItems->map(fn (MenuItem $item) => $item->toArray())->all()
+        );
 
         return $data;
     }
 
     public function samplePreviewPayload(int $templateId): array
     {
-        $restaurant = [
+        $uploadBaseUrl = rtrim(config('resmenu.upload_url'), '/');
+
+        $restaurant = LegacyMenuViewData::normalizeRestaurant([
             'id' => 0,
-            'name' => 'Preview Restaurant',
-            'slug' => 'preview',
+            'name' => 'Your Restaurant',
+            'slug' => 'template-preview',
+            'logo' => null,
+            'description' => 'Template preview – replace with your own name, logo, and menu.',
             'template_id' => $templateId,
+            'header_menu_items' => null,
+            'address' => '123 Sample Street, City Centre',
+            'phone' => '+1 (555) 123-4567',
+            'email' => 'hello@yourrestaurant.com',
+            'hero_image' => null,
+            'hero_image_url' => url('/templates/template'.$templateId.'/cover.jpg'),
+            'footer_content' => 'At Your Restaurant, we believe in great food and warm service. This is a template preview – your real content will replace this.',
+            'google_rating' => 4.8,
+            'rating_source' => 'Google',
+            'map_latitude' => null,
+            'map_longitude' => null,
+            'opening_hours' => "Mon–Fri: 11:00 – 22:00\nSat–Sun: 10:00 – 23:00",
+            'instagram_url' => 'https://instagram.com',
+            'facebook_url' => 'https://facebook.com',
+            'twitter_url' => 'https://twitter.com',
+            'whatsapp_link' => 'https://wa.me/15551234567',
             'enable_food_ordering' => true,
             'enable_table_reservations' => true,
-        ];
+        ], $uploadBaseUrl);
 
         $sections = [[
             'id' => 1,
@@ -179,7 +202,7 @@ class MenuService
             ]],
         ]];
 
-        return [
+        return LegacyMenuViewData::normalize([
             'restaurant' => $restaurant,
             'sections' => $sections,
             'customization' => ['primary_color' => '#f20d0d', 'background_color' => '#f8f5f5'],
@@ -187,11 +210,13 @@ class MenuService
             'singleSectionView' => false,
             'fullMenuUrl' => url('/templates/'.$templateId.'/preview'),
             'sectionsForNav' => [['id' => 1, 'name' => 'Main', 'slug' => 'main']],
-            'uploadBaseUrl' => rtrim(config('resmenu.upload_url'), '/'),
+            'uploadBaseUrl' => $uploadBaseUrl,
+            'templateAssetBaseUrl' => url('/templates/template'.$templateId),
             'template4BaseUrl' => url('/templates/template4'),
             'supportsOrdering' => true,
             'supportsReservations' => true,
             'reservationUrl' => '#',
-        ];
+            'isTemplatePreview' => true,
+        ]);
     }
 }

@@ -43,6 +43,7 @@ class ComposerStaticInite5fbbe6137dc77bcd5b6646b5dd75b52
         'ec07570ca5a812141189b1fa81503674' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert/Functions.php',
         '320163ac6b93aebe3dc25b60a0533d56' => __DIR__ . '/..' . '/spatie/laravel-ignition/src/helpers.php',
         'd1852035ca5ede3a526b60fa82c9cdf3' => __DIR__ . '/../..' . '/app/Support/legacy_menu_helpers.php',
+        '0769f0471dd15e0c54f249df98b65e6f' => __DIR__ . '/../..' . '/app/Support/legacy_resmenu_icons.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -671,6 +672,7 @@ class ComposerStaticInite5fbbe6137dc77bcd5b6646b5dd75b52
         'App\\Services\\UploadService' => __DIR__ . '/../..' . '/app/Services/UploadService.php',
         'App\\Support\\ApiJsonResponse' => __DIR__ . '/../..' . '/app/Support/ApiJsonResponse.php',
         'App\\Support\\LegacyEncryption' => __DIR__ . '/../..' . '/app/Support/LegacyEncryption.php',
+        'App\\Support\\LegacyMenuViewData' => __DIR__ . '/../..' . '/app/Support/LegacyMenuViewData.php',
         'App\\Support\\MenuTemplateResolver' => __DIR__ . '/../..' . '/app/Support/MenuTemplateResolver.php',
         'App\\Support\\MenuViewHelpers' => __DIR__ . '/../..' . '/app/Support/MenuViewHelpers.php',
         'App\\Support\\OrderCancelToken' => __DIR__ . '/../..' . '/app/Support/OrderCancelToken.php',

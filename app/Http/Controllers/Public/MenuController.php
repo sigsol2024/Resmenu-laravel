@@ -8,6 +8,7 @@ use App\Services\MenuService;
 use App\Services\MenuTemplateRenderService;
 use App\Services\SubscriptionService;
 use App\Services\UploadService;
+use App\Support\LegacyMenuViewData;
 use App\Support\MenuTemplateResolver;
 use Illuminate\Http\Request;
 
@@ -66,7 +67,7 @@ class MenuController extends Controller
         }
 
         $viewData = [
-            'restaurant' => $restaurant->toArray(),
+            'restaurant' => LegacyMenuViewData::normalizeRestaurant($restaurant->toArray(), rtrim(config('resmenu.canonical_upload_url') ?: config('resmenu.upload_url'), '/')),
             'sections' => $sections,
             'customization' => $this->customization->forRestaurant($restaurant),
             'headerMenuItems' => $restaurant->header_menu_items ?? [],
@@ -83,6 +84,7 @@ class MenuController extends Controller
 
         if ($this->templates->hasBladeView($templateId)) {
             $view = $this->templates->bladeViewFor($templateId);
+            $viewData['sections'] = LegacyMenuViewData::normalizeSections($viewData['sections']);
 
             return view($view, $viewData);
         }

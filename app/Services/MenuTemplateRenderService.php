@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\LegacyMenuViewData;
 use App\Support\MenuViewHelpers;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -12,6 +13,7 @@ class MenuTemplateRenderService
 {
     public function render(int $templateId, array $viewData): Response
     {
+        $viewData = LegacyMenuViewData::normalize($viewData);
         MenuViewHelpers::register($viewData);
 
         $templateId = max(1, (int) $templateId);

@@ -114,6 +114,7 @@ return array(
     'App\\Services\\UploadService' => $baseDir . '/app/Services/UploadService.php',
     'App\\Support\\ApiJsonResponse' => $baseDir . '/app/Support/ApiJsonResponse.php',
     'App\\Support\\LegacyEncryption' => $baseDir . '/app/Support/LegacyEncryption.php',
+    'App\\Support\\LegacyMenuViewData' => $baseDir . '/app/Support/LegacyMenuViewData.php',
     'App\\Support\\MenuTemplateResolver' => $baseDir . '/app/Support/MenuTemplateResolver.php',
     'App\\Support\\MenuViewHelpers' => $baseDir . '/app/Support/MenuViewHelpers.php',
     'App\\Support\\OrderCancelToken' => $baseDir . '/app/Support/OrderCancelToken.php',

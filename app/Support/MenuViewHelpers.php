@@ -12,6 +12,11 @@ class MenuViewHelpers
             require_once $helpers;
         }
 
+        $icons = __DIR__.'/legacy_resmenu_icons.php';
+        if (is_file($icons)) {
+            require_once $icons;
+        }
+
         if (! defined('SITE_URL')) {
             define('SITE_URL', rtrim((string) config('app.url'), '/'));
         }
