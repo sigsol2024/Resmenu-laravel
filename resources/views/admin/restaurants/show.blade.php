@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 @section('title', $restaurant->name)
 @section('content')
 @include('partials.admin.page-header', ['title' => $restaurant->name, 'subtitle' => '/'.$restaurant->slug])
@@ -41,8 +41,8 @@
   </div>
   <div class="card">
     <h3 style="margin:0 0 12px;font-size:1rem;">Contact</h3>
-    <p>{{ $restaurant->email ?? '—' }}</p>
-    <p>{{ $restaurant->phone ?? '—' }}</p>
+    <p>{{ $restaurant->email ?? 'â€”' }}</p>
+    <p>{{ $restaurant->phone ?? 'â€”' }}</p>
     <p style="font-size:0.875rem;color:#6b7280;">{{ $restaurant->address }}</p>
   </div>
 </div>
@@ -66,6 +66,6 @@
   <a href="{{ route('admin.payments.index') }}" class="btn-view">Payments</a>
 </div>
 
-<p style="margin-top:24px"><a href="{{ route('admin.restaurants.index') }}">← Back to restaurants</a></p>
+<p style="margin-top:24px"><a href="{{ route('admin.restaurants.index') }}">â† Back to restaurants</a></p>
 @endsection
-@push('head')<link rel="stylesheet" href="{{ asset('assets/css/admin-dashboard.css') }}">@endpush
+@push('head')<link rel="stylesheet" href="{{ asset('legacy/css/pages/admin-dashboard.css') }}">@endpush

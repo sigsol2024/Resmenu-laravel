@@ -1,11 +1,18 @@
 @extends('layouts.manager')
 @section('title', 'Sections')
+@push('head')
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/manager-sections.css') }}">
+@endpush
 @section('content')
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-    <h1 style="margin:0;">Sections</h1>
-    <a href="{{ route('manager.sections.create') }}" class="btn btn-primary">Add section</a>
+<div class="page-header">
+    <h1 class="page-title">Manage Sections</h1>
+    <p class="page-subtitle">Sections group categories on your menu. Reorder sections to change how they appear.</p>
 </div>
 <div class="card">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+        <h2 class="card-title">All sections</h2>
+        <a href="{{ route('manager.sections.create') }}" class="btn btn-primary">Add section</a>
+    </div>
 <table>
     <thead><tr><th>Name</th><th>Slug</th><th>Categories</th><th>Order</th><th>Actions</th></tr></thead>
     <tbody>

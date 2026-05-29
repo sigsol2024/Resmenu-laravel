@@ -2,6 +2,10 @@
 
 @section('title', 'Template & customization')
 
+@push('head')
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/manager-customization.css') }}">
+@endpush
+
 @section('content')
 <div class="page-header">
     <h1 class="page-title">Template selection</h1>

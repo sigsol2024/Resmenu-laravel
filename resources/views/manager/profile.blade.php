@@ -2,14 +2,32 @@
 
 @section('title', 'Profile')
 
+@push('head')
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/manager-settings.css') }}">
+@endpush
+
 @section('content')
-<h1 class="text-2xl font-bold mb-6">Profile</h1>
-@if(session('success'))<p class="text-green-700 mb-4">{{ session('success') }}</p>@endif
-<form method="post" action="{{ route('manager.profile.update') }}" class="max-w-md space-y-4 bg-white p-6 rounded-lg shadow">
+<div class="page-header">
+    <h1 class="page-title">Profile</h1>
+    <p class="page-subtitle">Update your account username, email, and password</p>
+</div>
+@if(session('success'))<div class="alert alert-success">{{ session('success') }}</div>@endif
+<div class="settings-card">
+<form method="post" action="{{ route('manager.profile.update') }}">
     @csrf @method('PUT')
-    <div><label class="block text-sm font-medium">Username</label><input name="username" value="{{ old('username', $manager->username) }}" class="w-full border rounded px-3 py-2"></div>
-    <div><label class="block text-sm font-medium">Email</label><input type="email" name="email" value="{{ old('email', $manager->email) }}" class="w-full border rounded px-3 py-2"></div>
-    <div><label class="block text-sm font-medium">New password (optional)</label><input type="password" name="password" class="w-full border rounded px-3 py-2"></div>
-    <button type="submit" class="px-4 py-2 bg-orange-600 text-white rounded font-semibold">Save</button>
+    <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" class="form-input" value="{{ old('username', $manager->username) }}" required>
+    </div>
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" class="form-input" value="{{ old('email', $manager->email) }}" required>
+    </div>
+    <div class="form-group">
+        <label for="password">New password (optional)</label>
+        <input type="password" name="password" id="password" class="form-input" autocomplete="new-password">
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
 </form>
+</div>
 @endsection

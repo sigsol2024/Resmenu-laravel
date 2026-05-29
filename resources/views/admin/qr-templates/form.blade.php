@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 @section('title', $template ? 'Edit QR template' : 'New QR template')
 @section('content')
 @include('partials.admin.page-header', ['title' => $template ? 'Edit QR template' : 'New QR template'])
@@ -38,4 +38,4 @@
   </form>
 </div>
 @endsection
-@push('head')<link rel="stylesheet" href="{{ asset('assets/css/admin-payments.css') }}">@endpush
+@push('head')<link rel="stylesheet" href="{{ asset('legacy/css/pages/admin-payments.css') }}">@endpush

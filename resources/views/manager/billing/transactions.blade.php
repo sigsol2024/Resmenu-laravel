@@ -2,16 +2,23 @@
 
 @section('title', 'Transactions')
 
+@push('head')
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/manager-transaction-history.css') }}">
+@endpush
+
 @section('content')
-<h1 class="text-2xl font-bold mb-6">Transaction history</h1>
-<div class="bg-white rounded-lg shadow overflow-hidden">
-    <table class="w-full text-sm">
-        <thead class="bg-gray-50"><tr><th class="p-3 text-left">Date</th><th class="p-3 text-left">Amount</th><th class="p-3 text-left">Status</th></tr></thead>
+<div class="page-header">
+    <h1 class="page-title">Transaction History</h1>
+    <p class="page-subtitle">View your subscription payment history</p>
+</div>
+<div class="card">
+    <table class="table">
+        <thead><tr><th>Date</th><th>Amount</th><th>Status</th></tr></thead>
         <tbody>
         @forelse($transactions as $tx)
-            <tr class="border-t"><td class="p-3">{{ $tx->created_at }}</td><td class="p-3">₦{{ number_format($tx->amount ?? 0, 0) }}</td><td class="p-3">{{ $tx->status ?? '-' }}</td></tr>
+            <tr><td>{{ $tx->created_at }}</td><td>₦{{ number_format($tx->amount ?? 0, 0) }}</td><td>{{ $tx->status ?? '-' }}</td></tr>
         @empty
-            <tr><td colspan="3" class="p-6 text-center text-gray-500">No transactions yet.</td></tr>
+            <tr><td colspan="3">No transactions yet.</td></tr>
         @endforelse
         </tbody>
     </table>

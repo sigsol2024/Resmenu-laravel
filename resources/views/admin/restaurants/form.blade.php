@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 @section('title', $restaurant->exists ? 'Edit restaurant' : 'New restaurant')
 @section('content')
 @include('partials.admin.page-header', ['title' => $restaurant->exists ? 'Edit restaurant' : 'New restaurant'])
@@ -15,7 +15,7 @@
     <div class="filter-group" style="margin-top:12px"><label>Template ID</label><input type="number" name="template_id" value="{{ old('template_id', $restaurant->template_id ?? 4) }}" min="1" style="width:100%"></div>
     @if(!$restaurant->exists)
       <div class="filter-group" style="margin-top:12px"><label>Plan</label>
-        <select name="plan_id" style="width:100%"><option value="">—</option>@foreach($plans as $p)<option value="{{ $p->id }}">{{ $p->name }}</option>@endforeach</select>
+        <select name="plan_id" style="width:100%"><option value="">â€”</option>@foreach($plans as $p)<option value="{{ $p->id }}">{{ $p->name }}</option>@endforeach</select>
       </div>
     @endif
     <label style="display:block;margin-top:12px"><input type="checkbox" name="is_active" value="1" @checked(old('is_active', $restaurant->is_active ?? true))> Active</label>
@@ -31,4 +31,4 @@
   </form>
 </div>
 @endsection
-@push('head')<link rel="stylesheet" href="{{ asset('assets/css/admin-payments.css') }}">@endpush
+@push('head')<link rel="stylesheet" href="{{ asset('legacy/css/pages/admin-payments.css') }}">@endpush

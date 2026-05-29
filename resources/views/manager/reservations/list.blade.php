@@ -1,10 +1,16 @@
 @extends('layouts.manager')
 @section('title', 'All reservations')
+@push('head')
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/manager-restaurant-reservations.css') }}">
+@endpush
 @section('content')
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-    <h1 style="margin:0;">All reservations</h1>
-    <a href="{{ route('manager.reservations.index') }}" class="btn btn-primary">Overview</a>
+<div class="page-header">
+    <h1 class="page-title">All Reservations</h1>
+    <p class="page-subtitle">Full reservation list with filters for {{ $restaurant->name ?? 'your restaurant' }}</p>
 </div>
+<p style="margin-bottom:20px;">
+    <a href="{{ route('manager.reservations.index') }}" class="btn btn-secondary">Back to Reservations Overview</a>
+</p>
 <div class="card" style="margin-bottom:20px;">
 <form method="get" style="display:flex;gap:12px;align-items:end;">
     <div class="form-group" style="margin:0;">

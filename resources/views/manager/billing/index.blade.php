@@ -1,8 +1,13 @@
 @extends('layouts.manager')
 @section('title', 'Billing')
+@push('head')
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/manager-billing.css') }}">
+@endpush
 @section('content')
-<h1 style="margin:0 0 8px;">Billing</h1>
-<p style="color:#6b7280;margin:0 0 24px;">Subscription for {{ $restaurant->name }}</p>
+<div class="page-header">
+    <h1 class="page-title">Billing & Subscription</h1>
+    <p class="page-subtitle">Manage your subscription plan and view payment history for {{ $restaurant->name }}</p>
+</div>
 
 @if(!$access['valid'])
     <div class="alert alert-error">{{ $access['message'] }}</div>

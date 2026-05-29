@@ -1,7 +1,13 @@
 @extends('layouts.manager')
 @section('title', $item->exists ? 'Edit item' : 'New item')
+@push('head')
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/manager-menu-items.css') }}">
+@endpush
 @section('content')
-<h1 style="margin-bottom:20px;">{{ $item->exists ? 'Edit menu item' : 'New menu item' }}</h1>
+<div class="page-header">
+    <h1 class="page-title">{{ $item->exists ? 'Edit menu item' : 'New menu item' }}</h1>
+    <p class="page-subtitle">Manage your restaurant menu items, prices, and availability</p>
+</div>
 <div class="card">
 <form method="post" action="{{ $item->exists ? route('manager.menu-items.update', $item) : route('manager.menu-items.store') }}" enctype="multipart/form-data">
     @csrf

@@ -1,5 +1,8 @@
 @extends('layouts.manager')
 @section('title', 'Orders')
+@push('head')
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/manager-orders.css') }}">
+@endpush
 @section('content')
 @if(!empty($showUpgradeOverlay))
 <div class="card" style="margin-bottom:24px;border:2px solid #f59e0b;background:#fffbeb;">
@@ -9,10 +12,13 @@
 </div>
 <div style="filter:blur(3px);opacity:0.45;pointer-events:none;">
 @endif
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-    <h1 style="margin:0;">Orders</h1>
-    <a href="{{ route('manager.orders.list') }}" class="btn btn-primary">View all orders</a>
+<div class="page-header">
+    <h1 class="page-title">Orders</h1>
+    <p class="page-subtitle">View revenue and manage orders for {{ $restaurant->name ?? 'your restaurant' }}</p>
 </div>
+<p style="margin-bottom:20px;">
+    <a href="{{ route('manager.orders.list') }}" class="btn btn-primary">View all orders</a>
+</p>
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:24px;">
     @foreach($stats as $status => $count)
         <div class="card"><strong>{{ $count }}</strong><br><span style="color:#6b7280;font-size:0.8rem;">{{ \App\Services\OrderService::statusLabel($status) }}</span></div>

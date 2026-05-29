@@ -3,8 +3,8 @@
 @section('title', 'Contact')
 
 @section('content')
-<section style="padding: 60px 24px; max-width: 720px; margin: 0 auto;">
-    <h1 style="margin-bottom: 24px;">Contact us</h1>
+<section class="section" style="max-width: 720px;">
+    <h1 class="section-title">Contact us</h1>
     @if(!empty($settings['contact_support_email']))
         <p>Support: <a href="mailto:{{ $settings['contact_support_email'] }}">{{ $settings['contact_support_email'] }}</a></p>
     @endif

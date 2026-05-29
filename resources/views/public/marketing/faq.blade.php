@@ -3,8 +3,8 @@
 @section('title', 'FAQ')
 
 @section('content')
-<section class="faq-section" style="padding: 60px 24px; max-width: 720px; margin: 0 auto;">
-    <h1 style="margin-bottom: 24px;">Frequently asked questions</h1>
+<section class="section" style="max-width: 720px;">
+    <h1 class="section-title">Frequently asked questions</h1>
     <div class="faq-container">
         <div class="faq-item active">
             <div class="faq-question">What is Resmenu?</div>

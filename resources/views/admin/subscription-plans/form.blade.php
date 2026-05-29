@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 @section('title', $plan->exists ? 'Edit plan' : 'New plan')
 @section('content')
 @include('partials.admin.page-header', ['title' => $plan->exists ? 'Edit plan' : 'New plan'])
@@ -31,6 +31,6 @@
 </div>
 @endsection
 @push('head')
-<link rel="stylesheet" href="{{ asset('assets/css/admin-payments.css') }}">
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/admin-payments.css') }}">
 <style>.form-grid{display:grid;gap:12px}.form-grid textarea,.form-grid input{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px}</style>
 @endpush

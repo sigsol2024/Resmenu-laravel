@@ -1,7 +1,13 @@
 @extends('layouts.manager')
 @section('title', 'Settings')
+@push('head')
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/manager-settings.css') }}">
+@endpush
 @section('content')
-<h1 class="page-title" style="margin-bottom:20px;">Settings</h1>
+<div class="page-header">
+    <h1 class="page-title">Settings</h1>
+    <p class="page-subtitle">Manage your account, restaurant details, and password</p>
+</div>
 @if(session('success'))<div class="alert alert-success">{{ session('success') }}</div>@endif
 @if($errors->any())<div class="alert alert-error">{{ $errors->first() }}</div>@endif
 

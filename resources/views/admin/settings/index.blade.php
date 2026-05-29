@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 @section('title', 'Settings')
 @section('content')
 @include('partials.admin.page-header', ['title' => 'Site settings', 'subtitle' => 'Branding and contact information'])
@@ -84,6 +84,6 @@
 </div>
 @endsection
 @push('head')
-<link rel="stylesheet" href="{{ asset('assets/css/admin-payments.css') }}">
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/admin-payments.css') }}">
 <style>.form-grid{display:grid;gap:12px}</style>
 @endpush

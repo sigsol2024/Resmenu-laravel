@@ -744,7 +744,7 @@ if (empty($singleSectionView) && !empty($sectionsForNav) && is_array($sectionsFo
 </div>
 <?php if (!empty($supportsOrdering)): ?>
 <?php $nmcAssetBase = rtrim((defined('SITE_URL') && (string)SITE_URL !== '') ? SITE_URL : $baseUrl, '/'); ?>
-<link rel="stylesheet" href="<?php echo $nmcAssetBase; ?>/assets/css/cart-modal.css">
+<link rel="stylesheet" href="<?php echo $nmcAssetBase; ?>/legacy/assets/css/cart-modal.css">
 <div id="resmenu-cart-widget" class="nmc-cart-widget fixed bottom-6 right-6 z-50 hidden"></div>
 <script src="<?php echo $nmcAssetBase; ?>/assets/js/cart.js"></script>
 <script src="<?php echo $nmcAssetBase; ?>/assets/js/cart-widget.js"></script>

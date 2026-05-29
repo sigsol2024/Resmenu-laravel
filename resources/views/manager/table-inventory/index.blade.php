@@ -1,12 +1,15 @@
 @extends('layouts.manager')
 @section('title', 'Table Inventory')
+@push('head')
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/manager-table-inventory.css') }}">
+@endpush
 @section('content')
-<div class="page-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
-    <div>
-        <a href="{{ route('manager.reservations.index') }}" class="btn btn-secondary" style="font-size:0.8rem;margin-bottom:8px;display:inline-flex;align-items:center;gap:6px;">← Back to Reservations</a>
-        <h1 class="page-title" style="margin:0;">Table Inventory</h1>
-        <p class="page-subtitle" style="margin:4px 0 0;">Manage daily table availability for {{ $restaurant->name }}</p>
-    </div>
+<p style="margin-bottom:8px;">
+    <a href="{{ route('manager.reservations.index') }}" class="btn btn-secondary" style="font-size:0.8rem;display:inline-flex;align-items:center;gap:6px;">← Back to Reservations</a>
+</p>
+<div class="page-header">
+    <h1 class="page-title">Table Inventory</h1>
+    <p class="page-subtitle">Manage daily table availability for {{ $restaurant->name }}</p>
 </div>
 
 <div class="settings-card" style="padding:24px;margin-bottom:24px;">
@@ -51,15 +54,6 @@
         </div>
     </div>
 </div>
-
-<style>
-.inventory-calendar .inv-day { padding:10px;border-radius:8px;min-height:60px;cursor:pointer;font-size:0.8rem;border:1px solid #e5e7eb; }
-.inventory-calendar .inv-day.past { opacity:0.6;cursor:default; }
-.inventory-calendar .inv-day.avail-dominant { background:#d1fae5; }
-.inventory-calendar .inv-day.booked-dominant { background:#fee2e2; }
-.inventory-calendar .inv-day.pending-dominant { background:#fef3c7; }
-.inventory-calendar .inv-header { font-size:0.7rem;font-weight:600;color:#6b7280;text-align:center; }
-</style>
 
 <script>
 window.TABLE_INVENTORY_CONFIG = {

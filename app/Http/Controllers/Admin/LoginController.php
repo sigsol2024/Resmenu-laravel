@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
-    public function show()
+    public function show(Request $request)
     {
-        return view('admin.login');
+        return redirect()->route('login', $request->query());
     }
 
     public function login(Request $request)
@@ -44,6 +44,6 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('admin.login');
+        return redirect()->route('login');
     }
 }

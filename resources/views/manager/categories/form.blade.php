@@ -1,7 +1,13 @@
 @extends('layouts.manager')
 @section('title', $category->exists ? 'Edit category' : 'New category')
+@push('head')
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/manager-categories.css') }}">
+@endpush
 @section('content')
-<h1 style="margin-bottom:20px;">{{ $category->exists ? 'Edit category' : 'New category' }}</h1>
+<div class="page-header">
+    <h1 class="page-title">{{ $category->exists ? 'Edit category' : 'New category' }}</h1>
+    <p class="page-subtitle">Create and manage menu categories for your restaurant</p>
+</div>
 <div class="card">
 <form method="post" action="{{ $category->exists ? route('manager.categories.update', $category) : route('manager.categories.store') }}" enctype="multipart/form-data">
     @csrf

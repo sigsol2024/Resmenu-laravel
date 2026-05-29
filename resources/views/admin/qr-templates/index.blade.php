@@ -1,8 +1,8 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 @section('title', 'QR Templates')
 
 @push('head')
-<link rel="stylesheet" href="{{ asset('assets/css/admin-qr-templates.css') }}">
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/admin-qr-templates.css') }}">
 @endpush
 
 @section('content')

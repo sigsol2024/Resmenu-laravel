@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 @section('title', 'Edit template')
 @section('content')
 @include('partials.admin.page-header', ['title' => 'Edit template #'.$template->id, 'subtitle' => $template->slug ?? ''])
@@ -33,4 +33,4 @@
   </form>
 </div>
 @endsection
-@push('head')<link rel="stylesheet" href="{{ asset('assets/css/admin-payments.css') }}">@endpush
+@push('head')<link rel="stylesheet" href="{{ asset('legacy/css/pages/admin-payments.css') }}">@endpush

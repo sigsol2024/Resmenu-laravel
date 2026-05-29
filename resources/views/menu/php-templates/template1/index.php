@@ -39,7 +39,7 @@ if (!empty($singleSectionView) && !empty($sections[0]['image'])) {
 <link rel="stylesheet" href="<?php echo htmlspecialchars($template1BaseUrl . '/style.css', ENT_QUOTES, 'UTF-8'); ?>">
 <?php if (!empty($supportsOrdering)): ?>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link rel="stylesheet" href="<?php echo rtrim(defined('SITE_URL') ? SITE_URL : $baseUrl, '/'); ?>/assets/css/cart-widget-standalone.css">
+<link rel="stylesheet" href="<?php echo rtrim(defined('SITE_URL') ? SITE_URL : $baseUrl, '/'); ?>/legacy/legacy/assets/css/cart-widget-standalone.css">
 <?php endif; ?>
 <style>
 section.hero { position: relative; }
@@ -516,7 +516,7 @@ endif;
 
 <?php if (!empty($supportsOrdering)): ?>
 <?php $cartScriptBase = rtrim(defined('SITE_URL') ? SITE_URL : $baseUrl, '/'); ?>
-<link rel="stylesheet" href="<?php echo htmlspecialchars($cartScriptBase); ?>/assets/css/cart-modal.css">
+<link rel="stylesheet" href="<?php echo htmlspecialchars($cartScriptBase); ?>/legacy/assets/css/cart-modal.css">
 <div id="resmenu-cart-widget" class="fixed bottom-6 left-6 z-50 hidden"></div>
 <script src="<?php echo htmlspecialchars($cartScriptBase); ?>/assets/js/cart.js"></script>
 <script src="<?php echo htmlspecialchars($cartScriptBase); ?>/assets/js/cart-widget.js"></script>

@@ -1,11 +1,18 @@
 @extends('layouts.manager')
 @section('title', 'Menu items')
+@push('head')
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/manager-menu-items.css') }}">
+@endpush
 @section('content')
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-    <h1 style="margin:0;">Menu items</h1>
-    <a href="{{ route('manager.menu-items.create') }}" class="btn btn-primary">Add item</a>
+<div class="page-header">
+    <h1 class="page-title">Menu Items</h1>
+    <p class="page-subtitle">Manage your restaurant menu items, prices, and availability</p>
 </div>
 <div class="card">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+        <h2 class="card-title">All menu items</h2>
+        <a href="{{ route('manager.menu-items.create') }}" class="btn btn-primary">Add item</a>
+    </div>
 <table>
     <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Actions</th></tr></thead>
     <tbody>

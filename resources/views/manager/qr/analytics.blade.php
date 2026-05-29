@@ -2,8 +2,15 @@
 
 @section('title', 'QR analytics')
 
+@push('head')
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/manager-qr-analytics.css') }}">
+@endpush
+
 @section('content')
-<h1 class="page-title" style="margin-bottom:20px;">QR analytics</h1>
+<div class="page-header">
+    <h1 class="page-title">QR Code Analytics</h1>
+    <p class="page-subtitle">View scan statistics, device types, and trends for your QR code</p>
+</div>
 @if(!empty($exportUrl))
 <p style="margin-bottom:16px"><a href="{{ $exportUrl }}" class="btn btn-secondary">Export CSV</a></p>
 @endif

@@ -3,46 +3,7 @@
 @section('title', 'Dashboard')
 
 @push('head')
-<style>
-.subscription-banner{display:flex;align-items:center;gap:16px;padding:16px 20px;border-radius:8px;margin-bottom:24px}
-.subscription-banner.trial-banner{background:#fef3c7;border:1px solid #fbbf24}
-.subscription-banner.expired-banner{background:#fee2e2;border:1px solid #f87171}
-.subscription-banner .banner-icon{width:40px;height:40px;background:rgba(255,255,255,.6);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.subscription-banner .banner-icon svg{width:20px;height:20px}
-.trial-banner .banner-icon{color:#1e3a5f}
-.expired-banner .banner-icon{color:#dc2626}
-.subscription-banner .banner-content{flex:1;display:flex;flex-direction:column;gap:4px}
-.subscription-banner .banner-content strong{font-size:.875rem;font-weight:600;color:#111827}
-.subscription-banner .banner-content span{font-size:.813rem;color:#6b7280}
-.subscription-banner .banner-btn{background:#111827;color:#fff;padding:10px 20px;border-radius:6px;font-weight:500;font-size:.875rem;text-decoration:none;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
-.page-header{margin-bottom:24px}
-.page-title{font-size:1.5rem;font-weight:600;color:#111827;margin:0}
-.page-subtitle{color:#6b7280;margin:.25rem 0 0;font-size:.875rem}
-.stats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:20px;margin-bottom:24px}
-.stat-card{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:20px}
-.stat-label{font-size:.75rem;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
-.stat-value{font-size:1.75rem;font-weight:700;color:#111827}
-.chart-card{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:24px;margin-bottom:24px}
-.chart-title{font-size:1.125rem;font-weight:600;margin:0 0 20px;display:flex;align-items:center;gap:8px}
-.chart-title svg{width:22px;height:22px}
-.simple-bar-chart{display:flex;align-items:flex-end;gap:12px;min-height:200px;padding-top:20px}
-.simple-bar-chart .item{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0}
-.simple-bar-chart .item::before{content:'';width:100%;max-width:48px;height:calc(var(--val,0) * 1.6px);min-height:4px;background:var(--clr,#5EB344);border-radius:4px 4px 0 0}
-.simple-bar-chart .label{font-size:.7rem;color:#6b7280;text-align:center}
-.simple-bar-chart .value{font-size:.875rem;font-weight:600;color:#111827}
-.quick-actions{margin-bottom:24px}
-.section-title{font-size:1.125rem;font-weight:600;margin:0 0 16px}
-.actions-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
-.action-card{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:20px;text-decoration:none;color:inherit;transition:box-shadow .2s,border-color .2s}
-.action-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.08);border-color:#d1d5db}
-.action-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-.action-icon{width:40px;height:40px;background:#f3f4f6;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#374151}
-.action-title{font-weight:600;font-size:1rem}
-.action-desc{font-size:.875rem;color:#6b7280;margin:0 0 12px;line-height:1.5}
-.action-arrow{font-size:.875rem;font-weight:500;color:#111827;display:flex;align-items:center;gap:4px}
-@media(max-width:1200px){.stats{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}.subscription-banner{flex-direction:column;text-align:center}.subscription-banner .banner-btn{width:100%;justify-content:center}}
-</style>
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/manager-dashboard.css') }}">
 @endpush
 
 @section('content')

@@ -1,9 +1,12 @@
 @extends('layouts.manager')
 @section('title', 'Categories')
+@push('head')
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/manager-categories.css') }}">
+@endpush
 @section('content')
 <div class="page-header">
-    <h1 class="page-title">Categories</h1>
-    <p class="page-subtitle">Organize your menu into categories</p>
+    <h1 class="page-title">Category Management</h1>
+    <p class="page-subtitle">Create and manage menu categories for your restaurant</p>
 </div>
 <div class="card">
     <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">

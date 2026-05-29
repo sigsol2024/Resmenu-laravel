@@ -1,10 +1,16 @@
 @extends('layouts.manager')
 @section('title', 'All orders')
+@push('head')
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/manager-restaurant-orders.css') }}">
+@endpush
 @section('content')
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-    <h1 style="margin:0;">All orders</h1>
-    <a href="{{ route('manager.orders.index') }}" class="btn btn-primary">Overview</a>
+<div class="page-header">
+    <h1 class="page-title">All Orders</h1>
+    <p class="page-subtitle">Full order list with filters for {{ $restaurant->name ?? 'your restaurant' }}</p>
 </div>
+<p style="margin-bottom:20px;">
+    <a href="{{ route('manager.orders.index') }}" class="btn btn-secondary">Back to Orders Overview</a>
+</p>
 <div class="card" style="margin-bottom:20px;">
 <form method="get" style="display:flex;flex-wrap:wrap;gap:12px;align-items:end;">
     <div class="form-group" style="margin:0;">

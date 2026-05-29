@@ -67,7 +67,7 @@
                     <p class="text-sm text-amber-800 mt-3">Transfer exactly <strong>{{ $currencySymbol }}{{ number_format((float) ($draft->total ?? 0), 2) }}</strong> and use <strong>#{{ $displayRef }}</strong> as the reference.</p>
                 </div>
                 <div id="countdown-box" class="mb-6 flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-gray-100 text-gray-800">
-                    @resmenuIcon('schedule', ['size' => 20])
+                    @resmenuIcon('clock', ['size' => 20])
                     <span id="countdown-text" class="font-mono font-bold text-lg">15:00</span>
                 </div>
                 <div class="mb-4">

@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Subscription plans')
 
@@ -218,7 +218,7 @@
 
             <span class="feature-badge {{ !empty($features[$key]) ? 'feature-enabled' : 'feature-disabled' }}">
 
-              {{ !empty($features[$key]) ? '✓' : '✗' }} {{ $label }}
+              {{ !empty($features[$key]) ? 'âœ“' : 'âœ—' }} {{ $label }}
 
             </span>
 
@@ -282,9 +282,9 @@
 
 @push('head')
 
-<link rel="stylesheet" href="{{ asset('assets/css/admin-subscription-plans.css') }}">
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/admin-subscription-plans.css') }}">
 
-<link rel="stylesheet" href="{{ asset('assets/css/admin-payments.css') }}">
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/admin-payments.css') }}">
 
 @endpush
 

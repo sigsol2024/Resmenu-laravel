@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Street Food Hub - Vibrant street food brutalism
  */
@@ -13,9 +13,9 @@ if ($baseUrl === '') {
 }
 $siteAssetsBase = rtrim($baseUrl, '/') . '/uploads/site';
 $reservationUrl = $baseUrl . '/restaurant/' . ($restaurant['slug'] ?? '') . '/reservation';
-$currencySymbol = '₦';
+$currencySymbol = 'â‚¦';
 $primaryColor = isset($customization['primary_color']) ? $customization['primary_color'] : '#FFD700';
-function sfh_price($p, $s = '₦') {
+function sfh_price($p, $s = 'â‚¦') {
     return formatPrice($p, $s);
 }
 $activeCategories = [];
@@ -170,8 +170,8 @@ body.sfh-body .sfh-bg { position: absolute; inset: 0; pointer-events: none; back
 <h2 class="font-chunky text-3xl mb-4"><?php echo htmlspecialchars($restaurant['name']); ?></h2>
 <div class="flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm font-bold mb-4">
 <?php if (!empty($restaurant['address'])): ?><span><?php echo htmlspecialchars($restaurant['address']); ?></span><?php endif; ?>
-<?php if (!empty($restaurant['phone'])): ?><span><?php if (!empty($restaurant['address'])): ?> • <?php endif; ?><a href="tel:<?php echo htmlspecialchars(preg_replace('/\s+/', '', $restaurant['phone'])); ?>" class="text-brandYellow hover:underline"><?php echo htmlspecialchars($restaurant['phone']); ?></a></span><?php endif; ?>
-<?php if (!empty($restaurant['email'])): ?><span><?php if (!empty($restaurant['address']) || !empty($restaurant['phone'])): ?> • <?php endif; ?><a href="mailto:<?php echo htmlspecialchars($restaurant['email']); ?>" class="text-brandYellow hover:underline"><?php echo htmlspecialchars($restaurant['email']); ?></a></span><?php endif; ?>
+<?php if (!empty($restaurant['phone'])): ?><span><?php if (!empty($restaurant['address'])): ?> â€¢ <?php endif; ?><a href="tel:<?php echo htmlspecialchars(preg_replace('/\s+/', '', $restaurant['phone'])); ?>" class="text-brandYellow hover:underline"><?php echo htmlspecialchars($restaurant['phone']); ?></a></span><?php endif; ?>
+<?php if (!empty($restaurant['email'])): ?><span><?php if (!empty($restaurant['address']) || !empty($restaurant['phone'])): ?> â€¢ <?php endif; ?><a href="mailto:<?php echo htmlspecialchars($restaurant['email']); ?>" class="text-brandYellow hover:underline"><?php echo htmlspecialchars($restaurant['email']); ?></a></span><?php endif; ?>
 </div>
 <?php if (!empty($restaurant['opening_hours'])): ?><p class="text-sm mb-4"><?php echo htmlspecialchars($restaurant['opening_hours']); ?></p><?php endif; ?>
 <p class="text-xs uppercase tracking-widest opacity-80 mb-6">Please inform your server of any allergies.</p>
@@ -180,11 +180,11 @@ body.sfh-body .sfh-bg { position: absolute; inset: 0; pointer-events: none; back
 <?php if (!empty($restaurant['facebook_url'])): ?><a class="comic-border p-2 bg-brandYellow text-brandBlack font-black hover:bg-white transition-colors" href="<?php echo htmlspecialchars($restaurant['facebook_url']); ?>" target="_blank" rel="noopener">FB</a><?php endif; ?>
 <?php if (!empty($restaurant['website'])): ?><a class="comic-border p-2 bg-brandYellow text-brandBlack font-black hover:bg-white transition-colors" href="<?php echo htmlspecialchars($restaurant['website']); ?>" target="_blank" rel="noopener">WEB</a><?php endif; ?>
 </div>
-<p class="mt-6 pt-4 border-t-2 border-white/20 text-sm">© <?php echo date('Y'); ?> <?php echo htmlspecialchars($restaurant['name']); ?></p>
+<p class="mt-6 pt-4 border-t-2 border-white/20 text-sm">Â© <?php echo date('Y'); ?> <?php echo htmlspecialchars($restaurant['name']); ?></p>
 </div>
 </footer>
 <?php if (!empty($supportsOrdering)): ?>
-<link rel="stylesheet" href="<?php echo rtrim(defined('SITE_URL') ? SITE_URL : $baseUrl, '/'); ?>/assets/css/cart-modal.css">
+<link rel="stylesheet" href="<?php echo rtrim(defined('SITE_URL') ? SITE_URL : $baseUrl, '/'); ?>/legacy/legacy/legacy/assets/css/cart-modal.css">
 <div id="resmenu-cart-widget" class="fixed bottom-6 left-6 z-50 hidden"></div>
 <script src="<?php echo rtrim(defined('SITE_URL') ? SITE_URL : $baseUrl, '/'); ?>/assets/js/cart.js"></script>
 <script src="<?php echo rtrim(defined('SITE_URL') ? SITE_URL : $baseUrl, '/'); ?>/assets/js/cart-widget.js"></script>

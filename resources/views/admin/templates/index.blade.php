@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 @section('title', 'Templates')
 @section('content')
 @include('partials.admin.page-header', ['title' => 'Template Management', 'subtitle' => 'Manage menu page design templates'])
@@ -22,7 +22,7 @@
         <h2 class="template-accordion-title">{{ $t->name ?? 'Template '.$t->id }}</h2>
         <div class="template-accordion-actions">
           <a href="{{ $previewUrl }}" target="_blank" rel="noopener" class="btn-clear" onclick="event.stopPropagation()">Preview</a>
-          <span id="toggle-icon-{{ $t->id }}">{{ $isExpanded ? '▼' : '▶' }}</span>
+          <span id="toggle-icon-{{ $t->id }}">{{ $isExpanded ? 'â–¼' : 'â–¶' }}</span>
         </div>
       </div>
       <div class="template-accordion-body" id="template-body-{{ $t->id }}" style="{{ $isExpanded ? '' : 'display:none' }}">
@@ -109,8 +109,8 @@
 </div>
 @endsection
 @push('head')
-<link rel="stylesheet" href="{{ asset('assets/css/admin-payments.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/css/admin-templates.css') }}">
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/admin-payments.css') }}">
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/admin-templates.css') }}">
 @endpush
 @push('scripts')
 <script>
@@ -121,7 +121,7 @@ function toggleTemplateAccordion(id) {
   const open = !card.classList.contains('is-open');
   card.classList.toggle('is-open', open);
   body.style.display = open ? 'block' : 'none';
-  if (icon) icon.textContent = open ? '▼' : '▶';
+  if (icon) icon.textContent = open ? 'â–¼' : 'â–¶';
 }
 function togglePrivateRestaurants(id) {
   const cb = document.getElementById('is_private_' + id);

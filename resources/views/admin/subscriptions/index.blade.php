@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 @section('title', 'Subscriptions')
 @section('content')
 @include('partials.admin.page-header', ['title' => 'Subscriptions Management', 'subtitle' => 'View and manage restaurant subscription status'])
@@ -151,6 +151,6 @@
 </div>
 @endsection
 @push('head')
-<link rel="stylesheet" href="{{ asset('assets/css/admin-payments.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/css/admin-subscriptions.css') }}">
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/admin-payments.css') }}">
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/admin-subscriptions.css') }}">
 @endpush

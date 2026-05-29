@@ -43,6 +43,7 @@ class PaymentController extends Controller
 
     $totalSuccess = (float) DB::table('payments')->where('status', 'success')->sum('amount');
     $totalPending = (float) DB::table('payments')->where('status', 'pending')->sum('amount');
+    $totalCount = (int) DB::table('payments')->count();
 
     $restaurants = DB::table('restaurants')->orderBy('name')->get(['id', 'name']);
 
@@ -50,6 +51,7 @@ class PaymentController extends Controller
       'payments',
       'totalSuccess',
       'totalPending',
+      'totalCount',
       'restaurants',
       'statusFilter',
       'gatewayFilter',

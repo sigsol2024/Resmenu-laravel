@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 @section('title', 'Payment settings')
 @section('content')
 @include('partials.admin.page-header', ['title' => 'Payment settings', 'subtitle' => 'Platform Paystack and Flutterwave'])
@@ -22,4 +22,4 @@
 </div>
 @endforeach
 @endsection
-@push('head')<link rel="stylesheet" href="{{ asset('assets/css/admin-payments.css') }}">@endpush
+@push('head')<link rel="stylesheet" href="{{ asset('legacy/css/pages/admin-payments.css') }}">@endpush

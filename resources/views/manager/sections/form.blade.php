@@ -1,7 +1,13 @@
 @extends('layouts.manager')
 @section('title', $section->exists ? 'Edit section' : 'New section')
+@push('head')
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/manager-sections.css') }}">
+@endpush
 @section('content')
-<h1 style="margin-bottom:20px;">{{ $section->exists ? 'Edit section' : 'New section' }}</h1>
+<div class="page-header">
+    <h1 class="page-title">{{ $section->exists ? 'Edit section' : 'New section' }}</h1>
+    <p class="page-subtitle">Sections group categories on your menu. Reorder sections to change how they appear.</p>
+</div>
 <div class="card">
 <form method="post" action="{{ $section->exists ? route('manager.sections.update', $section) : route('manager.sections.store') }}">
     @csrf

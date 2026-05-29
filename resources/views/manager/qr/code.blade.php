@@ -2,6 +2,10 @@
 
 @section('title', 'QR code')
 
+@push('head')
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/manager-qr-code.css') }}">
+@endpush
+
 @section('content')
 <div class="page-header">
     <h1 class="page-title">QR code</h1>
