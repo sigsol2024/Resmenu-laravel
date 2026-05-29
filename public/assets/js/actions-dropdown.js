@@ -90,8 +90,9 @@
     activeTrigger = trigger;
 
     setTimeout(function () {
-      document.addEventListener('click', onDocumentClick);
-      document.addEventListener('keydown', onEscape);
+      // Capture-phase so it still works inside elements that stopPropagation().
+      document.addEventListener('click', onDocumentClick, true);
+      document.addEventListener('keydown', onEscape, true);
       window.addEventListener('resize', onReposition);
       window.addEventListener('scroll', onReposition, true);
     }, 0);
@@ -100,8 +101,8 @@
   function closeDropdown() {
     window.removeEventListener('resize', onReposition);
     window.removeEventListener('scroll', onReposition, true);
-    document.removeEventListener('click', onDocumentClick);
-    document.removeEventListener('keydown', onEscape);
+    document.removeEventListener('click', onDocumentClick, true);
+    document.removeEventListener('keydown', onEscape, true);
 
     if (activeDropdown && activePlaceholder) {
       activeDropdown.classList.remove('show', PORTAL_CLASS);
@@ -143,17 +144,19 @@
     if (e.key === 'Escape') closeDropdown();
   }
 
+  // Capture-phase so click works even when parents call stopPropagation().
   document.addEventListener('click', function (e) {
     var trigger = e.target.closest(TRIGGER_SELECTOR);
     if (!trigger) return;
     e.preventDefault();
     e.stopPropagation();
+    if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
     document.querySelectorAll(TRIGGER_SELECTOR).forEach(function (t) {
       t.classList.remove('active-dropdown');
     });
     trigger.classList.add('active-dropdown');
     openDropdown(trigger);
-  });
+  }, true);
 
   window.ResmenuActionsDropdown = { open: openDropdown, close: closeDropdown };
 })();
