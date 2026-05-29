@@ -55,6 +55,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/qr-templates/{qrTemplate}/edit', [QrTemplateController::class, 'edit'])->name('qr-templates.edit');
         Route::put('/qr-templates/{qrTemplate}', [QrTemplateController::class, 'update'])->name('qr-templates.update');
         Route::delete('/qr-templates/{qrTemplate}', [QrTemplateController::class, 'destroy'])->name('qr-templates.destroy');
+        Route::post('/qr-templates/regenerate-previews', [QrTemplateController::class, 'regeneratePreviews'])->name('qr-templates.regenerate-previews');
 
         Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
         Route::post('/payments', [PaymentController::class, 'store'])->name('payments.store');

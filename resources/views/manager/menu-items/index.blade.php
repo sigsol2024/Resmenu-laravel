@@ -7,7 +7,7 @@
 </div>
 <div class="card">
 <table>
-    <thead><tr><th>Name</th><th>Category</th><th>Price</th><th></th></tr></thead>
+    <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Actions</th></tr></thead>
     <tbody>
     @forelse($items as $item)
         <tr>
@@ -15,11 +15,19 @@
             <td>{{ $item->category->name ?? '—' }}</td>
             <td>{{ \App\Support\PriceFormatter::format($item->price) }}</td>
             <td>
-                <a href="{{ route('manager.menu-items.edit', $item) }}">Edit</a>
-                <form action="{{ route('manager.menu-items.destroy', $item) }}" method="post" style="display:inline;" onsubmit="return confirm('Delete?');">
-                    @csrf @method('DELETE')
-                    <button type="submit" class="btn btn-danger" style="padding:4px 8px;margin-left:8px;">Delete</button>
-                </form>
+                @include('partials.admin.actions-dropdown', [
+                  'items' => [
+                    ['label' => 'Edit', 'url' => route('manager.menu-items.edit', $item)],
+                    [
+                      'type' => 'form',
+                      'label' => 'Delete',
+                      'action' => route('manager.menu-items.destroy', $item),
+                      'method' => 'DELETE',
+                      'class' => 'danger',
+                      'confirm' => 'Delete this menu item?',
+                    ],
+                  ],
+                ])
             </td>
         </tr>
     @empty

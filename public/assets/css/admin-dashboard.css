@@ -22,10 +22,85 @@
 .btn-manage { background: #111827; color: #fff; }
 .btn-view { background: #f3f4f6; color: #374151; }
 .chart-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.1); padding: 24px; margin-bottom: 30px; }
-.chart-title { font-size: 1.125rem; font-weight: 600; margin-bottom: 20px; }
-.simple-bar-chart { height: 10rem; display: grid; grid-auto-flow: column; gap: 2%; align-items: end; padding: 1.5rem 2% 0; position: relative; }
-.simple-bar-chart > .item { height: calc(1% * var(--val)); background-color: var(--clr); border-radius: 4px 4px 0 0; position: relative; min-height: 2px; }
-.simple-bar-chart > .item > .label { position: absolute; inset: 100% 0 auto; font-size: 0.75rem; color: #6b7280; text-align: center; margin-top: 4px; }
-.simple-bar-chart > .item > .value { position: absolute; inset: auto 0 100%; font-size: 0.875rem; font-weight: 600; text-align: center; margin-bottom: 4px; }
+.chart-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #111827;
+}
+.chart-title svg { width: 20px; height: 20px; color: #6b7280; flex-shrink: 0; }
+.simple-bar-chart {
+  --line-count: 10;
+  --line-color: currentcolor;
+  --line-opacity: 0.25;
+  --item-gap: 2%;
+  --padding-block: 1.5rem;
+  height: 10rem;
+  display: grid;
+  grid-auto-flow: column;
+  gap: var(--item-gap);
+  align-items: end;
+  padding-inline: var(--item-gap);
+  padding-block: var(--padding-block);
+  position: relative;
+  isolation: isolate;
+}
+.simple-bar-chart::after {
+  content: "";
+  position: absolute;
+  inset: var(--padding-block) 0;
+  z-index: -1;
+  --line-width: 1px;
+  --line-spacing: calc(100% / var(--line-count));
+  background-image: repeating-linear-gradient(
+    to top,
+    transparent 0 calc(var(--line-spacing) - var(--line-width)),
+    var(--line-color) 0 var(--line-spacing)
+  );
+  box-shadow: 0 var(--line-width) 0 var(--line-color);
+  opacity: var(--line-opacity);
+}
+.simple-bar-chart > .item {
+  height: calc(1% * var(--val));
+  background-color: var(--clr);
+  border-radius: 4px 4px 0 0;
+  position: relative;
+  min-height: 2px;
+  animation: admin-bar-grow 1s ease forwards;
+}
+@keyframes admin-bar-grow { from { height: 0; } }
+.simple-bar-chart > .item > .label {
+  position: absolute;
+  inset: 100% 0 auto;
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: center;
+  margin-top: 4px;
+  font-weight: 500;
+}
+.simple-bar-chart > .item > .value {
+  position: absolute;
+  inset: auto 0 100%;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 4px;
+  color: #111827;
+}
+.restaurant-body .actions-cell { display: flex; justify-content: flex-start; }
 .empty-state { padding: 60px 20px; text-align: center; color: #6b7280; }
+.empty-state a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #111827;
+  text-decoration: none;
+  font-weight: 500;
+  margin-top: 8px;
+}
+.empty-state a:hover { text-decoration: underline; }
+.empty-state svg { width: 18px; height: 18px; }
 @media (max-width: 768px) { .stats { grid-template-columns: 1fr; } }

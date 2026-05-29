@@ -45,6 +45,7 @@
     </div>
 </div>
 <script src="{{ url('/assets/js/admin.js') }}"></script>
+<script src="{{ asset('assets/js/actions-dropdown.js') }}"></script>
 @stack('scripts')
 </body>
 </html>

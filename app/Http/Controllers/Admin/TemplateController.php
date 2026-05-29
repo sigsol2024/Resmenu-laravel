@@ -26,9 +26,22 @@ class TemplateController extends Controller
       ];
     }
 
+    $restaurantIdsByTemplate = [];
+    $isPrivateByTemplate = [];
+    foreach ($templateIds as $id) {
+      $restaurantIdsByTemplate[$id] = DB::table('template_restaurants')->where('template_id', $id)->pluck('restaurant_id')->all();
+      $row = $templates->get($id);
+      $isPrivateByTemplate[$id] = (bool) ($row->is_private ?? 0);
+    }
+
     return view('admin.templates.index', [
       'templates' => collect($rows),
       'planIdsByTemplate' => $this->planIdsByTemplate($templateIds),
+      'restaurantIdsByTemplate' => $restaurantIdsByTemplate,
+      'isPrivateByTemplate' => $isPrivateByTemplate,
+      'plans' => SubscriptionPlan::orderBy('display_order')->get(),
+      'restaurants' => DB::table('restaurants')->orderBy('name')->get(['id', 'name']),
+      'expandedId' => (int) request()->query('expand', 0),
     ]);
   }
 
@@ -114,7 +127,7 @@ class TemplateController extends Controller
       DB::table('template_restaurants')->insert(['template_id' => $template, 'restaurant_id' => (int) $restaurantId]);
     }
 
-    return redirect()->route('admin.templates.edit', $template)->with('success', 'Template saved.');
+    return redirect()->route('admin.templates.index', ['expand' => $template])->with('success', 'Template saved.');
   }
 
   public function toggle(int $template)

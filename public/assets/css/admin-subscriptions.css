@@ -1,0 +1,94 @@
+.status-stats {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.status-stat {
+  background: #fff;
+  padding: 16px 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  border: 1px solid #e5e7eb;
+  flex: 1;
+  min-width: 140px;
+}
+.status-stat:hover { border-color: #111827; }
+.status-stat.active { border-color: #111827; background: #f9fafb; }
+.status-stat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.status-stat-icon svg { width: 20px; height: 20px; }
+.status-stat-icon.trial { background: #dbeafe; color: #2563eb; }
+.status-stat-icon.active-status { background: #d1fae5; color: #059669; }
+.status-stat-icon.expired { background: #fee2e2; color: #dc2626; }
+.status-stat-icon.cancelled { background: #f3f4f6; color: #6b7280; }
+.status-stat-icon.pending { background: #f3f4f6; color: #6b7280; }
+.status-stat-icon.all { background: #e0e7ff; color: #4f46e5; }
+.status-stat-count { font-size: 1.25rem; font-weight: 700; color: #111827; line-height: 1.2; }
+.status-stat-label { font-size: 0.75rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
+.subscriptions-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.subscriptions-table th,
+.subscriptions-table td { padding: 14px 16px; border-bottom: 1px solid #e5e7eb; text-align: left; vertical-align: middle; }
+.subscriptions-table th { font-weight: 600; color: #6b7280; font-size: 0.75rem; text-transform: uppercase; background: #f9fafb; }
+.subscriptions-table tbody tr:hover { background: #f9fafb; }
+.restaurant-info .restaurant-name { font-weight: 600; display: block; color: #111827; }
+.restaurant-info .restaurant-slug { font-size: 0.75rem; color: #6b7280; font-family: monospace; }
+.plan-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: #f3f4f6;
+  color: #374151;
+}
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+.status-badge.status-trial { background: #dbeafe; color: #1d4ed8; }
+.status-badge.status-active { background: #d1fae5; color: #065f46; }
+.status-badge.status-expired { background: #fee2e2; color: #991b1b; }
+.status-badge.status-cancelled { background: #f3f4f6; color: #6b7280; }
+.status-badge.status-pending { background: #fef3c7; color: #92400e; }
+.billing-info .billing-cycle { font-weight: 500; color: #111827; }
+.billing-info .billing-price { font-size: 0.813rem; color: #6b7280; }
+.date-info { font-size: 0.813rem; color: #374151; }
+.date-info .date-label { font-size: 0.7rem; color: #6b7280; text-transform: uppercase; }
+.search-box input {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  min-width: 260px;
+}
+.btn-search {
+  padding: 10px 16px;
+  background: #111827;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+@media (max-width: 768px) {
+  .subscriptions-table { font-size: 0.813rem; }
+  .subscriptions-table th, .subscriptions-table td { padding: 12px 8px; }
+}

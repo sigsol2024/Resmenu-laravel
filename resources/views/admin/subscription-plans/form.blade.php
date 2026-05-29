@@ -21,8 +21,9 @@
     </div>
     <div style="margin:16px 0;">
       <label><input type="checkbox" name="is_active" value="1" @checked(old('is_active', $plan->is_active ?? true))> Active</label><br>
-      <label><input type="checkbox" name="feature_food_ordering" value="1" @checked(old('feature_food_ordering', data_get($plan->features, 'food_ordering')))> Food ordering</label><br>
-      <label><input type="checkbox" name="feature_table_reservations" value="1" @checked(old('feature_table_reservations', data_get($plan->features, 'table_reservations')))> Table reservations</label>
+      @foreach(['priority_support' => 'Priority Support', 'custom_domain' => 'Custom Domain', 'analytics_advanced' => 'Advanced Analytics', 'food_ordering' => 'Food Ordering', 'table_reservations' => 'Table Reservations'] as $key => $label)
+        <label><input type="checkbox" name="feature_{{ $key }}" value="1" @checked(old('feature_'.$key, data_get($plan->features, $key)))> {{ $label }}</label><br>
+      @endforeach
     </div>
     <button type="submit" class="btn-filter">Save plan</button>
     <a href="{{ route('admin.subscription-plans.index') }}" class="btn-clear">Cancel</a>

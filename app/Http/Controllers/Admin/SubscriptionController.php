@@ -31,18 +31,51 @@ class SubscriptionController extends Controller
       $query->whereHas('restaurant', fn ($q) => $q->where('name', 'like', "%{$search}%")->orWhere('slug', 'like', "%{$search}%"));
     }
 
+    $statusCounts = Subscription::query()
+      ->selectRaw('status, COUNT(*) as count')
+      ->groupBy('status')
+      ->pluck('count', 'status')
+      ->all();
+
     return view('admin.subscriptions.index', [
       'subscriptions' => $query->paginate(25)->withQueryString(),
       'plans' => SubscriptionPlan::orderBy('display_order')->get(),
       'statusFilter' => $statusFilter,
       'planFilter' => $planFilter,
       'search' => $search,
+      'statusCounts' => $statusCounts,
     ]);
   }
 
   public function update(Request $request, Subscription $subscription, SubscriptionService $service)
   {
     $action = $request->input('action', 'update');
+
+    if ($action === 'update_status') {
+      $data = $request->validate([
+        'new_status' => 'required|in:trial,active,expired,cancelled,pending',
+      ]);
+
+      $subscription->update(['status' => $data['new_status']]);
+
+      if ($data['new_status'] === 'active') {
+        $service->activateSubscription($subscription->id, $subscription->billing_cycle ?? 'monthly');
+      } elseif ($data['new_status'] === 'cancelled') {
+        $service->deactivateSubscription($subscription->id);
+      }
+
+      return back()->with('success', 'Subscription status updated.');
+    }
+
+    if ($action === 'change_plan') {
+      $data = $request->validate([
+        'new_plan_id' => 'required|integer|exists:subscription_plans,id',
+      ]);
+
+      $subscription->update(['plan_id' => (int) $data['new_plan_id']]);
+
+      return back()->with('success', 'Subscription plan updated.');
+    }
 
     if ($action === 'extend_period') {
       $data = $request->validate([

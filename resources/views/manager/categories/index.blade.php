@@ -27,11 +27,19 @@
                     <td>{{ $cat->section->name ?? '—' }}</td>
                     <td>{{ $cat->menu_items_count }}</td>
                     <td>
-                        <a href="{{ route('manager.categories.edit', $cat) }}" class="btn btn-secondary btn-small">Edit</a>
-                        <form action="{{ route('manager.categories.destroy', $cat) }}" method="post" style="display:inline;" onsubmit="return confirm('Delete this category?');">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-small">Delete</button>
-                        </form>
+                        @include('partials.admin.actions-dropdown', [
+                          'items' => [
+                            ['label' => 'Edit', 'url' => route('manager.categories.edit', $cat)],
+                            [
+                              'type' => 'form',
+                              'label' => 'Delete',
+                              'action' => route('manager.categories.destroy', $cat),
+                              'method' => 'DELETE',
+                              'class' => 'danger',
+                              'confirm' => 'Delete this category?',
+                            ],
+                          ],
+                        ])
                     </td>
                 </tr>
             @empty

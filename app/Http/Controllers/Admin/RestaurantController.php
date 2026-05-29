@@ -25,7 +25,25 @@ class RestaurantController extends Controller
       ->paginate(25)
       ->withQueryString();
 
-    return view('admin.restaurants.index', compact('restaurants', 'q'));
+    $editRestaurant = null;
+    $editManager = null;
+    if ($request->filled('edit')) {
+      $editRestaurant = Restaurant::find((int) $request->query('edit'));
+      if ($editRestaurant) {
+        $editManager = Manager::where('restaurant_id', $editRestaurant->id)->first();
+      }
+    } elseif ($request->has('new')) {
+      $editRestaurant = new Restaurant(['is_active' => true, 'template_id' => 4]);
+    }
+
+    return view('admin.restaurants.index', [
+      'restaurants' => $restaurants,
+      'q' => $q,
+      'editRestaurant' => $editRestaurant,
+      'editManager' => $editManager,
+      'plans' => SubscriptionPlan::orderBy('display_order')->get(),
+      'showCreateModal' => $request->has('new'),
+    ]);
   }
 
   public function create()
@@ -159,7 +177,7 @@ class RestaurantController extends Controller
       ]);
     }
 
-    return redirect()->route('admin.restaurants.show', $restaurant)->with('success', 'Restaurant updated.');
+    return redirect()->route('admin.restaurants.index')->with('success', 'Restaurant updated.');
   }
 
   public function destroy(Restaurant $restaurant, UploadService $uploads)

@@ -1,0 +1,73 @@
+.template-intro {
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin: 0;
+}
+.template-accordion-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+.template-accordion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 20px 24px;
+  cursor: pointer;
+  border-bottom: 1px solid transparent;
+}
+.template-accordion-header:hover { background: #f9fafb; }
+.template-accordion-card.is-open .template-accordion-header { border-bottom-color: #e5e7eb; }
+.template-accordion-title { font-size: 1.125rem; font-weight: 600; margin: 0; color: #111827; }
+.template-accordion-actions { display: flex; align-items: center; gap: 8px; }
+.template-accordion-body { display: none; padding: 20px 24px; }
+.template-accordion-card.is-open .template-accordion-body { display: block; }
+.template-section-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+.template-section-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+.template-section-header h3 { margin: 0; font-size: 1rem; font-weight: 600; }
+.template-section-body { padding: 20px 24px; }
+.template-section-body .form-hint { margin: 6px 0 0; color: #6b7280; font-size: 0.8rem; }
+.template-plans-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin-top: 8px;
+}
+.template-plans-grid label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.template-restaurant-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.template-restaurant-tag {
+  background: #f3f4f6;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+}
+.form-input, .form-textarea, .form-select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+}
+.form-label { display: block; font-weight: 500; margin-bottom: 6px; font-size: 0.875rem; }
+.form-group { margin-bottom: 16px; }

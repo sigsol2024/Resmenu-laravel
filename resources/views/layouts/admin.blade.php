@@ -25,6 +25,7 @@
         </main>
     </div>
 </div>
+<script src="{{ asset('assets/js/actions-dropdown.js') }}"></script>
 @stack('scripts')
 </body>
 </html>

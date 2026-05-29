@@ -34,7 +34,7 @@
     <textarea name="description" placeholder="Description" rows="2" class="form-input"></textarea>
     <button type="submit" class="btn-manage">Add category</button>
   </form>
-  <table class="admin-table">
+  <table class="data-table">
     <thead><tr><th>Name</th><th>Section</th><th>Items</th><th>Actions</th></tr></thead>
     <tbody>
       @forelse($categories as $category)
@@ -43,12 +43,20 @@
         <td>{{ $category->section->name ?? '—' }}</td>
         <td>{{ $category->menu_items_count }}</td>
         <td>
-          <form method="post" action="{{ route('admin.restaurants.hub', $restaurant) }}" style="display:inline" onsubmit="return confirm('Delete category?')">
-            @csrf
-            <input type="hidden" name="action" value="delete_category">
-            <input type="hidden" name="id" value="{{ $category->id }}">
-            <button type="submit" class="btn-danger-sm">Delete</button>
-          </form>
+          @include('partials.admin.actions-dropdown', [
+            'items' => [
+              ['type' => 'button', 'label' => 'Edit', 'onclick' => 'openCategoryModal('.e(json_encode(['id' => $category->id, 'name' => $category->name, 'section_id' => $category->section_id, 'description' => $category->description, 'display_order' => $category->display_order])).')'],
+              ['type' => 'divider'],
+              [
+                'type' => 'form',
+                'label' => 'Delete',
+                'action' => route('admin.restaurants.hub', $restaurant),
+                'class' => 'danger',
+                'confirm' => 'Delete category and its items?',
+                'hidden' => ['action' => 'delete_category', 'id' => $category->id],
+              ],
+            ],
+          ])
         </td>
       </tr>
       @empty
@@ -77,7 +85,7 @@
     <textarea name="description" placeholder="Description" rows="2" class="form-input"></textarea>
     <button type="submit" class="btn-manage">Add menu item</button>
   </form>
-  <table class="admin-table">
+  <table class="data-table">
     <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Actions</th></tr></thead>
     <tbody>
       @forelse($menuItems as $item)
@@ -86,12 +94,20 @@
         <td>{{ $item->category->name ?? '—' }}</td>
         <td>₦{{ number_format($item->price, 2) }}</td>
         <td>
-          <form method="post" action="{{ route('admin.restaurants.hub', $restaurant) }}" style="display:inline" onsubmit="return confirm('Delete item?')">
-            @csrf
-            <input type="hidden" name="action" value="delete_menu_item">
-            <input type="hidden" name="id" value="{{ $item->id }}">
-            <button type="submit" class="btn-danger-sm">Delete</button>
-          </form>
+          @include('partials.admin.actions-dropdown', [
+            'items' => [
+              ['type' => 'button', 'label' => 'Edit', 'onclick' => 'openMenuItemModal('.e(json_encode(['id' => $item->id, 'name' => $item->name, 'category_id' => $item->category_id, 'description' => $item->description, 'price' => $item->price, 'display_order' => $item->display_order])).')'],
+              ['type' => 'divider'],
+              [
+                'type' => 'form',
+                'label' => 'Delete',
+                'action' => route('admin.restaurants.hub', $restaurant),
+                'class' => 'danger',
+                'confirm' => 'Delete this menu item?',
+                'hidden' => ['action' => 'delete_menu_item', 'id' => $item->id],
+              ],
+            ],
+          ])
         </td>
       </tr>
       @empty
@@ -100,6 +116,8 @@
     </tbody>
   </table>
 </div>
+
+@include('partials.admin.hub-edit-modals', ['restaurant' => $restaurant, 'sections' => $sections, 'categories' => $categories])
 @endif
 
 @if($activeTab === 'customization')
@@ -151,4 +169,32 @@
 
 <p style="margin-top:24px"><a href="{{ route('admin.restaurants.index') }}">← All restaurants</a></p>
 @endsection
-@push('head')<link rel="stylesheet" href="{{ asset('assets/css/admin-dashboard.css') }}">@endpush
+@push('head')
+<link rel="stylesheet" href="{{ asset('assets/css/admin-dashboard.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/admin-payments.css') }}">
+@endpush
+@push('scripts')
+<script>
+function openCategoryModal(data) {
+  document.getElementById('categoryModal').style.display = 'flex';
+  document.getElementById('category-form-action').value = 'update_category';
+  document.getElementById('category-id').value = data.id;
+  document.getElementById('category-name').value = data.name || '';
+  document.getElementById('category-section').value = data.section_id || '';
+  document.getElementById('category-description').value = data.description || '';
+  document.getElementById('category-order').value = data.display_order || 0;
+}
+function closeCategoryModal() { document.getElementById('categoryModal').style.display = 'none'; }
+function openMenuItemModal(data) {
+  document.getElementById('menuItemModal').style.display = 'flex';
+  document.getElementById('menu-item-form-action').value = 'update_menu_item';
+  document.getElementById('menu-item-id').value = data.id;
+  document.getElementById('menu-item-name').value = data.name || '';
+  document.getElementById('menu-item-category').value = data.category_id || '';
+  document.getElementById('menu-item-description').value = data.description || '';
+  document.getElementById('menu-item-price').value = data.price || 0;
+  document.getElementById('menu-item-order').value = data.display_order || 0;
+}
+function closeMenuItemModal() { document.getElementById('menuItemModal').style.display = 'none'; }
+</script>
+@endpush

@@ -10,10 +10,17 @@ use Illuminate\Support\Str;
 
 class SubscriptionPlanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $editPlan = null;
+        if ($request->filled('edit')) {
+            $editPlan = SubscriptionPlan::find((int) $request->query('edit'));
+        }
+
         return view('admin.subscription-plans.index', [
             'plans' => SubscriptionPlan::query()->orderBy('display_order')->get(),
+            'editPlan' => $editPlan,
+            'showForm' => $request->has('new') || $editPlan !== null,
         ]);
     }
 
@@ -90,6 +97,9 @@ class SubscriptionPlanController extends Controller
         $data['slug'] = $data['slug'] ?: Str::slug($data['name']);
         $data['is_active'] = $request->boolean('is_active', true);
         $data['features'] = [
+            'priority_support' => $request->boolean('feature_priority_support'),
+            'custom_domain' => $request->boolean('feature_custom_domain'),
+            'analytics_advanced' => $request->boolean('feature_analytics_advanced'),
             'food_ordering' => $request->boolean('feature_food_ordering'),
             'table_reservations' => $request->boolean('feature_table_reservations'),
         ];

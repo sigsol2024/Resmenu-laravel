@@ -15,8 +15,13 @@
 </section>
 
 <section class="chart-card">
-  <h2 class="chart-title">Statistics Overview</h2>
-  <div class="simple-bar-chart">
+  <h2 class="chart-title">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+    </svg>
+    Statistics Overview
+  </h2>
+  <div class="simple-bar-chart gradient-bars">
     @foreach($chartData as $item)
       <div class="item" style="--clr: {{ $item['color'] }}; --val: {{ round($item['percentage'], 1) }}">
         <div class="label">{{ $item['label'] }}</div>
@@ -29,7 +34,7 @@
 <section class="list-card">
   <div class="list-card-header"><h2 class="list-card-title">Recent Restaurants</h2></div>
   @forelse($recentRestaurants as $restaurant)
-    <div class="restaurant" onclick="toggleRestaurant(this)">
+    <div class="restaurant" onclick="toggleRestaurant(event, this)">
       <div class="restaurant-header">
         <div class="restaurant-info">
           <span class="restaurant-name">{{ $restaurant->name }}</span>
@@ -41,22 +46,35 @@
         <span class="restaurant-toggle">▼</span>
       </div>
       <div class="restaurant-body">
-        <div class="actions">
-          <a href="{{ route('admin.restaurants.show', $restaurant) }}" class="btn-manage">Manage</a>
-          <a href="{{ route('public.menu', $restaurant->slug) }}" target="_blank" class="btn-view">View Menu</a>
-        </div>
+        @include('partials.admin.actions-dropdown', [
+          'items' => [
+            ['label' => 'Manage', 'url' => route('admin.restaurants.hub', $restaurant)],
+            ['label' => 'Edit', 'url' => route('admin.restaurants.edit', $restaurant)],
+            ['label' => 'View Menu', 'url' => route('public.menu', $restaurant->slug), 'target' => '_blank', 'rel' => 'noopener'],
+          ],
+        ])
       </div>
     </div>
   @empty
     <div class="empty-state">
       <p>No restaurants found.</p>
-      <p><a href="{{ route('admin.restaurants.index') }}">View all restaurants</a></p>
+      <p>
+        <a href="{{ route('admin.restaurants.index', ['new' => 1]) }}">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Create your first restaurant
+        </a>
+      </p>
     </div>
   @endforelse
 </section>
 @endsection
 @push('scripts')
 <script>
-function toggleRestaurant(el){ el.classList.toggle('open'); }
+function toggleRestaurant(e, el) {
+  if (e.target.closest('.actions-cell')) return;
+  el.classList.toggle('open');
+}
 </script>
 @endpush

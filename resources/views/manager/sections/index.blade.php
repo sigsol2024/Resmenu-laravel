@@ -7,7 +7,7 @@
 </div>
 <div class="card">
 <table>
-    <thead><tr><th>Name</th><th>Slug</th><th>Categories</th><th>Order</th><th></th></tr></thead>
+    <thead><tr><th>Name</th><th>Slug</th><th>Categories</th><th>Order</th><th>Actions</th></tr></thead>
     <tbody>
     @forelse($sections as $section)
         <tr>
@@ -16,11 +16,19 @@
             <td>{{ $section->categories_count }}</td>
             <td>{{ $section->display_order }}</td>
             <td>
-                <a href="{{ route('manager.sections.edit', $section) }}">Edit</a>
-                <form action="{{ route('manager.sections.destroy', $section) }}" method="post" style="display:inline;" onsubmit="return confirm('Delete this section?');">
-                    @csrf @method('DELETE')
-                    <button type="submit" class="btn btn-danger" style="padding:4px 8px;margin-left:8px;">Delete</button>
-                </form>
+                @include('partials.admin.actions-dropdown', [
+                  'items' => [
+                    ['label' => 'Edit', 'url' => route('manager.sections.edit', $section)],
+                    [
+                      'type' => 'form',
+                      'label' => 'Delete',
+                      'action' => route('manager.sections.destroy', $section),
+                      'method' => 'DELETE',
+                      'class' => 'danger',
+                      'confirm' => 'Delete this section?',
+                    ],
+                  ],
+                ])
             </td>
         </tr>
     @empty

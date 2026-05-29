@@ -64,6 +64,58 @@ class QrGeneratorService
         return ['body' => $result->getString(), 'content_type' => 'image/png'];
     }
 
+    /** Generate and store a preview image for a QR template. */
+    public function generateTemplatePreview(int $templateId): ?string
+    {
+        $template = DB::table('qr_templates')->where('id', $templateId)->first();
+        if (! $template || empty($template->config_json)) {
+            return null;
+        }
+
+        $config = is_string($template->config_json) ? json_decode($template->config_json, true) : $template->config_json;
+        if (! is_array($config)) {
+            return null;
+        }
+
+        $fg = $config['colors']['foreground'] ?? '#000000';
+        $bg = $config['colors']['background'] ?? '#FFFFFF';
+
+        $qrCode = QrCode::create('https://menu.example.com/preview')
+            ->setEncoding(new Encoding('UTF-8'))
+            ->setErrorCorrectionLevel(ErrorCorrectionLevel::Medium)
+            ->setSize(200)
+            ->setMargin(10)
+            ->setForegroundColor($this->hexColor($fg))
+            ->setBackgroundColor($this->hexColor($bg))
+            ->setRoundBlockSizeMode(RoundBlockSizeMode::Margin);
+
+        $writer = new PngWriter();
+        $result = $writer->write($qrCode);
+        $dir = public_path('uploads/qr-templates');
+        if (! is_dir($dir)) {
+            @mkdir($dir, 0755, true);
+        }
+
+        foreach (['png', 'svg'] as $ext) {
+            $old = $dir.'/'.$templateId.'.'.$ext;
+            if (is_file($old)) {
+                @unlink($old);
+            }
+        }
+
+        $filename = $templateId.'.png';
+        if (@file_put_contents($dir.'/'.$filename, $result->getString()) === false) {
+            return null;
+        }
+
+        DB::table('qr_templates')->where('id', $templateId)->update([
+            'preview_image' => $filename,
+            'updated_at' => now(),
+        ]);
+
+        return $filename;
+    }
+
     /** @return array<string, mixed>|null */
     private function resolveConfig(object $settings): ?array
     {
