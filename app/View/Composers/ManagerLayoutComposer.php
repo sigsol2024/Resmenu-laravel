@@ -47,6 +47,7 @@ class ManagerLayoutComposer
         }
         if ($showReservations) {
             $items[] = ['id' => 'reservations', 'name' => 'Reservations', 'href' => route('manager.reservations.index'), 'icon' => 'M3.75 9h16.5m-16.5 6.75h16.5'];
+            $items[] = ['id' => 'table-inventory', 'name' => 'Table inventory', 'href' => route('manager.table-inventory.index'), 'icon' => 'M6.75 3v2.25M17.25 3v2.25M3 9.75h18M4.5 21h15a1.5 1.5 0 001.5-1.5V9.75M3 9.75l.75-5.25A1.5 1.5 0 015.25 3h13.5a1.5 1.5 0 011.5 1.5l.75 5.25'];
         }
 
         return array_merge($items, [

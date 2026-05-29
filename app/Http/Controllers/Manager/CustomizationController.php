@@ -5,12 +5,17 @@ namespace App\Http\Controllers\Manager;
 use App\Http\Controllers\Controller;
 use App\Models\Restaurant;
 use App\Services\CustomizationService;
+use App\Services\ManagerFeatureAccess;
+use App\Services\TemplateAvailabilityService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class CustomizationController extends Controller
 {
-    public function __construct(private CustomizationService $customization) {}
+    public function __construct(
+        private CustomizationService $customization,
+        private TemplateAvailabilityService $templates,
+        private ManagerFeatureAccess $features,
+    ) {}
 
     public function index(Request $request)
     {
@@ -18,29 +23,112 @@ class CustomizationController extends Controller
         $restaurant = Restaurant::findOrFail($restaurantId);
 
         if ($request->isMethod('post')) {
-            $data = $request->validate([
-                'template_id' => 'nullable|integer|min:1|max:99',
-                'primary_color' => 'nullable|string|max:20',
-                'background_color' => 'nullable|string|max:20',
-                'menu_title_color' => 'nullable|string|max:20',
-                'price_color' => 'nullable|string|max:20',
-            ]);
+            $action = $request->input('action', 'save_customization');
 
-            if (isset($data['template_id'])) {
-                $restaurant->update(['template_id' => $data['template_id']]);
+            if ($action === 'save_template') {
+                return $this->saveTemplate($request, $restaurant);
+            }
+            if ($action === 'save_feature_toggles') {
+                return $this->saveFeatureToggles($request, $restaurant);
             }
 
-            $this->customization->saveForRestaurant($restaurantId, $data);
-
-            return back()->with('success', 'Template settings saved.');
+            return $this->saveCustomization($request, $restaurant);
         }
 
-        $templates = DB::table('templates')->where('is_active', 1)->orderBy('display_order')->get();
+        $available = $this->templates->availableForRestaurant($restaurantId);
+        $templatesCanUse = array_values(array_filter($available, fn ($t) => ! empty($t['can_use'])));
+        $templatesUpgrade = array_values(array_filter($available, fn ($t) => empty($t['can_use'])));
 
         return view('manager.customization.index', [
             'restaurant' => $restaurant,
             'customization' => $this->customization->forRestaurant($restaurant),
-            'templates' => $templates,
+            'templates' => $available,
+            'templatesCanUse' => $templatesCanUse,
+            'templatesUpgrade' => $templatesUpgrade,
+            'planHasOrdering' => $this->features->planHasFoodOrdering($restaurantId),
+            'planHasReservations' => $this->features->planHasTableReservations($restaurantId),
+            'enableFoodOrdering' => (int) ($restaurant->enable_food_ordering ?? 1),
+            'enableTableReservations' => (int) ($restaurant->enable_table_reservations ?? 1),
+            'flashMessage' => $this->flashMessage($request->query('message')),
         ]);
+    }
+
+    private function saveTemplate(Request $request, Restaurant $restaurant)
+    {
+        $data = $request->validate([
+            'template_id' => 'required|integer|min:1|max:99',
+        ]);
+
+        $templateId = (int) $data['template_id'];
+        $available = $this->templates->availableForRestaurant($restaurant->id);
+        $canSee = array_column($available, 'id');
+        $canUse = array_column(array_filter($available, fn ($t) => ! empty($t['can_use'])), 'id');
+
+        if (! in_array($templateId, $canSee, true)) {
+            return back()->withErrors(['template_id' => 'You do not have access to this template.']);
+        }
+        if (! in_array($templateId, $canUse, true)) {
+            return back()->withErrors(['template_id' => 'This template requires a higher subscription plan.']);
+        }
+
+        $restaurant->update(['template_id' => $templateId]);
+
+        return redirect()->route('manager.customization', ['message' => 'template_updated']);
+    }
+
+    private function saveFeatureToggles(Request $request, Restaurant $restaurant)
+    {
+        $restaurantId = (int) $restaurant->id;
+        $enableOrdering = $this->features->planHasFoodOrdering($restaurantId)
+            ? $request->boolean('enable_food_ordering')
+            : false;
+        $enableReservations = $this->features->planHasTableReservations($restaurantId)
+            ? $request->boolean('enable_table_reservations')
+            : false;
+
+        $restaurant->update([
+            'enable_food_ordering' => $enableOrdering ? 1 : 0,
+            'enable_table_reservations' => $enableReservations ? 1 : 0,
+        ]);
+
+        return redirect()->route('manager.customization', ['message' => 'features_updated']);
+    }
+
+    private function saveCustomization(Request $request, Restaurant $restaurant)
+    {
+        $data = $request->validate([
+            'menu_title_color' => 'nullable|string|max:20',
+            'menu_title_size' => 'nullable|integer|min:12|max:72',
+            'menu_title_font' => 'nullable|string|max:50',
+            'price_color' => 'nullable|string|max:20',
+            'price_size' => 'nullable|integer|min:12|max:48',
+            'price_font' => 'nullable|string|max:50',
+            'description_color' => 'nullable|string|max:20',
+            'description_size' => 'nullable|integer|min:10|max:24',
+            'description_font' => 'nullable|string|max:50',
+            'category_title_color' => 'nullable|string|max:20',
+            'category_title_size' => 'nullable|integer|min:12|max:48',
+            'category_title_font' => 'nullable|string|max:50',
+            'background_color' => 'nullable|string|max:20',
+            'header_background_color' => 'nullable|string|max:20',
+            'primary_color' => 'nullable|string|max:20',
+            'secondary_color' => 'nullable|string|max:20',
+        ]);
+
+        $this->customization->saveForRestaurant($restaurant->id, $data);
+
+        return redirect()->route('manager.customization', ['message' => 'customization_updated']);
+    }
+
+    private function flashMessage(?string $key): ?string
+    {
+        return match ($key) {
+            'template_updated' => 'Template updated successfully.',
+            'customization_updated' => 'Template colors and styles saved.',
+            'features_updated' => 'Ordering & reservation settings updated for your menu.',
+            'ordering_disabled' => 'Food ordering is turned off for your public menu.',
+            'reservations_disabled' => 'Table reservations are turned off for your public menu.',
+            default => null,
+        };
     }
 }

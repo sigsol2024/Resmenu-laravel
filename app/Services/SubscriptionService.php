@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class SubscriptionService
 {
@@ -129,5 +130,152 @@ class SubscriptionService
             'cancelled_at' => now(),
             'updated_at' => now(),
         ]) > 0;
+    }
+
+    /** @return array<string, mixed>|null */
+    public function getRestaurantSubscription(int $restaurantId): ?array
+    {
+        $row = Subscription::query()
+            ->from('subscriptions as s')
+            ->join('subscription_plans as p', 'p.id', '=', 's.plan_id')
+            ->where('s.restaurant_id', $restaurantId)
+            ->orderByDesc('s.created_at')
+            ->select([
+                's.*',
+                'p.name as plan_name',
+                'p.slug as plan_slug',
+                'p.monthly_price',
+                'p.annual_price',
+                'p.display_order',
+                'p.max_categories',
+                'p.max_menu_items',
+                'p.max_qr_styles',
+                'p.max_templates',
+                'p.features as plan_features',
+            ])
+            ->first();
+
+        if (! $row) {
+            return null;
+        }
+
+        $sub = $row->toArray();
+        if (is_string($sub['plan_features'] ?? null)) {
+            $sub['plan_features'] = json_decode($sub['plan_features'], true) ?: [];
+        }
+
+        return $sub;
+    }
+
+    public function isSubscriptionActive(int $restaurantId): bool
+    {
+        return $this->checkAccess($restaurantId)['valid'];
+    }
+
+    public function hasFeatureAccess(int $restaurantId, string $feature, ?int $currentCount = null): bool
+    {
+        $subscription = $this->getRestaurantSubscription($restaurantId);
+        if (! $subscription || ! $this->isSubscriptionActive($restaurantId)) {
+            return false;
+        }
+
+        $featureMap = [
+            'categories' => 'max_categories',
+            'menu_items' => 'max_menu_items',
+            'qr_styles' => 'max_qr_styles',
+            'templates' => 'max_templates',
+        ];
+
+        if (isset($featureMap[$feature])) {
+            $max = $subscription[$featureMap[$feature]] ?? 0;
+            if ((int) $max === -1) {
+                return true;
+            }
+            if ($currentCount !== null) {
+                return $currentCount < (int) $max;
+            }
+
+            return true;
+        }
+
+        $planFeatures = $subscription['plan_features'] ?? [];
+        if (is_array($planFeatures) && array_key_exists($feature, $planFeatures)) {
+            return (bool) $planFeatures[$feature];
+        }
+
+        $planSlug = strtolower((string) ($subscription['plan_slug'] ?? ''));
+        if ($feature === 'food_ordering') {
+            return in_array($planSlug, ['professional', 'enterprise'], true);
+        }
+        if ($feature === 'table_reservations') {
+            return $planSlug === 'enterprise';
+        }
+
+        return false;
+    }
+
+    /** @return array{used:int, limit:int|string, remaining:int|string, unlimited:bool} */
+    public function getRemainingUsage(int $restaurantId, string $feature): array
+    {
+        $result = ['used' => 0, 'limit' => 0, 'remaining' => 0, 'unlimited' => false];
+        $subscription = $this->getRestaurantSubscription($restaurantId);
+        if (! $subscription) {
+            return $result;
+        }
+
+        $featureMap = [
+            'categories' => 'max_categories',
+            'menu_items' => 'max_menu_items',
+            'qr_styles' => 'max_qr_styles',
+            'templates' => 'max_templates',
+        ];
+
+        if (! isset($featureMap[$feature])) {
+            return $result;
+        }
+
+        $maxAllowed = (int) ($subscription[$featureMap[$feature]] ?? 0);
+        if ($maxAllowed === -1) {
+            $result['unlimited'] = true;
+            $result['limit'] = 'unlimited';
+            $result['remaining'] = 'unlimited';
+        } else {
+            $result['limit'] = $maxAllowed;
+        }
+
+        switch ($feature) {
+            case 'categories':
+                $result['used'] = (int) DB::table('categories')->where('restaurant_id', $restaurantId)->count();
+                break;
+            case 'menu_items':
+                $result['used'] = (int) DB::table('menu_items')->where('restaurant_id', $restaurantId)->count();
+                break;
+            case 'qr_styles':
+                $result['used'] = (int) DB::table('restaurant_qr_codes')->where('restaurant_id', $restaurantId)->count();
+                break;
+            case 'templates':
+                $result['used'] = 1;
+                break;
+        }
+
+        if (! $result['unlimited']) {
+            $result['remaining'] = max(0, $maxAllowed - $result['used']);
+        }
+
+        return $result;
+    }
+
+    public function canAddCategory(int $restaurantId): bool
+    {
+        $usage = $this->getRemainingUsage($restaurantId, 'categories');
+
+        return $usage['unlimited'] || $usage['used'] < (int) $usage['limit'];
+    }
+
+    public function canAddMenuItem(int $restaurantId): bool
+    {
+        $usage = $this->getRemainingUsage($restaurantId, 'menu_items');
+
+        return $usage['unlimited'] || $usage['used'] < (int) $usage['limit'];
     }
 }

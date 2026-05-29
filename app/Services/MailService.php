@@ -39,8 +39,7 @@ class MailService
 
     public function sendOrderCreated(int $orderId, int $restaurantId): void
     {
-        // Order confirmation emails — extend with Blade templates as needed.
-        Log::info('Order created', ['order_id' => $orderId, 'restaurant_id' => $restaurantId]);
+        app(RestaurantTransactionalMailService::class)->sendOrderCreated($orderId, $restaurantId);
     }
 
     private function sendZeptoMail(string $to, string $toName, string $subject, string $html, array $options): bool

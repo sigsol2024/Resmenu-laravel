@@ -12,6 +12,7 @@ use App\Http\Controllers\Manager\ReservationController;
 use App\Http\Controllers\Manager\SectionController;
 use App\Http\Controllers\Manager\SettingsController;
 use App\Http\Controllers\Manager\SlugDashboardRedirectController;
+use App\Http\Controllers\Public\QrImageController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:manager', 'manager.tenant', 'session.idle:manager'])
@@ -36,18 +37,23 @@ Route::middleware(['auth:manager', 'manager.tenant', 'session.idle:manager'])
         Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.status');
 
         Route::get('/reservations', [ReservationController::class, 'index'])->name('reservations.index');
+        Route::post('/reservations/deposit', [ReservationController::class, 'updateDeposit'])->name('reservations.deposit');
         Route::get('/reservations/all', [ReservationController::class, 'list'])->name('reservations.list');
         Route::patch('/reservations/{reservation}/status', [ReservationController::class, 'updateStatus'])->name('reservations.status');
+        Route::get('/table-inventory', [\App\Http\Controllers\Manager\TableInventoryController::class, 'index'])->name('table-inventory.index');
 
         Route::get('/billing', [BillingController::class, 'index'])->name('billing.index');
         Route::match(['get', 'post'], '/billing/checkout', [BillingController::class, 'checkout'])->name('billing.checkout');
         Route::post('/billing/process-payment', [BillingController::class, 'processPayment'])->name('billing.process-payment');
         Route::get('/billing/payment-callback', [BillingController::class, 'paymentCallback'])->name('billing.payment-callback');
         Route::get('/billing/transactions', [BillingController::class, 'transactionHistory'])->name('billing.transactions');
-        Route::match(['get', 'post'], '/payment-settings', [BillingController::class, 'paymentSettings'])->name('billing.payment-settings');
+        Route::get('/payment-settings', [BillingController::class, 'paymentSettings'])->name('billing.payment-settings');
+        Route::post('/payment-settings', [BillingController::class, 'savePaymentSettings'])->name('billing.payment-settings.save');
 
-        Route::get('/qr', [QrController::class, 'code'])->name('qr.code');
+        Route::match(['get', 'post'], '/qr', [QrController::class, 'code'])->name('qr.code');
+        Route::get('/qr/image', QrImageController::class)->name('qr.image');
         Route::get('/qr/analytics', [QrController::class, 'analytics'])->name('qr.analytics');
+        Route::get('/qr/analytics/export', [QrController::class, 'exportCsv'])->name('qr.analytics.export');
 
         Route::get('/{slug}', SlugDashboardRedirectController::class)
             ->where('slug', '[a-z0-9-]+')

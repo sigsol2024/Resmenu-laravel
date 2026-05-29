@@ -51,5 +51,15 @@ Route::get('/templates/{template}/preview', [TemplatePreviewController::class, '
     ->where('template', '[0-9]+')
     ->name('public.template.preview');
 
+Route::get('/faq', [\App\Http\Controllers\Public\MarketingController::class, 'faq'])->name('public.faq');
+Route::get('/contact', [\App\Http\Controllers\Public\MarketingController::class, 'contact'])->name('public.contact');
+Route::get('/terms', [\App\Http\Controllers\Public\MarketingController::class, 'terms'])->name('public.terms');
+Route::get('/restaurants-list', [\App\Http\Controllers\Public\MarketingController::class, 'restaurantsList'])->name('public.restaurants-list');
+Route::get('/templates', [\App\Http\Controllers\Public\MarketingController::class, 'templates'])->name('public.templates');
+Route::get('/bank-transfer-pending', [\App\Http\Controllers\Public\BankTransferPendingController::class, 'show'])->name('public.bank-transfer-pending');
+Route::get('/payment-failed', [\App\Http\Controllers\Public\PaymentFailedController::class, 'show'])->name('public.payment-failed');
+Route::get('/reservations/{reservation}/confirmation', [\App\Http\Controllers\Public\ReservationConfirmationController::class, 'show'])
+    ->name('public.reservation.confirmation');
+
 require __DIR__.'/manager.php';
 require __DIR__.'/admin.php';

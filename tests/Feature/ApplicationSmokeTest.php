@@ -70,9 +70,9 @@ class ApplicationSmokeTest extends TestCase
             $this->markTestSkipped('Database schema not available.');
         }
 
-        $restaurant = Restaurant::query()->where('slug', 'mania-house')->where('is_active', 1)->first();
+        $restaurant = Restaurant::query()->where('slug', 'the-mania-house')->where('is_active', 1)->first();
         if (! $restaurant) {
-            $this->markTestSkipped('Bootstrap restaurant mania-house not found.');
+            $this->markTestSkipped('Bootstrap restaurant the-mania-house not found.');
         }
 
         $this->get('/restaurant/'.$restaurant->slug)->assertOk();

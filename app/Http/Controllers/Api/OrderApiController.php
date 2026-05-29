@@ -196,7 +196,12 @@ class OrderApiController extends Controller
 
         $order->update(['status' => $status]);
 
-
+        try {
+            app(\App\Services\RestaurantTransactionalMailService::class)
+                ->sendOrderStatusChange($order->id, (int) $order->restaurant_id, $status);
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
         return ApiJsonResponse::success('Status updated', ['id' => $order->id, 'status' => $status]);
 

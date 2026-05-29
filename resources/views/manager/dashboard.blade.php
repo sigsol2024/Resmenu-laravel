@@ -95,6 +95,36 @@
     <div class="stat-card"><div class="stat-label">Orders Revenue</div><div class="stat-value">₦{{ number_format($stats['total_orders_amount'], 0) }}</div></div>
 </section>
 
+@if(is_array($subscription ?? null))
+<section class="chart-card">
+    <h2 class="chart-title">Plan usage</h2>
+    <div style="display:grid;gap:16px;max-width:560px;">
+        @foreach([
+            ['label' => 'Categories', 'usage' => $usageCategories ?? []],
+            ['label' => 'Menu items', 'usage' => $usageMenuItems ?? []],
+            ['label' => 'QR styles', 'usage' => $usageQrStyles ?? []],
+        ] as $bar)
+            @php
+                $u = $bar['usage'];
+                $unlimited = $u['unlimited'] ?? false;
+                $used = (int) ($u['used'] ?? 0);
+                $limit = $unlimited ? 100 : max(1, (int) ($u['limit'] ?? 1));
+                $pct = $unlimited ? 15 : min(100, round(($used / $limit) * 100));
+            @endphp
+            <div>
+                <div style="display:flex;justify-content:space-between;font-size:.875rem;margin-bottom:6px;">
+                    <span>{{ $bar['label'] }}</span>
+                    <span>{{ $used }} / {{ $unlimited ? '∞' : $limit }}</span>
+                </div>
+                <div style="height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;">
+                    <div style="width:{{ $pct }}%;height:100%;background:#111827;border-radius:4px;"></div>
+                </div>
+            </div>
+        @endforeach
+    </div>
+</section>
+@endif
+
 @php
     $uniqueBrowsers = count($qrAnalytics['scans_by_browser'] ?? []);
     $uniqueDevices = count($qrAnalytics['scans_by_device'] ?? []);

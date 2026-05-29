@@ -18,7 +18,7 @@ class TemplateApiController extends Controller
 
         $templates = DB::table('templates')
             ->where('is_active', 1)
-            ->orderBy('display_order')
+            ->orderBy('id')
             ->limit($limit)
             ->get()
             ->map(fn ($t) => [
@@ -26,8 +26,8 @@ class TemplateApiController extends Controller
                 'name' => $t->name,
                 'slug' => $t->slug,
                 'description' => $t->description,
-                'cover_image' => $t->cover_image ? $this->uploads->publicUrl('templates', $t->cover_image) : null,
-                'listing_image' => $t->listing_image ? $this->uploads->publicUrl('templates', $t->listing_image) : null,
+                'cover_image' => $t->preview_image ? $this->uploads->publicUrl('template-previews', $t->preview_image) : null,
+                'listing_image' => $t->listing_image ? $this->uploads->publicUrl('template-previews', $t->listing_image) : null,
             ])
             ->values()
             ->all();

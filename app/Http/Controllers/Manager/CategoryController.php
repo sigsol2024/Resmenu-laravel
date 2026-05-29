@@ -6,13 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Restaurant;
 use App\Models\Section;
+use App\Services\CategorySecondarySectionService;
+use App\Services\SubscriptionService;
 use App\Services\UploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
-    public function __construct(private UploadService $uploads) {}
+    public function __construct(
+        private UploadService $uploads,
+        private SubscriptionService $subscriptions,
+        private CategorySecondarySectionService $secondarySections,
+    ) {}
 
     public function index(Request $request)
     {
@@ -39,12 +45,16 @@ class CategoryController extends Controller
             'category' => new Category(['is_active' => true, 'display_order' => 0]),
             'sections' => Section::where('restaurant_id', $restaurantId)->orderBy('display_order')->get(),
             'restaurant' => Restaurant::findOrFail($restaurantId),
+            'secondarySectionIds' => [],
         ]);
     }
 
     public function store(Request $request)
     {
         $restaurantId = (int) $request->attributes->get('restaurant_id');
+        if (! $this->subscriptions->canAddCategory($restaurantId)) {
+            return back()->withErrors(['limit' => 'Category limit reached for your plan. Please upgrade.'])->withInput();
+        }
         $data = $this->validated($request, $restaurantId);
 
         if ($request->hasFile('image')) {
@@ -55,7 +65,12 @@ class CategoryController extends Controller
             $data['image'] = $upload['filename'];
         }
 
-        Category::create($data);
+        $category = Category::create($data);
+        $this->secondarySections->sync(
+            $category->id,
+            (int) $data['section_id'],
+            array_map('intval', $request->input('secondary_section_ids', [])),
+        );
 
         return redirect()->route('manager.categories.index')->with('success', 'Category created.');
     }
@@ -69,6 +84,7 @@ class CategoryController extends Controller
             'category' => $category,
             'sections' => Section::where('restaurant_id', $restaurantId)->orderBy('display_order')->get(),
             'restaurant' => Restaurant::findOrFail($restaurantId),
+            'secondarySectionIds' => $this->secondarySections->sectionIdsForCategory($category->id),
         ]);
     }
 
@@ -88,6 +104,11 @@ class CategoryController extends Controller
         }
 
         $category->update($data);
+        $this->secondarySections->sync(
+            $category->id,
+            (int) $data['section_id'],
+            array_map('intval', $request->input('secondary_section_ids', [])),
+        );
 
         return redirect()->route('manager.categories.index')->with('success', 'Category updated.');
     }

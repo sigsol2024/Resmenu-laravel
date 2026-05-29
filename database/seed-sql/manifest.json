@@ -8,6 +8,7 @@
     "_shared/03_templates.sql",
     "_shared/04_qr_templates.sql",
     "_shared/05_staging_auth_bootstrap.sql",
+    "_shared/06_production_restaurants_missing.sql",
     "restaurants/seed_lusso_drinks.sql",
     "restaurants/seed_maniahouse_menu.sql",
     "restaurants/seed_opal_menu.sql",
@@ -33,7 +34,7 @@
       "field": "slug"
     },
     "seed_swissvistana_menu.sql": {
-      "lookup": "swiss-vistana",
+      "lookup": "swiss-the-vistana",
       "field": "slug"
     },
     "seed_vendomecafe_menu.sql": {

@@ -1,0 +1,26 @@
+.payment-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.payment-stats .stat-card { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.1); border: 1px solid #e5e7eb; }
+.payment-stats .stat-label { font-size: 0.75rem; color: #6b7280; text-transform: uppercase; margin-bottom: 8px; }
+.payment-stats .stat-value { font-size: 1.5rem; font-weight: 600; }
+.payment-stats .stat-value.success { color: #059669; }
+.payment-stats .stat-value.pending { color: #6b7280; }
+.filters-bar { background: #fff; padding: 16px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.1); margin-bottom: 24px; }
+.filters-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+.filter-group { display: flex; flex-direction: column; gap: 6px; }
+.filter-group label { font-size: 0.75rem; font-weight: 500; color: #6b7280; text-transform: uppercase; }
+.filter-group select, .filter-group input { padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem; }
+.btn-filter, .btn-clear { padding: 10px 16px; border-radius: 6px; font-size: 0.875rem; text-decoration: none; border: none; cursor: pointer; }
+.btn-filter { background: #111827; color: #fff; }
+.btn-clear { background: #f3f4f6; color: #374151; }
+.table-card { overflow-x: auto; }
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.data-table th, .data-table td { padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: left; }
+.data-table th { font-weight: 600; color: #6b7280; font-size: 0.75rem; text-transform: uppercase; }
+.mono { font-family: monospace; font-size: 0.75rem; }
+.badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 500; text-transform: capitalize; }
+.badge-success { background: #d1fae5; color: #065f46; }
+.badge-pending { background: #f3f4f6; color: #374151; }
+.badge-failed { background: #fee2e2; color: #991b1b; }
+.badge-refunded { background: #dbeafe; color: #1e40af; }
+.manual-payment-panel summary { cursor: pointer; font-weight: 600; padding: 16px; }
+.manual-form { padding: 0 16px 16px; }

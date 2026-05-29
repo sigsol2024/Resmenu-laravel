@@ -11,13 +11,26 @@
         <input type="text" name="name" id="name" value="{{ old('name', $category->name) }}" required>
     </div>
     <div class="form-group">
-        <label for="section_id">Section</label>
+        <label for="section_id">Primary section</label>
         <select name="section_id" id="section_id" required>
             @foreach($sections as $s)
                 <option value="{{ $s->id }}" @selected(old('section_id', $category->section_id) == $s->id)>{{ $s->name }}</option>
             @endforeach
         </select>
     </div>
+    @if($sections->count() > 1)
+    <div class="form-group">
+        <label>Also show in sections (secondary)</label>
+        <p style="font-size:0.8rem;color:#6b7280;margin:0 0 8px;">Category appears on its primary section and any checked sections below.</p>
+        @foreach($sections as $s)
+            <label style="display:block;margin-bottom:4px;">
+                <input type="checkbox" name="secondary_section_ids[]" value="{{ $s->id }}"
+                    @checked(in_array($s->id, old('secondary_section_ids', $secondarySectionIds ?? [])))>
+                {{ $s->name }}
+            </label>
+        @endforeach
+    </div>
+    @endif
     <div class="form-group">
         <label for="description">Description</label>
         <textarea name="description" id="description" rows="3">{{ old('description', $category->description) }}</textarea>

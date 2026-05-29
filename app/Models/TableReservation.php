@@ -15,7 +15,11 @@ class TableReservation extends Model
 
     const UPDATED_AT = 'updated_at';
 
-    protected $fillable = ['restaurant_id', 'status', 'guest_name', 'guest_email', 'guest_phone', 'reservation_date', 'reservation_time', 'party_size', 'deposit_amount', 'deposit_paid', 'notes'];
+    protected $fillable = [
+        'restaurant_id', 'reservation_number', 'status', 'guest_name', 'guest_email', 'guest_phone',
+        'reservation_date', 'reservation_time', 'party_size', 'special_occasion',
+        'deposit_amount', 'deposit_paid', 'notes', 'is_walkin',
+    ];
 
     protected $casts = [
         'reservation_date' => 'date',

@@ -1,6 +1,14 @@
 @extends('layouts.manager')
 @section('title', 'Orders')
 @section('content')
+@if(!empty($showUpgradeOverlay))
+<div class="card" style="margin-bottom:24px;border:2px solid #f59e0b;background:#fffbeb;">
+    <h2 style="margin:0 0 8px;">Upgrade required</h2>
+    <p style="margin:0 0 12px;color:#4b5563;">{{ $upgradeMessage }}</p>
+    <a href="{{ route('manager.billing') }}" class="btn btn-primary">View plans</a>
+</div>
+<div style="filter:blur(3px);opacity:0.45;pointer-events:none;">
+@endif
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
     <h1 style="margin:0;">Orders</h1>
     <a href="{{ route('manager.orders.list') }}" class="btn btn-primary">View all orders</a>
@@ -33,4 +41,5 @@
         </tbody>
     </table>
 </div>
+@if(!empty($showUpgradeOverlay))</div>@endif
 @endsection

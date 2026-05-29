@@ -53,6 +53,10 @@ class DashboardController extends Controller
             'stats' => $stats,
             'qrAnalytics' => $qrStats,
             'recentOrders' => $orders->recent($restaurantId, 5),
+            'usageCategories' => $subscriptions->getRemainingUsage($restaurantId, 'categories'),
+            'usageMenuItems' => $subscriptions->getRemainingUsage($restaurantId, 'menu_items'),
+            'usageTemplates' => $subscriptions->getRemainingUsage($restaurantId, 'templates'),
+            'usageQrStyles' => $subscriptions->getRemainingUsage($restaurantId, 'qr_styles'),
         ]);
     }
 }

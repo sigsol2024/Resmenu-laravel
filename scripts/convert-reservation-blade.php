@@ -1,0 +1,52 @@
+<?php
+
+$src = file_get_contents(dirname(__DIR__).'/../Resmenu/reservation.php');
+if (! preg_match('/<!DOCTYPE html>/s', $src, $m, PREG_OFFSET_CAPTURE)) {
+    fwrite(STDERR, "no html found\n");
+    exit(1);
+}
+$html = substr($src, $m[0][1]);
+$html = preg_replace('/<\?php if \(\$success\): \?>/', '@if($success)', $html);
+$html = preg_replace('/<\?php else: \?>/', '@else', $html);
+$html = preg_replace('/<\?php endif; \?>/', '@endif', $html);
+$html = preg_replace('/<\?php if \(!empty\(\$errors\)\): \?>/', '@if($errors->isNotEmpty())', $html);
+$html = preg_replace('/<\?php foreach \(\$errors as \$e\): \?><li><\?php echo htmlspecialchars\(\$e\); \?><\/li><\?php endforeach; \?>/', '@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach', $html);
+$html = preg_replace('/<\?php if \(\$depositAmount > 0\): \?>/', '@if($depositAmount > 0)', $html);
+$html = preg_replace('/<\?php foreach \(\$timeSlots as \$slot\): \?>/', '@foreach($timeSlots as $slot)', $html);
+$html = preg_replace('/<\?php foreach \(\$occasions as \$occ\): \?>/', '@foreach($occasions as $occ)', $html);
+$html = preg_replace('/<\?php endforeach; \?>/', '@endforeach', $html);
+$html = preg_replace('/<\?php\s+\$occasions = \[.*?\];\s+\$selectedOccasion = \$_POST\[\'special_occasion\'\] \?\? \'\';\s+/s', '@php $occasions = ["BIRTHDAY","ANNIVERSARY","BUSINESS","DATE_NIGHT"]; $selectedOccasion = old("special_occasion", ""); @endphp', $html);
+$html = preg_replace('/<\?php echo htmlspecialchars\(\$_POST\[\'reservation_date\'\] \?\? \$selectedDate\); \?>/', '{{ old("reservation_date", $selectedDate) }}', $html);
+$html = preg_replace('/<\?php echo \(int\) \(\$_POST\[\'party_size\'\] \?\? 1\); \?>/', '{{ (int) old("party_size", 1) }}', $html);
+$html = preg_replace('/<\?php echo \(\$_POST\[\'party_size\'\] \?\? 1\) != 1 \? \'s\' : \'\'; \?>/', '{{ (int) old("party_size", 1) !== 1 ? "s" : "" }}', $html);
+$html = preg_replace('/<\?php echo htmlspecialchars\(\$_POST\[\'guest_name\'\] \?\? \'\'\); \?>/', '{{ old("guest_name") }}', $html);
+$html = preg_replace('/<\?php echo htmlspecialchars\(\$_POST\[\'guest_email\'\] \?\? \'\'\); \?>/', '{{ old("guest_email") }}', $html);
+$html = preg_replace('/<\?php echo htmlspecialchars\(\$_POST\[\'guest_phone\'\] \?\? \'\'\); \?>/', '{{ old("guest_phone") }}', $html);
+$html = preg_replace('/<\?php echo htmlspecialchars\(\$_POST\[\'special_occasion\'\] \?\? \'\'\); \?>/', '{{ old("special_occasion") }}', $html);
+$html = preg_replace('/<\?php echo htmlspecialchars\(\$_POST\[\'notes\'\] \?\? \'\'\); \?>/', '{{ old("notes") }}', $html);
+$html = preg_replace('/<\?php echo htmlspecialchars\(\$_POST\[\'reservation_time\'\] \?\? \'\'\); \?>/', '{{ old("reservation_time") }}', $html);
+$html = preg_replace('/<\?php echo htmlspecialchars\(\$slug\); \?>/', '{{ $restaurant->slug }}', $html);
+$html = preg_replace('/<\?php echo htmlspecialchars\(\$primaryColor\); \?>/', '{{ $primaryColor }}', $html);
+$html = preg_replace('/<\?php echo htmlspecialchars\(\$bgColor\); \?>/', '{{ $bgColor }}', $html);
+$html = preg_replace('/<\?php echo htmlspecialchars\(\$heroBgImage\); \?>/', '{{ $heroBgImage }}', $html);
+$html = preg_replace('/<\?php echo htmlspecialchars\(\$menuUrl\); \?>/', '{{ $menuUrl }}', $html);
+$html = preg_replace('/<\?php echo \$restaurantName; \?>/', '{{ $restaurantName }}', $html);
+$html = preg_replace('/<\?php echo number_format\(\$depositAmount, 2\); \?>/', '{{ number_format($depositAmount, 2) }}', $html);
+$html = preg_replace('/<\?php echo \$slot\[\'available\'\] \? \'\' : \'disabled\'; \?>/', '{{ $slot["available"] ? "" : "disabled" }}', $html);
+$html = preg_replace('/<\?php echo htmlspecialchars\(\$slot\[\'time\'\]\); \?>/', '{{ $slot["time"] }}', $html);
+$html = preg_replace('/<\?php echo \$slot\[\'available\'\] \? \'border-gray-200 hover:border-primary text-gray-700\' : \'opacity-50 cursor-not-allowed line-through border-gray-200 text-gray-500\'; \?>/', '{{ $slot["available"] ? "border-gray-200 hover:border-primary text-gray-700" : "opacity-50 cursor-not-allowed line-through border-gray-200 text-gray-500" }}', $html);
+$html = preg_replace('/<\?php echo \$selectedOccasion === \$occ \? \'border-primary text-white\' : \'border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100\'; \?>/', '{{ $selectedOccasion === $occ ? "border-primary text-white" : "border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100" }}', $html);
+$html = preg_replace('/<\?php echo \$selectedOccasion === \$occ \? \'background-color:\' \. htmlspecialchars\(\$primaryColor\) : \'\'; \?>/', '{{ $selectedOccasion === $occ ? "background-color:".$primaryColor : "" }}', $html);
+$html = preg_replace('/<\?php echo htmlspecialchars\(\$occ\); \?>/', '{{ $occ }}', $html);
+$html = preg_replace('/<\?php if \(!\$success\): \?>\s*<script>.*?<\/script>\s*<\?php endif; \?>/s', '', $html);
+$html = preg_replace('/<form method="post" id="reservation-form">/', '<form method="post" id="reservation-form" action="{{ route("public.reservation", $restaurant->slug) }}">@csrf', $html);
+$html = preg_replace('/<\?php echo resmenu_icon\([^)]+\); \?>/', '<span class="inline-flex" data-resmenu-icon></span>', $html);
+$html = preg_replace('/<\?php if \(!empty\(\$restaurant\[\'logo\'\]\)\): \?>/', '@if($restaurant->logo)', $html);
+$html = preg_replace('/<\?php else: \?>/', '@else', $html);
+$html = preg_replace('/<\?php echo \$uploadBaseUrl \. \'\/logos\/\' \. htmlspecialchars\(\$restaurant\[\'logo\'\]\); \?>/', '{{ $uploadBaseUrl }}/logos/{{ $restaurant->logo }}', $html);
+$html = preg_replace('/<\?php endif; \?>/', '@endif', $html);
+$html = preg_replace('/<\?php echo date\(\'Y\'\); \?>/', '{{ date("Y") }}', $html);
+$html = preg_replace('/<\?php[^?]*\?>/s', '', $html);
+$out = dirname(__DIR__).'/resources/views/public/reservation-booking.blade.php';
+file_put_contents($out, $html);
+echo "Wrote ".strlen($html)." bytes to $out\n";

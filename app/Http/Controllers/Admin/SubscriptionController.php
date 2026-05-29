@@ -7,39 +7,90 @@ use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
 use App\Services\SubscriptionService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SubscriptionController extends Controller
 {
-    public function index(SubscriptionService $subscriptions)
-    {
-        $subscriptions->syncExpiredStatuses();
+  public function index(Request $request, SubscriptionService $subscriptions)
+  {
+    $subscriptions->syncExpiredStatuses();
 
-        return view('admin.subscriptions.index', [
-            'subscriptions' => Subscription::query()->with(['restaurant', 'plan'])->orderByDesc('id')->paginate(25),
-            'plans' => SubscriptionPlan::orderBy('display_order')->get(),
-        ]);
+    $statusFilter = $request->query('status', '');
+    $planFilter = (int) $request->query('plan_id', 0);
+    $search = trim((string) $request->query('q', ''));
+
+    $query = Subscription::query()->with(['restaurant', 'plan'])->orderByDesc('id');
+
+    if ($statusFilter !== '') {
+      $query->where('status', $statusFilter);
+    }
+    if ($planFilter > 0) {
+      $query->where('plan_id', $planFilter);
+    }
+    if ($search !== '') {
+      $query->whereHas('restaurant', fn ($q) => $q->where('name', 'like', "%{$search}%")->orWhere('slug', 'like', "%{$search}%"));
     }
 
-    public function update(Request $request, Subscription $subscription, SubscriptionService $service)
-    {
-        $data = $request->validate([
-            'status' => 'required|in:trial,active,expired,cancelled,pending',
-            'plan_id' => 'required|integer|exists:subscription_plans,id',
-            'billing_cycle' => 'nullable|in:monthly,annual',
-        ]);
+    return view('admin.subscriptions.index', [
+      'subscriptions' => $query->paginate(25)->withQueryString(),
+      'plans' => SubscriptionPlan::orderBy('display_order')->get(),
+      'statusFilter' => $statusFilter,
+      'planFilter' => $planFilter,
+      'search' => $search,
+    ]);
+  }
 
-        $subscription->update([
-            'status' => $data['status'],
-            'plan_id' => $data['plan_id'],
-            'billing_cycle' => $data['billing_cycle'] ?? $subscription->billing_cycle ?? 'monthly',
-        ]);
+  public function update(Request $request, Subscription $subscription, SubscriptionService $service)
+  {
+    $action = $request->input('action', 'update');
 
-        if ($data['status'] === 'active') {
-            $service->activateSubscription($subscription->id, $data['billing_cycle'] ?? 'monthly');
-        } elseif ($data['status'] === 'cancelled') {
-            $service->deactivateSubscription($subscription->id);
+    if ($action === 'extend_period') {
+      $data = $request->validate([
+        'days' => 'required|integer|min:1|max:365',
+      ]);
+      $days = (int) $data['days'];
+      $sub = $subscription->fresh();
+
+      if ($sub->status === 'trial') {
+        $base = $sub->trial_ends_at && $sub->trial_ends_at->isFuture() ? $sub->trial_ends_at : now();
+        $sub->update(['trial_ends_at' => $base->copy()->addDays($days)]);
+      } elseif ($sub->status === 'expired' && $sub->trial_ends_at && ! $sub->current_period_end) {
+        $base = $sub->trial_ends_at ?? now();
+        $sub->update([
+          'status' => 'trial',
+          'trial_ends_at' => ($base->isFuture() ? $base : now())->copy()->addDays($days),
+        ]);
+      } else {
+        $base = $sub->current_period_end && $sub->current_period_end->isFuture() ? $sub->current_period_end : now();
+        $newEnd = $base->copy()->addDays($days);
+        $payload = ['current_period_end' => $newEnd];
+        if ($sub->status === 'expired' && $newEnd->isFuture()) {
+          $payload['status'] = 'active';
         }
+        $sub->update($payload);
+      }
 
-        return back()->with('success', 'Subscription updated.');
+      return back()->with('success', "Subscription extended by {$days} days.");
     }
+
+    $data = $request->validate([
+      'status' => 'required|in:trial,active,expired,cancelled,pending',
+      'plan_id' => 'required|integer|exists:subscription_plans,id',
+      'billing_cycle' => 'nullable|in:monthly,annual',
+    ]);
+
+    $subscription->update([
+      'status' => $data['status'],
+      'plan_id' => $data['plan_id'],
+      'billing_cycle' => $data['billing_cycle'] ?? $subscription->billing_cycle ?? 'monthly',
+    ]);
+
+    if ($data['status'] === 'active') {
+      $service->activateSubscription($subscription->id, $data['billing_cycle'] ?? 'monthly');
+    } elseif ($data['status'] === 'cancelled') {
+      $service->deactivateSubscription($subscription->id);
+    }
+
+    return back()->with('success', 'Subscription updated.');
+  }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\BankTransferApiController;
 use App\Http\Controllers\Api\MenuApiController;
 use App\Http\Controllers\Api\OrderApiController;
 use App\Http\Controllers\Api\QrApiController;
@@ -15,6 +16,12 @@ Route::middleware('throttle:120,1')->group(function () {
     Route::get('/restaurants', [RestaurantApiController::class, 'index']);
     Route::get('/templates', [TemplateApiController::class, 'index']);
     Route::get('/restaurants/{slug}/menu', [MenuApiController::class, 'show']);
+});
+
+Route::middleware('throttle:30,1')->prefix('bank-transfer')->group(function () {
+    Route::post('/confirm', [BankTransferApiController::class, 'confirm']);
+    Route::post('/expire', [BankTransferApiController::class, 'expire']);
+    Route::post('/cancel-order', [BankTransferApiController::class, 'cancelOrder']);
 });
 
 Route::middleware('throttle:60,1')->prefix('orders')->group(function () {
@@ -35,7 +42,8 @@ Route::middleware('throttle:60,1')->prefix('reservations')->group(function () {
 Route::middleware(['auth:manager', 'manager.tenant', 'session.idle:manager'])->group(function () {
     Route::get('/orders/analytics', [OrderApiController::class, 'analytics']);
     Route::get('/reservations/analytics', [ReservationApiController::class, 'analytics']);
-    Route::get('/table-inventory', [ReservationApiController::class, 'tableInventory']);
+    Route::post('/reservations/deposit', [ReservationApiController::class, 'updateDeposit']);
+    Route::match(['get', 'post'], '/table-inventory', [ReservationApiController::class, 'tableInventory']);
 });
 
 Route::prefix('qr')->middleware('throttle:60,1')->group(function () {

@@ -6,13 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\MenuItem;
 use App\Models\Restaurant;
+use App\Services\SubscriptionService;
 use App\Services\UploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class MenuItemController extends Controller
 {
-    public function __construct(private UploadService $uploads) {}
+    public function __construct(
+        private UploadService $uploads,
+        private SubscriptionService $subscriptions,
+    ) {}
 
     public function index(Request $request)
     {
@@ -44,6 +48,9 @@ class MenuItemController extends Controller
     public function store(Request $request)
     {
         $restaurantId = (int) $request->attributes->get('restaurant_id');
+        if (! $this->subscriptions->canAddMenuItem($restaurantId)) {
+            return back()->withErrors(['limit' => 'Menu item limit reached for your plan. Please upgrade.'])->withInput();
+        }
         $data = $this->validated($request, $restaurantId);
 
         if ($request->hasFile('image')) {

@@ -21,6 +21,9 @@
     if (request()->routeIs('manager.billing.*') && ! request()->routeIs('manager.billing.payment-settings')) {
         $activeId = 'billing';
     }
+    if (request()->routeIs('manager.table-inventory.*')) {
+        $activeId = 'table-inventory';
+    }
 @endphp
 <button type="button" onclick="toggleMobile()" class="mobile-hamburger" aria-label="Toggle sidebar">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="hamburger-icon">

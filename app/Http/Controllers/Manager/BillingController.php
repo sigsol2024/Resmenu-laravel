@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Manager;
 use App\Http\Controllers\Controller;
 use App\Models\Restaurant;
 use App\Models\Subscription;
+use App\Services\ManagerFeatureAccess;
 use App\Services\PaymentGatewayService;
+use App\Services\RestaurantPaymentSettingsService;
 use App\Services\SubscriptionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -107,12 +109,59 @@ class BillingController extends Controller
         ]);
     }
 
-    public function paymentSettings(Request $request)
-    {
+    public function paymentSettings(
+        Request $request,
+        RestaurantPaymentSettingsService $payments,
+        ManagerFeatureAccess $features,
+    ) {
         $restaurantId = (int) $request->attributes->get('restaurant_id');
+        $hasAccess = $features->planHasFoodOrdering($restaurantId)
+            || $features->planHasTableReservations($restaurantId);
 
         return view('manager.billing.payment-settings', [
             'restaurant' => Restaurant::findOrFail($restaurantId),
+            'settings' => $payments->allForRestaurant($restaurantId),
+            'showUpgradeOverlay' => ! $hasAccess,
+            'webhookBase' => url('/api/webhooks/restaurant'),
         ]);
+    }
+
+    public function savePaymentSettings(Request $request, RestaurantPaymentSettingsService $payments)
+    {
+        $restaurantId = (int) $request->attributes->get('restaurant_id');
+        $gateway = $request->input('gateway');
+
+        if (! in_array($gateway, ['paystack', 'flutterwave', 'bank_transfer'], true)) {
+            return back()->withErrors(['gateway' => 'Invalid gateway.']);
+        }
+
+        if ($gateway === 'bank_transfer') {
+            $data = $request->validate([
+                'is_active' => 'nullable|boolean',
+                'bank_name' => 'nullable|string|max:255',
+                'account_number' => 'nullable|string|max:100',
+                'account_name' => 'nullable|string|max:255',
+            ]);
+        } else {
+            $data = $request->validate([
+                'is_active' => 'nullable|boolean',
+                'test_mode' => 'nullable|boolean',
+                'public_key_test' => 'nullable|string|max:255',
+                'secret_key_test' => 'nullable|string',
+                'webhook_secret_test' => 'nullable|string|max:255',
+                'public_key_live' => 'nullable|string|max:255',
+                'secret_key_live' => 'nullable|string',
+                'webhook_secret_live' => 'nullable|string|max:255',
+            ]);
+        }
+
+        $data['is_active'] = $request->boolean('is_active');
+        if ($gateway !== 'bank_transfer') {
+            $data['test_mode'] = $request->boolean('test_mode');
+        }
+
+        $payments->update($restaurantId, $gateway, $data);
+
+        return back()->with('success', ucfirst(str_replace('_', ' ', $gateway)).' settings saved.');
     }
 }

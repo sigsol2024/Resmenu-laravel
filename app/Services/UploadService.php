@@ -46,6 +46,19 @@ class UploadService
         return ['success' => true, 'filename' => $filename, 'path' => $dir.DIRECTORY_SEPARATOR.$filename];
     }
 
+    public function storeSiteAsset(UploadedFile $file, ?string $previousFilename = null): ?string
+    {
+        $result = $this->storeImage($file, 'site');
+        if (! ($result['success'] ?? false)) {
+            return $previousFilename;
+        }
+        if ($previousFilename) {
+            $this->delete('site', $previousFilename);
+        }
+
+        return $result['filename'];
+    }
+
     public function delete(string $subdir, ?string $filename): void
     {
         if ($filename === null || $filename === '') {

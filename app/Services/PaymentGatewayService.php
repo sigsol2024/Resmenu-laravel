@@ -339,4 +339,54 @@ class PaymentGatewayService
             'reference' => $reference,
         ];
     }
+
+    /** @param array<string, mixed> $gatewayResponse */
+    public function updatePaymentStatus(int $paymentId, string $status, ?array $gatewayResponse = null): bool
+    {
+        $valid = ['pending', 'success', 'failed', 'refunded'];
+        if (! in_array($status, $valid, true)) {
+            return false;
+        }
+
+        $payload = ['status' => $status];
+        if ($gatewayResponse !== null) {
+            $payload['gateway_response'] = json_encode($gatewayResponse);
+        }
+        if ($status === 'success') {
+            $payload['paid_at'] = now();
+        }
+
+        return DB::table('payments')->where('id', $paymentId)->update($payload) > 0;
+    }
+
+    /** @param array{restaurant_id:int,subscription_id:int,amount:float,payment_gateway:string,transaction_reference?:string,status?:string} $data */
+    public function createPayment(array $data): ?int
+    {
+        return DB::table('payments')->insertGetId([
+            'restaurant_id' => $data['restaurant_id'],
+            'subscription_id' => $data['subscription_id'],
+            'amount' => $data['amount'],
+            'currency' => $data['currency'] ?? 'NGN',
+            'payment_gateway' => $data['payment_gateway'],
+            'transaction_reference' => $data['transaction_reference'] ?? null,
+            'status' => $data['status'] ?? 'pending',
+            'created_at' => now(),
+        ]) ?: null;
+    }
+
+    public function activateSubscriptionForPayment(int $paymentId): void
+    {
+        $payment = DB::table('payments')->where('id', $paymentId)->first();
+        if (! $payment || ! $payment->subscription_id) {
+            return;
+        }
+
+        $sub = DB::table('subscriptions')->where('id', $payment->subscription_id)->first();
+        if (! $sub) {
+            return;
+        }
+
+        $cycle = ($sub->billing_cycle ?? 'monthly') === 'annual' ? 'annual' : 'monthly';
+        $this->subscriptions->activateSubscription((int) $payment->subscription_id, $cycle);
+    }
 }

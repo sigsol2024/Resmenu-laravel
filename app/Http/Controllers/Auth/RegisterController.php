@@ -7,6 +7,8 @@ use App\Models\Manager;
 use App\Models\Restaurant;
 use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
+use App\Services\DisposableEmailService;
+use App\Services\EmailDeliverabilityService;
 use App\Services\RecaptchaService;
 use App\Services\RegistrationOtpService;
 use Illuminate\Http\Request;
@@ -20,6 +22,7 @@ class RegisterController extends Controller
     public function __construct(
         private RegistrationOtpService $otp,
         private RecaptchaService $recaptcha,
+        private DisposableEmailService $disposableEmail,
     ) {}
 
     public function show(Request $request)
@@ -43,8 +46,18 @@ class RegisterController extends Controller
         }
 
         $data = $request->validate(['email' => 'required|email']);
+        if ($this->disposableEmail->isDisposable($data['email'])) {
+            return response()->json(['success' => false, 'message' => 'Please use a permanent email address.'], 422);
+        }
+        $mx = app(EmailDeliverabilityService::class)->evaluateMx($data['email']);
+        if ($mx['state'] === 'permanent_bad') {
+            return response()->json(['success' => false, 'message' => 'That email domain cannot receive mail. Use a different address.'], 422);
+        }
+        if ($mx['state'] === 'transient_unavailable') {
+            return response()->json(['success' => false, 'message' => 'We could not verify your email domain. Try again in a few minutes.'], 503);
+        }
         if (! $this->otp->send($data['email'], $request->ip())) {
-            return response()->json(['success' => false, 'message' => 'Could not send code.'], 500);
+            return response()->json(['success' => false, 'message' => 'Could not send verification code. Check the address or try again later.'], 500);
         }
 
         return response()->json(['success' => true, 'message' => 'Verification code sent.']);
@@ -64,6 +77,10 @@ class RegisterController extends Controller
             'otp' => 'required|string|size:6',
             'plan_id' => 'nullable|integer',
         ]);
+
+        if ($this->disposableEmail->isDisposable($data['email'])) {
+            return back()->withErrors(['email' => 'Please use a permanent email address.'])->withInput();
+        }
 
         if (! $this->otp->verify($data['email'], $data['otp'])) {
             return back()->withErrors(['otp' => 'Invalid or expired verification code.'])->withInput();

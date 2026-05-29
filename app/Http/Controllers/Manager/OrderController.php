@@ -5,18 +5,23 @@ namespace App\Http\Controllers\Manager;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Restaurant;
+use App\Services\ManagerFeatureAccess;
 use App\Services\OrderService;
 use App\Support\PriceFormatter;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-    public function __construct(private OrderService $orders) {}
+    public function __construct(
+        private OrderService $orders,
+        private ManagerFeatureAccess $features,
+    ) {}
 
     public function index(Request $request)
     {
         $restaurantId = (int) $request->attributes->get('restaurant_id');
         $restaurant = Restaurant::findOrFail($restaurantId);
+        $overlay = $this->features->ordersPageContext($restaurantId);
         $stats = $this->orders->countByStatus($restaurantId);
 
         return view('manager.orders.index', [
@@ -26,6 +31,8 @@ class OrderController extends Controller
             'revenue' => $this->orders->revenueTotal($restaurantId),
             'recent' => $this->orders->recent($restaurantId),
             'price' => PriceFormatter::class,
+            'showUpgradeOverlay' => $overlay['show_overlay'],
+            'upgradeMessage' => $overlay['message'],
         ]);
     }
 
@@ -71,6 +78,13 @@ class OrderController extends Controller
 
         $order->status = $data['status'];
         $order->save();
+
+        try {
+            app(\App\Services\RestaurantTransactionalMailService::class)
+                ->sendOrderStatusChange($order->id, $restaurantId, $data['status']);
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
         return redirect()
             ->route($request->input('return_to') === 'list' ? 'manager.orders.list' : 'manager.orders.index')

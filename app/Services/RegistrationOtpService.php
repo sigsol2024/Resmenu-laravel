@@ -9,6 +9,14 @@ class RegistrationOtpService
 {
     public function send(string $email, ?string $ip = null): bool
     {
+        $deliverability = app(EmailDeliverabilityService::class)->evaluateMx($email);
+        if ($deliverability['state'] === 'permanent_bad') {
+            return false;
+        }
+        if ($deliverability['state'] === 'transient_unavailable') {
+            return false;
+        }
+
         $emailKey = 'reg_otp_email:'.strtolower(trim($email));
         $ipKey = $ip ? 'reg_otp_ip:'.$ip : null;
 

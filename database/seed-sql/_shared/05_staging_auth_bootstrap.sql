@@ -3,7 +3,7 @@
 
 SET NAMES utf8mb4;
 
-SET @mania_rid = (SELECT id FROM restaurants WHERE slug = 'mania-house' LIMIT 1);
+SET @mania_rid = (SELECT id FROM restaurants WHERE slug = 'the-mania-house' LIMIT 1);
 
 INSERT INTO admins (username, email, password_hash)
 SELECT 'staging-admin', 'staging-admin@resmenu.test', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'

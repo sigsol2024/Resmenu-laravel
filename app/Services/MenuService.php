@@ -6,6 +6,8 @@ use App\Models\Category;
 use App\Models\MenuItem;
 use App\Models\Restaurant;
 use App\Models\Section;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class MenuService
 {
@@ -23,19 +25,21 @@ class MenuService
             ->where('restaurant_id', $restaurant->id)
             ->where('is_active', 1)
             ->orderBy('display_order')
-            ->with(['categories' => function ($q) {
-                $q->where('is_active', 1)->orderBy('display_order')
-                    ->with(['menuItems' => function ($mq) {
-                        $mq->where('is_available', 1)->orderBy('display_order');
-                    }]);
-            }])
             ->get();
 
         if ($sections->isEmpty()) {
             return $this->fallbackVirtualSection($restaurant);
         }
 
-        return $sections->map(fn (Section $section) => $this->mapSection($section))->all();
+        $result = [];
+        foreach ($sections as $section) {
+            $categories = $this->primaryCategoriesForSection($restaurant->id, $section->id);
+            $mapped = $section->toArray();
+            $mapped['categories'] = $categories;
+            $result[] = $mapped;
+        }
+
+        return $result;
     }
 
     public function sectionWithMenuBySlug(Restaurant $restaurant, string $sectionSlug): ?array
@@ -44,15 +48,16 @@ class MenuService
             ->where('restaurant_id', $restaurant->id)
             ->where('slug', $sectionSlug)
             ->where('is_active', 1)
-            ->with(['categories' => function ($q) {
-                $q->where('is_active', 1)->orderBy('display_order')
-                    ->with(['menuItems' => function ($mq) {
-                        $mq->where('is_available', 1)->orderBy('display_order');
-                    }]);
-            }])
             ->first();
 
-        return $section ? $this->mapSection($section) : null;
+        if (! $section) {
+            return null;
+        }
+
+        $mapped = $section->toArray();
+        $mapped['categories'] = $this->categoriesForSectionPage($restaurant->id, $section->id);
+
+        return $mapped;
     }
 
     /** @return list<array{id:int,name:string,slug:string}> */
@@ -65,6 +70,54 @@ class MenuService
             ->get(['id', 'name', 'slug'])
             ->map(fn (Section $s) => ['id' => $s->id, 'name' => $s->name, 'slug' => $s->slug])
             ->all();
+    }
+
+    /** Primary categories only (full menu pages). */
+    private function primaryCategoriesForSection(int $restaurantId, int $sectionId): array
+    {
+        return Category::query()
+            ->where('restaurant_id', $restaurantId)
+            ->where('section_id', $sectionId)
+            ->where('is_active', 1)
+            ->orderBy('display_order')
+            ->orderBy('name')
+            ->get()
+            ->map(fn (Category $cat) => $this->mapCategory($cat))
+            ->all();
+    }
+
+    /** Primary + secondary mapped categories (single-section views). */
+    private function categoriesForSectionPage(int $restaurantId, int $sectionId): array
+    {
+        try {
+            $rows = DB::select('
+                SELECT c.*, x.is_secondary
+                FROM (
+                    SELECT c.id, 0 AS is_secondary
+                    FROM categories c
+                    WHERE c.restaurant_id = ? AND c.section_id = ? AND c.is_active = 1
+                    UNION ALL
+                    SELECT c.id, 1 AS is_secondary
+                    FROM categories c
+                    INNER JOIN category_secondary_sections css ON css.category_id = c.id
+                    WHERE c.restaurant_id = ? AND css.section_id = ? AND c.is_active = 1
+                      AND css.is_active = 1 AND c.section_id <> ?
+                ) x
+                INNER JOIN categories c ON c.id = x.id
+                ORDER BY x.is_secondary ASC, c.display_order ASC, c.name ASC
+            ', [$restaurantId, $sectionId, $restaurantId, $sectionId, $sectionId]);
+
+            return collect($rows)->map(function ($row) {
+                $cat = Category::query()->find($row->id);
+                if (! $cat) {
+                    return null;
+                }
+
+                return $this->mapCategory($cat);
+            })->filter()->values()->all();
+        } catch (\Throwable) {
+            return $this->primaryCategoriesForSection($restaurantId, $sectionId);
+        }
     }
 
     private function fallbackVirtualSection(Restaurant $restaurant): array
@@ -93,27 +146,15 @@ class MenuService
         ]];
     }
 
-    private function mapSection(Section $section): array
-    {
-        $data = $section->toArray();
-        $data['categories'] = $section->categories
-            ->map(fn (Category $cat) => $this->mapCategory($cat))
-            ->all();
-
-        return $data;
-    }
-
     private function mapCategory(Category $category): array
     {
+        $category->loadMissing(['menuItems' => fn ($q) => $q->where('is_available', 1)->orderBy('display_order')]);
         $data = $category->toArray();
-        $data['menu_items'] = $category->menuItems
-            ->map(fn (MenuItem $item) => $item->toArray())
-            ->all();
+        $data['menu_items'] = $category->menuItems->map(fn (MenuItem $item) => $item->toArray())->all();
 
         return $data;
     }
 
-    /** Sample data for template preview routes. */
     public function samplePreviewPayload(int $templateId): array
     {
         $restaurant = [

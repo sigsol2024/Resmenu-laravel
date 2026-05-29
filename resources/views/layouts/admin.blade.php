@@ -20,16 +20,7 @@
             <div class="header-actions"></div>
         </div>
         <main>
-            @if(session('success'))
-                <div class="message message-success">{{ session('success') }}</div>
-            @endif
-            @if($errors->any())
-                <div class="message message-error">
-                    <ul style="margin:0;padding-left:18px;">
-                        @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
-                    </ul>
-                </div>
-            @endif
+            @include('partials.admin.flash-messages')
             @yield('content')
         </main>
     </div>

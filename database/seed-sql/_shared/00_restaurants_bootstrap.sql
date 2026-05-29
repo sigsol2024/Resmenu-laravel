@@ -8,12 +8,12 @@ SELECT 'The Lusso Restaurant', 'the-lusso-restaurant', 'restaurant@lussohotelsab
 FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM restaurants WHERE slug = 'the-lusso-restaurant');
 
 INSERT INTO restaurants (name, slug, email, manager_email, template_id, is_active, enable_food_ordering, enable_table_reservations)
-SELECT 'Mania House', 'mania-house', 'admin@maniahouse.our-menu.online', 'admin@maniahouse.our-menu.online', 4, 1, 1, 1
-FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM restaurants WHERE slug = 'mania-house');
+SELECT 'The Mania House', 'the-mania-house', 'admin@maniahouse.our-menu.online', 'admin@maniahouse.our-menu.online', 16, 1, 1, 0
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM restaurants WHERE slug = 'the-mania-house');
 
 INSERT INTO restaurants (name, slug, email, manager_email, template_id, is_active, enable_food_ordering, enable_table_reservations)
-SELECT 'Opal Lagos', 'opal-lagos', 'opallagos1@gmail.com', 'opallagos1@gmail.com', 4, 1, 1, 1
-FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM restaurants WHERE slug = 'opal-lagos');
+SELECT 'OPAL CAFE MENU', 'opal-cafe-menu', 'opallagos1@gmail.com', 'opallagos1@gmail.com', 4, 1, 0, 0
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM restaurants WHERE slug = 'opal-cafe-menu');
 
 INSERT INTO restaurants (name, slug, email, manager_email, template_id, is_active, enable_food_ordering, enable_table_reservations)
 SELECT 'Salt and Social', 'salt-and-social', 'admin@saltandsocial.our-menu.online', 'admin@saltandsocial.our-menu.online', 4, 1, 1, 1

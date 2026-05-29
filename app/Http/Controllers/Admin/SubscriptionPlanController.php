@@ -76,8 +76,10 @@ class SubscriptionPlanController extends Controller
             'description' => 'nullable|string',
             'monthly_price' => 'required|numeric|min:0',
             'yearly_discount_percent' => 'nullable|numeric|min:0|max:100',
-            'max_categories' => 'nullable|integer|min:0',
-            'max_menu_items' => 'nullable|integer|min:0',
+            'max_categories' => 'nullable|integer|min:-1',
+            'max_menu_items' => 'nullable|integer|min:-1',
+            'max_qr_styles' => 'nullable|integer|min:-1',
+            'max_templates' => 'nullable|integer|min:-1',
             'is_active' => 'nullable|boolean',
             'display_order' => 'nullable|integer',
         ]);
