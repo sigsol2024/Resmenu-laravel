@@ -27,7 +27,10 @@ class QrTemplateController extends Controller
 
   public function create()
   {
-    return view('admin.qr-templates.form', ['template' => null, 'config' => $this->defaultConfig()]);
+    return view('admin.qr-templates.edit', [
+      'template' => null,
+      'config' => $this->defaultConfig(),
+    ]);
   }
 
   public function store(Request $request)
@@ -53,7 +56,7 @@ class QrTemplateController extends Controller
       abort(404);
     }
 
-    return view('admin.qr-templates.form', [
+    return view('admin.qr-templates.edit', [
       'template' => $row,
       'config' => json_decode($row->config_json, true) ?: $this->defaultConfig(),
     ]);
@@ -122,6 +125,11 @@ class QrTemplateController extends Controller
       'background_color' => 'nullable|string',
       'frame_type' => 'nullable|string',
       'frame_text' => 'nullable|string',
+      'frame_color' => 'nullable|string',
+      'frame_text_color' => 'nullable|string',
+      'frame_text_size' => 'nullable|integer|min:10|max:48',
+      'frame_bg_color' => 'nullable|string',
+      'logo_size' => 'nullable|numeric|min:0.1|max:0.3',
     ]);
 
     $config = $this->defaultConfig();
@@ -131,7 +139,14 @@ class QrTemplateController extends Controller
     $config['colors']['background'] = $request->input('background_color', '#FFFFFF');
     $config['frame']['type'] = $request->input('frame_type', 'none');
     $config['frame']['text'] = $request->input('frame_text', '');
+    $config['frame']['color'] = $request->input('frame_color', '#000000');
+    $config['frame']['text_color'] = $request->input('frame_text_color', '#FFFFFF');
+    $config['frame']['text_size'] = (int) $request->input('frame_text_size', 14);
+    $config['frame']['bg_enabled'] = $request->boolean('frame_bg_enabled');
+    $config['frame']['bg_color'] = $request->input('frame_bg_color', '#000000');
     $config['logo']['enabled'] = $request->boolean('logo_enabled');
+    $config['logo']['size'] = (float) $request->input('logo_size', 0.2);
+    $config['logo']['center_only'] = $request->boolean('logo_center_only', true);
 
     return [
       'name' => $request->input('name'),

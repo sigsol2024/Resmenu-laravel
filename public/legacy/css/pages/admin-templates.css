@@ -43,6 +43,28 @@
     margin-bottom: 24px;
 }
 
+.templates-shell {
+    overflow: visible;
+}
+
+.templates-shell-header {
+    cursor: default;
+}
+
+.template-list {
+    padding: 0 24px 24px;
+}
+
+.template-item-card {
+    margin-bottom: 24px;
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
+}
+
+.template-item-card:last-child {
+    margin-bottom: 0;
+}
+
 .card-header {
     padding: 20px 24px;
     border-bottom: 1px solid #e5e7eb;
@@ -103,8 +125,25 @@
     font-size: 0.875rem;
 }
 
-.template-item-card {
-    margin: 0 24px 24px;
+.inner-section-card .card-title {
+    font-size: 1rem;
+}
+
+.restaurant-search-wrap {
+    position: relative;
+    max-width: 320px;
+    margin-bottom: 8px;
+}
+
+.restaurant-search-input {
+    max-width: 320px;
+}
+
+.selected-restaurants {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
 }
 
 .template-item-header {

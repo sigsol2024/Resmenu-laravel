@@ -8,14 +8,15 @@
     <p class="page-subtitle">Manage menu page design templates</p>
 </div>
 
-<div class="card">
-    <div class="card-header" style="cursor: default;">
+<div class="card templates-shell">
+    <div class="card-header templates-shell-header">
         <h2 class="card-title">Template Management</h2>
     </div>
     <div class="template-intro">
         Manage template display names, marketing copy, images, and which subscription plans or restaurants can use each design. Folder names stay as template1, template2, etc.; names shown to users come from here.
     </div>
 
+    <div class="template-list">
     @foreach($templates as $t)
         @php
             $isExpanded = $expandedId === (int) $t->id;
@@ -74,11 +75,12 @@
                             </div>
                             <div id="private-restaurants-{{ $t->id }}" style="display: {{ $isPrivate ? 'block' : 'none' }}">
                                 <label class="form-label">Assigned restaurants</label>
-                                <select name="restaurant_ids[]" multiple size="8" class="form-select">
-                                    @foreach($restaurants as $r)
-                                        <option value="{{ $r->id }}" @selected(in_array($r->id, old('restaurant_ids', $assignedRestaurantIds)))>{{ $r->name }}</option>
-                                    @endforeach
-                                </select>
+                                <div class="restaurant-search-wrap">
+                                    <input type="text" id="search-restaurant-{{ $t->id }}" class="form-input restaurant-search-input" placeholder="Search by restaurant name..." autocomplete="off">
+                                    <div id="search-results-{{ $t->id }}" class="search-results-dropdown" style="display:none;"></div>
+                                </div>
+                                <div id="selected-restaurants-{{ $t->id }}" class="selected-restaurants"></div>
+                                <div id="restaurant_ids_container_{{ $t->id }}"></div>
                             </div>
                         </div>
                     </div>
@@ -123,6 +125,7 @@
             </div>
         </div>
     @endforeach
+    </div>
 </div>
 @endsection
 
@@ -132,6 +135,9 @@
 
 @push('scripts')
 <script>
+const initialSelectedRestaurants = @json($restaurantNamesByTemplate ?? []);
+const restaurantSearchUrl = @json(route('admin.restaurants.search'));
+
 function toggleTemplate(id) {
     var content = document.getElementById('content-' + id);
     var toggle = document.getElementById('toggle-' + id);
@@ -144,5 +150,78 @@ function togglePrivateRestaurants(id) {
     var el = document.getElementById('private-restaurants-' + id);
     if (el && cb) el.style.display = cb.checked ? 'block' : 'none';
 }
+function escapeHtml(s) {
+    var div = document.createElement('div');
+    div.textContent = s;
+    return div.innerHTML;
+}
+function addRestaurant(templateId, id, name) {
+    var container = document.getElementById('selected-restaurants-' + templateId);
+    var hiddenContainer = document.getElementById('restaurant_ids_container_' + templateId);
+    if (container.querySelector('[data-restaurant-id="' + id + '"]')) return;
+    var chip = document.createElement('span');
+    chip.className = 'restaurant-chip';
+    chip.setAttribute('data-restaurant-id', id);
+    chip.innerHTML = escapeHtml(name) + ' <button type="button" aria-label="Remove">&times;</button>';
+    chip.querySelector('button').addEventListener('click', function () {
+        chip.remove();
+        hiddenContainer.querySelector('input[value="' + id + '"]')?.remove();
+    });
+    var hid = document.createElement('input');
+    hid.type = 'hidden';
+    hid.name = 'restaurant_ids[]';
+    hid.value = id;
+    container.appendChild(chip);
+    hiddenContainer.appendChild(hid);
+}
+function initTemplateRestaurantSearch(templateId) {
+    var input = document.getElementById('search-restaurant-' + templateId);
+    var resultsEl = document.getElementById('search-results-' + templateId);
+    if (!input || !resultsEl) return;
+    var debounceTimer = null;
+    var initial = initialSelectedRestaurants[templateId] || {};
+    Object.keys(initial).forEach(function (id) { addRestaurant(templateId, id, initial[id]); });
+    input.addEventListener('input', function () {
+        clearTimeout(debounceTimer);
+        var q = (this.value || '').trim();
+        resultsEl.style.display = 'none';
+        resultsEl.innerHTML = '';
+        if (q.length < 1) return;
+        debounceTimer = setTimeout(function () {
+            fetch(restaurantSearchUrl + '?q=' + encodeURIComponent(q))
+                .then(function (r) { return r.json(); })
+                .then(function (payload) {
+                    var list = payload.results || payload || [];
+                    resultsEl.innerHTML = '';
+                    if (!list.length) {
+                        resultsEl.innerHTML = '<div class="search-result-item">No restaurants found</div>';
+                    } else {
+                        list.forEach(function (r) {
+                            var item = document.createElement('div');
+                            item.className = 'search-result-item';
+                            item.textContent = r.name;
+                            item.addEventListener('click', function () {
+                                addRestaurant(templateId, String(r.id), r.name);
+                                input.value = '';
+                                resultsEl.style.display = 'none';
+                            });
+                            resultsEl.appendChild(item);
+                        });
+                    }
+                    resultsEl.style.display = 'block';
+                });
+        }, 250);
+    });
+    document.addEventListener('click', function (e) {
+        if (!input.contains(e.target) && !resultsEl.contains(e.target)) {
+            resultsEl.style.display = 'none';
+        }
+    });
+}
+document.addEventListener('DOMContentLoaded', function () {
+    @foreach($templates as $t)
+    initTemplateRestaurantSearch({{ $t->id }});
+    @endforeach
+});
 </script>
 @endpush

@@ -42,6 +42,9 @@ class TemplateController extends Controller
       'templates' => collect($rows),
       'planIdsByTemplate' => $this->planIdsByTemplate($templateIds),
       'restaurantIdsByTemplate' => $restaurantIdsByTemplate,
+      'restaurantNamesByTemplate' => $this->restaurantNamesByTemplate($restaurantIdsByTemplate, $this->hasTable('restaurants')
+        ? DB::table('restaurants')->orderBy('name')->get(['id', 'name'])
+        : collect()),
       'isPrivateByTemplate' => $isPrivateByTemplate,
       'plans' => SubscriptionPlan::orderBy('display_order')->get(),
       'restaurants' => $this->hasTable('restaurants')
@@ -193,5 +196,23 @@ class TemplateController extends Controller
     } catch (\Throwable) {
       return [];
     }
+  }
+
+  /** @param array<int, list<int>> $restaurantIdsByTemplate */
+  private function restaurantNamesByTemplate(array $restaurantIdsByTemplate, $restaurants): array
+  {
+    $lookup = collect($restaurants)->keyBy('id');
+    $map = [];
+    foreach ($restaurantIdsByTemplate as $templateId => $ids) {
+      $map[$templateId] = [];
+      foreach ($ids as $id) {
+        $row = $lookup->get($id);
+        if ($row) {
+          $map[$templateId][$id] = $row->name;
+        }
+      }
+    }
+
+    return $map;
   }
 }
