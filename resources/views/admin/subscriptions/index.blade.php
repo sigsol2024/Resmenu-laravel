@@ -41,13 +41,11 @@
 <form method="get" class="filters-bar">
   @if($statusFilter)<input type="hidden" name="status" value="{{ $statusFilter }}">@endif
   @if($planFilter)<input type="hidden" name="plan_id" value="{{ $planFilter }}">@endif
-  <div class="filters-row">
-    <div class="search-box"><input type="text" name="q" value="{{ $search }}" placeholder="Search by restaurant name..."></div>
-    <button type="submit" class="btn-search">Search</button>
-    @if($search || $statusFilter || $planFilter)
-      <a href="{{ route('admin.subscriptions.index') }}" class="btn-clear">Clear</a>
-    @endif
-  </div>
+  <div class="search-box"><input type="text" name="q" value="{{ $search }}" placeholder="Search by restaurant name..."></div>
+  <button type="submit" class="btn-search">Search</button>
+  @if($search || $statusFilter || $planFilter)
+    <a href="{{ route('admin.subscriptions.index') }}" class="btn-clear">Clear</a>
+  @endif
 </form>
 
 <div class="admin-list-card">
@@ -151,6 +149,5 @@
 </div>
 @endsection
 @push('head')
-<link rel="stylesheet" href="{{ asset('legacy/css/pages/admin-payments.css') }}">
 <link rel="stylesheet" href="{{ asset('legacy/css/pages/admin-subscriptions.css') }}">
 @endpush

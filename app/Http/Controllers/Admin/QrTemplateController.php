@@ -9,14 +9,16 @@ use Illuminate\Support\Facades\DB;
 
 class QrTemplateController extends Controller
 {
-  public function __construct(private QrGeneratorService $qrGenerator) {}
-
   public function index()
   {
-    $templates = DB::table('qr_templates')
-      ->select('qr_templates.*', DB::raw('(SELECT COUNT(*) FROM restaurant_qr_codes WHERE qr_template_id = qr_templates.id) as usage_count'))
-      ->orderBy('qr_templates.id')
-      ->get();
+    try {
+      $templates = DB::table('qr_templates')
+        ->select('qr_templates.*', DB::raw('(SELECT COUNT(*) FROM restaurant_qr_codes WHERE qr_template_id = qr_templates.id) as usage_count'))
+        ->orderBy('qr_templates.id')
+        ->get();
+    } catch (\Throwable) {
+      $templates = collect();
+    }
 
     return view('admin.qr-templates.index', [
       'templates' => $templates,
@@ -83,12 +85,12 @@ class QrTemplateController extends Controller
     return back()->with('success', 'QR template deleted.');
   }
 
-  public function regeneratePreviews()
+  public function regeneratePreviews(QrGeneratorService $qrGenerator)
   {
     $ids = DB::table('qr_templates')->orderBy('id')->pluck('id');
     $done = 0;
     foreach ($ids as $id) {
-      if ($this->qrGenerator->generateTemplatePreview((int) $id)) {
+      if ($qrGenerator->generateTemplatePreview((int) $id)) {
         $done++;
       }
     }

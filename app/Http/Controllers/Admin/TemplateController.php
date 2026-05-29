@@ -8,13 +8,17 @@ use App\Services\UploadService;
 use App\Support\MenuTemplateResolver;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class TemplateController extends Controller
 {
   public function index(MenuTemplateResolver $resolver)
   {
     $templateIds = $resolver->availableTemplateIds();
-    $templates = DB::table('templates')->orderBy('id')->get()->keyBy('id');
+    $templates = $this->hasTable('templates')
+      ? DB::table('templates')->orderBy('id')->get()->keyBy('id')
+      : collect();
+
     $rows = [];
     foreach ($templateIds as $id) {
       $rows[] = $templates->get($id) ?? (object) [
@@ -29,7 +33,7 @@ class TemplateController extends Controller
     $restaurantIdsByTemplate = [];
     $isPrivateByTemplate = [];
     foreach ($templateIds as $id) {
-      $restaurantIdsByTemplate[$id] = DB::table('template_restaurants')->where('template_id', $id)->pluck('restaurant_id')->all();
+      $restaurantIdsByTemplate[$id] = $this->pluckTemplateColumn('template_restaurants', $id, 'restaurant_id');
       $row = $templates->get($id);
       $isPrivateByTemplate[$id] = (bool) ($row->is_private ?? 0);
     }
@@ -40,7 +44,9 @@ class TemplateController extends Controller
       'restaurantIdsByTemplate' => $restaurantIdsByTemplate,
       'isPrivateByTemplate' => $isPrivateByTemplate,
       'plans' => SubscriptionPlan::orderBy('display_order')->get(),
-      'restaurants' => DB::table('restaurants')->orderBy('name')->get(['id', 'name']),
+      'restaurants' => $this->hasTable('restaurants')
+        ? DB::table('restaurants')->orderBy('name')->get(['id', 'name'])
+        : collect(),
       'expandedId' => (int) request()->query('expand', 0),
     ]);
   }
@@ -160,9 +166,32 @@ class TemplateController extends Controller
   {
     $map = [];
     foreach ($templateIds as $id) {
-      $map[$id] = DB::table('template_plans')->where('template_id', $id)->pluck('plan_id')->all();
+      $map[$id] = $this->pluckTemplateColumn('template_plans', $id, 'plan_id');
     }
 
     return $map;
+  }
+
+  private function hasTable(string $table): bool
+  {
+    try {
+      return Schema::hasTable($table);
+    } catch (\Throwable) {
+      return false;
+    }
+  }
+
+  /** @return list<int|string> */
+  private function pluckTemplateColumn(string $table, int $templateId, string $column): array
+  {
+    if (! $this->hasTable($table)) {
+      return [];
+    }
+
+    try {
+      return DB::table($table)->where('template_id', $templateId)->pluck($column)->all();
+    } catch (\Throwable) {
+      return [];
+    }
   }
 }

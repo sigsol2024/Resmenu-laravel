@@ -34,7 +34,7 @@
       @if(session('error'))
         <div class="message message-error">{{ session('error') }}</div>
       @endif
-      @if($errors->any())
+      @if(isset($errors) && $errors->any())
         <div class="message message-error">
           @foreach($errors->all() as $e)<div>{{ $e }}</div>@endforeach
         </div>

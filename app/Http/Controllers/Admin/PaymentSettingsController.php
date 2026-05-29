@@ -14,6 +14,8 @@ class PaymentSettingsController extends Controller
         return view('admin.payment-settings.index', [
             'paystack' => DB::table('payment_settings')->where('gateway', 'paystack')->first(),
             'flutterwave' => DB::table('payment_settings')->where('gateway', 'flutterwave')->first(),
+            'paystackWebhookUrl' => url('/api/webhooks/paystack'),
+            'flutterwaveWebhookUrl' => url('/api/webhooks/flutterwave'),
         ]);
     }
 
@@ -28,6 +30,8 @@ class PaymentSettingsController extends Controller
             'secret_key_live' => 'nullable|string',
             'public_key_test' => 'nullable|string',
             'secret_key_test' => 'nullable|string',
+            'webhook_secret_live' => 'nullable|string',
+            'webhook_secret_test' => 'nullable|string',
         ]);
 
         $payload = [
@@ -35,6 +39,8 @@ class PaymentSettingsController extends Controller
             'test_mode' => $request->boolean('test_mode') ? 1 : 0,
             'public_key_live' => $data['public_key_live'] ?? null,
             'public_key_test' => $data['public_key_test'] ?? null,
+            'webhook_secret_live' => $data['webhook_secret_live'] ?? null,
+            'webhook_secret_test' => $data['webhook_secret_test'] ?? null,
             'updated_at' => now(),
         ];
 
