@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class QrTemplateController extends Controller
 {
-  public function index()
+  public function index(Request $request)
   {
     try {
       $templates = DB::table('qr_templates')
@@ -20,17 +20,33 @@ class QrTemplateController extends Controller
       $templates = collect();
     }
 
+    $editTemplate = null;
+    $editConfig = $this->defaultConfig();
+    $editId = (int) $request->query('edit', 0);
+
+    if ($editId > 0) {
+      $editTemplate = DB::table('qr_templates')->where('id', $editId)->first();
+      if (! $editTemplate) {
+        return redirect()->route('admin.qr-templates.index')
+          ->with('error', 'QR template not found.');
+      }
+      $decoded = json_decode($editTemplate->config_json ?? '', true);
+      if (is_array($decoded)) {
+        $editConfig = $decoded;
+      }
+    }
+
     return view('admin.qr-templates.index', [
       'templates' => $templates,
+      'editTemplate' => $editTemplate,
+      'editConfig' => $editConfig,
+      'openCreateModal' => $request->boolean('create'),
     ]);
   }
 
   public function create()
   {
-    return view('admin.qr-templates.edit', [
-      'template' => null,
-      'config' => $this->defaultConfig(),
-    ]);
+    return redirect()->route('admin.qr-templates.index', ['create' => 1]);
   }
 
   public function store(Request $request)
@@ -51,15 +67,11 @@ class QrTemplateController extends Controller
 
   public function edit(int $qrTemplate)
   {
-    $row = DB::table('qr_templates')->where('id', $qrTemplate)->first();
-    if (! $row) {
+    if (! DB::table('qr_templates')->where('id', $qrTemplate)->exists()) {
       abort(404);
     }
 
-    return view('admin.qr-templates.edit', [
-      'template' => $row,
-      'config' => json_decode($row->config_json, true) ?: $this->defaultConfig(),
-    ]);
+    return redirect()->route('admin.qr-templates.index', ['edit' => $qrTemplate]);
   }
 
   public function update(Request $request, int $qrTemplate)

@@ -7,43 +7,13 @@
 
 @section('content')
 @php
-    $editTemplate = null;
-    $editConfig = null;
-    $defaultConfig = [
+    $editConfig = $editConfig ?? [
         'pattern' => 'square',
         'eyes' => 'square',
-        'frame' => [
-            'type' => 'none',
-            'text' => '',
-            'color' => '#000000',
-            'text_color' => '#000000',
-            'text_size' => 14,
-            'bg_enabled' => false,
-            'bg_color' => '#FFFFFF',
-        ],
-        'colors' => [
-            'foreground' => '#000000',
-            'background' => '#FFFFFF',
-        ],
-        'logo' => [
-            'enabled' => false,
-            'size' => 0.2,
-            'center_only' => false,
-        ],
+        'frame' => ['type' => 'none', 'text' => '', 'color' => '#000000', 'text_color' => '#000000', 'text_size' => 14, 'bg_enabled' => false, 'bg_color' => '#FFFFFF'],
+        'colors' => ['foreground' => '#000000', 'background' => '#FFFFFF'],
+        'logo' => ['enabled' => false, 'size' => 0.2, 'center_only' => false],
     ];
-
-    if (request()->filled('edit')) {
-        $editTemplate = $templates->firstWhere('id', (int) request('edit'));
-        if ($editTemplate && !empty($editTemplate->config_json)) {
-            $decoded = is_string($editTemplate->config_json)
-                ? json_decode($editTemplate->config_json, true)
-                : (array) $editTemplate->config_json;
-            if (is_array($decoded)) {
-                $editConfig = $decoded;
-            }
-        }
-        $editConfig = $editConfig ?: $defaultConfig;
-    }
 @endphp
 
 <!-- Page Header -->
@@ -137,7 +107,7 @@
                                     </svg>
                                 </button>
                                 <div class="actions-dropdown">
-                                    <a href="{{ route('admin.qr-templates.edit', $template->id) }}" class="actions-dropdown-item">Edit</a>
+                                    <a href="{{ route('admin.qr-templates.index', ['edit' => $template->id]) }}" class="actions-dropdown-item">Edit</a>
                                     <div class="actions-dropdown-divider"></div>
                                     <form method="POST" action="{{ route('admin.qr-templates.destroy', $template->id) }}" data-confirm="{{ $deleteConfirm }}" onsubmit="return confirm(this.dataset.confirm);">
                                         @csrf
@@ -255,7 +225,7 @@
                 </h2>
                 <button type="button" class="modal-close" onclick="closeCreateTemplateModal()" aria-label="Close">&times;</button>
             </div>
-            <div class="modal-body" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 24px;">
+            <div class="modal-body qr-template-editor-body">
                 <!-- Left Column: Form Controls -->
                 <div class="template-editor-controls">
                     <input type="hidden" name="action" value="create_template">
@@ -414,7 +384,7 @@
                 </h2>
                 <a href="{{ route('admin.qr-templates.index') }}" class="modal-close" aria-label="Close">&times;</a>
             </div>
-            <div class="modal-body" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 24px;">
+            <div class="modal-body qr-template-editor-body">
                 <!-- Left Column: Form Controls -->
                 <div class="template-editor-controls">
                     <input type="hidden" name="action" value="update_template">
@@ -470,7 +440,7 @@
                             <option value="circle" {{ ($editConfig['frame']['type'] ?? 'none') === 'circle' ? 'selected' : '' }}>Circle</option>
                             <option value="badge" {{ ($editConfig['frame']['type'] ?? 'none') === 'badge' ? 'selected' : '' }}>Badge</option>
                         </select>
-                        <div id="frameOptionsEdit" class="{{ ($editConfig['frame']['type'] ?? 'none') !== 'none' ? '' : 'is-hidden' }}" style="margin-top: 12px;">
+                        <div id="frameOptionsEdit" style="display: {{ ($editConfig['frame']['type'] ?? 'none') !== 'none' ? 'block' : 'none' }}; margin-top: 12px;">
                             <label class="form-label" style="margin-bottom: 4px;">Frame Border Color</label>
                             <input type="color" name="frame_color" value="{{ $editConfig['frame']['color'] ?? '#000000' }}" onchange="updatePreviewEdit()" style="width: 100%; height: 40px; cursor: pointer;">
                         </div>
@@ -571,143 +541,6 @@ document.body.style.overflow = 'hidden';
 window.editModalNeedsInit = true;
 </script>
 @endif
-
-<style>
-/* Modal Styles */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 3000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.modal-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 3001;
-}
-
-.modal-content {
-    position: relative;
-    background: white;
-    border-radius: 12px;
-    max-width: 600px;
-    width: 90%;
-    max-height: 90vh;
-    overflow-y: auto;
-    z-index: 3002;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
-.qr-template-editor-modal {
-    max-width: 1200px !important;
-}
-
-.radio-group {
-    display: flex;
-    gap: 16px;
-    margin-top: 8px;
-}
-
-.radio-option {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    padding: 8px 12px;
-    border: 2px solid #e5e7eb;
-    border-radius: 8px;
-    transition: all 0.2s;
-}
-
-.radio-option:hover {
-    border-color: var(--primary);
-    background: #f9fafb;
-}
-
-.radio-option input[type="radio"] {
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-}
-
-.radio-option input[type="radio"]:checked + span {
-    font-weight: 600;
-    color: var(--primary);
-}
-
-.radio-option:has(input[type="radio"]:checked) {
-    border-color: var(--primary);
-    background: #f0f9ff;
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 24px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.modal-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #111827;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.modal-title svg {
-    width: 18px;
-    height: 18px;
-    color: #6b7280;
-    flex-shrink: 0;
-}
-
-.modal-close {
-    background: none;
-    border: none;
-    font-size: 24px;
-    color: #6b7280;
-    cursor: pointer;
-    padding: 0;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-    text-decoration: none;
-    transition: color 0.2s;
-}
-
-.modal-close:hover {
-    color: #111827;
-}
-
-.modal-body {
-    padding: 24px;
-}
-
-.modal-footer {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-    padding: 20px 24px;
-    border-top: 1px solid #e5e7eb;
-}
-</style>
 
 <script>
 // Wait for QRCode library to be available
@@ -1102,6 +935,10 @@ document.addEventListener('DOMContentLoaded', function() {
             updatePreviewEdit();
         });
     }
+
+    @if(!empty($openCreateModal))
+    openCreateTemplateModal();
+    @endif
 });
 </script>
 @endsection
