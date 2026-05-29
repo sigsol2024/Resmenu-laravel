@@ -336,3 +336,22 @@
     }
 }
 
+/* Full-page restaurant form (edit/create route) */
+.form-page-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-page-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+}
+

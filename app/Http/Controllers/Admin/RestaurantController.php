@@ -128,6 +128,7 @@ class RestaurantController extends Controller
       'restaurant' => $restaurant,
       'manager' => $manager,
       'plans' => SubscriptionPlan::orderBy('display_order')->get(),
+      'showBackToDashboard' => false,
     ]);
   }
 

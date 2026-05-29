@@ -32,6 +32,19 @@ class RestaurantHubController extends Controller
 
         $restaurant->load(['sections', 'categories.section']);
         $tab = $request->query('tab', 'menu');
+        $editAction = $request->query('action');
+        $editId = (int) $request->query('id');
+
+        $editMenuItem = ($editAction === 'edit_menu_item' && $editId > 0)
+            ? MenuItem::where('restaurant_id', $restaurant->id)->with('category')->find($editId)
+            : null;
+
+        $menuItems = MenuItem::where('restaurant_id', $restaurant->id)
+            ->with('category')
+            ->orderBy('display_order')
+            ->orderByDesc('id')
+            ->paginate(50)
+            ->withQueryString();
 
         $menuTemplates = Schema::hasTable('templates')
             ? DB::table('templates')->where('is_active', 1)->orderBy('id')->get()
@@ -42,11 +55,13 @@ class RestaurantHubController extends Controller
             'subscription' => Subscription::where('restaurant_id', $restaurant->id)->orderByDesc('id')->with('plan')->first(),
             'sections' => $restaurant->sections,
             'categories' => Category::where('restaurant_id', $restaurant->id)->with('section')->withCount('menuItems')->orderBy('display_order')->get(),
-            'menuItems' => MenuItem::where('restaurant_id', $restaurant->id)->with('category')->orderBy('display_order')->get(),
+            'menuItems' => $menuItems,
+            'editMenuItem' => $editMenuItem,
             'customization' => $this->customization->forRestaurant($restaurant),
             'activeTab' => $tab,
             'headerMenuItems' => json_decode($restaurant->header_menu_items ?? '[]', true) ?: [],
             'menuTemplates' => $menuTemplates,
+            'showBackToDashboard' => true,
         ]);
     }
 

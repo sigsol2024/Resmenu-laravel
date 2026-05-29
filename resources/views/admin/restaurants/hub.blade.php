@@ -7,7 +7,6 @@
 
 @php
     $sectionsList = $sections;
-    $allMenuItems = $menuItems;
     $availableTemplates = $menuTemplates;
     $restaurantSlug = $restaurant->slug;
     $uploadUrl = rtrim(config('resmenu.upload_url'), '/');
@@ -23,15 +22,10 @@
     }
     $activeTab = $resolvedTab;
 
-    $editMenuItem = null;
     $editCategory = null;
     $editCategorySecondarySectionIds = [];
     $editAction = request()->query('action');
     $editId = (int) request()->query('id');
-
-    if ($editAction === 'edit_menu_item' && $editId > 0) {
-        $editMenuItem = $allMenuItems->firstWhere('id', $editId);
-    }
 
     if ($editAction === 'edit_category' && $editId > 0) {
         $editCategory = $categories->firstWhere('id', $editId);
@@ -66,12 +60,12 @@
     </div>
 @endif
 
-        <div class="card">
-            <div class="tabs">
-                <button class="tab {{ $activeTab === 'menu' ? 'active' : '' }}" onclick="showTab('menu')">Menu Items</button>
-                <button class="tab {{ $activeTab === 'categories' ? 'active' : '' }}" onclick="showTab('categories')">Categories</button>
-                <button class="tab {{ $activeTab === 'customization' ? 'active' : '' }}" onclick="showTab('customization')">Customization</button>
-                <button class="tab {{ $activeTab === 'header-footer' ? 'active' : '' }}" onclick="showTab('header-footer')">Header & Footer</button>
+        <div class="tabs-container">
+            <div class="tabs-nav">
+                <button type="button" class="tab-button {{ $activeTab === 'menu' ? 'active' : '' }}" onclick="showTab('menu', this)">Menu Items</button>
+                <button type="button" class="tab-button {{ $activeTab === 'categories' ? 'active' : '' }}" onclick="showTab('categories', this)">Categories</button>
+                <button type="button" class="tab-button {{ $activeTab === 'customization' ? 'active' : '' }}" onclick="showTab('customization', this)">Customization</button>
+                <button type="button" class="tab-button {{ $activeTab === 'header-footer' ? 'active' : '' }}" onclick="showTab('header-footer', this)">Header & Footer</button>
             </div>
 
             <!-- Menu Items Tab -->
@@ -103,7 +97,7 @@
                     </tr>
                 </thead>
                 <tbody id="menuItemsTableBody">
-                    @foreach ($allMenuItems as $item)
+                    @forelse ($menuItems as $item)
                         <tr data-category-id="{{ $item->category_id }}" data-item-name="{{ strtolower($item->name ?? '') }}">
                             <td>
                                 @if ($item->image)
@@ -128,9 +122,14 @@
                                 </div>
                             </td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr><td colspan="5" style="text-align:center;padding:40px;color:#6b7280">No menu items found.</td></tr>
+                    @endforelse
                 </tbody>
             </table>
+            @if($menuItems->hasPages())
+                <div class="table-pagination">{{ $menuItems->links() }}</div>
+            @endif
         </div>
 
             <!-- Categories Tab -->
@@ -703,20 +702,19 @@
     <script>
         const hubUrl = @json(route('admin.restaurants.hub', $restaurant));
 
-        function showTab(tabName) {
-            // Hide all tabs
+        function showTab(tabName, btn) {
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
-            document.querySelectorAll('.tab').forEach(btn => {
-                btn.classList.remove('active');
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
             });
 
-            // Show selected tab
             document.getElementById('tab-' + tabName).classList.add('active');
-            event.target.classList.add('active');
+            if (btn) {
+                btn.classList.add('active');
+            }
 
-            // Update URL without reload
             const url = new URL(window.location);
             url.searchParams.set('tab', tabName);
             window.history.pushState({}, '', url);

@@ -77,19 +77,27 @@
         @else
           <span class="restaurant-date">—</span>
         @endif
-        <div class="restaurant-actions actions" onclick="event.stopPropagation()">
-          <a href="{{ route('admin.restaurants.hub', $restaurant) }}" class="btn-manage">Manage</a>
-          <a href="{{ route('admin.restaurants.edit', $restaurant) }}" class="btn-edit">Edit</a>
-          <a href="{{ route('public.menu', $restaurant->slug) }}" target="_blank" rel="noopener" class="btn-view">View Menu</a>
+        <div class="restaurant-actions" onclick="event.stopPropagation()">
+          @include('partials.admin.actions-dropdown', [
+            'items' => [
+              ['label' => 'Manage', 'url' => route('admin.restaurants.hub', $restaurant)],
+              ['label' => 'Edit', 'url' => route('admin.restaurants.edit', $restaurant)],
+              ['label' => 'View Menu', 'url' => route('public.menu', $restaurant->slug), 'target' => '_blank', 'rel' => 'noopener'],
+            ],
+            'stopPropagation' => false,
+          ])
         </div>
         <span class="restaurant-toggle" aria-hidden="true">▼</span>
       </div>
-      <div class="restaurant-body">
-        <div class="actions">
-          <a href="{{ route('admin.restaurants.hub', $restaurant) }}" class="btn-manage">Manage</a>
-          <a href="{{ route('admin.restaurants.edit', $restaurant) }}" class="btn-edit">Edit</a>
-          <a href="{{ route('public.menu', $restaurant->slug) }}" target="_blank" rel="noopener" class="btn-view">View Menu</a>
-        </div>
+      <div class="restaurant-body" onclick="event.stopPropagation()">
+        @include('partials.admin.actions-dropdown', [
+          'items' => [
+            ['label' => 'Manage', 'url' => route('admin.restaurants.hub', $restaurant)],
+            ['label' => 'Edit', 'url' => route('admin.restaurants.edit', $restaurant)],
+            ['label' => 'View Menu', 'url' => route('public.menu', $restaurant->slug), 'target' => '_blank', 'rel' => 'noopener'],
+          ],
+          'stopPropagation' => false,
+        ])
       </div>
     </div>
   @empty
@@ -111,7 +119,7 @@
 <script>
 function toggleRestaurantMobile(event, el) {
   if (window.innerWidth > 768) return;
-  if (event.target.closest('a, button')) return;
+  if (event.target.closest('.actions-cell, .actions-btn, .actions-dropdown, a, button')) return;
   el.classList.toggle('open');
 }
 </script>

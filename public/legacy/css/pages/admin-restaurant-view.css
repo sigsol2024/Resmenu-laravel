@@ -39,6 +39,50 @@
     margin: 0;
 }
 
+/* Tabs — payment-settings pattern */
+.tabs-container {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+    overflow: hidden;
+}
+
+.tabs-nav {
+    display: flex;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f9fafb;
+}
+
+.tab-button {
+    flex: 1;
+    padding: 14px 20px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #6b7280;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.tab-button:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.tab-button.active {
+    color: #111827;
+    border-bottom-color: #111827;
+    background: #fff;
+}
+
 .tabs {
     display: flex;
     gap: 0;
@@ -48,6 +92,7 @@
 }
 
 .tab {
+    flex: 1;
     padding: 14px 20px;
     background: transparent;
     border: none;
@@ -78,6 +123,46 @@
 
 .tab-content.active {
     display: block;
+}
+
+.table-pagination {
+    padding: 16px 24px;
+    border-top: 1px solid #e5e7eb;
+    background: #fff;
+}
+
+.table-pagination nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.table-pagination a,
+.table-pagination span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    text-decoration: none;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+}
+
+.table-pagination a:hover {
+    background: #f9fafb;
+}
+
+.table-pagination span[aria-current="page"] {
+    background: #111827;
+    color: #fff;
+    border-color: #111827;
 }
 
 .search-filter-bar {
@@ -367,6 +452,16 @@
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
+    .tabs-nav {
+        flex-wrap: wrap;
+    }
+
+    .tab-button {
+        flex: 1 1 50%;
+        padding: 12px 10px;
+        font-size: 0.813rem;
+    }
+
     .tabs {
         flex-direction: column;
     }
