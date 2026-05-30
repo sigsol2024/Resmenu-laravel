@@ -31,30 +31,51 @@ class CategoryController extends Controller
             ->orderBy('display_order')
             ->get();
 
+        $editCategory = null;
+        $secondarySectionIds = [];
+        if ($request->filled('edit')) {
+            $editCategory = Category::query()
+                ->where('restaurant_id', $restaurantId)
+                ->where('id', $request->integer('edit'))
+                ->first();
+            if ($editCategory) {
+                $secondarySectionIds = $this->secondarySections->sectionIdsForCategory($editCategory->id);
+            }
+        }
+
+        $sections = Section::query()
+            ->where('restaurant_id', $restaurantId)
+            ->where('is_active', 1)
+            ->orderBy('display_order')
+            ->orderBy('name')
+            ->get();
+
         return view('manager.categories.index', [
             'categories' => $categories,
+            'sections' => $sections,
             'restaurant' => Restaurant::findOrFail($restaurantId),
+            'uploadUrl' => rtrim(config('resmenu.canonical_upload_url') ?: config('resmenu.upload_url'), '/'),
+            'editCategory' => $editCategory,
+            'secondarySectionIds' => $secondarySectionIds,
+            'openCreateModal' => $request->query('open') === 'create',
         ]);
     }
 
     public function create(Request $request)
     {
-        $restaurantId = (int) $request->attributes->get('restaurant_id');
-
-        return view('manager.categories.form', [
-            'category' => new Category(['is_active' => true, 'display_order' => 0]),
-            'sections' => Section::where('restaurant_id', $restaurantId)->orderBy('display_order')->get(),
-            'restaurant' => Restaurant::findOrFail($restaurantId),
-            'secondarySectionIds' => [],
-        ]);
+        return redirect()->route('manager.categories.index', ['open' => 'create']);
     }
 
     public function store(Request $request)
     {
         $restaurantId = (int) $request->attributes->get('restaurant_id');
+
         if (! $this->subscriptions->canAddCategory($restaurantId)) {
-            return back()->withErrors(['limit' => 'Category limit reached for your plan. Please upgrade.'])->withInput();
+            return back()
+                ->withErrors(['limit' => 'Category limit reached for your plan. Please upgrade.'])
+                ->withInput();
         }
+
         $data = $this->validated($request, $restaurantId);
 
         if ($request->hasFile('image')) {
@@ -66,11 +87,7 @@ class CategoryController extends Controller
         }
 
         $category = Category::create($data);
-        $this->secondarySections->sync(
-            $category->id,
-            (int) $data['section_id'],
-            array_map('intval', $request->input('secondary_section_ids', [])),
-        );
+        $this->syncSecondarySections($request, $category->id, (int) $data['section_id']);
 
         return redirect()->route('manager.categories.index')->with('success', 'Category created.');
     }
@@ -78,14 +95,8 @@ class CategoryController extends Controller
     public function edit(Request $request, Category $category)
     {
         $this->authorizeRestaurant($request, $category);
-        $restaurantId = (int) $request->attributes->get('restaurant_id');
 
-        return view('manager.categories.form', [
-            'category' => $category,
-            'sections' => Section::where('restaurant_id', $restaurantId)->orderBy('display_order')->get(),
-            'restaurant' => Restaurant::findOrFail($restaurantId),
-            'secondarySectionIds' => $this->secondarySections->sectionIdsForCategory($category->id),
-        ]);
+        return redirect()->route('manager.categories.index', ['edit' => $category->id]);
     }
 
     public function update(Request $request, Category $category)
@@ -104,11 +115,7 @@ class CategoryController extends Controller
         }
 
         $category->update($data);
-        $this->secondarySections->sync(
-            $category->id,
-            (int) $data['section_id'],
-            array_map('intval', $request->input('secondary_section_ids', [])),
-        );
+        $this->syncSecondarySections($request, $category->id, (int) $data['section_id']);
 
         return redirect()->route('manager.categories.index')->with('success', 'Category updated.');
     }
@@ -121,6 +128,15 @@ class CategoryController extends Controller
         $category->delete();
 
         return redirect()->route('manager.categories.index')->with('success', 'Category deleted.');
+    }
+
+    private function syncSecondarySections(Request $request, int $categoryId, int $primarySectionId): void
+    {
+        $this->secondarySections->sync(
+            $categoryId,
+            $primarySectionId,
+            array_map('intval', $request->input('secondary_section_ids', [])),
+        );
     }
 
     private function validated(Request $request, int $restaurantId, ?int $ignoreId = null): array

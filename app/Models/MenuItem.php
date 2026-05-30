@@ -20,6 +20,18 @@ class MenuItem extends Model
         'is_available' => 'boolean',
     ];
 
+    protected $fillable = [
+        'restaurant_id',
+        'category_id',
+        'name',
+        'slug',
+        'description',
+        'price',
+        'image',
+        'display_order',
+        'is_available',
+    ];
+
     public function restaurant(): BelongsTo
     {
         return $this->belongsTo(Restaurant::class);

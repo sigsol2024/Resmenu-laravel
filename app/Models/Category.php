@@ -18,6 +18,17 @@ class Category extends Model
 
     protected $casts = ['is_active' => 'boolean'];
 
+    protected $fillable = [
+        'restaurant_id',
+        'section_id',
+        'name',
+        'slug',
+        'description',
+        'image',
+        'display_order',
+        'is_active',
+    ];
+
     public function restaurant(): BelongsTo
     {
         return $this->belongsTo(Restaurant::class);

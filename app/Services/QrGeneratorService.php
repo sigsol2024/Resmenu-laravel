@@ -14,11 +14,13 @@ use Illuminate\Support\Facades\DB;
 
 class QrGeneratorService
 {
-    public function __construct(private QrCodeService $urls) {}
-
     public function menuUrl(Restaurant $restaurant, ?string $sectionSlug = null): string
     {
-        return $this->urls->menuUrl($restaurant, $sectionSlug);
+        $base = url('/qr/'.$restaurant->slug);
+        $sectionSlug = strtolower(trim((string) $sectionSlug));
+        $sectionSlug = preg_replace('/[^a-z0-9-]/', '', $sectionSlug) ?? '';
+
+        return $sectionSlug !== '' ? $base.'/'.$sectionSlug : $base;
     }
 
     /** @return array{body: string, content_type: string}|null */

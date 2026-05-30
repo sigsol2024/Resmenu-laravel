@@ -5,16 +5,16 @@ namespace App\Http\Controllers\Manager;
 use App\Http\Controllers\Controller;
 use App\Models\Restaurant;
 use App\Services\QrAnalyticsService;
-use App\Services\QrCodeService;
 use App\Services\RestaurantQrService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Throwable;
 
 class QrController extends Controller
 {
     public function __construct(
         private QrAnalyticsService $qr,
-        private QrCodeService $qrCode,
         private RestaurantQrService $restaurantQr,
     ) {}
 
@@ -33,24 +33,37 @@ class QrController extends Controller
         }
 
         $settings = $this->restaurantQr->settings($restaurantId);
-        $sections = DB::table('sections')
-            ->where('restaurant_id', $restaurantId)
-            ->where('is_active', 1)
-            ->orderBy('display_order')
-            ->get(['id', 'name', 'slug']);
+        $sections = collect();
+        if (Schema::hasTable('sections')) {
+            try {
+                $sections = DB::table('sections')
+                    ->where('restaurant_id', $restaurantId)
+                    ->where('is_active', 1)
+                    ->orderBy('display_order')
+                    ->get(['id', 'name', 'slug']);
+            } catch (Throwable $e) {
+                report($e);
+            }
+        }
 
-        $hasTemplate = $settings && ! empty($settings->qr_template_id);
+        $templates = $this->restaurantQr->activeTemplates();
+        $selectedTemplate = null;
+        if (! empty($settings->qr_template_id ?? null)) {
+            $selectedTemplate = collect($templates)->firstWhere('id', (int) $settings->qr_template_id);
+        }
+
+        $hasTemplate = ! empty($settings->qr_template_id ?? null);
         $imageUrl = $hasTemplate ? route('manager.qr.image', ['format' => 'png', 'size' => 512]) : null;
 
         return view('manager.qr.code', [
             'restaurant' => $restaurant,
             'menuUrl' => url('/restaurant/'.$restaurant->slug),
             'qrUrl' => url('/qr/'.$restaurant->slug),
-            'templates' => $this->restaurantQr->activeTemplates(),
+            'templates' => $templates,
+            'selectedTemplate' => $selectedTemplate,
             'qrSettings' => $settings,
             'sections' => $sections,
             'imageUrl' => $imageUrl,
-            'apiGenerate' => url('/api/qr/generate'),
         ]);
     }
 

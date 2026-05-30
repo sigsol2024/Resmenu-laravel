@@ -33,7 +33,21 @@ class MenuItemController extends Controller
         }
 
         $items = $query->paginate(30)->withQueryString();
-        $categories = Category::where('restaurant_id', $restaurantId)->orderBy('name')->get();
+
+        $editItem = null;
+        if ($request->filled('edit')) {
+            $editItem = MenuItem::query()
+                ->where('restaurant_id', $restaurantId)
+                ->where('id', $request->integer('edit'))
+                ->first();
+        }
+
+        $categories = Category::query()
+            ->where('restaurant_id', $restaurantId)
+            ->where('is_active', 1)
+            ->orderBy('display_order')
+            ->orderBy('name')
+            ->get();
 
         return view('manager.menu-items.index', [
             'items' => $items,
@@ -41,26 +55,26 @@ class MenuItemController extends Controller
             'selectedCategoryId' => $categoryId,
             'restaurant' => Restaurant::findOrFail($restaurantId),
             'uploadUrl' => rtrim(config('resmenu.canonical_upload_url') ?: config('resmenu.upload_url'), '/'),
+            'editItem' => $editItem,
+            'openCreateModal' => $request->query('open') === 'create',
         ]);
     }
 
     public function create(Request $request)
     {
-        $restaurantId = (int) $request->attributes->get('restaurant_id');
-
-        return view('manager.menu-items.form', [
-            'item' => new MenuItem(['is_available' => true, 'display_order' => 0, 'price' => 0]),
-            'categories' => Category::where('restaurant_id', $restaurantId)->orderBy('name')->get(),
-            'restaurant' => Restaurant::findOrFail($restaurantId),
-        ]);
+        return redirect()->route('manager.menu-items.index', $this->indexQueryParams($request, ['open' => 'create']));
     }
 
     public function store(Request $request)
     {
         $restaurantId = (int) $request->attributes->get('restaurant_id');
+
         if (! $this->subscriptions->canAddMenuItem($restaurantId)) {
-            return back()->withErrors(['limit' => 'Menu item limit reached for your plan. Please upgrade.'])->withInput();
+            return back()
+                ->withErrors(['limit' => 'Menu item limit reached for your plan. Please upgrade.'])
+                ->withInput();
         }
+
         $data = $this->validated($request, $restaurantId);
 
         if ($request->hasFile('image')) {
@@ -73,19 +87,15 @@ class MenuItemController extends Controller
 
         MenuItem::create($data);
 
-        return redirect()->route('manager.menu-items.index')->with('success', 'Menu item created.');
+        return redirect()->route('manager.menu-items.index', $this->indexQueryParams($request))
+            ->with('success', 'Menu item created.');
     }
 
     public function edit(Request $request, MenuItem $menuItem)
     {
         $this->authorizeRestaurant($request, $menuItem);
-        $restaurantId = (int) $request->attributes->get('restaurant_id');
 
-        return view('manager.menu-items.form', [
-            'item' => $menuItem,
-            'categories' => Category::where('restaurant_id', $restaurantId)->orderBy('name')->get(),
-            'restaurant' => Restaurant::findOrFail($restaurantId),
-        ]);
+        return redirect()->route('manager.menu-items.index', $this->indexQueryParams($request, ['edit' => $menuItem->id]));
     }
 
     public function update(Request $request, MenuItem $menuItem)
@@ -105,7 +115,8 @@ class MenuItemController extends Controller
 
         $menuItem->update($data);
 
-        return redirect()->route('manager.menu-items.index')->with('success', 'Menu item updated.');
+        return redirect()->route('manager.menu-items.index', $this->indexQueryParams($request))
+            ->with('success', 'Menu item updated.');
     }
 
     public function destroy(Request $request, MenuItem $menuItem)
@@ -114,7 +125,19 @@ class MenuItemController extends Controller
         $this->uploads->delete('menu-items', $menuItem->image);
         $menuItem->delete();
 
-        return redirect()->route('manager.menu-items.index')->with('success', 'Menu item deleted.');
+        return redirect()->route('manager.menu-items.index', $this->indexQueryParams($request))
+            ->with('success', 'Menu item deleted.');
+    }
+
+    /** @param  array<string, mixed>  $extra */
+    private function indexQueryParams(Request $request, array $extra = []): array
+    {
+        $categoryId = $request->input('_return_category_id', $request->query('category_id'));
+
+        return array_filter(array_merge(
+            ['category_id' => $categoryId ?: null],
+            $extra,
+        ), fn ($value) => $value !== null && $value !== '');
     }
 
     private function validated(Request $request, int $restaurantId, ?int $ignoreId = null): array
