@@ -119,9 +119,19 @@
     background: #f9fafb !important;
 }
 
+.qr-code-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
 @media (max-width: 968px) {
+    .qr-code-grid {
+        grid-template-columns: 1fr !important;
+    }
+
     div[style*="grid-template-columns: 1fr 1fr"] {
         grid-template-columns: 1fr !important;
     }
 }
-

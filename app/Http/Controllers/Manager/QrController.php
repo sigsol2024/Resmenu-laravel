@@ -26,7 +26,7 @@ class QrController extends Controller
         if ($request->isMethod('post')) {
             $data = $request->validate(['qr_template_id' => 'required|integer|exists:qr_templates,id']);
             if ($this->restaurantQr->selectTemplate($restaurantId, (int) $data['qr_template_id'])) {
-                return back()->with('success', 'QR template selected. You can download your QR code below.');
+                return back()->with('success', 'Template selected successfully! You can now download your QR code.');
             }
 
             return back()->withErrors(['qr_template_id' => 'Could not save template.']);
@@ -53,10 +53,12 @@ class QrController extends Controller
         }
 
         $hasTemplate = ! empty($settings->qr_template_id ?? null);
-        $imageUrl = $hasTemplate ? route('manager.qr.image', ['format' => 'png', 'size' => 512]) : null;
+        $imageUrl = $hasTemplate ? route('manager.qr.image', ['format' => 'png', 'size' => 250]) : null;
+        $analytics = $this->qr->summary($restaurantId);
 
         return view('manager.qr.code', [
             'restaurant' => $restaurant,
+            'restaurantId' => $restaurantId,
             'menuUrl' => url('/restaurant/'.$restaurant->slug),
             'qrUrl' => url('/qr/'.$restaurant->slug),
             'templates' => $templates,
@@ -64,6 +66,8 @@ class QrController extends Controller
             'qrSettings' => $settings,
             'sections' => $sections,
             'imageUrl' => $imageUrl,
+            'totalScans' => (int) ($analytics['total_scans'] ?? 0),
+            'templatePreviewUrl' => url('/api/qr-template-preview-image'),
         ]);
     }
 

@@ -8,6 +8,7 @@ use App\Http\Controllers\Public\HealthController;
 use App\Http\Controllers\Public\MenuController;
 use App\Http\Controllers\Public\OrderConfirmationController;
 use App\Http\Controllers\Public\QrRedirectController;
+use App\Http\Controllers\Public\QrTemplatePreviewController;
 use App\Http\Controllers\Public\ReservationController;
 use App\Http\Controllers\Public\TemplatePreviewController;
 use Illuminate\Support\Facades\Route;
@@ -46,6 +47,10 @@ Route::get('/restaurant/{slug}/{section}', [MenuController::class, 'show'])
 Route::get('/qr/{slug}', QrRedirectController::class)->name('public.qr');
 Route::get('/qr/{slug}/{section}', QrRedirectController::class)->name('public.qr.section')
     ->where('section', '[a-z0-9-]+');
+
+Route::get('/api/qr-template-preview-image', QrTemplatePreviewController::class)
+    ->middleware('throttle:120,1')
+    ->name('public.qr.template-preview');
 
 Route::get('/templates/{template}/preview', [TemplatePreviewController::class, 'show'])
     ->where('template', '[0-9]+')

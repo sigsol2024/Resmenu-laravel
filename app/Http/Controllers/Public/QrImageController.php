@@ -32,7 +32,12 @@ class QrImageController extends Controller
             abort(404, 'QR template not configured');
         }
 
-        $filename = 'qr-menu.'.($format === 'svg' ? 'svg' : 'png');
+        $filename = match ($format) {
+            'svg' => 'qr-menu.svg',
+            'jpeg', 'jpg' => 'qr-menu.jpg',
+            'pdf' => 'qr-code.pdf',
+            default => 'qr-menu.png',
+        };
 
         return response($result['body'], 200, [
             'Content-Type' => $result['content_type'],
