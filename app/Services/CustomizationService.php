@@ -79,7 +79,10 @@ class CustomizationService
     public function saveForRestaurant(int $restaurantId, array $data): void
     {
         $restaurant = Restaurant::findOrFail($restaurantId);
-        $templateId = (int) ($restaurant->template_id ?? 1);
+        $templateId = isset($data['template_id'])
+            ? (int) $data['template_id']
+            : (int) ($restaurant->template_id ?? 1);
+        unset($data['template_id']);
 
         $allowed = [
             'menu_title_color', 'menu_title_size', 'menu_title_font',

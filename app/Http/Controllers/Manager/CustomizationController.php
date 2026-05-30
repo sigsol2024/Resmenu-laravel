@@ -37,7 +37,12 @@ class CustomizationController extends Controller
 
         $available = $this->templates->availableForRestaurant($restaurantId);
         $templatesCanUse = array_values(array_filter($available, fn ($t) => ! empty($t['can_use'])));
-        $templatesUpgrade = array_values(array_filter($available, fn ($t) => empty($t['can_use'])));
+        $templatesUpgrade = array_values(array_filter(
+            $available,
+            fn ($t) => ! empty($t['can_see']) && empty($t['can_use']),
+        ));
+        $currentTemplateId = (int) ($restaurant->template_id ?? 1);
+        $currentTemplate = collect($available)->firstWhere('id', $currentTemplateId);
 
         return view('manager.customization.index', [
             'restaurant' => $restaurant,
@@ -45,6 +50,9 @@ class CustomizationController extends Controller
             'templates' => $available,
             'templatesCanUse' => $templatesCanUse,
             'templatesUpgrade' => $templatesUpgrade,
+            'currentTemplateId' => $currentTemplateId,
+            'currentTemplateName' => $currentTemplate['name'] ?? null,
+            'currentInCanUse' => collect($templatesCanUse)->contains('id', $currentTemplateId),
             'planHasOrdering' => $this->features->planHasFoodOrdering($restaurantId),
             'planHasReservations' => $this->features->planHasTableReservations($restaurantId),
             'enableFoodOrdering' => (int) ($restaurant->enable_food_ordering ?? 1),
@@ -97,6 +105,7 @@ class CustomizationController extends Controller
     private function saveCustomization(Request $request, Restaurant $restaurant)
     {
         $data = $request->validate([
+            'template_id' => 'nullable|integer|min:1|max:99',
             'menu_title_color' => 'nullable|string|max:20',
             'menu_title_size' => 'nullable|integer|min:12|max:72',
             'menu_title_font' => 'nullable|string|max:50',
@@ -123,11 +132,11 @@ class CustomizationController extends Controller
     private function flashMessage(?string $key): ?string
     {
         return match ($key) {
-            'template_updated' => 'Template updated successfully.',
-            'customization_updated' => 'Template colors and styles saved.',
+            'template_updated' => 'Template updated successfully',
+            'customization_updated' => 'Template colors and styles saved. Each template keeps its own settings when you switch.',
             'features_updated' => 'Ordering & reservation settings updated for your menu.',
-            'ordering_disabled' => 'Food ordering is turned off for your public menu.',
-            'reservations_disabled' => 'Table reservations are turned off for your public menu.',
+            'ordering_disabled' => 'Food ordering is turned off for your public menu. Turn it back on under Ordering & reservations below.',
+            'reservations_disabled' => 'Table reservations are turned off for your public menu. Turn them back on under Ordering & reservations below.',
             default => null,
         };
     }

@@ -42,7 +42,7 @@ Route::middleware(['auth:manager', 'manager.tenant', 'session.idle:manager'])
         Route::patch('/reservations/{reservation}/status', [ReservationController::class, 'updateStatus'])->name('reservations.status');
         Route::get('/table-inventory', [\App\Http\Controllers\Manager\TableInventoryController::class, 'index'])->name('table-inventory.index');
 
-        Route::get('/billing', [BillingController::class, 'index'])->name('billing.index');
+        Route::match(['get', 'post'], '/billing', [BillingController::class, 'index'])->name('billing.index');
         Route::match(['get', 'post'], '/billing/checkout', [BillingController::class, 'checkout'])->name('billing.checkout');
         Route::post('/billing/process-payment', [BillingController::class, 'processPayment'])->name('billing.process-payment');
         Route::get('/billing/payment-callback', [BillingController::class, 'paymentCallback'])->name('billing.payment-callback');

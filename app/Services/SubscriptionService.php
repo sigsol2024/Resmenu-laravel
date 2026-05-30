@@ -278,4 +278,259 @@ class SubscriptionService
 
         return $usage['unlimited'] || $usage['used'] < (int) $usage['limit'];
     }
+
+    /** @return array<string, array<string, mixed>> */
+    public function getUsageSummary(int $restaurantId): array
+    {
+        return [
+            'categories' => $this->getRemainingUsage($restaurantId, 'categories'),
+            'menu_items' => $this->getRemainingUsage($restaurantId, 'menu_items'),
+            'qr_styles' => $this->getRemainingUsage($restaurantId, 'qr_styles'),
+            'templates' => $this->getRemainingUsage($restaurantId, 'templates'),
+        ];
+    }
+
+    public function formatSubscriptionPrice(float|string $amount, string $currency = 'NGN'): string
+    {
+        $symbols = ['NGN' => '₦', 'USD' => '$', 'GBP' => '£', 'EUR' => '€'];
+        $symbol = $symbols[$currency] ?? $currency.' ';
+
+        return $symbol.number_format((float) $amount, 2);
+    }
+
+    /** @param  array<string, mixed>|null  $subscription */
+    public function getTrialDaysRemaining(?array $subscription): int
+    {
+        if (! $subscription || ($subscription['status'] ?? '') !== 'trial' || empty($subscription['trial_ends_at'])) {
+            return 0;
+        }
+
+        $trialEnd = Carbon::parse($subscription['trial_ends_at']);
+        if ($trialEnd->isPast()) {
+            return 0;
+        }
+
+        return (int) ceil(now()->diffInSeconds($trialEnd) / 86400);
+    }
+
+    /** @param  array<string, mixed>|null  $subscription */
+    public function getSubscriptionStatusInfo(?array $subscription): array
+    {
+        if (! $subscription) {
+            return [
+                'label' => 'No Subscription',
+                'class' => 'badge-secondary',
+                'description' => 'No active subscription',
+                'effective_status' => 'none',
+            ];
+        }
+
+        $status = $this->resolveEffectiveSubscriptionStatus($subscription);
+
+        return match ($status) {
+            'trial' => [
+                'label' => 'Trial',
+                'class' => 'badge-info',
+                'description' => $this->getTrialDaysRemaining($subscription).' days remaining',
+                'effective_status' => 'trial',
+            ],
+            'active' => [
+                'label' => 'Active',
+                'class' => 'badge-success',
+                'description' => 'Renews on '.(
+                    ! empty($subscription['current_period_end'])
+                        ? Carbon::parse($subscription['current_period_end'])->format('M j, Y')
+                        : 'N/A'
+                ),
+                'effective_status' => 'active',
+            ],
+            'expired' => [
+                'label' => 'Expired',
+                'class' => 'badge-danger',
+                'description' => 'Please renew to continue',
+                'effective_status' => 'expired',
+            ],
+            'cancelled' => [
+                'label' => 'Cancelled',
+                'class' => 'badge-warning',
+                'description' => 'Subscription cancelled',
+                'effective_status' => 'cancelled',
+            ],
+            default => [
+                'label' => ucfirst((string) $status),
+                'class' => 'badge-secondary',
+                'description' => '',
+                'effective_status' => $status,
+            ],
+        };
+    }
+
+    /** @param  array<string, mixed>  $subscription */
+    private function resolveEffectiveSubscriptionStatus(array $subscription): string
+    {
+        $status = (string) ($subscription['status'] ?? '');
+
+        if ($status === 'trial') {
+            if (! empty($subscription['trial_ends_at']) && Carbon::parse($subscription['trial_ends_at'])->isFuture()) {
+                return 'trial';
+            }
+
+            return 'expired';
+        }
+
+        if ($status === 'active') {
+            if (! empty($subscription['current_period_end']) && Carbon::parse($subscription['current_period_end'])->isPast()) {
+                return 'expired';
+            }
+
+            return 'active';
+        }
+
+        return $status;
+    }
+
+    /** @param  array<string, mixed>  $plan */
+    public function getSubscriptionPlanRank(array $plan): int
+    {
+        return (int) ($plan['display_order'] ?? 0);
+    }
+
+    /**
+     * @param  array<string, mixed>|null  $currentSubscription
+     * @param  array<string, mixed>  $targetPlan
+     * @return array{mode:string, reason:string, type:string}
+     */
+    public function getSubscriptionChangeDecision(?array $currentSubscription, array $targetPlan, string $targetBillingCycle): array
+    {
+        $targetCycle = $targetBillingCycle === 'annual' ? 'annual' : 'monthly';
+
+        if (! $currentSubscription) {
+            return ['mode' => 'immediate', 'reason' => 'new_subscription', 'type' => 'new'];
+        }
+
+        $currentPlanId = (int) ($currentSubscription['plan_id'] ?? 0);
+        $targetPlanId = (int) ($targetPlan['id'] ?? 0);
+        $currentCycle = ($currentSubscription['billing_cycle'] ?? 'monthly') === 'annual' ? 'annual' : 'monthly';
+        $status = (string) ($currentSubscription['status'] ?? '');
+
+        if ($currentPlanId === $targetPlanId && $currentCycle === $targetCycle) {
+            return ['mode' => 'none', 'reason' => 'already_on_plan', 'type' => 'same'];
+        }
+
+        if (in_array($status, ['trial', 'pending', 'expired', 'cancelled'], true)) {
+            return ['mode' => 'immediate', 'reason' => 'non_active_or_trial', 'type' => 'change'];
+        }
+
+        $currentRank = $this->getSubscriptionPlanRank($currentSubscription);
+        $targetRank = $this->getSubscriptionPlanRank($targetPlan);
+
+        if ($targetRank > $currentRank) {
+            return ['mode' => 'immediate', 'reason' => 'upgrade', 'type' => 'upgrade'];
+        }
+
+        if ($targetRank < $currentRank) {
+            return ['mode' => 'scheduled', 'reason' => 'downgrade', 'type' => 'downgrade'];
+        }
+
+        if ($currentCycle !== $targetCycle) {
+            return ['mode' => 'scheduled', 'reason' => 'billing_cycle_change', 'type' => 'cycle_change'];
+        }
+
+        return ['mode' => 'none', 'reason' => 'already_on_plan', 'type' => 'same'];
+    }
+
+    /** @return array<string, mixed>|null */
+    public function getScheduledSubscriptionChange(int $subscriptionId): ?array
+    {
+        $row = DB::table('subscription_change_requests as r')
+            ->join('subscription_plans as p', 'p.id', '=', 'r.to_plan_id')
+            ->where('r.subscription_id', $subscriptionId)
+            ->where('r.status', 'pending')
+            ->orderByDesc('r.id')
+            ->select(['r.*', 'p.name as to_plan_name', 'p.slug as to_plan_slug'])
+            ->first();
+
+        return $row ? (array) $row : null;
+    }
+
+    public function createOrUpdateScheduledSubscriptionChange(
+        int $restaurantId,
+        int $subscriptionId,
+        int $toPlanId,
+        string $toBillingCycle,
+        string $effectiveAt,
+        string $changeType = 'cycle_change',
+        string $requestedBy = 'manager',
+    ): bool {
+        $subscription = DB::table('subscriptions')->where('id', $subscriptionId)->first();
+        if (! $subscription) {
+            return false;
+        }
+
+        $cycle = $toBillingCycle === 'annual' ? 'annual' : 'monthly';
+        $pending = DB::table('subscription_change_requests')
+            ->where('subscription_id', $subscriptionId)
+            ->where('status', 'pending')
+            ->orderByDesc('id')
+            ->first();
+
+        if ($pending) {
+            return DB::table('subscription_change_requests')
+                ->where('id', $pending->id)
+                ->update([
+                    'to_plan_id' => $toPlanId,
+                    'to_billing_cycle' => $cycle,
+                    'change_type' => $changeType,
+                    'effective_at' => $effectiveAt,
+                    'requested_by' => $requestedBy,
+                    'updated_at' => now(),
+                ]) > 0;
+        }
+
+        return DB::table('subscription_change_requests')->insert([
+            'restaurant_id' => $restaurantId,
+            'subscription_id' => $subscriptionId,
+            'from_plan_id' => $subscription->plan_id,
+            'to_plan_id' => $toPlanId,
+            'from_billing_cycle' => $subscription->billing_cycle,
+            'to_billing_cycle' => $cycle,
+            'change_type' => $changeType,
+            'effective_at' => $effectiveAt,
+            'status' => 'pending',
+            'requested_by' => $requestedBy,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
+
+    public function cancelScheduledSubscriptionChange(int $subscriptionId): bool
+    {
+        return DB::table('subscription_change_requests')
+            ->where('subscription_id', $subscriptionId)
+            ->where('status', 'pending')
+            ->update(['status' => 'cancelled', 'updated_at' => now()]) > 0;
+    }
+
+    /** @return list<array<string, mixed>> */
+    public function getPaymentHistory(int $restaurantId, int $limit = 10): array
+    {
+        return DB::table('payments as p')
+            ->leftJoin('subscriptions as s', 's.id', '=', 'p.subscription_id')
+            ->leftJoin('subscription_plans as sp', 'sp.id', '=', 's.plan_id')
+            ->where('p.restaurant_id', $restaurantId)
+            ->orderByDesc('p.created_at')
+            ->limit($limit)
+            ->select(['p.*', 'sp.name as plan_name'])
+            ->get()
+            ->map(fn ($row) => (array) $row)
+            ->all();
+    }
+
+    /** @param  array<string, mixed>  $plan */
+    public function getPlanById(int $planId): ?array
+    {
+        $plan = SubscriptionPlan::query()->find($planId);
+
+        return $plan ? $plan->toArray() : null;
+    }
 }

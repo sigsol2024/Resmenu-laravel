@@ -22,16 +22,122 @@ class BillingController extends Controller
         $restaurantId = (int) $request->attributes->get('restaurant_id');
         $restaurant = Restaurant::findOrFail($restaurantId);
 
+        if ($request->isMethod('post')) {
+            return $this->handleBillingPost($request, $restaurantId);
+        }
+
+        if ($request->query('payment_success') === '1') {
+            $reference = $request->query('reference', '');
+            if ($reference !== '') {
+                $payment = DB::table('payments')->where('transaction_reference', $reference)->first();
+                if ($payment && $payment->status === 'success') {
+                    session()->flash('success', 'Payment successful! Your subscription is now active.');
+                } else {
+                    session()->flash('info', 'Payment is being processed. Please refresh in a moment.');
+                }
+            } else {
+                session()->flash('success', 'Payment successful! Your subscription is now active.');
+            }
+
+            return redirect()->route('manager.billing.index');
+        }
+
+        if ($request->query('payment_error') === '1') {
+            session()->flash('error', $request->query('message', 'Payment processing error occurred.'));
+
+            return redirect()->route('manager.billing.index');
+        }
+
+        if ($request->query('welcome') === '1') {
+            session()->flash('success', 'Welcome! Your 7-day Professional trial is active. Choose a paid plan anytime from this page.');
+        }
+
+        if ($request->query('upgrade_required') === '1') {
+            session()->flash('error', 'Your trial or subscription is no longer active. Please choose a plan to continue using manager features.');
+        }
+
+        $subscription = $this->subscriptions->getRestaurantSubscription($restaurantId);
+        $subscriptionId = (int) ($subscription['id'] ?? 0);
+
         return view('manager.billing.index', [
             'restaurant' => $restaurant,
-            'subscription' => Subscription::query()
-                ->where('restaurant_id', $restaurantId)
-                ->orderByDesc('created_at')
-                ->with('plan')
-                ->first(),
-            'access' => $this->subscriptions->checkAccess($restaurantId),
+            'subscription' => $subscription,
+            'statusInfo' => $this->subscriptions->getSubscriptionStatusInfo($subscription),
             'plans' => $this->subscriptions->getPlans(true),
+            'usage' => $this->subscriptions->getUsageSummary($restaurantId),
+            'paymentHistory' => $this->subscriptions->getPaymentHistory($restaurantId, 3),
+            'scheduledChange' => $subscriptionId > 0
+                ? $this->subscriptions->getScheduledSubscriptionChange($subscriptionId)
+                : null,
+            'formatPrice' => fn ($amount, $currency = 'NGN') => $this->subscriptions->formatSubscriptionPrice($amount, $currency),
+            'trialDaysLeft' => $this->subscriptions->getTrialDaysRemaining($subscription),
         ]);
+    }
+
+    private function handleBillingPost(Request $request, int $restaurantId)
+    {
+        $action = $request->input('action', '');
+        $subscription = $this->subscriptions->getRestaurantSubscription($restaurantId);
+
+        if (! $subscription) {
+            return redirect()->route('manager.billing.index')->with('error', 'No active subscription found to update.');
+        }
+
+        if ($action === 'schedule_change') {
+            $targetPlanId = (int) $request->input('target_plan_id', 0);
+            $targetCycle = strtolower(trim((string) $request->input('target_cycle', 'monthly'))) === 'annual'
+                ? 'annual'
+                : 'monthly';
+            $targetPlan = $this->subscriptions->getPlanById($targetPlanId);
+
+            if (! $targetPlan) {
+                return redirect()->route('manager.billing.index')->with('error', 'Selected plan could not be found.');
+            }
+
+            $decision = $this->subscriptions->getSubscriptionChangeDecision($subscription, $targetPlan, $targetCycle);
+
+            if ($decision['mode'] === 'immediate') {
+                return redirect()->route('manager.billing.checkout', [
+                    'plan' => $targetPlan['slug'],
+                    'cycle' => $targetCycle,
+                ]);
+            }
+
+            if ($decision['mode'] === 'none') {
+                return redirect()->route('manager.billing.index')->with('info', 'You are already on that plan and billing cycle.');
+            }
+
+            $effectiveAt = $subscription['current_period_end']
+                ?? $subscription['trial_ends_at']
+                ?? now()->toDateTimeString();
+
+            $scheduled = $this->subscriptions->createOrUpdateScheduledSubscriptionChange(
+                $restaurantId,
+                (int) $subscription['id'],
+                (int) $targetPlan['id'],
+                $targetCycle,
+                $effectiveAt,
+                $decision['type'],
+            );
+
+            return redirect()->route('manager.billing.index')->with(
+                $scheduled ? 'success' : 'error',
+                $scheduled
+                    ? 'Plan change scheduled successfully. It will take effect at the end of your current billing period.'
+                    : 'Unable to schedule the change. Please try again.',
+            );
+        }
+
+        if ($action === 'cancel_scheduled_change') {
+            $cancelled = $this->subscriptions->cancelScheduledSubscriptionChange((int) $subscription['id']);
+
+            return redirect()->route('manager.billing.index')->with(
+                $cancelled ? 'success' : 'error',
+                $cancelled ? 'Scheduled change cancelled.' : 'Unable to cancel scheduled change.',
+            );
+        }
+
+        return redirect()->route('manager.billing.index');
     }
 
     public function checkout(Request $request)
@@ -106,6 +212,7 @@ class BillingController extends Controller
                 ->orderByDesc('created_at')
                 ->limit(100)
                 ->get(),
+            'formatPrice' => fn ($amount, $currency = 'NGN') => $this->subscriptions->formatSubscriptionPrice($amount, $currency),
         ]);
     }
 
@@ -118,11 +225,27 @@ class BillingController extends Controller
         $hasAccess = $features->planHasFoodOrdering($restaurantId)
             || $features->planHasTableReservations($restaurantId);
 
+        $upgradePlans = [];
+        if (! $hasAccess) {
+            foreach ($this->subscriptions->getPlans(true) as $plan) {
+                $slug = strtolower((string) ($plan['slug'] ?? ''));
+                if (in_array($slug, ['professional', 'enterprise'], true)) {
+                    $upgradePlans[] = $plan;
+                }
+            }
+        }
+
+        $allSettings = $payments->allForRestaurant($restaurantId);
+
         return view('manager.billing.payment-settings', [
             'restaurant' => Restaurant::findOrFail($restaurantId),
-            'settings' => $payments->allForRestaurant($restaurantId),
+            'paystackSettings' => $allSettings['paystack'] ?? null,
+            'flutterwaveSettings' => $allSettings['flutterwave'] ?? null,
+            'bankTransferSettings' => $allSettings['bank_transfer'] ?? null,
             'showUpgradeOverlay' => ! $hasAccess,
-            'webhookBase' => url('/api/webhooks/restaurant'),
+            'upgradePlans' => $upgradePlans,
+            'paystackWebhookUrl' => url('/api/webhooks/restaurant/paystack'),
+            'flutterwaveWebhookUrl' => url('/api/webhooks/restaurant/flutterwave'),
         ]);
     }
 
@@ -162,6 +285,12 @@ class BillingController extends Controller
 
         $payments->update($restaurantId, $gateway, $data);
 
-        return back()->with('success', ucfirst(str_replace('_', ' ', $gateway)).' settings saved.');
+        $label = match ($gateway) {
+            'paystack' => 'Paystack',
+            'flutterwave' => 'Flutterwave',
+            default => 'Bank transfer',
+        };
+
+        return back()->with('success', "{$label} settings updated successfully!");
     }
 }
