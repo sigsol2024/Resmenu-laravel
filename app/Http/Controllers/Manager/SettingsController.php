@@ -18,10 +18,17 @@ class SettingsController extends Controller
     {
         $manager = Auth::guard('manager')->user();
         $restaurant = Restaurant::findOrFail((int) $request->attributes->get('restaurant_id'));
+        $activeTab = $request->query('tab', old('tab', session('tab', 'account')));
+        if (! in_array($activeTab, ['account', 'restaurant', 'password'], true)) {
+            $activeTab = 'account';
+        }
 
         return view('manager.settings', [
             'manager' => $manager,
             'restaurant' => $restaurant,
+            'activeTab' => $activeTab,
+            'logoUrl' => $this->uploads->publicUrl('logos', $restaurant->logo),
+            'heroUrl' => $this->uploads->publicUrl('heroes', $restaurant->hero_image),
         ]);
     }
 
@@ -30,33 +37,53 @@ class SettingsController extends Controller
         $manager = Auth::guard('manager')->user();
         $restaurant = Restaurant::findOrFail((int) $request->attributes->get('restaurant_id'));
         $action = $request->input('action', 'update_profile');
+        $tab = $request->input('tab', match ($action) {
+            'update_restaurant' => 'restaurant',
+            'update_password' => 'password',
+            default => 'account',
+        });
 
         if ($action === 'update_restaurant') {
-            return $this->updateRestaurant($request, $restaurant);
+            return $this->updateRestaurant($request, $restaurant, $tab);
         }
 
         if ($action === 'update_password') {
-            return $this->updatePassword($request, $manager);
+            return $this->updatePassword($request, $manager, $tab);
         }
 
-        return $this->updateProfile($request, $manager, $restaurant);
+        return $this->updateProfile($request, $manager, $restaurant, $tab);
     }
 
-    private function updateProfile(Request $request, Manager $manager, Restaurant $restaurant)
+    private function redirectToTab(string $tab, string $message): \Illuminate\Http\RedirectResponse
+    {
+        return redirect()->route('manager.settings.edit', ['tab' => $tab])->with('success', $message);
+    }
+
+    private function updateProfile(Request $request, Manager $manager, Restaurant $restaurant, string $tab)
     {
         $data = $request->validate([
             'username' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'max:255'],
         ]);
 
-        $exists = Manager::query()
+        $usernameTaken = Manager::query()
             ->where('id', '!=', $manager->id)
-            ->where(function ($q) use ($data) {
-                $q->where('username', $data['username'])->orWhere('email', $data['email']);
-            })->exists();
+            ->where('username', $data['username'])
+            ->exists();
+        if ($usernameTaken) {
+            return redirect()->route('manager.settings.edit', ['tab' => $tab])
+                ->withErrors(['username' => 'Username is already taken by another manager.'])
+                ->withInput();
+        }
 
-        if ($exists) {
-            return back()->withErrors(['email' => 'Username or email already in use.'])->withInput();
+        $emailTaken = Manager::query()
+            ->where('id', '!=', $manager->id)
+            ->where('email', $data['email'])
+            ->exists();
+        if ($emailTaken) {
+            return redirect()->route('manager.settings.edit', ['tab' => $tab])
+                ->withErrors(['email' => 'Email is already taken by another manager.'])
+                ->withInput();
         }
 
         $oldEmail = $manager->email;
@@ -64,26 +91,35 @@ class SettingsController extends Controller
         $manager->email = $data['email'];
         $manager->save();
 
-        if ($restaurant->email === $oldEmail || $restaurant->manager_email === $oldEmail) {
-            $restaurant->update(['email' => $data['email'], 'manager_email' => $data['email']]);
+        if ($restaurant->manager_email === $oldEmail) {
+            $restaurant->update(['manager_email' => $data['email']]);
         }
 
-        return back()->with('success', 'Account updated.');
+        return $this->redirectToTab($tab, 'Account updated successfully');
     }
 
-    private function updatePassword(Request $request, Manager $manager)
+    private function updatePassword(Request $request, Manager $manager, string $tab)
     {
-        $data = $request->validate([
-            'password' => ['required', 'string', 'min:'.config('resmenu.password_min_length', 8), 'confirmed'],
+        $min = (int) config('resmenu.password_min_length', 8);
+
+        $request->validate([
+            'current_password' => ['required', 'string'],
+            'new_password' => ['required', 'string', "min:{$min}"],
+            'confirm_password' => ['required', 'string', "same:new_password"],
         ]);
 
-        $manager->password_hash = Hash::make($data['password']);
+        if (! Hash::check($request->input('current_password'), $manager->password_hash)) {
+            return redirect()->route('manager.settings.edit', ['tab' => $tab])
+                ->withErrors(['current_password' => 'Current password is incorrect']);
+        }
+
+        $manager->password_hash = Hash::make($request->input('new_password'));
         $manager->save();
 
-        return back()->with('success', 'Password updated.');
+        return $this->redirectToTab($tab, 'Password updated successfully');
     }
 
-    private function updateRestaurant(Request $request, Restaurant $restaurant)
+    private function updateRestaurant(Request $request, Restaurant $restaurant, string $tab)
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
@@ -105,6 +141,10 @@ class SettingsController extends Controller
             if ($result['success'] ?? false) {
                 $this->uploads->delete('logos', $restaurant->logo);
                 $payload['logo'] = $result['filename'];
+            } else {
+                return redirect()->route('manager.settings.edit', ['tab' => $tab])
+                    ->withErrors(['logo' => $result['message'] ?? 'Logo upload failed.'])
+                    ->withInput();
             }
         }
 
@@ -113,11 +153,15 @@ class SettingsController extends Controller
             if ($result['success'] ?? false) {
                 $this->uploads->delete('heroes', $restaurant->hero_image);
                 $payload['hero_image'] = $result['filename'];
+            } else {
+                return redirect()->route('manager.settings.edit', ['tab' => $tab])
+                    ->withErrors(['hero_image' => $result['message'] ?? 'Cover image upload failed.'])
+                    ->withInput();
             }
         }
 
         $restaurant->update($payload);
 
-        return back()->with('success', 'Restaurant profile updated.');
+        return $this->redirectToTab($tab, 'Restaurant details updated successfully');
     }
 }

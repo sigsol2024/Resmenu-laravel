@@ -18,6 +18,7 @@ class Restaurant extends Model
     protected $fillable = [
         'name', 'slug', 'email', 'phone', 'address', 'description', 'logo', 'hero_image',
         'template_id', 'is_active', 'enable_food_ordering', 'enable_table_reservations', 'header_menu_items',
+        'manager_email', 'whatsapp_link', 'instagram_url', 'facebook_url', 'twitter_url', 'footer_content',
     ];
 
     protected $casts = [
