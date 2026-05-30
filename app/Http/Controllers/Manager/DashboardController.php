@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\Restaurant;
+use App\Services\ManagerFeatureAccess;
 use App\Services\OrderService;
 use App\Services\QrAnalyticsService;
 use App\Services\SubscriptionService;
@@ -20,6 +21,7 @@ class DashboardController extends Controller
         SubscriptionService $subscriptions,
         OrderService $orders,
         QrAnalyticsService $qr,
+        ManagerFeatureAccess $features,
     ) {
         $restaurantId = (int) $request->attributes->get('restaurant_id');
         $restaurant = Restaurant::findOrFail($restaurantId);
@@ -49,14 +51,9 @@ class DashboardController extends Controller
             'access' => $access,
             'subscription' => $subscription,
             'trialDaysRemaining' => $trialDaysRemaining,
-            'showOrdersQuickAction' => (int) ($restaurant->enable_food_ordering ?? 1) === 1,
+            'showOrdersQuickAction' => $features->foodOrderingUsable($restaurantId),
             'stats' => $stats,
             'qrAnalytics' => $qrStats,
-            'recentOrders' => $orders->recent($restaurantId, 5),
-            'usageCategories' => $subscriptions->getRemainingUsage($restaurantId, 'categories'),
-            'usageMenuItems' => $subscriptions->getRemainingUsage($restaurantId, 'menu_items'),
-            'usageTemplates' => $subscriptions->getRemainingUsage($restaurantId, 'templates'),
-            'usageQrStyles' => $subscriptions->getRemainingUsage($restaurantId, 'qr_styles'),
         ]);
     }
 }

@@ -27,7 +27,8 @@
         },
         "files": [
             "app/Support/legacy_menu_helpers.php",
-            "app/Support/legacy_resmenu_icons.php"
+            "app/Support/legacy_resmenu_icons.php",
+            "app/Support/legacy_assets.php"
         ]
     },
     "autoload-dev": {

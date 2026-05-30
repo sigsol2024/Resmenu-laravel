@@ -1,0 +1,13 @@
+﻿
+.inventory-calendar .inv-day { padding:10px;border-radius:8px;min-height:60px;cursor:pointer;font-size:0.8rem;font-weight:500;border:1px solid #e5e7eb;transition:all 0.2s; }
+.inventory-calendar .inv-day:hover { border-color:var(--primary); }
+.inventory-calendar .inv-day.other-month { opacity:0.4; }
+.inventory-calendar .inv-day.past { opacity:0.6;cursor:default; }
+.inventory-calendar .inv-day .inv-date { font-weight:700;margin-bottom:4px; }
+.inventory-calendar .inv-day .inv-summary { font-size:0.7rem;color:#6b7280; }
+.inventory-calendar .inv-day.avail-dominant { background:#d1fae5; }
+.inventory-calendar .inv-day.booked-dominant { background:#fee2e2; }
+.inventory-calendar .inv-day.pending-dominant { background:#fef3c7; }
+.inventory-calendar .inv-day.cancelled-dominant { background:#f3f4f6; }
+.inventory-calendar .inv-header { font-size:0.7rem;font-weight:600;color:#6b7280;text-align:center;padding:4px; }
+

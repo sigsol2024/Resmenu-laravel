@@ -69,6 +69,7 @@ class QrAnalyticsService
                 'total_scans' => 0,
                 'scans_by_device' => [],
                 'scans_by_browser' => [],
+                'scans_by_location' => [],
                 'recent_scans' => [],
             ];
         }
@@ -89,6 +90,16 @@ class QrAnalyticsService
             ->pluck('cnt', 'browser')
             ->all();
 
+        $byLocation = DB::table('qr_code_scans')
+            ->where('restaurant_id', $restaurantId)
+            ->whereNotNull('country')
+            ->select('country', 'city', DB::raw('COUNT(*) as cnt'))
+            ->groupBy('country', 'city')
+            ->orderByDesc('cnt')
+            ->limit(10)
+            ->get()
+            ->all();
+
         $recent = DB::table('qr_code_scans')
             ->where('restaurant_id', $restaurantId)
             ->orderByDesc('scanned_at')
@@ -100,6 +111,7 @@ class QrAnalyticsService
             'total_scans' => $total,
             'scans_by_device' => $byDevice,
             'scans_by_browser' => $byBrowser,
+            'scans_by_location' => $byLocation,
             'recent_scans' => $recent,
         ];
     }

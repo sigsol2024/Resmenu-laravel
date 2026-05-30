@@ -1,0 +1,46 @@
+﻿
+.restaurant-reservations .actions-cell { position: relative; }
+.restaurant-reservations .actions-dropdown { z-index: 50; right: 100%; left: auto; top: 0; margin-right: 6px; min-width: 160px; }
+.reservations-list-mobile { display:none; }
+.res-card { background:#fff; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+.res-card + .res-card { margin-top:12px; }
+.res-card-summary { list-style:none; cursor:pointer; padding:14px 14px; display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.res-card-summary::-webkit-details-marker { display:none; }
+.res-card-left { min-width:0; display:flex; flex-direction:column; gap:6px; }
+.res-card-top { display:flex; gap:10px; align-items:baseline; min-width:0; }
+.res-card-id { font-weight:700; color:#111827; font-size:0.95rem; flex-shrink:0; }
+.res-card-date { color:#6b7280; font-size:0.8rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.res-card-bottom { display:flex; gap:8px; align-items:center; color:#374151; font-size:0.85rem; min-width:0; }
+.res-card-guest { font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:180px; }
+.res-card-dot { color:#9ca3af; }
+.res-card-right { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.res-badge { padding:4px 10px; border-radius:999px; font-size:0.75rem; font-weight:700; }
+.res-card-chevron { color:#6b7280; font-size:0.9rem; transition:transform .15s ease; }
+.res-card[open] .res-card-chevron { transform:rotate(180deg); }
+.res-card-body { border-top:1px solid #f3f4f6; padding:12px 14px 14px; }
+.res-card-metrics { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+.res-metric { background:#f9fafb; border:1px solid #e5e7eb; border-radius:10px; padding:10px 10px; }
+.res-metric-label { display:block; font-size:0.7rem; text-transform:uppercase; color:#6b7280; font-weight:700; letter-spacing:.04em; margin-bottom:4px; }
+.res-metric-value { font-size:0.9rem; color:#111827; font-weight:700; }
+.res-card-actions { display:flex; gap:8px; flex-wrap:wrap; }
+.res-card-actions .btn { padding:8px 12px; border-radius:10px; font-size:0.85rem; }
+.res-card-actions form { margin:0; }
+@media (max-width: 768px) {
+    .reservations-table-desktop { display:none; }
+    .reservations-list-mobile { display:block; }
+    .restaurant-reservations .actions-dropdown { right: 0; left: auto; top: 100%; margin-right: 0; margin-top: 6px; } /* safety if table shows */
+    .table-wrapper { overflow: visible; } /* prevent horizontal scroll wrappers */
+}
+.detail-modal { display: flex; flex-direction: column; gap: 20px; }
+.detail-modal-section { padding: 16px; background: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb; }
+.detail-modal-heading { margin: 0 0 12px 0; font-size: 0.8rem; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.05em; }
+.detail-modal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px 20px; }
+.detail-modal-item { display: flex; flex-direction: column; gap: 4px; }
+.detail-label { font-size: 0.7rem; color: #6b7280; font-weight: 500; text-transform: uppercase; }
+.detail-value { font-size: 0.9rem; color: #111827; font-weight: 500; }
+.detail-badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; width: fit-content; }
+.detail-link { color: var(--primary); text-decoration: none; }
+.detail-link:hover { text-decoration: underline; }
+.detail-modal-footer { background: #f3f4f6; }
+.detail-total { font-size: 1.1rem; font-weight: 700; }
+

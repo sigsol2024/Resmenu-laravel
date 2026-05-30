@@ -43,4 +43,5 @@ return array(
     '320163ac6b93aebe3dc25b60a0533d56' => $vendorDir . '/spatie/laravel-ignition/src/helpers.php',
     'd1852035ca5ede3a526b60fa82c9cdf3' => $baseDir . '/app/Support/legacy_menu_helpers.php',
     '0769f0471dd15e0c54f249df98b65e6f' => $baseDir . '/app/Support/legacy_resmenu_icons.php',
+    '5720e56536360162706e86480843550f' => $baseDir . '/app/Support/legacy_assets.php',
 );
