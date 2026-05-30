@@ -32,7 +32,7 @@
                 @endforeach
             </select>
             @if(empty($templatesCanUse))
-                <p class="text-muted" style="margin-top:8px;">No templates available for your plan. <a href="{{ route('manager.billing') }}">Upgrade plan</a></p>
+                <p class="text-muted" style="margin-top:8px;">No templates available for your plan. <a href="{{ route('manager.billing.index') }}">Upgrade plan</a></p>
             @endif
             @if(!empty($templatesUpgrade))
                 <p class="text-muted" style="margin-top:8px;">Upgrade required to use: {{ collect($templatesUpgrade)->pluck('name')->join(', ') }}</p>

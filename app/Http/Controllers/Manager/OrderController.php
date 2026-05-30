@@ -23,14 +23,20 @@ class OrderController extends Controller
         $restaurant = Restaurant::findOrFail($restaurantId);
         $overlay = $this->features->ordersPageContext($restaurantId);
         $stats = $this->orders->countByStatus($restaurantId);
+        $lastMonthStart = now()->subMonth()->startOfMonth();
+        $lastMonthEnd = now()->subMonth()->endOfMonth();
 
         return view('manager.orders.index', [
             'restaurant' => $restaurant,
             'stats' => $stats,
+            'statsLastMonth' => $this->orders->countByStatusBetween($restaurantId, $lastMonthStart, $lastMonthEnd),
             'totalCount' => array_sum($stats),
             'revenue' => $this->orders->revenueTotal($restaurantId),
+            'revenueLastMonth' => $this->orders->revenueBetween($restaurantId, $lastMonthStart, $lastMonthEnd),
             'recent' => $this->orders->recent($restaurantId),
+            'statuses' => Order::STATUSES,
             'price' => PriceFormatter::class,
+            'currencySymbol' => '₦',
             'showUpgradeOverlay' => $overlay['show_overlay'],
             'upgradeMessage' => $overlay['message'],
         ]);

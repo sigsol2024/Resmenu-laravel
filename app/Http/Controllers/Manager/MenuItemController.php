@@ -21,16 +21,26 @@ class MenuItemController extends Controller
     public function index(Request $request)
     {
         $restaurantId = (int) $request->attributes->get('restaurant_id');
+        $categoryId = $request->integer('category_id') ?: null;
 
-        $items = MenuItem::query()
+        $query = MenuItem::query()
             ->where('restaurant_id', $restaurantId)
             ->with('category')
-            ->orderBy('display_order')
-            ->paginate(30);
+            ->orderBy('display_order');
+
+        if ($categoryId) {
+            $query->where('category_id', $categoryId);
+        }
+
+        $items = $query->paginate(30)->withQueryString();
+        $categories = Category::where('restaurant_id', $restaurantId)->orderBy('name')->get();
 
         return view('manager.menu-items.index', [
             'items' => $items,
+            'categories' => $categories,
+            'selectedCategoryId' => $categoryId,
             'restaurant' => Restaurant::findOrFail($restaurantId),
+            'uploadUrl' => rtrim(config('resmenu.canonical_upload_url') ?: config('resmenu.upload_url'), '/'),
         ]);
     }
 

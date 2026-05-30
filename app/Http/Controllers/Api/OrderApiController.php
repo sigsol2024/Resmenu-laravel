@@ -28,6 +28,8 @@ use App\Support\OrderConfirmationToken;
 
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\DB;
+
 
 
 class OrderApiController extends Controller
@@ -178,9 +180,17 @@ class OrderApiController extends Controller
 
         $this->authorizeRestaurant($order);
 
+        $items = DB::table('order_items')
+            ->where('order_id', $order->id)
+            ->get(['name', 'price', 'quantity']);
 
-
-        return ApiJsonResponse::success('Order details', $order->load('restaurant'));
+        return response()->json([
+            'success' => true,
+            'order' => array_merge($order->toArray(), [
+                'items' => $items,
+                'order_display_number' => $order->displayNumber(),
+            ]),
+        ])->withHeaders(ApiJsonResponse::corsHeaders());
 
     }
 
@@ -240,18 +250,13 @@ class OrderApiController extends Controller
     {
 
         $restaurantId = (int) $request->attributes->get('restaurant_id');
+        $range = (string) $request->query('range', 'all');
 
-
-
-        return ApiJsonResponse::success('Orders analytics', [
-
-            'by_status' => $this->orderService->countByStatus($restaurantId),
-
-            'revenue' => $this->orderService->revenueTotal($restaurantId),
-
-            'recent' => $this->orderService->recent($restaurantId, 10),
-
-        ]);
+        return response()->json([
+            'success' => true,
+            'revenue_by_date' => $this->orderService->revenueByDate($restaurantId, $range),
+            'counts_by_status' => $this->orderService->countByStatus($restaurantId),
+        ])->withHeaders(ApiJsonResponse::corsHeaders());
 
     }
 

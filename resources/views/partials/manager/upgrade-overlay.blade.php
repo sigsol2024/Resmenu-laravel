@@ -7,7 +7,7 @@
         <div style="max-width:420px;">
             <h2 style="margin:0 0 12px;font-size:1.25rem;">Upgrade required</h2>
             <p style="color:#4b5563;margin:0 0 16px;">{{ $upgradeMessage ?? 'This feature is not included in your current plan.' }}</p>
-            <a href="{{ route('manager.billing') }}" class="btn btn-primary">View plans & upgrade</a>
+            <a href="{{ route('manager.billing.index') }}" class="btn btn-primary">View plans & upgrade</a>
         </div>
     </div>
 </div>

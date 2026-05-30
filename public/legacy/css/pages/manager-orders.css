@@ -62,3 +62,9 @@
 .detail-total { font-size: 1.1rem; font-weight: 700; }
 .detail-items-table td { padding: 10px 12px; font-size: 0.875rem; border-bottom: 1px solid #e5e7eb; }
 
+.resmenu-manager-blurred {
+    filter: blur(4px);
+    pointer-events: none;
+    user-select: none;
+}
+
