@@ -6,8 +6,8 @@ if ($uploadRoot && ! str_starts_with($uploadRoot, '/') && ! preg_match('#^[A-Za-
 }
 
 return [
-    'upload_root' => $uploadRoot ?: public_path('storage/uploads'),
-    'upload_url' => rtrim(env('UPLOAD_URL', env('APP_URL', 'http://localhost').'/storage/uploads'), '/'),
+    'upload_root' => $uploadRoot ?: public_path('uploads'),
+    'upload_url' => rtrim(env('UPLOAD_URL', env('APP_URL', 'http://localhost').'/uploads'), '/'),
     'canonical_upload_url' => env('CANONICAL_UPLOAD_URL') ? rtrim(env('CANONICAL_UPLOAD_URL'), '/') : null,
 
     'password_min_length' => (int) env('PASSWORD_MIN_LENGTH', 8),

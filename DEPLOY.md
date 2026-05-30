@@ -17,9 +17,9 @@ Point the web server vhost to **`public/`** only.
    Or use phpMyAdmin → Import → `database/schema/sigsolmenu_resmenu.sql`.
 4. Copy `.env.example` → `.env` and set `DB_*`, `APP_URL`, mail, payment keys.
 5. `php artisan key:generate`
-6. `php artisan storage:link`
+6. Optional: `php artisan storage:link` (only if you use Laravel’s `storage/app/public` disk elsewhere).
 7. Optional: `php artisan migrate` (Laravel `cache`/`jobs` tables only — **not** `migrate:fresh`).
-8. Ensure `storage/app/public/uploads` contains menu images (copy from backup or production sync).
+8. Ensure `public/uploads` contains menu images (copy from backup or production sync).
 9. `php artisan config:cache` && `php artisan route:cache` && `php artisan view:cache` (production).
 10. Cron: `* * * * * cd /path/to/Resmenu-laravel && php artisan schedule:run`
 
@@ -38,13 +38,13 @@ Boot guards refuse `APP_ENV=local|staging` with production DB name and refuse pr
 
 | Path | Purpose |
 |------|---------|
-| `storage/app/public/uploads` | Restaurant logos, menu item images |
+| `public/uploads` | Restaurant logos, menu item images |
 | `public/assets` | CSS, JS, icons (`admin.css`, `cart.js`, etc.) |
 | `public/templates` | Per-template static assets |
 | `resources/views/menu/php-templates` | Menu templates 1–18 |
 
-`UPLOAD_ROOT` empty → defaults to `storage/app/public/uploads`.  
-`UPLOAD_URL` → `${APP_URL}/storage/uploads` after `storage:link`.
+`UPLOAD_ROOT` empty → defaults to `public/uploads`.  
+`UPLOAD_URL` → `${APP_URL}/uploads`.
 
 ## Schema rules
 

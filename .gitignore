@@ -4,8 +4,9 @@
 /public/hot
 /public/storage/*
 !/public/storage/.gitignore
-!/public/storage/uploads/
-!/public/storage/uploads/**
+/public/uploads/*
+!/public/uploads/
+!/public/uploads/**
 /storage/*.key
 /storage/logs/*
 !/storage/logs/.gitignore

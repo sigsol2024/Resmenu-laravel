@@ -10,7 +10,7 @@
 
 $root = dirname(__DIR__, 2);
 $dump = $argv[1] ?? $root.'/../backup/resmenu_server_original/database/sigsolmenu_resmenu.sql';
-$uploadRoot = $root.'/public/storage/uploads';
+$uploadRoot = $root.'/public/uploads';
 
 if (! is_file($dump)) {
     fwrite(STDERR, "Dump not found: {$dump}\n");

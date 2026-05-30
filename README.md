@@ -30,7 +30,7 @@ Do not use `migrate:fresh` on production.
 | `public/` | Web root |
 | `public/assets/` | Shared CSS/JS |
 | `public/templates/` | Template static files |
-| `storage/app/public/uploads/` | Images |
+| `public/uploads/` | Images |
 | `resources/views/menu/php-templates/` | Menu templates 1–18 |
 
 Legacy `Resmenu/` is **not** required to run this application.
