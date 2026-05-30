@@ -1,5 +1,6 @@
 ﻿
-/* Clean QR Code Page Styles */
+/* Manager QR Code page — matches Resmenu/manager/qr-code.php inline styles */
+
 .alert {
     padding: 12px 16px;
     border-radius: 8px;
@@ -19,8 +20,8 @@
     border: 1px solid #fecaca;
 }
 
-/* Button Styles */
-.btn {
+/* Override manager-shell button styles on this page */
+.qr-code-page .btn {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -34,104 +35,121 @@
     text-decoration: none;
     background: #111827;
     color: #fff;
+    transform: none;
 }
 
-.btn svg {
+.qr-code-page .btn svg {
     width: 16px;
     height: 16px;
     flex-shrink: 0;
 }
 
-.btn-primary {
+.qr-code-page .btn-primary {
     background: #111827;
     color: #fff;
 }
 
-.btn-primary:hover {
+.qr-code-page .btn-primary:hover {
     background: #374151;
+    transform: none;
 }
 
-.btn-secondary {
+.qr-code-page .btn-secondary {
     background: #f3f4f6;
     color: #111827;
 }
 
-.btn-secondary:hover {
+.qr-code-page .btn-secondary:hover {
     background: #e5e7eb;
+    transform: none;
 }
 
-/* Card Styles */
-.card {
+/* Quick stats card — override manager-shell .card padding */
+.qr-code-page .card {
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     margin-bottom: 24px;
+    padding: 0;
 }
 
-.card-header {
+.qr-code-page .card-header {
     padding: 20px 24px;
     border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 0;
 }
 
-.card-title {
+.qr-code-page .card-title {
     font-size: 1.125rem;
     font-weight: 600;
     color: #111827;
     margin: 0;
 }
 
-/* Form Styles */
-.form-group {
-    margin-bottom: 20px;
+.qr-code-page .card-stats-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 24px;
+    align-items: center;
+    padding: 20px 24px;
 }
 
-.form-label {
-    display: block;
-    margin-bottom: 6px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #111827;
-}
-
-.form-select {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    font-size: 0.875rem;
-    color: #111827;
-    transition: border-color 0.2s;
-}
-
-.form-select:focus {
-    outline: none;
-    border-color: #111827;
-}
-
-.template-card:hover {
-    border-color: #111827 !important;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.template-card.selected {
-    border-color: #111827 !important;
-    background: #f9fafb !important;
-}
-
-.qr-code-grid {
+/* Two-column layout */
+.qr-code-page .qr-code-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 24px;
     margin-bottom: 24px;
 }
 
-@media (max-width: 968px) {
-    .qr-code-grid {
-        grid-template-columns: 1fr !important;
-    }
+.qr-code-page .qr-code-grid > .settings-card {
+    margin-bottom: 0;
+}
 
-    div[style*="grid-template-columns: 1fr 1fr"] {
+.qr-code-page .settings-card .section-header {
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.qr-code-page .settings-card .section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.qr-code-page #template-form {
+    padding: 0;
+}
+
+.qr-code-page #template-form > p,
+.qr-code-page #template-form > .template-grid,
+.qr-code-page #template-form > button {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.qr-code-page .template-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.qr-code-page .template-card:hover {
+    border-color: #111827 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.qr-code-page .template-card.selected {
+    border-color: var(--primary) !important;
+    background: #f0f9ff !important;
+}
+
+@media (max-width: 968px) {
+    .qr-code-page .qr-code-grid {
         grid-template-columns: 1fr !important;
     }
 }

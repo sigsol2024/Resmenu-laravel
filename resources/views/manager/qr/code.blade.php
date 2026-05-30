@@ -4,20 +4,21 @@
 
 @push('head')
 <link rel="stylesheet" href="{{ resmenu_public_asset('css/pages/manager-qr-code.css') }}">
+@if($inline = resmenu_inline_page_css('manager-qr-code.css'))
+<style>{!! $inline !!}</style>
+@endif
 @endpush
 
 @section('content')
+@if($dashCss = resmenu_inline_page_css('manager-qr-code.css'))
+<style>{!! $dashCss !!}</style>
+@endif
+
+<div class="qr-code-page">
 <div class="page-header">
     <h1 class="page-title">QR Code</h1>
     <p class="page-subtitle">Select a template and download your restaurant's QR code</p>
 </div>
-
-@if(session('success'))
-    <div class="alert alert-success">{{ session('success') }}</div>
-@endif
-@if($errors->any())
-    <div class="alert alert-error">{{ $errors->first() }}</div>
-@endif
 
 <div class="qr-code-grid">
     {{-- QR Code Preview & Download --}}
@@ -28,17 +29,25 @@
         <div style="text-align: center; padding: 20px;">
             @if(empty($templates))
                 <div style="padding: 40px;">
-                    <p style="color: #6b7280; font-size: 1rem; margin-bottom: 8px;"><strong>No QR Code Templates Available</strong></p>
-                    <p style="color: #6b7280; font-size: 0.875rem;">Please contact your administrator to create QR code templates.</p>
+                    <p style="color: var(--muted); font-size: 1rem; margin-bottom: 8px;">
+                        <strong>No QR Code Templates Available</strong>
+                    </p>
+                    <p style="color: var(--muted); font-size: 0.875rem;">
+                        Please contact your administrator to create QR code templates.
+                    </p>
                 </div>
             @elseif(! $selectedTemplate)
                 <div style="padding: 40px;">
-                    <p style="color: #6b7280; font-size: 1rem; margin-bottom: 8px;"><strong>No Template Selected</strong></p>
-                    <p style="color: #6b7280; font-size: 0.875rem;">Please select a template from the list to generate your QR code.</p>
+                    <p style="color: var(--muted); font-size: 1rem; margin-bottom: 8px;">
+                        <strong>No Template Selected</strong>
+                    </p>
+                    <p style="color: var(--muted); font-size: 0.875rem;">
+                        Please select a template from the list to generate your QR code.
+                    </p>
                 </div>
             @else
                 <div style="margin-bottom: 16px;">
-                    <span style="display: inline-block; padding: 6px 16px; background: #111827; color: white; border-radius: 20px; font-size: 0.875rem; font-weight: 500;">
+                    <span style="display: inline-block; padding: 6px 16px; background: var(--primary); color: white; border-radius: 20px; font-size: 0.875rem; font-weight: 500;">
                         {{ $selectedTemplate->name }}
                     </span>
                 </div>
@@ -48,11 +57,11 @@
                         <img src="{{ $imageUrl }}&t={{ time() }}"
                              alt="QR Code"
                              style="max-width: 250px; height: auto; display: block;"
-                             onerror="this.parentElement.innerHTML='<p style=\'color: #6b7280; padding: 40px;\'>Preview loading...</p>'">
+                             onerror="this.parentElement.innerHTML='<p style=\'color: var(--muted); padding: 40px;\'>Preview loading...</p>'">
                     @endif
                 </div>
 
-                <p style="color: #6b7280; margin-bottom: 20px; font-size: 0.875rem;">
+                <p style="color: var(--muted); margin-bottom: 20px; font-size: 0.875rem;">
                     <strong>URL:</strong> <code style="background: #f3f4f6; padding: 4px 8px; border-radius: 4px;">{{ $qrUrl }}</code>
                 </p>
 
@@ -63,21 +72,24 @@
                         </div>
                         <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px;">
                             @foreach($sections as $sec)
+                                @if(empty($sec->slug))
+                                    @continue
+                                @endif
                                 @php
                                     $secUrl = url('/qr/'.$restaurant->slug.'/'.$sec->slug);
                                     $secImg = route('manager.qr.image', ['format' => 'png', 'size' => 160, 'section_slug' => $sec->slug]);
                                 @endphp
                                 <div style="background: #f9fafb; border-radius: 12px; padding: 14px; text-align:center; border: 1px solid #e5e7eb;">
-                                    <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 8px; color: #111827;">
+                                    <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 8px; color: var(--text);">
                                         {{ $sec->name }}
                                     </div>
                                     <div style="background:#fff; border-radius: 10px; padding: 10px; display:flex; justify-content:center; align-items:center; margin-bottom: 10px;">
                                         <img src="{{ $secImg }}&t={{ time() }}"
                                              alt="QR Code for {{ $sec->name }}"
                                              style="max-width: 160px; height: auto; display: block;"
-                                             onerror="this.parentElement.innerHTML='<p style=\'color: #6b7280; margin: 0;\'>Preview loading...</p>'">
+                                             onerror="this.parentElement.innerHTML='<p style=\'color: var(--muted); margin: 0;\'>Preview loading...</p>'">
                                     </div>
-                                    <div style="color: #6b7280; margin-bottom: 10px; font-size: 0.75rem;">
+                                    <div style="color: var(--muted); margin-bottom: 10px; font-size: 0.75rem;">
                                         <strong>URL:</strong>
                                         <div>
                                             <code style="background: #f3f4f6; padding: 3px 6px; border-radius: 4px; display:inline-block; word-break: break-word; max-width: 150px;">
@@ -129,19 +141,23 @@
 
         @if(empty($templates))
             <div style="padding: 40px; text-align: center;">
-                <p style="color: #6b7280; font-size: 1rem; margin-bottom: 8px;"><strong>No Templates Available</strong></p>
-                <p style="color: #6b7280; font-size: 0.875rem;">Please contact your administrator to create QR code templates.</p>
+                <p style="color: var(--muted); font-size: 1rem; margin-bottom: 8px;">
+                    <strong>No Templates Available</strong>
+                </p>
+                <p style="color: var(--muted); font-size: 0.875rem;">
+                    Please contact your administrator to create QR code templates.
+                </p>
             </div>
         @else
-            <form method="POST" id="template-form" action="{{ route('manager.qr.code') }}" style="padding: 20px;">
+            <form method="POST" id="template-form" action="{{ route('manager.qr.code') }}">
                 @csrf
                 <input type="hidden" name="qr_template_id" id="selected-template-id" value="{{ $qrSettings->qr_template_id ?? '' }}">
 
-                <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 16px;">
+                <p style="color: var(--muted); font-size: 0.875rem; margin-bottom: 16px;">
                     Choose a QR code design created by your administrator:
                 </p>
 
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; margin-bottom: 20px;">
+                <div class="template-grid">
                     @foreach($templates as $template)
                         @php
                             $isSelected = (int) ($qrSettings->qr_template_id ?? 0) === (int) $template->id;
@@ -153,9 +169,9 @@
                         <div class="template-card {{ $isSelected ? 'selected' : '' }}"
                              data-template-id="{{ $template->id }}"
                              onclick="selectTemplate({{ $template->id }})"
-                             style="cursor: pointer; border: 3px solid {{ $isSelected ? '#111827' : '#e5e7eb' }}; border-radius: 12px; padding: 12px; text-align: center; transition: all 0.2s; background: {{ $isSelected ? '#f0f9ff' : 'white' }};">
+                             style="cursor: pointer; border: 3px solid {{ $isSelected ? 'var(--primary)' : '#e5e7eb' }}; border-radius: 12px; padding: 12px; text-align: center; transition: all 0.2s; background: {{ $isSelected ? '#f0f9ff' : 'white' }};">
 
-                            <div style="font-weight: 600; margin-bottom: 8px; font-size: 0.875rem; color: {{ $isSelected ? '#111827' : '#111827' }};">
+                            <div style="font-weight: 600; margin-bottom: 8px; font-size: 0.875rem; color: {{ $isSelected ? 'var(--primary)' : 'var(--text)' }};">
                                 {{ $template->name }}
                             </div>
 
@@ -165,16 +181,16 @@
                                      data-config="{{ e($configJson) }}"
                                      data-fallback-src="{{ e($previewSrc) }}"
                                      data-alt="{{ e($template->name) }}">
-                                    <span style="color: #6b7280; font-size: 0.75rem;">Preview</span>
+                                    <span style="color: var(--muted); font-size: 0.75rem;">Preview</span>
                                 </div>
                             </div>
 
                             @if($isSelected)
-                                <span style="display: inline-block; padding: 4px 10px; background: #111827; color: white; border-radius: 12px; font-size: 0.7rem; font-weight: 600;">
+                                <span style="display: inline-block; padding: 4px 10px; background: var(--primary); color: white; border-radius: 12px; font-size: 0.7rem; font-weight: 600;">
                                     ✓ SELECTED
                                 </span>
                             @else
-                                <span style="display: inline-block; padding: 4px 10px; background: #e5e7eb; color: #6b7280; border-radius: 12px; font-size: 0.7rem;">
+                                <span style="display: inline-block; padding: 4px 10px; background: #e5e7eb; color: var(--muted); border-radius: 12px; font-size: 0.7rem;">
                                     Click to select
                                 </span>
                             @endif
@@ -198,12 +214,12 @@
     <div class="card-header">
         <h2 class="card-title">Quick Stats</h2>
     </div>
-    <div style="display: grid; grid-template-columns: auto 1fr auto; gap: 24px; align-items: center; padding: 20px 24px;">
+    <div class="card-stats-row">
         <div>
-            <div style="font-size: 2rem; font-weight: 700; color: #111827; margin-bottom: 8px;">
+            <div style="font-size: 2rem; font-weight: 700; color: var(--text); margin-bottom: 8px;">
                 {{ number_format($totalScans) }}
             </div>
-            <div style="font-size: 0.875rem; color: #6b7280;">Total Scans</div>
+            <div style="font-size: 0.875rem; color: var(--muted);">Total Scans</div>
         </div>
         <div></div>
         <div>
@@ -216,6 +232,7 @@
         </div>
     </div>
 </div>
+</div>
 
 @push('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -225,10 +242,10 @@ function selectTemplate(templateId) {
     document.getElementById('selected-template-id').value = templateId;
 
     document.querySelectorAll('.template-card').forEach(function(card) {
-        const cardId = parseInt(card.getAttribute('data-template-id'), 10);
+        var cardId = parseInt(card.getAttribute('data-template-id'), 10);
         if (cardId === templateId) {
             card.classList.add('selected');
-            card.style.borderColor = '#111827';
+            card.style.borderColor = 'var(--primary)';
             card.style.background = '#f0f9ff';
         } else {
             card.classList.remove('selected');
@@ -273,7 +290,7 @@ function selectTemplate(templateId) {
                 fallbackToImage(container);
             }
             setTimeout(function() {
-                if (!container.querySelector('svg') && !container.querySelector('img')) {
+                if (!container.querySelector('svg')) {
                     fallbackToImage(container);
                 }
             }, 4000);
