@@ -2,7 +2,10 @@
 /node_modules
 /public/build
 /public/hot
-/public/storage
+/public/storage/*
+!/public/storage/.gitignore
+!/public/storage/uploads/
+!/public/storage/uploads/**
 /storage/*.key
 /storage/logs/*
 !/storage/logs/.gitignore
