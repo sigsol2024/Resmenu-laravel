@@ -57,6 +57,11 @@ class OrderPaymentCallbackController extends Controller
         }
 
         if (($result['type'] ?? '') === 'reservation') {
+            $url = (string) ($result['confirmation_url'] ?? '');
+            if ($url !== '') {
+                return redirect()->to($url);
+            }
+
             return redirect()->route('public.menu', $result['slug'] ?: $slug)
                 ->with('success', 'Reservation deposit paid successfully.');
         }
@@ -89,6 +94,11 @@ class OrderPaymentCallbackController extends Controller
         }
 
         if (($verified['type'] ?? '') === 'reservation') {
+            $url = (string) ($verified['confirmation_url'] ?? '');
+            if ($url !== '') {
+                return redirect()->to($url);
+            }
+
             return redirect()->route('public.menu', $verified['slug'] ?? $slug)
                 ->with('success', 'Reservation deposit paid successfully.');
         }

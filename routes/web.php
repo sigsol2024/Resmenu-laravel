@@ -24,7 +24,7 @@ Route::middleware('throttle:30,1')->group(function () {
     Route::post('/register/otp', [RegisterController::class, 'sendOtp'])->middleware('throttle:5,1')->name('register.otp');
     Route::post('/register', [RegisterController::class, 'store'])->name('register.submit');
     Route::get('/forgot-password', [PasswordResetController::class, 'showForgot'])->name('password.request');
-    Route::post('/forgot-password', [PasswordResetController::class, 'sendReset'])->name('password.email');
+    Route::post('/forgot-password', [PasswordResetController::class, 'sendReset'])->middleware('throttle:5,1')->name('password.email');
     Route::get('/reset-password/{token}', [PasswordResetController::class, 'showReset'])->name('password.reset');
     Route::post('/reset-password', [PasswordResetController::class, 'reset'])->name('password.update');
 });

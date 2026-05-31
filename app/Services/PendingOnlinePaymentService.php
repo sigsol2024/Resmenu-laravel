@@ -5,8 +5,10 @@ namespace App\Services;
 use App\Models\Order;
 use App\Models\Restaurant;
 use App\Models\TableReservation;
+use App\Support\ReservationConfirmationToken;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class PendingOnlinePaymentService
@@ -72,7 +74,13 @@ class PendingOnlinePaymentService
         }
 
         try {
-            return DB::transaction(function () use ($reference, $gateway) {
+            if (! $this->claimFulfillmentReceipt($gateway, $reference)) {
+                Cache::forget($cacheKey);
+
+                return ['success' => true, 'already_processed' => true];
+            }
+
+            return DB::transaction(function () use ($reference, $gateway, $cacheKey) {
                 $draft = DB::table('pending_online_payments')
                     ->where('reference', $reference)
                     ->where('gateway', $gateway)
@@ -90,15 +98,20 @@ class PendingOnlinePaymentService
 
                     $restaurant = Restaurant::find($draft->restaurant_id);
                     $slug = $restaurant?->slug ?? '';
+                    $confirmationUrl = ReservationConfirmationToken::confirmationUrl((int) $draft->reservation_id, $slug);
                     $this->rememberFulfillment($gateway, $reference, [
                         'type' => 'reservation',
                         'slug' => $slug,
+                        'reservation_id' => (int) $draft->reservation_id,
+                        'confirmation_url' => $confirmationUrl,
                     ]);
 
                     return [
                         'success' => true,
                         'type' => 'reservation',
                         'slug' => $slug,
+                        'reservation_id' => (int) $draft->reservation_id,
+                        'confirmation_url' => $confirmationUrl,
                     ];
                 }
 
@@ -147,6 +160,7 @@ class PendingOnlinePaymentService
             });
         } catch (\Throwable $e) {
             Cache::forget($cacheKey);
+            $this->releaseFulfillmentReceipt($gateway, $reference);
             report($e);
 
             return ['success' => false, 'errors' => [$e->getMessage()]];
@@ -165,5 +179,32 @@ class PendingOnlinePaymentService
     private function rememberFulfillment(string $gateway, string $reference, array $payload): void
     {
         Cache::put('fulfilled_order_ref:'.$gateway.':'.$reference, $payload, now()->addDays(7));
+    }
+
+    private function claimFulfillmentReceipt(string $gateway, string $reference): bool
+    {
+        if (! Schema::hasTable('payment_fulfillment_receipts')) {
+            return true;
+        }
+
+        $inserted = DB::table('payment_fulfillment_receipts')->insertOrIgnore([
+            'gateway' => $gateway,
+            'reference' => $reference,
+            'created_at' => now(),
+        ]);
+
+        return $inserted > 0;
+    }
+
+    private function releaseFulfillmentReceipt(string $gateway, string $reference): void
+    {
+        if (! Schema::hasTable('payment_fulfillment_receipts')) {
+            return;
+        }
+
+        DB::table('payment_fulfillment_receipts')
+            ->where('gateway', $gateway)
+            ->where('reference', $reference)
+            ->delete();
     }
 }

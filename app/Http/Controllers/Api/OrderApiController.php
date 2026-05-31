@@ -12,6 +12,7 @@ use App\Models\Order;
 
 use App\Models\Restaurant;
 
+use App\Services\BankTransferService;
 use App\Services\MenuService;
 
 use App\Services\OrderService;
@@ -45,6 +46,8 @@ class OrderApiController extends Controller
         private OrderService $orderService,
 
         private RestaurantPaymentService $payments,
+
+        private BankTransferService $bankTransfers,
 
     ) {}
 
@@ -128,7 +131,30 @@ class OrderApiController extends Controller
 
 
 
-        if (in_array($method, ['card', 'online', 'bank_transfer'], true)) {
+        if ($method === 'bank_transfer') {
+            $custom = app(\App\Services\CustomizationService::class)->forRestaurant($restaurant);
+            $deliveryFee = (float) ($custom['delivery_fee'] ?? 0);
+            $taxRate = (float) ($custom['tax_rate'] ?? 0);
+
+            $result = $this->bankTransfers->createDraftFromCart(
+                (int) $restaurant->id,
+                $cart,
+                $customer,
+                $deliveryFee,
+                $taxRate,
+            );
+
+            if (! ($result['success'] ?? false)) {
+                return ApiJsonResponse::error($result['message'] ?? 'Unable to start bank transfer', null, 400);
+            }
+
+            return ApiJsonResponse::success('Bank transfer required', [
+                'payment_required' => true,
+                'redirect_url' => $result['redirect'],
+            ]);
+        }
+
+        if (in_array($method, ['card', 'online'], true)) {
 
             return ApiJsonResponse::error('Online payment must use paystack or flutterwave', null, 400);
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\SubscriptionPlan;
+use App\Services\ActivityLogService;
 use App\Services\UploadService;
 use App\Support\MenuTemplateResolver;
 use Illuminate\Http\Request;
@@ -71,11 +72,13 @@ class TemplateController extends Controller
     ]);
   }
 
-  public function update(Request $request, int $template, UploadService $uploads, MenuTemplateResolver $resolver)
+  public function update(Request $request, int $template, UploadService $uploads, MenuTemplateResolver $resolver, ActivityLogService $activityLog)
   {
     if (! $resolver->supportsTemplate($template)) {
       abort(404);
     }
+
+    $adminId = (int) $request->user('admin')?->id;
 
     $data = $request->validate([
       'name' => 'required|string|max:255',
@@ -136,11 +139,19 @@ class TemplateController extends Controller
       DB::table('template_restaurants')->insert(['template_id' => $template, 'restaurant_id' => (int) $restaurantId]);
     }
 
+    $activityLog->record('admin', $adminId, 'template.updated', null, 'template', $template, null, [
+      'name' => $data['name'],
+      'is_private' => $request->boolean('is_private'),
+      'plan_ids' => $data['plan_ids'] ?? [],
+      'restaurant_ids' => $data['restaurant_ids'] ?? [],
+    ], $request->ip(), $request->userAgent());
+
     return redirect()->route('admin.templates.index', ['expand' => $template])->with('success', 'Template saved.');
   }
 
-  public function toggle(int $template)
+  public function toggle(int $template, Request $request, ActivityLogService $activityLog)
   {
+    $adminId = (int) $request->user('admin')?->id;
     $row = DB::table('templates')->where('id', $template)->first();
     if (! $row) {
       DB::table('templates')->insert([
@@ -153,13 +164,20 @@ class TemplateController extends Controller
         'updated_at' => now(),
       ]);
 
+      $activityLog->record('admin', $adminId, 'template.toggled', null, 'template', $template, null, ['is_active' => false], $request->ip(), $request->userAgent());
+
       return back()->with('success', 'Template status updated.');
     }
 
+    $oldActive = (bool) ($row->is_active ?? 1);
+    $newActive = ! $oldActive;
+
     DB::table('templates')->where('id', $template)->update([
-      'is_active' => ! ($row->is_active ?? 1),
+      'is_active' => $newActive ? 1 : 0,
       'updated_at' => now(),
     ]);
+
+    $activityLog->record('admin', $adminId, 'template.toggled', null, 'template', $template, ['is_active' => $oldActive], ['is_active' => $newActive], $request->ip(), $request->userAgent());
 
     return back()->with('success', 'Template status updated.');
   }

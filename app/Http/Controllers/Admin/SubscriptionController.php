@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
+use App\Services\ActivityLogService;
 use App\Services\SubscriptionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -47,22 +48,26 @@ class SubscriptionController extends Controller
     ]);
   }
 
-  public function update(Request $request, Subscription $subscription, SubscriptionService $service)
+  public function update(Request $request, Subscription $subscription, SubscriptionService $service, ActivityLogService $activityLog)
   {
     $action = $request->input('action', 'update');
+    $adminId = (int) $request->user('admin')?->id;
 
     if ($action === 'update_status') {
       $data = $request->validate([
         'new_status' => 'required|in:trial,active,expired,cancelled,pending',
       ]);
 
-      $subscription->update(['status' => $data['new_status']]);
+      $oldStatus = $subscription->status;
+      $this->forceUpdate($subscription, ['status' => $data['new_status']]);
 
       if ($data['new_status'] === 'active') {
         $service->activateSubscription($subscription->id, $subscription->billing_cycle ?? 'monthly');
       } elseif ($data['new_status'] === 'cancelled') {
         $service->deactivateSubscription($subscription->id);
       }
+
+      $activityLog->record('admin', $adminId, 'subscription.status_changed', (int) $subscription->restaurant_id, 'subscription', (int) $subscription->id, ['status' => $oldStatus], ['status' => $data['new_status']], $request->ip(), $request->userAgent());
 
       return back()->with('success', 'Subscription status updated.');
     }
@@ -72,7 +77,10 @@ class SubscriptionController extends Controller
         'new_plan_id' => 'required|integer|exists:subscription_plans,id',
       ]);
 
-      $subscription->update(['plan_id' => (int) $data['new_plan_id']]);
+      $oldPlanId = (int) $subscription->plan_id;
+      $this->forceUpdate($subscription, ['plan_id' => (int) $data['new_plan_id']]);
+
+      $activityLog->record('admin', $adminId, 'subscription.plan_changed', (int) $subscription->restaurant_id, 'subscription', (int) $subscription->id, ['plan_id' => $oldPlanId], ['plan_id' => (int) $data['new_plan_id']], $request->ip(), $request->userAgent());
 
       return back()->with('success', 'Subscription plan updated.');
     }
@@ -83,13 +91,18 @@ class SubscriptionController extends Controller
       ]);
       $days = (int) $data['days'];
       $sub = $subscription->fresh();
+      $oldValues = [
+        'status' => $sub->status,
+        'trial_ends_at' => $sub->trial_ends_at?->toIso8601String(),
+        'current_period_end' => $sub->current_period_end?->toIso8601String(),
+      ];
 
       if ($sub->status === 'trial') {
         $base = $sub->trial_ends_at && $sub->trial_ends_at->isFuture() ? $sub->trial_ends_at : now();
-        $sub->update(['trial_ends_at' => $base->copy()->addDays($days)]);
+        $this->forceUpdate($sub, ['trial_ends_at' => $base->copy()->addDays($days)]);
       } elseif ($sub->status === 'expired' && $sub->trial_ends_at && ! $sub->current_period_end) {
         $base = $sub->trial_ends_at ?? now();
-        $sub->update([
+        $this->forceUpdate($sub, [
           'status' => 'trial',
           'trial_ends_at' => ($base->isFuture() ? $base : now())->copy()->addDays($days),
         ]);
@@ -100,8 +113,16 @@ class SubscriptionController extends Controller
         if ($sub->status === 'expired' && $newEnd->isFuture()) {
           $payload['status'] = 'active';
         }
-        $sub->update($payload);
+        $this->forceUpdate($sub, $payload);
       }
+
+      $sub = $sub->fresh();
+      $activityLog->record('admin', $adminId, 'subscription.extended', (int) $subscription->restaurant_id, 'subscription', (int) $subscription->id, $oldValues, [
+        'status' => $sub->status,
+        'trial_ends_at' => $sub->trial_ends_at?->toIso8601String(),
+        'current_period_end' => $sub->current_period_end?->toIso8601String(),
+        'days' => $days,
+      ], $request->ip(), $request->userAgent());
 
       return back()->with('success', "Subscription extended by {$days} days.");
     }
@@ -112,7 +133,13 @@ class SubscriptionController extends Controller
       'billing_cycle' => 'nullable|in:monthly,annual',
     ]);
 
-    $subscription->update([
+    $oldValues = [
+      'status' => $subscription->status,
+      'plan_id' => (int) $subscription->plan_id,
+      'billing_cycle' => $subscription->billing_cycle,
+    ];
+
+    $this->forceUpdate($subscription, [
       'status' => $data['status'],
       'plan_id' => $data['plan_id'],
       'billing_cycle' => $data['billing_cycle'] ?? $subscription->billing_cycle ?? 'monthly',
@@ -124,6 +151,18 @@ class SubscriptionController extends Controller
       $service->deactivateSubscription($subscription->id);
     }
 
+    $activityLog->record('admin', $adminId, 'subscription.updated', (int) $subscription->restaurant_id, 'subscription', (int) $subscription->id, $oldValues, [
+      'status' => $data['status'],
+      'plan_id' => (int) $data['plan_id'],
+      'billing_cycle' => $data['billing_cycle'] ?? $subscription->billing_cycle ?? 'monthly',
+    ], $request->ip(), $request->userAgent());
+
     return back()->with('success', 'Subscription updated.');
+  }
+
+  /** @param  array<string, mixed>  $attributes */
+  private function forceUpdate(Subscription $subscription, array $attributes): void
+  {
+    $subscription->forceFill($attributes)->save();
   }
 }

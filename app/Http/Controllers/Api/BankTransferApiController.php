@@ -12,13 +12,15 @@ class BankTransferApiController extends Controller
     public function confirm(Request $request, BankTransferService $bankTransfer)
     {
         $token = trim((string) ($request->input('token') ?? $request->post('token', '')));
-        $result = $bankTransfer->confirm($token);
+        $result = $bankTransfer->customerClaimPayment($token);
 
         if (! ($result['success'] ?? false)) {
-            return ApiJsonResponse::error($result['message'] ?? 'Unable to confirm payment', null, 400);
+            return ApiJsonResponse::error($result['message'] ?? 'Unable to record payment claim', null, 400);
         }
 
-        return ApiJsonResponse::success('Payment confirmed', ['redirect' => $result['redirect'] ?? null]);
+        return ApiJsonResponse::success($result['message'] ?? 'Payment claim recorded', [
+            'redirect' => $result['redirect'] ?? null,
+        ]);
     }
 
     public function expire(Request $request, BankTransferService $bankTransfer)

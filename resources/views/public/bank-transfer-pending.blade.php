@@ -195,6 +195,9 @@
             var redirect = data.redirect || (data.data && data.data.redirect);
             if (data.success && redirect) {
                 window.location.href = redirect;
+            } else if (data.success) {
+                document.getElementById('order-details-view').classList.add('hidden');
+                document.getElementById('thank-you-view').classList.remove('hidden');
             } else {
                 btn.disabled = false;
                 alert(data.message || 'Something went wrong. Please try again.');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\ActivityLogService;
 use App\Services\QrGeneratorService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -49,9 +50,10 @@ class QrTemplateController extends Controller
     return redirect()->route('admin.qr-templates.index', ['create' => 1]);
   }
 
-  public function store(Request $request)
+  public function store(Request $request, ActivityLogService $activityLog)
   {
     $data = $this->validated($request);
+    $adminId = (int) $request->user('admin')?->id;
     $id = DB::table('qr_templates')->insertGetId([
       'name' => $data['name'],
       'description' => $data['description'],
@@ -61,6 +63,8 @@ class QrTemplateController extends Controller
       'created_at' => now(),
       'updated_at' => now(),
     ]);
+
+    $activityLog->record('admin', $adminId, 'qr_template.created', null, 'qr_template', (int) $id, null, ['name' => $data['name']], $request->ip(), $request->userAgent());
 
     return redirect()->route('admin.qr-templates.index')->with('success', 'QR template created.');
   }
@@ -74,13 +78,14 @@ class QrTemplateController extends Controller
     return redirect()->route('admin.qr-templates.index', ['edit' => $qrTemplate]);
   }
 
-  public function update(Request $request, int $qrTemplate)
+  public function update(Request $request, int $qrTemplate, ActivityLogService $activityLog)
   {
     if (! DB::table('qr_templates')->where('id', $qrTemplate)->exists()) {
       abort(404);
     }
 
     $data = $this->validated($request);
+    $adminId = (int) $request->user('admin')?->id;
     DB::table('qr_templates')->where('id', $qrTemplate)->update([
       'name' => $data['name'],
       'description' => $data['description'],
@@ -90,11 +95,22 @@ class QrTemplateController extends Controller
       'updated_at' => now(),
     ]);
 
+    $activityLog->record('admin', $adminId, 'qr_template.updated', null, 'qr_template', $qrTemplate, null, [
+      'name' => $data['name'],
+      'is_active' => $request->boolean('is_active'),
+    ], $request->ip(), $request->userAgent());
+
     return redirect()->route('admin.qr-templates.index')->with('success', 'QR template updated.');
   }
 
-  public function destroy(int $qrTemplate)
+  public function destroy(int $qrTemplate, Request $request, ActivityLogService $activityLog)
   {
+    $row = DB::table('qr_templates')->where('id', $qrTemplate)->first();
+    if ($row) {
+      $adminId = (int) $request->user('admin')?->id;
+      $activityLog->record('admin', $adminId, 'qr_template.deleted', null, 'qr_template', $qrTemplate, ['name' => $row->name], null, $request->ip(), $request->userAgent());
+    }
+
     DB::table('qr_templates')->where('id', $qrTemplate)->delete();
 
     return back()->with('success', 'QR template deleted.');

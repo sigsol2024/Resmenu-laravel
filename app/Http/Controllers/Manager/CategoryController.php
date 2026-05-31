@@ -8,6 +8,7 @@ use App\Models\Restaurant;
 use App\Models\Section;
 use App\Services\CategorySecondarySectionService;
 use App\Services\SubscriptionService;
+use App\Support\TenantScope;
 use App\Services\UploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -136,6 +137,7 @@ class CategoryController extends Controller
             $categoryId,
             $primarySectionId,
             array_map('intval', $request->input('secondary_section_ids', [])),
+            (int) $request->attributes->get('restaurant_id'),
         );
     }
 
@@ -159,6 +161,12 @@ class CategoryController extends Controller
         if ($exists) {
             $slug .= '-'.Str::random(4);
         }
+
+        TenantScope::assertSectionBelongsToRestaurant((int) $data['section_id'], $restaurantId);
+        TenantScope::assertSectionsBelongToRestaurant(
+            array_map('intval', $request->input('secondary_section_ids', [])),
+            $restaurantId,
+        );
 
         return [
             'restaurant_id' => $restaurantId,

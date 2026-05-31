@@ -135,6 +135,9 @@
                                         <input type="hidden" name="action" value="update_status">
                                         <input type="hidden" name="payment_id" value="{{ $p->id }}">
                                         <input type="hidden" name="new_status" value="{{ $st }}">
+                                        @if($st === 'success')
+                                            <input type="hidden" name="note" value="Manual admin confirmation of payment #{{ $p->id }}">
+                                        @endif
                                         <button type="submit" class="actions-dropdown-item">Mark as {{ ucfirst($st) }}</button>
                                     </form>
                                 @endif

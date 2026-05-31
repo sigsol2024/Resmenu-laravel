@@ -76,11 +76,10 @@ class RegisterController extends Controller
 
         $data = $request->validate([
             'restaurant_name' => 'required|string|max:255',
-            'username' => 'required|string|max:100',
-            'email' => 'required|email|max:255',
+            'username' => 'required|string|max:100|unique:managers,username',
+            'email' => 'required|email|max:255|unique:managers,email',
             'password' => 'required|string|min:'.config('resmenu.password_min_length', 8),
             'otp' => 'required|string|size:6',
-            'plan_id' => 'nullable|integer',
         ]);
 
         if ($this->disposableEmail->isDisposable($data['email'])) {
@@ -96,7 +95,7 @@ class RegisterController extends Controller
             $slug .= '-'.Str::lower(Str::random(4));
         }
 
-        DB::transaction(function () use ($data, $slug) {
+        DB::transaction(function () use ($data, $slug, $request) {
             $restaurant = Restaurant::create([
                 'name' => $data['restaurant_name'],
                 'slug' => $slug,
@@ -112,17 +111,27 @@ class RegisterController extends Controller
                 'restaurant_id' => $restaurant->id,
             ]);
 
-            $planId = $data['plan_id'] ?? SubscriptionPlan::query()->where('is_active', 1)->orderBy('display_order')->value('id');
+            $planId = SubscriptionPlan::query()
+                ->where('is_active', 1)
+                ->where('slug', 'professional')
+                ->value('id');
+
+            if (! $planId) {
+                $planId = SubscriptionPlan::query()->where('is_active', 1)->orderBy('display_order')->value('id');
+            }
+
             if ($planId) {
-                Subscription::create([
+                Subscription::forceCreate([
                     'restaurant_id' => $restaurant->id,
                     'plan_id' => $planId,
                     'billing_cycle' => 'monthly',
-                    'status' => 'pending',
+                    'status' => 'trial',
+                    'trial_ends_at' => now()->addDays(7),
                 ]);
             }
 
             Auth::guard('manager')->login($manager);
+            $request->session()->regenerate();
             session([
                 'last_activity' => time(),
                 'user_role' => 'manager',
@@ -130,6 +139,6 @@ class RegisterController extends Controller
             ]);
         });
 
-        return redirect()->route('manager.dashboard')->with('success', 'Account created.');
+        return redirect()->route('manager.billing.index', ['welcome' => 1]);
     }
 }

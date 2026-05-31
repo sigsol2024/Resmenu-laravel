@@ -15,7 +15,7 @@ use App\Http\Controllers\Manager\SlugDashboardRedirectController;
 use App\Http\Controllers\Public\QrImageController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth:manager', 'manager.tenant', 'session.idle:manager'])
+Route::middleware(['auth:manager', 'manager.tenant', 'subscription.active', 'session.idle:manager'])
     ->prefix('manager')
     ->name('manager.')
     ->group(function () {
@@ -35,6 +35,10 @@ Route::middleware(['auth:manager', 'manager.tenant', 'session.idle:manager'])
         Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
         Route::get('/orders/all', [OrderController::class, 'list'])->name('orders.list');
         Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.status');
+
+        Route::get('/bank-transfers', [\App\Http\Controllers\Manager\BankTransferController::class, 'index'])->name('bank-transfers.index');
+        Route::post('/bank-transfers/{draft}/approve', [\App\Http\Controllers\Manager\BankTransferController::class, 'approve'])->middleware('throttle:20,1')->name('bank-transfers.approve');
+        Route::post('/bank-transfers/{draft}/reject', [\App\Http\Controllers\Manager\BankTransferController::class, 'reject'])->middleware('throttle:20,1')->name('bank-transfers.reject');
 
         Route::get('/reservations', [ReservationController::class, 'index'])->name('reservations.index');
         Route::post('/reservations/deposit', [ReservationController::class, 'updateDeposit'])->name('reservations.deposit');

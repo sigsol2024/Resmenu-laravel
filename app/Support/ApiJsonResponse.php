@@ -26,10 +26,13 @@ class ApiJsonResponse
 
     public static function corsHeaders(): array
     {
+        $origins = array_filter(array_map('trim', explode(',', (string) config('resmenu.cors_allowed_origins', '*'))));
+        $origin = $origins === [] || in_array('*', $origins, true) ? '*' : ($origins[0] ?? '*');
+
         return [
-            'Access-Control-Allow-Origin' => '*',
+            'Access-Control-Allow-Origin' => $origin,
             'Access-Control-Allow-Methods' => 'GET, POST, PATCH, OPTIONS',
-            'Access-Control-Allow-Headers' => 'Content-Type, Authorization',
+            'Access-Control-Allow-Headers' => 'Content-Type, Authorization, X-Webhook-Secret, x-paystack-signature, verif-hash',
         ];
     }
 }

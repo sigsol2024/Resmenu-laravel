@@ -8,6 +8,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Renders menu templates shipped under resources/views/menu/php-templates (ported from legacy).
+ *
+ * XSS: LegacyMenuViewData strips HTML tags from text fields. Each template must still
+ * escape dynamic output with htmlspecialchars() at render time (template1–18 do this).
  */
 class MenuTemplateRenderService
 {

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\SendTransactionalMailJob;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -10,6 +11,27 @@ class MailService
 {
     public function send(string $to, string $toName, string $subject, string $html, array $options = []): bool
     {
+        if (app(EmailSuppressionService::class)->isSuppressed($to)) {
+            Log::info('Mail suppressed for address', ['to' => $to]);
+
+            return false;
+        }
+
+        if (config('queue.default') !== 'sync') {
+            SendTransactionalMailJob::dispatch($to, $toName, $subject, $html, $options);
+
+            return true;
+        }
+
+        return $this->sendSync($to, $toName, $subject, $html, $options);
+    }
+
+    public function sendSync(string $to, string $toName, string $subject, string $html, array $options = []): bool
+    {
+        if (app(EmailSuppressionService::class)->isSuppressed($to)) {
+            return false;
+        }
+
         $token = config('resmenu.zeptomail_sendmail_token');
         if ($token !== '') {
             return $this->sendZeptoMail($to, $toName, $subject, $html, $options);

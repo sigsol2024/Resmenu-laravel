@@ -17,3 +17,13 @@ Schedule::command('subscriptions:send-reminders')
     ->dailyAt('09:00')
     ->withoutOverlapping(30)
     ->onOneServer();
+
+Schedule::command('subscriptions:apply-scheduled')
+    ->dailyAt('00:30')
+    ->withoutOverlapping(30)
+    ->onOneServer();
+
+Schedule::command('payments:cleanup-stale')
+    ->dailyAt('02:00')
+    ->withoutOverlapping(30)
+    ->onOneServer();

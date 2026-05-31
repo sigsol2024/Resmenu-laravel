@@ -94,6 +94,10 @@ class LegacyMenuViewData
     public static function normalizeRestaurant(array $restaurant, ?string $uploadBaseUrl = null): array
     {
         $data = array_merge(self::RESTAURANT_DEFAULTS, $restaurant);
+        $data['name'] = self::sanitizePlainText($data['name']);
+        $data['description'] = self::sanitizePlainText($data['description']);
+        $data['address'] = self::sanitizePlainText($data['address']);
+        $data['footer_content'] = self::sanitizePlainText($data['footer_content']);
 
         if (empty($data['hero_image_url']) && ! empty($data['hero_image']) && $uploadBaseUrl) {
             $data['hero_image_url'] = $uploadBaseUrl.'/heroes/'.ltrim((string) $data['hero_image'], '/');
@@ -115,6 +119,7 @@ class LegacyMenuViewData
     {
         return array_map(static function (array $section): array {
             $section = array_merge(self::SECTION_DEFAULTS, $section);
+            $section['name'] = self::sanitizePlainText($section['name']);
             if (isset($section['categories']) && is_array($section['categories'])) {
                 $section['categories'] = self::normalizeCategories($section['categories']);
             } else {
@@ -130,6 +135,7 @@ class LegacyMenuViewData
     {
         return array_map(static function (array $category): array {
             $category = array_merge(self::CATEGORY_DEFAULTS, $category);
+            $category['name'] = self::sanitizePlainText($category['name']);
             if (isset($category['menu_items']) && is_array($category['menu_items'])) {
                 $category['menu_items'] = self::normalizeMenuItems($category['menu_items']);
             } else {
@@ -143,6 +149,22 @@ class LegacyMenuViewData
     /** @param list<array<string, mixed>> $items */
     public static function normalizeMenuItems(array $items): array
     {
-        return array_map(static fn (array $item): array => array_merge(self::MENU_ITEM_DEFAULTS, $item), $items);
+        return array_map(static function (array $item): array {
+            $item = array_merge(self::MENU_ITEM_DEFAULTS, $item);
+            $item['name'] = self::sanitizePlainText($item['name']);
+            $item['description'] = self::sanitizePlainText($item['description']);
+
+            return $item;
+        }, $items);
+    }
+
+    /** Strip HTML tags; templates must escape output with htmlspecialchars(). */
+    private static function sanitizePlainText(mixed $value): string
+    {
+        if ($value === null) {
+            return '';
+        }
+
+        return strip_tags((string) $value);
     }
 }

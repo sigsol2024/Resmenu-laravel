@@ -175,6 +175,7 @@ class BillingController extends Controller
     {
         $gw = $request->query('gateway', 'paystack');
         $reference = $request->query('reference', $request->query('trxref', $request->query('transaction_id', '')));
+        $processed = false;
 
         if ($reference !== '') {
             if ($gw === 'paystack') {
@@ -183,7 +184,7 @@ class BillingController extends Controller
                     $verify = Http::withToken($keys['secret_key'])
                         ->get('https://api.paystack.co/transaction/verify/'.urlencode($reference));
                     if ($verify->successful() && $verify->json('data.status') === 'success') {
-                        $gateway->processPlatformPaystackSuccess($verify->json('data', []));
+                        $processed = $gateway->processPlatformPaystackSuccess($verify->json('data', []));
                     }
                 }
             } else {
@@ -192,13 +193,29 @@ class BillingController extends Controller
                     $verify = Http::withToken($keys['secret_key'])
                         ->get('https://api.flutterwave.com/v3/transactions/'.urlencode($request->query('transaction_id')).'/verify');
                     if ($verify->successful() && $verify->json('data.status') === 'successful') {
-                        $gateway->processPlatformFlutterwaveSuccess($verify->json('data', []));
+                        $processed = $gateway->processPlatformFlutterwaveSuccess($verify->json('data', []));
                     }
                 }
             }
         }
 
-        return redirect()->route('manager.billing.index')->with('success', 'Payment received. Your subscription is now active.');
+        if ($processed) {
+            return redirect()->route('manager.billing.index', ['payment_success' => '1', 'reference' => $reference]);
+        }
+
+        if ($reference !== '') {
+            $payment = DB::table('payments')->where('transaction_reference', $reference)->first();
+            if ($payment && $payment->status === 'success') {
+                return redirect()->route('manager.billing.index', ['payment_success' => '1', 'reference' => $reference]);
+            }
+            if ($payment && $payment->status === 'pending') {
+                return redirect()->route('manager.billing.index', ['payment_success' => '1', 'reference' => $reference])
+                    ->with('info', 'Payment is being processed. Please refresh in a moment.');
+            }
+        }
+
+        return redirect()->route('manager.billing.index', ['payment_error' => '1'])
+            ->with('error', 'Payment could not be confirmed. Contact support if you were charged.');
     }
 
     public function transactionHistory(Request $request)

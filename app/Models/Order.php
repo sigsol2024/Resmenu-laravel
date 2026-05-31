@@ -17,7 +17,7 @@ class Order extends Model
 
     protected $fillable = [
         'restaurant_id', 'order_number', 'customer_name', 'customer_phone', 'customer_email',
-        'delivery_address', 'payment_method', 'status', 'subtotal', 'delivery_fee', 'tax', 'total',
+        'delivery_address', 'payment_method',
     ];
 
     protected $casts = [

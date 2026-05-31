@@ -511,6 +511,53 @@ class SubscriptionService
             ->update(['status' => 'cancelled', 'updated_at' => now()]) > 0;
     }
 
+    public function applyScheduledChange(int $requestId): bool
+    {
+        return DB::transaction(function () use ($requestId) {
+            $request = DB::table('subscription_change_requests')
+                ->where('id', $requestId)
+                ->where('status', 'pending')
+                ->lockForUpdate()
+                ->first();
+
+            if (! $request) {
+                return false;
+            }
+
+            if ($request->effective_at && Carbon::parse($request->effective_at)->isFuture()) {
+                return false;
+            }
+
+            $subscription = DB::table('subscriptions')
+                ->where('id', $request->subscription_id)
+                ->lockForUpdate()
+                ->first();
+
+            if (! $subscription) {
+                DB::table('subscription_change_requests')->where('id', $requestId)->update([
+                    'status' => 'failed',
+                    'updated_at' => now(),
+                ]);
+
+                return false;
+            }
+
+            DB::table('subscriptions')->where('id', $subscription->id)->update([
+                'plan_id' => $request->to_plan_id,
+                'billing_cycle' => $request->to_billing_cycle,
+                'updated_at' => now(),
+            ]);
+
+            DB::table('subscription_change_requests')->where('id', $requestId)->update([
+                'status' => 'applied',
+                'applied_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            return true;
+        });
+    }
+
     /** @return list<array<string, mixed>> */
     public function getPaymentHistory(int $restaurantId, int $limit = 10): array
     {

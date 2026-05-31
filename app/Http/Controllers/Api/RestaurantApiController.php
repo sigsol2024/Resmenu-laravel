@@ -25,7 +25,6 @@ class RestaurantApiController extends Controller
                 'description' => $r->description,
                 'phone' => $r->phone,
                 'address' => $r->address,
-                'email' => $r->email,
             ])
             ->values()
             ->all();

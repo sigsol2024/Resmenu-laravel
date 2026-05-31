@@ -19,7 +19,7 @@ Route::middleware('throttle:120,1')->group(function () {
 });
 
 Route::middleware('throttle:30,1')->prefix('bank-transfer')->group(function () {
-    Route::post('/confirm', [BankTransferApiController::class, 'confirm']);
+    Route::post('/confirm', [BankTransferApiController::class, 'confirm'])->middleware('throttle:10,1');
     Route::post('/expire', [BankTransferApiController::class, 'expire']);
     Route::post('/cancel-order', [BankTransferApiController::class, 'cancelOrder']);
 });
@@ -51,7 +51,7 @@ Route::prefix('qr')->middleware('throttle:60,1')->group(function () {
     Route::get('/export', [QrApiController::class, 'export'])->middleware(['auth:manager', 'manager.tenant']);
 });
 
-Route::prefix('webhooks')->middleware('throttle:120,1')->group(function () {
+Route::prefix('webhooks')->middleware(['throttle:120,1', 'throttle:60,1'])->group(function () {
     Route::post('/paystack', [WebhookController::class, 'paystack']);
     Route::post('/flutterwave', [WebhookController::class, 'flutterwave']);
     Route::post('/restaurant/paystack', [WebhookController::class, 'restaurantPaystack']);

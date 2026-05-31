@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\TenantScope;
 use Illuminate\Support\Facades\DB;
 
 class CategorySecondarySectionService
@@ -18,8 +19,11 @@ class CategorySecondarySectionService
     }
 
     /** @param  list<int>  $sectionIds */
-    public function sync(int $categoryId, int $primarySectionId, array $sectionIds): void
+    public function sync(int $categoryId, int $primarySectionId, array $sectionIds, int $restaurantId): void
     {
+        TenantScope::assertSectionBelongsToRestaurant($primarySectionId, $restaurantId);
+        TenantScope::assertSectionsBelongToRestaurant($sectionIds, $restaurantId);
+
         DB::table('category_secondary_sections')->where('category_id', $categoryId)->delete();
 
         foreach ($sectionIds as $sectionId) {

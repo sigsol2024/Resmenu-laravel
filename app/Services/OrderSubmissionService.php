@@ -49,7 +49,7 @@ class OrderSubmissionService
         try {
             $orderId = DB::transaction(function () use ($restaurantId, $customer, $priced, $subtotal, $deliveryFee, $tax, $total) {
                 $orderNumber = strtoupper(Str::random(8));
-                $order = Order::query()->create([
+                $order = Order::query()->make([
                     'restaurant_id' => $restaurantId,
                     'order_number' => $orderNumber,
                     'customer_name' => $customer['customer_name'],
@@ -57,12 +57,14 @@ class OrderSubmissionService
                     'customer_email' => $customer['customer_email'],
                     'delivery_address' => $customer['delivery_address'],
                     'payment_method' => $customer['payment_method'] ?? null,
+                ]);
+                $order->forceFill([
                     'status' => 'pending',
                     'subtotal' => $subtotal,
                     'delivery_fee' => $deliveryFee,
                     'tax' => $tax,
                     'total' => $total,
-                ]);
+                ])->save();
 
                 foreach ($priced['lines'] as $line) {
                     DB::table('order_items')->insert([

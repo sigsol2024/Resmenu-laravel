@@ -10,6 +10,7 @@ use App\Support\SafeRedirect;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 
 class LoginController extends Controller
 {
@@ -48,7 +49,16 @@ class LoginController extends Controller
         $password = $credentials['password'];
         $next = SafeRedirect::localPath($credentials['next'] ?? $request->query('next'));
 
-        $admin = Admin::query()->where('username', $login)->orWhere('email', $login)->first();
+        $usernameKey = 'login-user:'.strtolower(trim($login));
+        if (RateLimiter::tooManyAttempts($usernameKey, 5)) {
+            return back()->withErrors(['username' => 'Too many login attempts. Please try again later.'])->onlyInput('username');
+        }
+
+        $admin = Admin::query()
+            ->where(function ($query) use ($login) {
+                $query->where('username', $login)->orWhere('email', $login);
+            })
+            ->first();
         if ($admin && Hash::check($password, $admin->password_hash)) {
             Auth::guard('admin')->login($admin);
             $request->session()->regenerate();
@@ -57,7 +67,11 @@ class LoginController extends Controller
             return redirect()->to($next ?: route('admin.dashboard'));
         }
 
-        $manager = Manager::query()->where('username', $login)->orWhere('email', $login)->first();
+        $manager = Manager::query()
+            ->where(function ($query) use ($login) {
+                $query->where('username', $login)->orWhere('email', $login);
+            })
+            ->first();
         if ($manager && Hash::check($password, $manager->password_hash)) {
             Auth::guard('manager')->login($manager);
             $request->session()->regenerate();
@@ -70,7 +84,14 @@ class LoginController extends Controller
             return redirect()->to($next ?: route('manager.dashboard'));
         }
 
+        $this->recordFailedLogin($login);
+
         return back()->withErrors(['username' => 'Invalid username or password.'])->onlyInput('username');
+    }
+
+    private function recordFailedLogin(string $login): void
+    {
+        RateLimiter::hit('login-user:'.strtolower(trim($login)), 900);
     }
 
     public function logout(Request $request)

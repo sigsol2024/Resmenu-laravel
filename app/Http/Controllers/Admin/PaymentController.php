@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\ActivityLogService;
 use App\Services\PaymentGatewayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -61,20 +62,27 @@ class PaymentController extends Controller
     ));
   }
 
-  public function store(Request $request, PaymentGatewayService $payments)
+  public function store(Request $request, PaymentGatewayService $payments, ActivityLogService $activityLog)
   {
     $action = $request->input('action');
+    $adminId = (int) $request->user('admin')?->id;
 
     if ($action === 'update_status') {
       $data = $request->validate([
         'payment_id' => 'required|integer|exists:payments,id',
         'new_status' => 'required|in:pending,success,failed,refunded',
+        'note' => 'required_if:new_status,success|nullable|string|min:10',
       ]);
+
+      $payment = DB::table('payments')->where('id', $data['payment_id'])->first();
+      $oldStatus = $payment->status ?? null;
 
       if ($payments->updatePaymentStatus((int) $data['payment_id'], $data['new_status'])) {
         if ($data['new_status'] === 'success') {
           $payments->activateSubscriptionForPayment((int) $data['payment_id']);
         }
+
+        $activityLog->record('admin', $adminId, 'payment.status_changed', (int) ($payment->restaurant_id ?? 0), 'payment', (int) $data['payment_id'], ['status' => $oldStatus], ['status' => $data['new_status'], 'note' => $data['note'] ?? null], $request->ip(), $request->userAgent());
 
         return back()->with('success', 'Payment status updated.');
       }
@@ -101,6 +109,10 @@ class PaymentController extends Controller
 
       if ($paymentId && $data['status'] === 'success') {
         $payments->activateSubscriptionForPayment($paymentId);
+      }
+
+      if ($paymentId) {
+        $activityLog->record('admin', $adminId, 'payment.manual_created', (int) $data['restaurant_id'], 'payment', $paymentId, null, $data, $request->ip(), $request->userAgent());
       }
 
       return back()->with('success', $paymentId ? 'Manual payment recorded.' : 'Failed to record payment.');

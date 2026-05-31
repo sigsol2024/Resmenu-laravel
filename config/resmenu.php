@@ -55,4 +55,6 @@ return [
     'reg_otp_bounce_webhook_secret' => env('REG_OTP_BOUNCE_WEBHOOK_SECRET', ''),
 
     'rate_limit_dir' => env('RATE_LIMIT_DIR', ''),
+
+    'cors_allowed_origins' => env('CORS_ALLOWED_ORIGINS', '*'),
 ];

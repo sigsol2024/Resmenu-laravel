@@ -9,6 +9,10 @@ class RegistrationOtpService
 {
     public function send(string $email, ?string $ip = null): bool
     {
+        if (app(EmailSuppressionService::class)->isSuppressed($email)) {
+            return false;
+        }
+
         $deliverability = app(EmailDeliverabilityService::class)->evaluateMx($email);
         if ($deliverability['state'] === 'permanent_bad') {
             return false;

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\MenuItem;
 use App\Models\Restaurant;
-use App\Services\SubscriptionService;
+use App\Support\TenantScope;
 use App\Services\UploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -161,6 +161,8 @@ class MenuItemController extends Controller
         if ($exists) {
             $slug .= '-'.Str::random(4);
         }
+
+        TenantScope::assertCategoryBelongsToRestaurant((int) $data['category_id'], $restaurantId);
 
         return [
             'restaurant_id' => $restaurantId,

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Restaurant;
 use App\Models\TableReservation;
 use App\Support\ReservationNumberGenerator;
+use App\Support\ReservationConfirmationToken;
 use Illuminate\Support\Facades\DB;
 
 class ReservationBookingService
@@ -75,6 +76,12 @@ class ReservationBookingService
             ];
         }
 
-        return ['success' => true, 'message' => 'Reservation request received. We will confirm shortly.'];
+        $confirmationUrl = ReservationConfirmationToken::confirmationUrl((int) $reservation->id, (string) $restaurant->slug);
+
+        return [
+            'success' => true,
+            'message' => 'Reservation request received. We will confirm shortly.',
+            'confirmation_url' => $confirmationUrl !== '' ? $confirmationUrl : null,
+        ];
     }
 }

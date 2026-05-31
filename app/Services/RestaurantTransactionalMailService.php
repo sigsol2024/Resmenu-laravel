@@ -6,6 +6,7 @@ use App\Models\Manager;
 use App\Models\Order;
 use App\Models\Restaurant;
 use App\Models\TableReservation;
+use App\Support\ReservationConfirmationToken;
 use Illuminate\Support\Facades\DB;
 
 class RestaurantTransactionalMailService
@@ -103,9 +104,17 @@ class RestaurantTransactionalMailService
             return;
         }
 
+        $custom = $this->customization->forRestaurant($restaurant);
         $body = '<h2 style="margin:0 0 16px;font-size:22px;color:#111827;">Reservation update</h2>'
             .'<p>Your reservation <strong>#'.e($this->reservationNumber($reservation)).'</strong> is now <strong>'.e(ucfirst($newStatus)).'</strong>.</p>'
             .$this->reservationDetailsList($reservation);
+
+        if ($newStatus === 'confirmed') {
+            $confirmUrl = ReservationConfirmationToken::confirmationUrl((int) $reservation->id, (string) $restaurant->slug);
+            if ($confirmUrl !== '') {
+                $body .= '<p style="margin-top:16px;"><a href="'.e($confirmUrl).'" style="color:'.e($custom['primary_color'] ?? '#111827').';">View reservation confirmation</a></p>';
+            }
+        }
 
         $html = $this->wrap($restaurant, 'Reservation Update', $body);
         $this->mail->send($guestEmail, (string) $reservation->guest_name, 'Reservation Update - '.$restaurant->name, $html, [
@@ -193,10 +202,22 @@ class RestaurantTransactionalMailService
 
     private function reservationGuestBody(TableReservation $reservation, Restaurant $restaurant): string
     {
-        return '<h2 style="margin:0 0 8px;font-size:26px;color:#111827;">Reservation received</h2>'
+        $body = '<h2 style="margin:0 0 8px;font-size:26px;color:#111827;">Reservation received</h2>'
             .'<p>Hello '.e($reservation->guest_name).', we have received your table reservation request.</p>'
-            .$this->reservationDetailsList($reservation)
-            .'<p>We will confirm your booking shortly.</p>';
+            .$this->reservationDetailsList($reservation);
+
+        if ((float) ($reservation->deposit_amount ?? 0) <= 0) {
+            $confirmUrl = ReservationConfirmationToken::confirmationUrl((int) $reservation->id, (string) $restaurant->slug);
+            if ($confirmUrl !== '') {
+                $body .= '<p style="margin-top:16px;"><a href="'.e($confirmUrl).'">View your reservation</a></p>';
+            } else {
+                $body .= '<p>We will confirm your booking shortly.</p>';
+            }
+        } else {
+            $body .= '<p>Please complete your deposit to confirm this reservation.</p>';
+        }
+
+        return $body;
     }
 
     private function reservationManagerBody(TableReservation $reservation, Restaurant $restaurant): string

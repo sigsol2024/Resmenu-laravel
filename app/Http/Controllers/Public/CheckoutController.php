@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Models\Restaurant;
 use App\Models\TableReservation;
+use App\Services\BankTransferService;
 use App\Services\CustomizationService;
 use App\Services\OrderSubmissionService;
 use App\Services\RestaurantPaymentService;
@@ -19,6 +20,7 @@ class CheckoutController extends Controller
         private CustomizationService $customization,
         private RestaurantPaymentService $payments,
         private OrderSubmissionService $orders,
+        private BankTransferService $bankTransfers,
     ) {}
 
     public function show(Request $request, string $slug)
@@ -92,7 +94,26 @@ class CheckoutController extends Controller
             return redirect()->away($payment['redirect_url']);
         }
 
-        $result = $this->orders->createFromCart($restaurant->id, $cart, $customer);
+        $custom = $this->customization->forRestaurant($restaurant);
+        $deliveryFee = (float) ($custom['delivery_fee'] ?? 0);
+        $taxRate = (float) ($custom['tax_rate'] ?? 0);
+
+        if ($method === 'bank_transfer') {
+            $result = $this->bankTransfers->createDraftFromCart(
+                $restaurant->id,
+                $cart,
+                $customer,
+                $deliveryFee,
+                $taxRate,
+            );
+            if (! ($result['success'] ?? false)) {
+                return back()->withErrors(['checkout' => $result['message'] ?? 'Unable to start bank transfer.'])->withInput();
+            }
+
+            return redirect()->to($result['redirect']);
+        }
+
+        $result = $this->orders->createFromCart($restaurant->id, $cart, $customer, $deliveryFee, $taxRate);
         if (! $result['success']) {
             return back()->withErrors(['checkout' => implode(' ', $result['errors'])])->withInput();
         }
@@ -119,7 +140,20 @@ class CheckoutController extends Controller
             'payment_method' => 'required|string',
         ]);
 
-        $payment = $this->payments->initiateReservationDeposit($restaurant, $reservation, $request->all());
+        $paymentMethod = $request->input('payment_method');
+        if ($paymentMethod === 'bank_transfer') {
+            $customer = $request->only(['customer_name', 'customer_phone', 'customer_email']);
+            $result = $this->bankTransfers->createDraftForReservation($restaurant->id, $reservation, $customer);
+            if (! ($result['success'] ?? false)) {
+                return back()->withErrors(['checkout' => $result['message'] ?? 'Unable to start bank transfer.'])->withInput();
+            }
+
+            return redirect()->to($result['redirect']);
+        }
+
+        $payment = $this->payments->initiateReservationDeposit($restaurant, $reservation, $request->only([
+            'customer_name', 'customer_phone', 'customer_email', 'payment_method',
+        ]));
         if (! empty($payment['redirect_url'])) {
             return redirect()->away($payment['redirect_url']);
         }

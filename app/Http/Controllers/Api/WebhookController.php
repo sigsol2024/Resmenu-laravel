@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Services\PaymentGatewayService;
 use App\Services\PendingOnlinePaymentService;
+use App\Services\RestaurantPaymentVerificationService;
 use App\Support\ApiJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -42,8 +43,12 @@ class WebhookController extends Controller
         return ApiJsonResponse::success('OK');
     }
 
-    public function restaurantPaystack(Request $request, PaymentGatewayService $gateway, PendingOnlinePaymentService $pending)
-    {
+    public function restaurantPaystack(
+        Request $request,
+        PaymentGatewayService $gateway,
+        PendingOnlinePaymentService $pending,
+        RestaurantPaymentVerificationService $verification,
+    ) {
         $payload = $request->getContent();
         $signature = $request->header('x-paystack-signature', '');
         $reference = $request->input('data.reference', '');
@@ -62,7 +67,15 @@ class WebhookController extends Controller
         }
 
         if ($request->input('event') === 'charge.success' && $reference !== '') {
-            $pending->fulfillFromWebhook($reference, 'paystack');
+            $verified = $verification->verifyWebhookPayment($reference, 'paystack', $request->input('data', []));
+            if ($verified['ok'] ?? false) {
+                $pending->fulfillFromWebhook($reference, 'paystack');
+            } else {
+                Log::warning('Restaurant Paystack webhook verification failed', [
+                    'reference' => $reference,
+                    'reason' => $verified['error'] ?? 'unknown',
+                ]);
+            }
         } elseif ($request->input('event') === 'charge.failed' && $reference !== '') {
             $pending->discardFailed($reference, 'paystack');
         }
@@ -70,8 +83,12 @@ class WebhookController extends Controller
         return ApiJsonResponse::success('OK');
     }
 
-    public function restaurantFlutterwave(Request $request, PaymentGatewayService $gateway, PendingOnlinePaymentService $pending)
-    {
+    public function restaurantFlutterwave(
+        Request $request,
+        PaymentGatewayService $gateway,
+        PendingOnlinePaymentService $pending,
+        RestaurantPaymentVerificationService $verification,
+    ) {
         $signature = $request->header('verif-hash', '');
         $reference = $request->input('data.tx_ref', $request->input('data.reference', ''));
         $restaurantId = (int) ($request->input('data.meta.restaurant_id') ?? 0);
@@ -89,13 +106,21 @@ class WebhookController extends Controller
         }
 
         if (in_array($request->input('event'), ['charge.completed', 'complete'], true) && $reference !== '') {
-            $pending->fulfillFromWebhook($reference, 'flutterwave');
+            $verified = $verification->verifyWebhookPayment($reference, 'flutterwave', $request->input('data', []));
+            if ($verified['ok'] ?? false) {
+                $pending->fulfillFromWebhook($reference, 'flutterwave');
+            } else {
+                Log::warning('Restaurant Flutterwave webhook verification failed', [
+                    'reference' => $reference,
+                    'reason' => $verified['error'] ?? 'unknown',
+                ]);
+            }
         }
 
         return ApiJsonResponse::success('OK');
     }
 
-    public function emailSuppression(Request $request)
+    public function emailSuppression(Request $request, \App\Services\EmailSuppressionService $suppression)
     {
         $secret = config('resmenu.reg_otp_bounce_webhook_secret');
         if ($secret === '' || ! hash_equals($secret, (string) $request->header('X-Webhook-Secret', ''))) {
@@ -104,7 +129,15 @@ class WebhookController extends Controller
             return ApiJsonResponse::error('Unauthorized', null, 401);
         }
 
-        Log::info('Email suppression webhook', ['payload' => $request->all()]);
+        $email = (string) ($request->input('email') ?? $request->input('data.email', ''));
+        $reason = (string) ($request->input('reason') ?? $request->input('data.reason', 'hard_bounce'));
+
+        if ($email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $suppression->addSuppression($email, $reason, 'webhook');
+            Log::info('Email suppression added', ['email_hash' => hash('sha256', strtolower(trim($email))), 'reason' => $reason]);
+        } else {
+            Log::warning('Email suppression webhook missing valid email');
+        }
 
         return ApiJsonResponse::success('OK');
     }

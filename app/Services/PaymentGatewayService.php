@@ -34,7 +34,7 @@ class PaymentGatewayService
 
         $subscription = Subscription::query()->where('restaurant_id', $restaurantId)->orderByDesc('id')->first();
         if (! $subscription) {
-            $subscription = Subscription::create([
+            $subscription = Subscription::forceCreate([
                 'restaurant_id' => $restaurantId,
                 'plan_id' => $planId,
                 'billing_cycle' => $cycle,
@@ -48,6 +48,8 @@ class PaymentGatewayService
         $paymentId = DB::table('payments')->insertGetId([
             'restaurant_id' => $restaurantId,
             'subscription_id' => $subscription->id,
+            'plan_id' => $planId,
+            'billing_cycle' => $cycle,
             'amount' => $amount,
             'currency' => 'NGN',
             'payment_gateway' => $gateway,
@@ -135,68 +137,163 @@ class PaymentGatewayService
 
     public function processPlatformPaystackSuccess(array $data): bool
     {
-        $reference = $data['reference'] ?? '';
+        $reference = (string) ($data['reference'] ?? '');
         if ($reference === '') {
             return false;
         }
 
-        $payment = DB::table('payments')->where('transaction_reference', $reference)->first();
-        if (! $payment) {
-            return false;
-        }
+        return DB::transaction(function () use ($data, $reference) {
+            $payment = DB::table('payments')
+                ->where('transaction_reference', $reference)
+                ->lockForUpdate()
+                ->first();
 
-        if ($payment->status === 'success') {
-            return true;
-        }
+            if (! $payment) {
+                return false;
+            }
 
-        DB::table('payments')->where('id', $payment->id)->update([
-            'status' => 'success',
-            'paid_at' => now(),
-            'gateway_response' => json_encode($data),
-        ]);
+            if ($payment->status === 'success') {
+                return true;
+            }
 
-        $meta = $data['metadata'] ?? [];
-        $subscriptionId = (int) ($meta['subscription_id'] ?? $payment->subscription_id);
-        $planId = (int) ($meta['plan_id'] ?? 0);
-        $cycle = ($meta['billing_cycle'] ?? 'monthly') === 'annual' ? 'annual' : 'monthly';
+            if (! $this->verifyPlatformPayment($data, $payment, 'paystack')) {
+                return false;
+            }
 
-        if ($planId > 0) {
-            DB::table('subscriptions')->where('id', $subscriptionId)->update([
-                'plan_id' => $planId,
-                'billing_cycle' => $cycle,
-                'updated_at' => now(),
+            DB::table('payments')->where('id', $payment->id)->update([
+                'status' => 'success',
+                'paid_at' => now(),
+                'gateway_response' => json_encode($data),
             ]);
-        }
 
-        return $this->subscriptions->activateSubscription($subscriptionId, $cycle);
+            return $this->activateSubscriptionForVerifiedPayment($payment);
+        });
     }
 
     public function processPlatformFlutterwaveSuccess(array $data): bool
     {
-        $reference = $data['tx_ref'] ?? $data['reference'] ?? '';
+        $reference = (string) ($data['tx_ref'] ?? $data['reference'] ?? '');
         if ($reference === '') {
             return false;
         }
 
-        $payment = DB::table('payments')->where('transaction_reference', $reference)->first();
-        if (! $payment) {
+        return DB::transaction(function () use ($data, $reference) {
+            $payment = DB::table('payments')
+                ->where('transaction_reference', $reference)
+                ->lockForUpdate()
+                ->first();
+
+            if (! $payment) {
+                return false;
+            }
+
+            if ($payment->status === 'success') {
+                return true;
+            }
+
+            if (! $this->verifyPlatformPayment($data, $payment, 'flutterwave')) {
+                return false;
+            }
+
+            DB::table('payments')->where('id', $payment->id)->update([
+                'status' => 'success',
+                'paid_at' => now(),
+                'gateway_response' => json_encode($data),
+            ]);
+
+            return $this->activateSubscriptionForVerifiedPayment($payment);
+        });
+    }
+
+    /** @param  array<string, mixed>  $gatewayData */
+    public function verifyPlatformPayment(array $gatewayData, object $payment, string $gateway): bool
+    {
+        $gateway = strtolower($gateway);
+        $reference = (string) ($payment->transaction_reference ?? '');
+
+        if ($gateway === 'paystack') {
+            $dataRef = (string) ($gatewayData['reference'] ?? '');
+            if ($dataRef !== '' && $dataRef !== $reference) {
+                Log::warning('Platform Paystack reference mismatch', ['expected' => $reference, 'got' => $dataRef]);
+
+                return false;
+            }
+
+            if (strtoupper((string) ($gatewayData['currency'] ?? 'NGN')) !== 'NGN') {
+                Log::warning('Platform Paystack currency mismatch', ['reference' => $reference]);
+
+                return false;
+            }
+
+            $paidKobo = (int) ($gatewayData['amount'] ?? 0);
+            $expectedKobo = (int) round((float) $payment->amount * 100);
+            if ($paidKobo !== $expectedKobo) {
+                Log::warning('Platform Paystack amount mismatch', [
+                    'reference' => $reference,
+                    'expected_kobo' => $expectedKobo,
+                    'paid_kobo' => $paidKobo,
+                ]);
+
+                return false;
+            }
+        } elseif ($gateway === 'flutterwave') {
+            $dataRef = (string) ($gatewayData['tx_ref'] ?? $gatewayData['reference'] ?? '');
+            if ($dataRef !== '' && $dataRef !== $reference) {
+                Log::warning('Platform Flutterwave reference mismatch', ['expected' => $reference, 'got' => $dataRef]);
+
+                return false;
+            }
+
+            if (strtoupper((string) ($gatewayData['currency'] ?? 'NGN')) !== 'NGN') {
+                Log::warning('Platform Flutterwave currency mismatch', ['reference' => $reference]);
+
+                return false;
+            }
+
+            $paid = (float) ($gatewayData['amount'] ?? 0);
+            $expected = (float) $payment->amount;
+            if (abs($paid - $expected) > 0.01) {
+                Log::warning('Platform Flutterwave amount mismatch', [
+                    'reference' => $reference,
+                    'expected' => $expected,
+                    'paid' => $paid,
+                ]);
+
+                return false;
+            }
+        } else {
             return false;
         }
 
-        if ($payment->status === 'success') {
-            return true;
+        $expectedPlanId = (int) ($payment->plan_id ?? 0);
+        if ($expectedPlanId <= 0) {
+            $expectedPlanId = (int) DB::table('subscriptions')
+                ->where('id', $payment->subscription_id)
+                ->value('plan_id');
         }
 
-        DB::table('payments')->where('id', $payment->id)->update([
-            'status' => 'success',
-            'paid_at' => now(),
-            'gateway_response' => json_encode($data),
-        ]);
+        $meta = $gateway === 'paystack'
+            ? ($gatewayData['metadata'] ?? [])
+            : ($gatewayData['meta'] ?? []);
+        $metaPlanId = (int) ($meta['plan_id'] ?? 0);
+        if ($expectedPlanId > 0 && $metaPlanId > 0 && $metaPlanId !== $expectedPlanId) {
+            Log::warning('Platform payment plan_id tamper rejected', [
+                'reference' => $reference,
+                'expected_plan_id' => $expectedPlanId,
+                'metadata_plan_id' => $metaPlanId,
+            ]);
 
-        $meta = $data['meta'] ?? [];
-        $subscriptionId = (int) ($meta['subscription_id'] ?? $payment->subscription_id);
-        $planId = (int) ($meta['plan_id'] ?? 0);
-        $cycle = ($meta['billing_cycle'] ?? 'monthly') === 'annual' ? 'annual' : 'monthly';
+            return false;
+        }
+
+        return true;
+    }
+
+    private function activateSubscriptionForVerifiedPayment(object $payment): bool
+    {
+        $subscriptionId = (int) $payment->subscription_id;
+        $planId = (int) ($payment->plan_id ?? 0);
+        $cycle = ($payment->billing_cycle ?? 'monthly') === 'annual' ? 'annual' : 'monthly';
 
         if ($planId > 0) {
             DB::table('subscriptions')->where('id', $subscriptionId)->update([

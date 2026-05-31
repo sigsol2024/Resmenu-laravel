@@ -22,7 +22,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'manager.tenant' => \App\Http\Middleware\EnsureManagerRestaurant::class,
             'session.idle' => \App\Http\Middleware\SessionIdleTimeout::class,
+            'subscription.active' => \App\Http\Middleware\EnsureActiveSubscription::class,
         ]);
+
+        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

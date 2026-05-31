@@ -7,6 +7,7 @@ use App\Models\Manager;
 use App\Models\Restaurant;
 use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
+use App\Services\ActivityLogService;
 use App\Services\UploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -55,12 +56,14 @@ class RestaurantController extends Controller
     ]);
   }
 
-  public function store(Request $request, UploadService $uploads)
+  public function store(Request $request, UploadService $uploads, ActivityLogService $activityLog)
   {
     $data = $this->validated($request);
     $slug = $this->uniqueSlug($data['slug'] ?: Str::slug($data['name']));
+    $adminId = (int) $request->user('admin')?->id;
+    $restaurantId = 0;
 
-    DB::transaction(function () use ($request, $data, $slug, $uploads) {
+    DB::transaction(function () use ($request, $data, $slug, $uploads, $activityLog, $adminId, &$restaurantId) {
       $logo = $request->hasFile('logo') ? ($uploads->storeImage($request->file('logo'), 'logos')['filename'] ?? null) : null;
       $hero = $request->hasFile('hero_image') ? ($uploads->storeImage($request->file('hero_image'), 'heroes')['filename'] ?? null) : null;
 
@@ -76,6 +79,7 @@ class RestaurantController extends Controller
         'template_id' => $data['template_id'] ?? 4,
         'is_active' => $request->boolean('is_active', true),
       ]);
+      $restaurantId = (int) $restaurant->id;
 
       Manager::create([
         'username' => $data['manager_username'],
@@ -85,7 +89,7 @@ class RestaurantController extends Controller
       ]);
 
       if (! empty($data['plan_id'])) {
-        Subscription::create([
+        Subscription::forceCreate([
           'restaurant_id' => $restaurant->id,
           'plan_id' => $data['plan_id'],
           'billing_cycle' => 'monthly',
@@ -93,6 +97,12 @@ class RestaurantController extends Controller
           'trial_ends_at' => now()->addDays(14),
         ]);
       }
+
+      $activityLog->record('admin', $adminId, 'restaurant.created', $restaurantId, 'restaurant', $restaurantId, null, [
+        'name' => $data['name'],
+        'slug' => $slug,
+        'plan_id' => $data['plan_id'] ?? null,
+      ], $request->ip(), $request->userAgent());
     });
 
     return redirect()->route('admin.restaurants.index')->with('success', 'Restaurant created.');
@@ -132,10 +142,17 @@ class RestaurantController extends Controller
     ]);
   }
 
-  public function update(Request $request, Restaurant $restaurant, UploadService $uploads)
+  public function update(Request $request, Restaurant $restaurant, UploadService $uploads, ActivityLogService $activityLog)
   {
     $data = $this->validated($request, $restaurant->id);
     $slug = $this->uniqueSlug($data['slug'] ?: Str::slug($data['name']), $restaurant->id);
+    $adminId = (int) $request->user('admin')?->id;
+    $oldValues = [
+      'name' => $restaurant->name,
+      'slug' => $restaurant->slug,
+      'is_active' => (bool) $restaurant->is_active,
+      'template_id' => (int) $restaurant->template_id,
+    ];
 
     $payload = [
       'name' => $data['name'],
@@ -178,14 +195,27 @@ class RestaurantController extends Controller
       ]);
     }
 
+    $activityLog->record('admin', $adminId, 'restaurant.updated', (int) $restaurant->id, 'restaurant', (int) $restaurant->id, $oldValues, [
+      'name' => $payload['name'],
+      'slug' => $payload['slug'],
+      'is_active' => $payload['is_active'],
+      'template_id' => (int) $payload['template_id'],
+    ], $request->ip(), $request->userAgent());
+
     return redirect()->route('admin.restaurants.index')->with('success', 'Restaurant updated.');
   }
 
-  public function destroy(Restaurant $restaurant, UploadService $uploads)
+  public function destroy(Restaurant $restaurant, UploadService $uploads, ActivityLogService $activityLog, Request $request)
   {
+    $adminId = (int) $request->user('admin')?->id;
+    $restaurantId = (int) $restaurant->id;
+    $oldValues = ['name' => $restaurant->name, 'slug' => $restaurant->slug];
+
     $uploads->delete('logos', $restaurant->logo);
     $uploads->delete('heroes', $restaurant->hero_image);
     $restaurant->delete();
+
+    $activityLog->record('admin', $adminId, 'restaurant.deleted', $restaurantId, 'restaurant', $restaurantId, $oldValues, null, $request->ip(), $request->userAgent());
 
     return redirect()->route('admin.restaurants.index')->with('success', 'Restaurant deleted.');
   }

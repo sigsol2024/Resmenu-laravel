@@ -23,8 +23,9 @@ class LoginController extends Controller
         ]);
 
         $admin = Admin::query()
-            ->where('username', $data['username'])
-            ->orWhere('email', $data['username'])
+            ->where(function ($query) use ($data) {
+                $query->where('username', $data['username'])->orWhere('email', $data['username']);
+            })
             ->first();
 
         if (! $admin || ! Hash::check($data['password'], $admin->password_hash)) {

@@ -31,7 +31,16 @@ class MenuApiController extends Controller
         }
 
         return ApiJsonResponse::success('Menu retrieved successfully', [
-            'restaurant' => $restaurant->toArray(),
+            'restaurant' => [
+                'id' => (int) $restaurant->id,
+                'name' => $restaurant->name,
+                'slug' => $restaurant->slug,
+                'description' => $restaurant->description,
+                'phone' => $restaurant->phone,
+                'address' => $restaurant->address,
+                'logo' => $restaurant->logo,
+                'template_id' => (int) $restaurant->template_id,
+            ],
             'sections' => $this->menu->sectionsWithMenu($restaurant),
             'customization' => $this->customization->forRestaurant($restaurant),
         ]);

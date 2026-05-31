@@ -12,6 +12,32 @@ class RestaurantPaymentVerificationService
     public function __construct(private PaymentGatewayService $gateway) {}
 
     /**
+     * @param  array<string, mixed>  $webhookData
+     * @return array{
+     *   ok: bool,
+     *   already_fulfilled?: bool,
+     *   order_id?: int,
+     *   slug?: string,
+     *   type?: string,
+     *   error?: string,
+     *   restaurant_id?: int
+     * }
+     */
+    public function verifyWebhookPayment(string $reference, string $gateway, array $webhookData = []): array
+    {
+        $gateway = strtolower($gateway);
+        if (! in_array($gateway, ['paystack', 'flutterwave'], true)) {
+            return ['ok' => false, 'error' => 'unsupported_gateway'];
+        }
+
+        $transactionId = $gateway === 'flutterwave'
+            ? (string) ($webhookData['id'] ?? $webhookData['transaction_id'] ?? '')
+            : null;
+
+        return $this->verifyDraftPayment($reference, $gateway, $transactionId);
+    }
+
+    /**
      * @return array{
      *   ok: bool,
      *   already_fulfilled?: bool,
@@ -36,6 +62,27 @@ class RestaurantPaymentVerificationService
             return ['ok' => false, 'error' => 'replay_throttled'];
         }
 
+        $result = $this->verifyDraftPayment($reference, $gateway, $transactionId);
+        if ($result['ok'] ?? false) {
+            Cache::put('payment_callback_verified:'.$gateway.':'.$reference, 1, now()->addDays(1));
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return array{
+     *   ok: bool,
+     *   already_fulfilled?: bool,
+     *   order_id?: int,
+     *   slug?: string,
+     *   type?: string,
+     *   error?: string,
+     *   restaurant_id?: int
+     * }
+     */
+    private function verifyDraftPayment(string $reference, string $gateway, ?string $transactionId = null): array
+    {
         $draft = DB::table('pending_online_payments')
             ->where('reference', $reference)
             ->where('gateway', $gateway)
@@ -57,8 +104,8 @@ class RestaurantPaymentVerificationService
             ? $this->verifyPaystack($restaurantId, $reference, $expectedTotal)
             : $this->verifyFlutterwave($restaurantId, $reference, $transactionId, $expectedTotal);
 
-        if (! $verified['ok']) {
-            Log::warning('Payment callback verification failed', [
+        if (! ($verified['ok'] ?? false)) {
+            Log::warning('Payment verification failed', [
                 'reference' => $reference,
                 'gateway' => $gateway,
                 'reason' => $verified['error'] ?? 'unknown',
@@ -66,8 +113,6 @@ class RestaurantPaymentVerificationService
 
             return $verified;
         }
-
-        Cache::put('payment_callback_verified:'.$gateway.':'.$reference, 1, now()->addDays(1));
 
         return [
             'ok' => true,

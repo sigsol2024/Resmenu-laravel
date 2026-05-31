@@ -16,8 +16,7 @@ class Subscription extends Model
     const UPDATED_AT = 'updated_at';
 
     protected $fillable = [
-        'restaurant_id', 'plan_id', 'billing_cycle', 'status', 'trial_ends_at',
-        'current_period_start', 'current_period_end', 'cancelled_at',
+        'restaurant_id', 'plan_id', 'billing_cycle',
     ];
 
     protected $casts = [

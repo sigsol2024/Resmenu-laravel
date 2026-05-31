@@ -25,12 +25,23 @@ class UploadService
     public function storeImage(UploadedFile $file, string $subdir): array
     {
         $maxUpload = (int) config('resmenu.image_upload_max_bytes', 1048576);
-        if ($file->getSize() > $maxUpload) {
+        if ($file->getSize() <= 0 || $file->getSize() > $maxUpload) {
             return ['success' => false, 'message' => 'File exceeds maximum upload size.'];
         }
 
+        $ext = strtolower($file->getClientOriginalExtension() ?: '');
+        $allowedExt = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        if (! in_array($ext, $allowedExt, true)) {
+            return ['success' => false, 'message' => 'Invalid image extension.'];
+        }
+
+        if (preg_match('/\.[^.]+\./', $file->getClientOriginalName())) {
+            return ['success' => false, 'message' => 'Invalid filename.'];
+        }
+
         $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        if (! in_array($file->getMimeType(), $allowed, true)) {
+        $detected = $file->getMimeType();
+        if (! in_array($detected, $allowed, true)) {
             return ['success' => false, 'message' => 'Invalid image type.'];
         }
 
@@ -39,11 +50,22 @@ class UploadService
             mkdir($dir, 0755, true);
         }
 
-        $ext = strtolower($file->getClientOriginalExtension() ?: 'jpg');
         $filename = Str::random(12).'.'.$ext;
+        $target = $dir.DIRECTORY_SEPARATOR.$filename;
         $file->move($dir, $filename);
 
-        return ['success' => true, 'filename' => $filename, 'path' => $dir.DIRECTORY_SEPARATOR.$filename];
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $storedMime = $finfo ? finfo_file($finfo, $target) : false;
+        if ($finfo) {
+            finfo_close($finfo);
+        }
+        if ($storedMime && ! in_array($storedMime, $allowed, true)) {
+            @unlink($target);
+
+            return ['success' => false, 'message' => 'Uploaded file failed content validation.'];
+        }
+
+        return ['success' => true, 'filename' => $filename, 'path' => $target];
     }
 
     public function storeSiteAsset(UploadedFile $file, ?string $previousFilename = null): ?string
@@ -64,7 +86,13 @@ class UploadService
         if ($filename === null || $filename === '') {
             return;
         }
-        $path = rtrim($this->root(), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.trim($subdir, '/').DIRECTORY_SEPARATOR.$filename;
+
+        $safeName = basename($filename);
+        if ($safeName !== $filename || $safeName === '' || str_contains($safeName, '..')) {
+            return;
+        }
+
+        $path = rtrim($this->root(), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.trim($subdir, '/').DIRECTORY_SEPARATOR.$safeName;
         if (is_file($path)) {
             @unlink($path);
         }

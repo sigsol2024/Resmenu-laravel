@@ -34,6 +34,10 @@ class AppServiceProvider extends ServiceProvider
         \Illuminate\Support\Facades\View::composer('layouts.manager', \App\View\Composers\ManagerLayoutComposer::class);
         \Illuminate\Support\Facades\View::composer('layouts.admin', \App\View\Composers\AdminLayoutComposer::class);
 
+        if ($this->app->environment('production') && filter_var(env('TRUST_PROXY_HEADERS', false), FILTER_VALIDATE_BOOLEAN)) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
         Blade::directive('resmenuIcon', function (string $expression): string {
             return "<?php echo \\App\\Support\\ResmenuIcons::icon($expression); ?>";
         });
@@ -69,17 +73,25 @@ class AppServiceProvider extends ServiceProvider
 
     private function validateProductionConfig(): void
     {
-        if (! $this->app->environment('production') || $this->app->environment('testing')) {
+        if ($this->app->environment('testing')) {
             return;
         }
 
-        if (config('app.debug')) {
+        if (! $this->app->environment(['production', 'staging'])) {
+            return;
+        }
+
+        if ($this->app->environment('production') && config('app.debug')) {
             throw new \RuntimeException('APP_DEBUG must be false in production.');
         }
 
         $encryptionKey = (string) config('resmenu.payment_encryption_key');
         if ($encryptionKey === '' || $encryptionKey === 'your-32-character-secret-key-here') {
-            throw new \RuntimeException('PAYMENT_ENCRYPTION_KEY must be set to the legacy production value.');
+            throw new \RuntimeException('PAYMENT_ENCRYPTION_KEY must be set to a secure value.');
+        }
+
+        if (! $this->app->environment('production')) {
+            return;
         }
 
         if ((string) config('resmenu.app_hmac_secret') === '') {

@@ -8,6 +8,7 @@ use App\Models\Restaurant;
 use App\Services\PendingOnlinePaymentService;
 use App\Services\RecaptchaService;
 use App\Support\OrderConfirmationToken;
+use App\Support\ReservationConfirmationToken;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -56,7 +57,7 @@ class SecurityHardeningTest extends TestCase
             'template_id' => 4,
         ]);
 
-        $order = Order::create([
+        $order = Order::forceCreate([
             'restaurant_id' => $restaurant->id,
             'order_number' => 'ABC12345',
             'customer_name' => 'Jane',
@@ -87,7 +88,7 @@ class SecurityHardeningTest extends TestCase
             'template_id' => 4,
         ]);
 
-        $order = Order::create([
+        $order = Order::forceCreate([
             'restaurant_id' => $restaurant->id,
             'order_number' => 'ABC12345',
             'customer_name' => 'Jane',
@@ -243,6 +244,63 @@ class SecurityHardeningTest extends TestCase
 
         $this->assertTrue($first['already_processed'] ?? false);
         $this->assertTrue($second['already_processed'] ?? false);
+    }
+
+    public function test_reservation_confirmation_without_token_returns_not_found(): void
+    {
+        try {
+            if (! Schema::hasTable('table_reservations')) {
+                $this->markTestSkipped('table_reservations not available.');
+            }
+        } catch (\Throwable) {
+            $this->markTestSkipped('Database not available.');
+        }
+
+        $restaurant = Restaurant::create([
+            'name' => 'Res Cafe',
+            'slug' => 'res-cafe-'.uniqid(),
+            'email' => 'res@test.com',
+            'is_active' => 1,
+            'template_id' => 4,
+        ]);
+
+        $reservationId = DB::table('table_reservations')->insertGetId([
+            'restaurant_id' => $restaurant->id,
+            'reservation_number' => 'R12345678',
+            'guest_name' => 'Guest',
+            'guest_email' => 'guest@test.com',
+            'guest_phone' => '080',
+            'reservation_date' => now()->toDateString(),
+            'reservation_time' => '18:00:00',
+            'party_size' => 2,
+            'status' => 'pending',
+            'deposit_amount' => 0,
+            'deposit_paid' => 0,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $this->get('/reservations/'.$reservationId.'/confirmation')->assertNotFound();
+    }
+
+    public function test_public_restaurants_api_omits_email(): void
+    {
+        if (! $this->legacySchemaAvailable()) {
+            $this->markTestSkipped('Legacy schema not available.');
+        }
+
+        Restaurant::create([
+            'name' => 'Public List',
+            'slug' => 'public-list-'.uniqid(),
+            'email' => 'secret@restaurant.com',
+            'is_active' => 1,
+            'template_id' => 4,
+        ]);
+
+        $response = $this->getJson('/api/restaurants');
+        $response->assertOk();
+        $payload = json_encode($response->json());
+        $this->assertStringNotContainsString('secret@restaurant.com', $payload);
     }
 
     public function test_recaptcha_skips_verification_in_testing_environment(): void
