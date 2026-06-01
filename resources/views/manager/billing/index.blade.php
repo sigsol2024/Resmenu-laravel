@@ -224,8 +224,11 @@
                         <option value="annual" @selected($defaultCycle === 'annual')>Yearly</option>
                     </select>
                     <div class="plan-action-wrap" style="margin-top:8px;">
-                        <span class="{{ $defaultPresentation['button_class'] }} plan-action-current" style="{{ $defaultPresentation['is_current_state'] ? 'display:inline-block;width:100%;text-align:center;' : 'display:none;' }}">{{ $defaultPresentation['label'] }}</span>
-                        <button type="submit" class="{{ $defaultPresentation['is_current_state'] ? 'btn-select-plan primary plan-action-btn' : $defaultPresentation['button_class'] }} plan-action-btn" style="width:100%;border:none;cursor:pointer;{{ $defaultPresentation['is_current_state'] ? 'display:none;' : '' }}">{{ $defaultPresentation['label'] }}</button>
+                        @if($defaultPresentation['is_current_state'])
+                            <span class="{{ $defaultPresentation['button_class'] }}">{{ $defaultPresentation['label'] }}</span>
+                        @else
+                            <button type="submit" class="{{ $defaultPresentation['button_class'] }} plan-action-btn">{{ $defaultPresentation['label'] }}</button>
+                        @endif
                     </div>
                 </form>
                 @php
@@ -248,46 +251,45 @@
 
 <script>
 (function() {
-    function applyPresentation(wrap, presentation) {
-        var currentSpan = wrap.querySelector('.plan-action-current');
-        var btn = wrap.querySelector('.plan-action-btn');
-        if (!presentation || !wrap) return;
+    function renderPlanAction(wrap, presentation) {
+        if (!wrap || !presentation) return;
+
+        wrap.innerHTML = '';
 
         if (presentation.is_current_state) {
-            if (currentSpan) {
-                currentSpan.style.display = 'inline-block';
-                currentSpan.className = presentation.button_class + ' plan-action-current';
-                currentSpan.textContent = presentation.label;
-            }
-            if (btn) btn.style.display = 'none';
-        } else {
-            if (currentSpan) currentSpan.style.display = 'none';
-            if (btn) {
-                btn.style.display = 'block';
-                btn.disabled = false;
-                btn.textContent = presentation.label;
-                btn.className = presentation.button_class + ' plan-action-btn';
-            }
+            var span = document.createElement('span');
+            span.className = presentation.button_class;
+            span.textContent = presentation.label;
+            wrap.appendChild(span);
+
+            return;
         }
+
+        var btn = document.createElement('button');
+        btn.type = 'submit';
+        btn.className = presentation.button_class + ' plan-action-btn';
+        btn.textContent = presentation.label;
+        wrap.appendChild(btn);
     }
 
     function updatePlanAction(form) {
         var sel = form.querySelector('.plan-cycle-select');
         var wrap = form.querySelector('.plan-action-wrap');
         if (!sel || !wrap) return;
+
         var presentations = {};
         try {
             presentations = JSON.parse(form.getAttribute('data-presentations') || '{}');
         } catch (e) {
             return;
         }
-        var presentation = presentations[sel.value] || presentations.monthly;
-        applyPresentation(wrap, presentation);
+
+        renderPlanAction(wrap, presentations[sel.value] || presentations.monthly);
     }
+
     document.querySelectorAll('.plan-select-form').forEach(function(form) {
         var sel = form.querySelector('.plan-cycle-select');
         if (sel) sel.addEventListener('change', function() { updatePlanAction(form); });
-        updatePlanAction(form);
     });
 })();
 </script>

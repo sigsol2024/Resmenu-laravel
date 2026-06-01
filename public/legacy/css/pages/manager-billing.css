@@ -562,6 +562,9 @@
     text-decoration: none;
     text-align: center;
     display: block;
+    border: none;
+    font: inherit;
+    box-sizing: border-box;
 }
 
 .btn-select-plan.primary {
