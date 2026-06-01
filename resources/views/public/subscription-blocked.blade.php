@@ -29,7 +29,7 @@
     @if($logoUrl)<img src="{{ $logoUrl }}" alt="{{ $restaurant->name }}">@endif
     <h1>{{ $title }}</h1>
     <p>{{ $message }}</p>
-    <a href="{{ url('/?next='.urlencode('/manager/billing.php')) }}">Sign in to renew</a>
+    <a href="{{ route('login', ['next' => route('manager.billing.index', [], false)]) }}">Sign in to renew</a>
 </div>
 </body>
 </html>
