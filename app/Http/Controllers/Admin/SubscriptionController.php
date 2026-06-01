@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
 use App\Services\ActivityLogService;
+use App\Services\PlanVisibilityService;
 use App\Services\SubscriptionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -48,10 +49,11 @@ class SubscriptionController extends Controller
     ]);
   }
 
-  public function update(Request $request, Subscription $subscription, SubscriptionService $service, ActivityLogService $activityLog)
+  public function update(Request $request, Subscription $subscription, SubscriptionService $service, ActivityLogService $activityLog, PlanVisibilityService $planVisibility)
   {
     $action = $request->input('action', 'update');
     $adminId = (int) $request->user('admin')?->id;
+    $restaurantId = (int) $subscription->restaurant_id;
 
     if ($action === 'update_status') {
       $data = $request->validate([
@@ -69,6 +71,8 @@ class SubscriptionController extends Controller
 
       $activityLog->record('admin', $adminId, 'subscription.status_changed', (int) $subscription->restaurant_id, 'subscription', (int) $subscription->id, ['status' => $oldStatus], ['status' => $data['new_status']], $request->ip(), $request->userAgent());
 
+      $planVisibility->forgetCache($restaurantId);
+
       return back()->with('success', 'Subscription status updated.');
     }
 
@@ -81,6 +85,8 @@ class SubscriptionController extends Controller
       $this->forceUpdate($subscription, ['plan_id' => (int) $data['new_plan_id']]);
 
       $activityLog->record('admin', $adminId, 'subscription.plan_changed', (int) $subscription->restaurant_id, 'subscription', (int) $subscription->id, ['plan_id' => $oldPlanId], ['plan_id' => (int) $data['new_plan_id']], $request->ip(), $request->userAgent());
+
+      $planVisibility->forgetCache($restaurantId);
 
       return back()->with('success', 'Subscription plan updated.');
     }
@@ -124,6 +130,8 @@ class SubscriptionController extends Controller
         'days' => $days,
       ], $request->ip(), $request->userAgent());
 
+      $planVisibility->forgetCache($restaurantId);
+
       return back()->with('success', "Subscription extended by {$days} days.");
     }
 
@@ -156,6 +164,8 @@ class SubscriptionController extends Controller
       'plan_id' => (int) $data['plan_id'],
       'billing_cycle' => $data['billing_cycle'] ?? $subscription->billing_cycle ?? 'monthly',
     ], $request->ip(), $request->userAgent());
+
+    $planVisibility->forgetCache($restaurantId);
 
     return back()->with('success', 'Subscription updated.');
   }

@@ -24,6 +24,22 @@
     <div class="alert alert-error">{{ $errors->first('limit') }}</div>
 @endif
 
+@if(isset($planVisibility) && $planVisibility->hasHiddenContent())
+    <div class="alert alert-error plan-limit-banner">
+        <strong>Plan limits:</strong>
+        {{ (int)($planVisibility->summary['categories']['hidden_count'] ?? 0) }} categories and
+        {{ (int)($planVisibility->summary['menu_items']['hidden_count'] ?? 0) }} menu items are hidden on your public menu.
+        <a href="{{ route('manager.billing.index') }}" style="margin-left:8px;font-weight:600;">Upgrade plan</a>
+        or reduce usage. Hidden items are not deleted.
+    </div>
+@endif
+
+<style>
+.plan-hidden-row .plan-hidden-name { color: #dc2626; font-weight: 600; }
+.plan-hidden-hint { font-size: 0.75rem; color: #b91c1c; margin-top: 4px; max-width: 280px; line-height: 1.35; }
+.plan-limit-banner { margin-bottom: 16px; }
+</style>
+
 <div class="settings-card">
     <div style="margin-bottom: 20px;">
         <form method="GET" action="{{ route('manager.menu-items.index') }}" style="display: flex; gap: 15px; align-items: end; flex-wrap: wrap;">
@@ -208,7 +224,8 @@
             </thead>
             <tbody>
                 @forelse($items as $item)
-                    <tr>
+                    @php $itemMeta = $planVisibility->getMenuItemMeta((int) $item->id); @endphp
+                    <tr class="{{ ($itemMeta['is_plan_hidden'] ?? false) ? 'plan-hidden-row' : '' }}">
                         <td>
                             @if($item->image)
                                 <img src="{{ $uploadUrl }}/menu-items/{{ rawurlencode($item->image) }}" alt="" class="menu-item-image">
@@ -216,7 +233,10 @@
                                 <div class="menu-item-image" style="background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#999;font-size:0.65rem;">No Image</div>
                             @endif
                         </td>
-                        <td>{{ $item->name }}</td>
+                        <td>
+                            <span class="{{ ($itemMeta['is_plan_hidden'] ?? false) ? 'plan-hidden-name' : '' }}">{{ $item->name }}</span>
+                            @include('partials.manager.plan-limit-hint', ['meta' => $itemMeta, 'subscription' => $subscription, 'isCategory' => false])
+                        </td>
                         <td>{{ $item->category->name ?? '—' }}</td>
                         <td>{{ \App\Support\PriceFormatter::format($item->price) }}</td>
                         <td>{{ $item->display_order }}</td>
@@ -249,7 +269,8 @@
 
     <div class="menu-items-mobile" aria-label="Menu items (mobile)">
         @forelse($items as $item)
-            <details class="mi-card">
+            @php $itemMeta = $planVisibility->getMenuItemMeta((int) $item->id); @endphp
+            <details class="mi-card {{ ($itemMeta['is_plan_hidden'] ?? false) ? 'plan-hidden-row' : '' }}">
                 <summary class="mi-summary">
                     <div class="mi-left">
                         @if($item->image)
@@ -258,7 +279,8 @@
                             <div class="mi-thumb mi-thumb-empty">No Image</div>
                         @endif
                         <div class="mi-main">
-                            <div class="mi-name">{{ $item->name }}</div>
+                            <div class="mi-name {{ ($itemMeta['is_plan_hidden'] ?? false) ? 'plan-hidden-name' : '' }}">{{ $item->name }}</div>
+                            @include('partials.manager.plan-limit-hint', ['meta' => $itemMeta, 'subscription' => $subscription, 'isCategory' => false])
                             <div class="mi-meta">
                                 <span>{{ $item->category->name ?? '—' }}</span>
                                 <span class="mi-dot">•</span>

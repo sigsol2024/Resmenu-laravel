@@ -10,6 +10,7 @@ use App\Models\Section;
 use App\Models\Subscription;
 use App\Services\CategorySecondarySectionService;
 use App\Services\CustomizationService;
+use App\Services\PlanVisibilityService;
 use App\Services\UploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -22,6 +23,7 @@ class RestaurantHubController extends Controller
         private UploadService $uploads,
         private CustomizationService $customization,
         private CategorySecondarySectionService $secondarySections,
+        private PlanVisibilityService $planVisibility,
     ) {}
 
     public function show(Request $request, Restaurant $restaurant)
@@ -164,6 +166,8 @@ class RestaurantHubController extends Controller
             array_map('intval', $request->input('secondary_section_ids', [])),
         );
 
+        $this->planVisibility->forgetCache((int) $restaurant->id);
+
         return redirect()->route('admin.restaurants.hub', [$restaurant, 'tab' => 'menu'])->with('success', 'Category saved.');
     }
 
@@ -173,6 +177,8 @@ class RestaurantHubController extends Controller
         $this->uploads->delete('categories', $category->image);
         MenuItem::where('category_id', $category->id)->delete();
         $category->delete();
+
+        $this->planVisibility->forgetCache((int) $restaurant->id);
 
         return redirect()->route('admin.restaurants.hub', [$restaurant, 'tab' => 'menu'])->with('success', 'Category deleted.');
     }
@@ -214,6 +220,8 @@ class RestaurantHubController extends Controller
         ]);
         $item->save();
 
+        $this->planVisibility->forgetCache((int) $restaurant->id);
+
         return redirect()->route('admin.restaurants.hub', [$restaurant, 'tab' => 'menu'])->with('success', 'Menu item saved.');
     }
 
@@ -222,6 +230,8 @@ class RestaurantHubController extends Controller
         $item = MenuItem::where('restaurant_id', $restaurant->id)->findOrFail($request->input('id'));
         $this->uploads->delete('menu-items', $item->image);
         $item->delete();
+
+        $this->planVisibility->forgetCache((int) $restaurant->id);
 
         return redirect()->route('admin.restaurants.hub', [$restaurant, 'tab' => 'menu'])->with('success', 'Menu item deleted.');
     }

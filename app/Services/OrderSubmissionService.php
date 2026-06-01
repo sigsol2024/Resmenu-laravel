@@ -13,6 +13,7 @@ class OrderSubmissionService
     public function __construct(
         private SubscriptionService $subscriptions,
         private MailService $mail,
+        private PlanVisibilityService $planVisibility,
     ) {}
 
     /**
@@ -135,6 +136,8 @@ class OrderSubmissionService
             ->get(['id', 'name', 'price'])
             ->keyBy('id');
 
+        $visibility = $this->planVisibility->resolve($restaurantId);
+
         $lines = [];
         $subtotal = 0.0;
 
@@ -144,6 +147,11 @@ class OrderSubmissionService
             if (! $row) {
                 return ['success' => false, 'subtotal' => 0, 'lines' => [], 'errors' => ['Invalid or inactive menu item.']];
             }
+
+            if (! $visibility->isMenuItemVisibleOnPublicMenu($menuItemId)) {
+                return ['success' => false, 'subtotal' => 0, 'lines' => [], 'errors' => ['This menu item is no longer available.']];
+            }
+
             $quantity = min(max(1, (int) ($item['quantity'] ?? 1)), 99);
             $price = (float) $row->price;
             $lines[] = [

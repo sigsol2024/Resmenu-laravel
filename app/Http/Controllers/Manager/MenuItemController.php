@@ -7,6 +7,8 @@ use App\Models\Category;
 use App\Models\MenuItem;
 use App\Models\Restaurant;
 use App\Support\TenantScope;
+use App\Services\PlanVisibilityService;
+use App\Services\SubscriptionService;
 use App\Services\UploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -16,6 +18,7 @@ class MenuItemController extends Controller
     public function __construct(
         private UploadService $uploads,
         private SubscriptionService $subscriptions,
+        private PlanVisibilityService $planVisibility,
     ) {}
 
     public function index(Request $request)
@@ -57,6 +60,8 @@ class MenuItemController extends Controller
             'uploadUrl' => rtrim(config('resmenu.canonical_upload_url') ?: config('resmenu.upload_url'), '/'),
             'editItem' => $editItem,
             'openCreateModal' => $request->query('open') === 'create',
+            'planVisibility' => $this->planVisibility->resolve($restaurantId),
+            'subscription' => $this->subscriptions->getRestaurantSubscription($restaurantId),
         ]);
     }
 
@@ -87,6 +92,8 @@ class MenuItemController extends Controller
 
         MenuItem::create($data);
 
+        $this->planVisibility->forgetCache($restaurantId);
+
         return redirect()->route('manager.menu-items.index', $this->indexQueryParams($request))
             ->with('success', 'Menu item created.');
     }
@@ -115,6 +122,8 @@ class MenuItemController extends Controller
 
         $menuItem->update($data);
 
+        $this->planVisibility->forgetCache($restaurantId);
+
         return redirect()->route('manager.menu-items.index', $this->indexQueryParams($request))
             ->with('success', 'Menu item updated.');
     }
@@ -122,8 +131,11 @@ class MenuItemController extends Controller
     public function destroy(Request $request, MenuItem $menuItem)
     {
         $this->authorizeRestaurant($request, $menuItem);
+        $restaurantId = (int) $menuItem->restaurant_id;
         $this->uploads->delete('menu-items', $menuItem->image);
         $menuItem->delete();
+
+        $this->planVisibility->forgetCache($restaurantId);
 
         return redirect()->route('manager.menu-items.index', $this->indexQueryParams($request))
             ->with('success', 'Menu item deleted.');

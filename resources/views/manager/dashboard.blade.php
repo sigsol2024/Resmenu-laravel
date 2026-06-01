@@ -16,6 +16,32 @@
     <p class="page-subtitle">Overview of your restaurant menu and orders</p>
 </div>
 
+@if(isset($planVisibility) && $planVisibility->hasHiddenContent())
+    <div class="settings-card plan-compliance-card" style="margin-bottom:24px;padding:20px;border-left:4px solid #dc2626;">
+        <h2 style="font-size:1.125rem;font-weight:700;margin:0 0 12px;">Plan Compliance</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:12px;">
+            <div>
+                <div style="font-size:0.8rem;color:#6b7280;">Visible Categories</div>
+                <div style="font-size:1.25rem;font-weight:700;">{{ (int)($planVisibility->summary['categories']['visible_count'] ?? 0) }}</div>
+            </div>
+            <div>
+                <div style="font-size:0.8rem;color:#6b7280;">Hidden Categories</div>
+                <div style="font-size:1.25rem;font-weight:700;color:#dc2626;">{{ (int)($planVisibility->summary['categories']['hidden_count'] ?? 0) }}</div>
+            </div>
+            <div>
+                <div style="font-size:0.8rem;color:#6b7280;">Visible Menu Items</div>
+                <div style="font-size:1.25rem;font-weight:700;">{{ (int)($planVisibility->summary['menu_items']['visible_count'] ?? 0) }}</div>
+            </div>
+            <div>
+                <div style="font-size:0.8rem;color:#6b7280;">Hidden Menu Items</div>
+                <div style="font-size:1.25rem;font-weight:700;color:#dc2626;">{{ (int)($planVisibility->summary['menu_items']['hidden_count'] ?? 0) }}</div>
+            </div>
+        </div>
+        <p style="font-size:0.875rem;color:#6b7280;margin:0 0 12px;">Hidden content is not deleted and returns automatically if you upgrade your plan.</p>
+        <a href="{{ route('manager.billing.index') }}" class="btn btn-primary" style="display:inline-block;text-decoration:none;">Upgrade Plan</a>
+    </div>
+@endif
+
 @if(isset($subscription) && $subscription)
     @if(($subscription['status'] ?? '') === 'trial' && $trialDaysRemaining > 0)
         <div class="subscription-banner trial-banner">

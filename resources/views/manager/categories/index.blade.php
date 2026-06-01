@@ -25,6 +25,21 @@
     <div class="alert alert-error">{{ $errors->first('limit') }}</div>
 @endif
 
+@if(isset($planVisibility) && $planVisibility->hasHiddenContent())
+    <div class="alert alert-error plan-limit-banner">
+        <strong>Plan limits:</strong>
+        {{ (int)($planVisibility->summary['categories']['hidden_count'] ?? 0) }} categories are hidden on your public menu.
+        <a href="{{ route('manager.billing.index') }}" style="margin-left:8px;font-weight:600;">Upgrade plan</a>
+        or remove excess categories. Hidden categories are not deleted.
+    </div>
+@endif
+
+<style>
+.plan-hidden-row .plan-hidden-name { color: #dc2626; font-weight: 600; }
+.plan-hidden-hint { font-size: 0.75rem; color: #b91c1c; margin-top: 4px; max-width: 320px; line-height: 1.35; }
+.plan-limit-banner { margin-bottom: 16px; }
+</style>
+
 <div class="modal" id="categoryModal" style="display: {{ $showModal ? 'flex' : 'none' }};">
     <div class="modal-overlay" onclick="closeCategoryModal()"></div>
     <div class="modal-content">
@@ -194,7 +209,8 @@
             </thead>
             <tbody>
                 @forelse($categories as $cat)
-                    <tr>
+                    @php $catMeta = $planVisibility->getCategoryMeta((int) $cat->id); @endphp
+                    <tr class="{{ ($catMeta['is_plan_hidden'] ?? false) ? 'plan-hidden-row' : '' }}">
                         <td>
                             @if($cat->image)
                                 <img src="{{ $uploadUrl }}/categories/{{ rawurlencode($cat->image) }}" alt="" class="menu-item-image">
@@ -202,7 +218,10 @@
                                 <div class="menu-item-image" style="background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#999;font-size:0.65rem;">No Image</div>
                             @endif
                         </td>
-                        <td>{{ $cat->name }}</td>
+                        <td>
+                            <span class="{{ ($catMeta['is_plan_hidden'] ?? false) ? 'plan-hidden-name' : '' }}">{{ $cat->name }}</span>
+                            @include('partials.manager.plan-limit-hint', ['meta' => $catMeta, 'subscription' => $subscription, 'isCategory' => true])
+                        </td>
                         <td>{{ $cat->section->name ?? '—' }}</td>
                         <td>
                             <a href="{{ route('manager.menu-items.index', ['category_id' => $cat->id]) }}" class="cat-item-count-link" title="View menu items in this category">
@@ -240,7 +259,8 @@
 
     <div class="categories-mobile" aria-label="Categories (mobile)">
         @forelse($categories as $cat)
-            <details class="cat-card">
+            @php $catMeta = $planVisibility->getCategoryMeta((int) $cat->id); @endphp
+            <details class="cat-card {{ ($catMeta['is_plan_hidden'] ?? false) ? 'plan-hidden-row' : '' }}">
                 <summary class="cat-summary">
                     <div class="cat-left">
                         @if($cat->image)
@@ -249,7 +269,8 @@
                             <div class="cat-thumb cat-thumb-empty">No Image</div>
                         @endif
                         <div class="cat-main">
-                            <div class="cat-name">{{ $cat->name }}</div>
+                            <div class="cat-name {{ ($catMeta['is_plan_hidden'] ?? false) ? 'plan-hidden-name' : '' }}">{{ $cat->name }}</div>
+                            @include('partials.manager.plan-limit-hint', ['meta' => $catMeta, 'subscription' => $subscription, 'isCategory' => true])
                             <div class="cat-meta">
                                 <span>{{ $cat->menu_items_count }} {{ $cat->menu_items_count === 1 ? 'item' : 'items' }}</span>
                                 <span class="cat-dot">•</span>

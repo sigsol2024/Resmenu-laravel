@@ -29,6 +29,18 @@ class SubscriptionService
     public function syncExpiredStatuses(): int
     {
         $now = Carbon::now();
+        $expiringActive = Subscription::query()
+            ->where('status', 'active')
+            ->whereNotNull('current_period_end')
+            ->where('current_period_end', '<', $now)
+            ->pluck('restaurant_id');
+
+        $expiringTrial = Subscription::query()
+            ->where('status', 'trial')
+            ->whereNotNull('trial_ends_at')
+            ->where('trial_ends_at', '<', $now)
+            ->pluck('restaurant_id');
+
         $a = Subscription::query()
             ->where('status', 'active')
             ->whereNotNull('current_period_end')
@@ -40,6 +52,11 @@ class SubscriptionService
             ->whereNotNull('trial_ends_at')
             ->where('trial_ends_at', '<', $now)
             ->update(['status' => 'expired', 'updated_at' => $now]);
+
+        $visibility = app(PlanVisibilityService::class);
+        foreach ($expiringActive->merge($expiringTrial)->unique() as $restaurantId) {
+            $visibility->forgetCache((int) $restaurantId);
+        }
 
         return $a + $b;
     }
@@ -112,7 +129,7 @@ class SubscriptionService
         $cycle = $billingCycle === 'annual' ? 'annual' : 'monthly';
         $periodEnd = $cycle === 'annual' ? now()->addYear() : now()->addMonth();
 
-        return Subscription::query()->where('id', $subscriptionId)->update([
+        $updated = Subscription::query()->where('id', $subscriptionId)->update([
             'status' => 'active',
             'billing_cycle' => $cycle,
             'current_period_start' => now(),
@@ -121,15 +138,32 @@ class SubscriptionService
             'cancelled_at' => null,
             'updated_at' => now(),
         ]) > 0;
+
+        if ($updated) {
+            $restaurantId = (int) Subscription::query()->where('id', $subscriptionId)->value('restaurant_id');
+            if ($restaurantId > 0) {
+                app(PlanVisibilityService::class)->forgetCache($restaurantId);
+            }
+        }
+
+        return $updated;
     }
 
     public function deactivateSubscription(int $subscriptionId): bool
     {
-        return Subscription::query()->where('id', $subscriptionId)->update([
+        $restaurantId = (int) Subscription::query()->where('id', $subscriptionId)->value('restaurant_id');
+
+        $updated = Subscription::query()->where('id', $subscriptionId)->update([
             'status' => 'cancelled',
             'cancelled_at' => now(),
             'updated_at' => now(),
         ]) > 0;
+
+        if ($updated && $restaurantId > 0) {
+            app(PlanVisibilityService::class)->forgetCache($restaurantId);
+        }
+
+        return $updated;
     }
 
     /** @return array<string, mixed>|null */
@@ -553,6 +587,8 @@ class SubscriptionService
                 'applied_at' => now(),
                 'updated_at' => now(),
             ]);
+
+            app(PlanVisibilityService::class)->forgetCache((int) $subscription->restaurant_id);
 
             return true;
         });

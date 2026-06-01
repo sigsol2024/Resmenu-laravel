@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Support\LegacyMenuViewData;
+use App\Support\PlanVisibilityResult;
 use App\Models\Category;
 use App\Models\MenuItem;
 use App\Models\Restaurant;
@@ -12,6 +13,12 @@ use Illuminate\Support\Facades\DB;
 
 class MenuService
 {
+    private ?PlanVisibilityResult $visibility = null;
+
+    private ?int $visibilityRestaurantId = null;
+
+    public function __construct(private PlanVisibilityService $planVisibility) {}
+
     public function findActiveRestaurantBySlug(string $slug): ?Restaurant
     {
         return Restaurant::query()
@@ -80,10 +87,12 @@ class MenuService
             ->where('restaurant_id', $restaurantId)
             ->where('section_id', $sectionId)
             ->where('is_active', 1)
-            ->orderBy('display_order')
-            ->orderBy('name')
+            ->orderByRaw('COALESCE(display_order, 999999) ASC')
+            ->orderBy('id')
             ->get()
-            ->map(fn (Category $cat) => $this->mapCategory($cat))
+            ->map(fn (Category $cat) => $this->mapCategory($cat, $restaurantId))
+            ->filter()
+            ->values()
             ->all();
     }
 
@@ -105,7 +114,7 @@ class MenuService
                       AND css.is_active = 1 AND c.section_id <> ?
                 ) x
                 INNER JOIN categories c ON c.id = x.id
-                ORDER BY x.is_secondary ASC, c.display_order ASC, c.name ASC
+                ORDER BY x.is_secondary ASC, COALESCE(c.display_order, 999999) ASC, c.id ASC
             ', [$restaurantId, $sectionId, $restaurantId, $sectionId, $sectionId]);
 
             return collect($rows)->map(function ($row) {
@@ -114,7 +123,7 @@ class MenuService
                     return null;
                 }
 
-                return $this->mapCategory($cat);
+                return $this->mapCategory($cat, $restaurantId);
             })->filter()->values()->all();
         } catch (\Throwable) {
             return $this->primaryCategoriesForSection($restaurantId, $sectionId);
@@ -126,9 +135,12 @@ class MenuService
         $categories = Category::query()
             ->where('restaurant_id', $restaurant->id)
             ->where('is_active', 1)
-            ->orderBy('display_order')
+            ->orderByRaw('COALESCE(display_order, 999999) ASC')
+            ->orderBy('id')
             ->with(['menuItems' => function ($mq) {
-                $mq->where('is_available', 1)->orderBy('display_order');
+                $mq->where('is_available', 1)
+                    ->orderByRaw('COALESCE(display_order, 999999) ASC')
+                    ->orderBy('id');
             }])
             ->get();
 
@@ -143,17 +155,40 @@ class MenuService
             'display_order' => 1,
             'is_active' => 1,
             'image' => null,
-            'categories' => $categories->map(fn (Category $cat) => $this->mapCategory($cat))->all(),
+            'categories' => $categories->map(fn (Category $cat) => $this->mapCategory($cat, $restaurant->id))
+                ->filter()
+                ->values()
+                ->all(),
         ]];
     }
 
-    private function mapCategory(Category $category): array
+  private function visibilityFor(int $restaurantId): PlanVisibilityResult
     {
-        $category->loadMissing(['menuItems' => fn ($q) => $q->where('is_available', 1)->orderBy('display_order')]);
+        if ($this->visibility === null || $this->visibilityRestaurantId !== $restaurantId) {
+            $this->visibility = $this->planVisibility->resolve($restaurantId);
+            $this->visibilityRestaurantId = $restaurantId;
+        }
+
+        return $this->visibility;
+    }
+
+    private function mapCategory(Category $category, int $restaurantId): ?array
+    {
+        $visibility = $this->visibilityFor($restaurantId);
+
+        if (! $visibility->isCategoryVisibleOnPublicMenu((int) $category->id)) {
+            return null;
+        }
+
+        $category->loadMissing(['menuItems' => fn ($q) => $q->where('is_available', 1)->orderByRaw('COALESCE(display_order, 999999) ASC')->orderBy('id')]);
+        $items = $category->menuItems
+            ->filter(fn (MenuItem $item) => $visibility->isMenuItemVisibleOnPublicMenu((int) $item->id))
+            ->map(fn (MenuItem $item) => $item->toArray())
+            ->values()
+            ->all();
+
         $data = $category->toArray();
-        $data['menu_items'] = LegacyMenuViewData::normalizeMenuItems(
-            $category->menuItems->map(fn (MenuItem $item) => $item->toArray())->all()
-        );
+        $data['menu_items'] = LegacyMenuViewData::normalizeMenuItems($items);
 
         return $data;
     }

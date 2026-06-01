@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Restaurant;
 use App\Models\Section;
 use App\Services\CategorySecondarySectionService;
+use App\Services\PlanVisibilityService;
 use App\Services\SubscriptionService;
 use App\Support\TenantScope;
 use App\Services\UploadService;
@@ -19,6 +20,7 @@ class CategoryController extends Controller
         private UploadService $uploads,
         private SubscriptionService $subscriptions,
         private CategorySecondarySectionService $secondarySections,
+        private PlanVisibilityService $planVisibility,
     ) {}
 
     public function index(Request $request)
@@ -59,6 +61,8 @@ class CategoryController extends Controller
             'editCategory' => $editCategory,
             'secondarySectionIds' => $secondarySectionIds,
             'openCreateModal' => $request->query('open') === 'create',
+            'planVisibility' => $this->planVisibility->resolve($restaurantId),
+            'subscription' => $this->subscriptions->getRestaurantSubscription($restaurantId),
         ]);
     }
 
@@ -90,6 +94,8 @@ class CategoryController extends Controller
         $category = Category::create($data);
         $this->syncSecondarySections($request, $category->id, (int) $data['section_id']);
 
+        $this->planVisibility->forgetCache($restaurantId);
+
         return redirect()->route('manager.categories.index')->with('success', 'Category created.');
     }
 
@@ -118,15 +124,20 @@ class CategoryController extends Controller
         $category->update($data);
         $this->syncSecondarySections($request, $category->id, (int) $data['section_id']);
 
+        $this->planVisibility->forgetCache($restaurantId);
+
         return redirect()->route('manager.categories.index')->with('success', 'Category updated.');
     }
 
     public function destroy(Request $request, Category $category)
     {
         $this->authorizeRestaurant($request, $category);
+        $restaurantId = (int) $category->restaurant_id;
         $this->uploads->delete('categories', $category->image);
         $category->menuItems()->delete();
         $category->delete();
+
+        $this->planVisibility->forgetCache($restaurantId);
 
         return redirect()->route('manager.categories.index')->with('success', 'Category deleted.');
     }

@@ -9,6 +9,7 @@ use App\Models\Order;
 use App\Models\Restaurant;
 use App\Services\ManagerFeatureAccess;
 use App\Services\OrderService;
+use App\Services\PlanVisibilityService;
 use App\Services\QrAnalyticsService;
 use App\Services\SubscriptionService;
 use Illuminate\Http\Request;
@@ -22,6 +23,7 @@ class DashboardController extends Controller
         OrderService $orders,
         QrAnalyticsService $qr,
         ManagerFeatureAccess $features,
+        PlanVisibilityService $planVisibility,
     ) {
         $restaurantId = (int) $request->attributes->get('restaurant_id');
         $restaurant = Restaurant::findOrFail($restaurantId);
@@ -54,6 +56,7 @@ class DashboardController extends Controller
             'showOrdersQuickAction' => $features->foodOrderingUsable($restaurantId),
             'stats' => $stats,
             'qrAnalytics' => $qrStats,
+            'planVisibility' => $planVisibility->resolve($restaurantId),
         ]);
     }
 }

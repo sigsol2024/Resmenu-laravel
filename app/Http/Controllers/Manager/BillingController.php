@@ -7,6 +7,7 @@ use App\Models\Restaurant;
 use App\Models\Subscription;
 use App\Services\ManagerFeatureAccess;
 use App\Services\PaymentGatewayService;
+use App\Services\PlanVisibilityService;
 use App\Services\RestaurantPaymentSettingsService;
 use App\Services\SubscriptionService;
 use Illuminate\Http\Request;
@@ -15,7 +16,10 @@ use Illuminate\Support\Facades\Http;
 
 class BillingController extends Controller
 {
-    public function __construct(private SubscriptionService $subscriptions) {}
+    public function __construct(
+        private SubscriptionService $subscriptions,
+        private PlanVisibilityService $planVisibility,
+    ) {}
 
     public function index(Request $request)
     {
@@ -142,9 +146,35 @@ class BillingController extends Controller
 
     public function checkout(Request $request)
     {
+        $restaurantId = (int) $request->attributes->get('restaurant_id');
+        $plans = $this->subscriptions->getPlans(true);
+        $usage = $this->subscriptions->getUsageSummary($restaurantId);
+        $planComparisons = [];
+
+        foreach ($plans as $plan) {
+            $planComparisons[(int) $plan['id']] = $this->planVisibility->compareToPlan($restaurantId, (int) $plan['id']);
+        }
+
+        $selectedPlanSlug = strtolower(trim((string) $request->query('plan', '')));
+        $selectedCycle = strtolower(trim((string) $request->query('cycle', 'monthly'))) === 'annual' ? 'annual' : 'monthly';
+        $selectedPlanId = null;
+
+        if ($selectedPlanSlug !== '') {
+            foreach ($plans as $plan) {
+                if (($plan['slug'] ?? '') === $selectedPlanSlug) {
+                    $selectedPlanId = (int) $plan['id'];
+                    break;
+                }
+            }
+        }
+
         return view('manager.billing.checkout', [
-            'restaurant' => Restaurant::findOrFail((int) $request->attributes->get('restaurant_id')),
-            'plans' => $this->subscriptions->getPlans(true),
+            'restaurant' => Restaurant::findOrFail($restaurantId),
+            'plans' => $plans,
+            'usage' => $usage,
+            'planComparisons' => $planComparisons,
+            'selectedPlanId' => $selectedPlanId,
+            'selectedCycle' => $selectedCycle,
         ]);
     }
 

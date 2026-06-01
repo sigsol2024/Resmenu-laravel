@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
+use App\Services\PlanVisibilityService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -42,9 +43,11 @@ class SubscriptionPlanController extends Controller
         return view('admin.subscription-plans.form', ['plan' => $subscriptionPlan]);
     }
 
-    public function update(Request $request, SubscriptionPlan $subscriptionPlan)
+    public function update(Request $request, SubscriptionPlan $subscriptionPlan, PlanVisibilityService $planVisibility)
     {
         $subscriptionPlan->update($this->validated($request));
+
+        $planVisibility->forgetCacheForPlan((int) $subscriptionPlan->id);
 
         return redirect()->route('admin.subscription-plans.index')->with('success', 'Plan updated.');
     }
