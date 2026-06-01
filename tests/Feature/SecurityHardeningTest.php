@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\Manager;
 use App\Models\Order;
 use App\Models\Restaurant;
+use App\Models\Subscription;
+use App\Services\BankTransferService;
 use App\Services\PendingOnlinePaymentService;
 use App\Services\RecaptchaService;
 use App\Support\OrderConfirmationToken;
@@ -12,6 +14,7 @@ use App\Support\ReservationConfirmationToken;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
@@ -314,5 +317,191 @@ class SecurityHardeningTest extends TestCase
         $service = app(RecaptchaService::class);
         $this->assertFalse($service->shouldEnforce());
         $this->assertTrue($service->verifyToken(''));
+    }
+
+    public function test_bank_transfer_customer_claim_records_customer_claimed_status(): void
+    {
+        try {
+            if (! Schema::hasTable('pending_bank_transfers')) {
+                $this->markTestSkipped('pending_bank_transfers table not available.');
+            }
+        } catch (\Throwable) {
+            $this->markTestSkipped('Database not available.');
+        }
+
+        $restaurant = Restaurant::create([
+            'name' => 'Bank Cafe',
+            'slug' => 'bank-cafe-'.uniqid(),
+            'email' => 'bank@test.com',
+            'is_active' => 1,
+            'template_id' => 4,
+        ]);
+
+        $token = 'tok_'.bin2hex(random_bytes(8));
+        $draftId = DB::table('pending_bank_transfers')->insertGetId([
+            'token' => $token,
+            'restaurant_id' => $restaurant->id,
+            'payment_type' => 'order',
+            'cart_json' => '[]',
+            'customer_name' => 'Pat',
+            'customer_phone' => '080',
+            'customer_email' => 'pat@test.com',
+            'delivery_address' => '',
+            'subtotal' => 10,
+            'delivery_fee' => 0,
+            'tax' => 0,
+            'total' => 10,
+            'status' => 'pending',
+            'created_at' => now(),
+        ]);
+
+        $result = app(BankTransferService::class)->customerClaimPayment($token);
+
+        $this->assertTrue($result['success'] ?? false);
+        $this->assertDatabaseHas('pending_bank_transfers', [
+            'id' => $draftId,
+            'status' => 'customer_claimed',
+        ]);
+    }
+
+    public function test_expired_subscription_redirects_manager_write_actions_to_billing(): void
+    {
+        if (! $this->legacySchemaAvailable()) {
+            $this->markTestSkipped('Legacy schema not available.');
+        }
+
+        $restaurant = Restaurant::create([
+            'name' => 'Locked Cafe',
+            'slug' => 'locked-cafe-'.uniqid(),
+            'email' => 'locked@test.com',
+            'is_active' => 1,
+            'template_id' => 4,
+        ]);
+
+        $planId = DB::table('subscription_plans')->where('is_active', 1)->value('id');
+        if (! $planId) {
+            $this->markTestSkipped('No subscription plans in database.');
+        }
+
+        Subscription::forceCreate([
+            'restaurant_id' => $restaurant->id,
+            'plan_id' => (int) $planId,
+            'billing_cycle' => 'monthly',
+            'status' => 'expired',
+            'trial_ends_at' => now()->subDay(),
+        ]);
+
+        $sectionId = DB::table('sections')->insertGetId([
+            'restaurant_id' => $restaurant->id,
+            'name' => 'Main',
+            'slug' => 'main-'.uniqid(),
+            'display_order' => 0,
+            'is_active' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $manager = Manager::create([
+            'username' => 'locked'.uniqid(),
+            'email' => 'locked'.uniqid().'@test.com',
+            'password_hash' => bcrypt('password'),
+            'restaurant_id' => $restaurant->id,
+        ]);
+
+        $this->actingAs($manager, 'manager')
+            ->withSession(['restaurant_id' => $restaurant->id])
+            ->post(route('manager.categories.store'), [
+                'name' => 'Blocked Category',
+                'section_id' => $sectionId,
+            ])
+            ->assertRedirect(route('manager.billing.index', ['upgrade_required' => 1]));
+    }
+
+    public function test_manager_cannot_assign_category_to_another_restaurants_section(): void
+    {
+        if (! $this->legacySchemaAvailable()) {
+            $this->markTestSkipped('Legacy schema not available.');
+        }
+
+        $planId = DB::table('subscription_plans')->where('is_active', 1)->value('id');
+        if (! $planId) {
+            $this->markTestSkipped('No subscription plans in database.');
+        }
+
+        $restaurantA = Restaurant::create([
+            'name' => 'Tenant A',
+            'slug' => 'tenant-a-'.uniqid(),
+            'email' => 'a@test.com',
+            'is_active' => 1,
+            'template_id' => 4,
+        ]);
+        $restaurantB = Restaurant::create([
+            'name' => 'Tenant B',
+            'slug' => 'tenant-b-'.uniqid(),
+            'email' => 'b@test.com',
+            'is_active' => 1,
+            'template_id' => 4,
+        ]);
+
+        foreach ([$restaurantA, $restaurantB] as $restaurant) {
+            Subscription::forceCreate([
+                'restaurant_id' => $restaurant->id,
+                'plan_id' => (int) $planId,
+                'billing_cycle' => 'monthly',
+                'status' => 'trial',
+                'trial_ends_at' => now()->addDays(7),
+            ]);
+        }
+
+        $sectionBId = DB::table('sections')->insertGetId([
+            'restaurant_id' => $restaurantB->id,
+            'name' => 'B Section',
+            'slug' => 'b-section-'.uniqid(),
+            'display_order' => 0,
+            'is_active' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $managerA = Manager::create([
+            'username' => 'tenanta'.uniqid(),
+            'email' => 'tenanta'.uniqid().'@test.com',
+            'password_hash' => bcrypt('password'),
+            'restaurant_id' => $restaurantA->id,
+        ]);
+
+        $this->actingAs($managerA, 'manager')
+            ->withSession(['restaurant_id' => $restaurantA->id])
+            ->post(route('manager.categories.store'), [
+                'name' => 'Cross Tenant',
+                'section_id' => $sectionBId,
+            ])
+            ->assertSessionHasErrors('section_id');
+    }
+
+    public function test_login_rate_limits_repeated_failures_per_username(): void
+    {
+        try {
+            DB::connection()->getPdo();
+        } catch (\Throwable) {
+            $this->markTestSkipped('Database not available.');
+        }
+
+        RateLimiter::clear('login-user:ratelimit-user');
+
+        for ($i = 0; $i < 5; $i++) {
+            $this->post(route('login.submit'), [
+                'username' => 'ratelimit-user',
+                'password' => 'wrong-password',
+            ]);
+        }
+
+        $response = $this->post(route('login.submit'), [
+            'username' => 'ratelimit-user',
+            'password' => 'wrong-password',
+        ]);
+
+        $response->assertSessionHasErrors('username');
+        $this->assertStringContainsStringIgnoringCase('too many', session('errors')->get('username')[0] ?? '');
     }
 }

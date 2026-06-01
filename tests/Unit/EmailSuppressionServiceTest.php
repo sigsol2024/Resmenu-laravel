@@ -32,7 +32,7 @@ class EmailSuppressionServiceTest extends TestCase
         $this->assertTrue($service->isSuppressed($email));
 
         DB::table('email_delivery_suppressions')
-            ->where('email_sha256', hash('sha256', strtolower(trim($email)))
+            ->where('email_sha256', hash('sha256', strtolower(trim($email))))
             ->delete();
     }
 
@@ -49,7 +49,7 @@ class EmailSuppressionServiceTest extends TestCase
         $this->assertFalse($sent);
 
         DB::table('email_delivery_suppressions')
-            ->where('email_sha256', hash('sha256', strtolower(trim($email)))
+            ->where('email_sha256', hash('sha256', strtolower(trim($email))))
             ->delete();
     }
 
