@@ -445,14 +445,26 @@ class SubscriptionService
         $currentPlanId = (int) ($currentSubscription['plan_id'] ?? 0);
         $targetPlanId = (int) ($targetPlan['id'] ?? 0);
         $currentCycle = ($currentSubscription['billing_cycle'] ?? 'monthly') === 'annual' ? 'annual' : 'monthly';
-        $status = (string) ($currentSubscription['status'] ?? '');
+        $effectiveStatus = $this->resolveEffectiveSubscriptionStatus($currentSubscription);
 
         if ($currentPlanId === $targetPlanId && $currentCycle === $targetCycle) {
+            if (in_array($effectiveStatus, ['expired', 'cancelled'], true)) {
+                return ['mode' => 'immediate', 'reason' => 'renewal', 'type' => 'renew'];
+            }
+            if ($effectiveStatus === 'trial') {
+                return ['mode' => 'immediate', 'reason' => 'trial_subscribe', 'type' => 'subscribe'];
+            }
+
             return ['mode' => 'none', 'reason' => 'already_on_plan', 'type' => 'same'];
         }
 
-        if (in_array($status, ['trial', 'pending', 'expired', 'cancelled'], true)) {
-            return ['mode' => 'immediate', 'reason' => 'non_active_or_trial', 'type' => 'change'];
+        if (in_array($effectiveStatus, ['expired', 'cancelled', 'trial'], true)
+            || in_array((string) ($currentSubscription['status'] ?? ''), ['pending'], true)) {
+            if ($currentPlanId === $targetPlanId) {
+                return ['mode' => 'immediate', 'reason' => 'renewal', 'type' => 'renew'];
+            }
+
+            return ['mode' => 'immediate', 'reason' => 'non_active_or_trial', 'type' => 'subscribe'];
         }
 
         $currentRank = $this->getSubscriptionPlanRank($currentSubscription);
@@ -471,6 +483,156 @@ class SubscriptionService
         }
 
         return ['mode' => 'none', 'reason' => 'already_on_plan', 'type' => 'same'];
+    }
+
+    /**
+     * Primary CTA on the current-plan card (renew vs upgrade vs subscribe).
+     *
+     * @param  array<string, mixed>|null  $subscription
+     * @return array{type:string, label:string, css_class:string, url:string}
+     */
+    public function getPrimaryBillingAction(?array $subscription): array
+    {
+        if (! $subscription) {
+            return [
+                'type' => 'subscribe',
+                'label' => 'View Plans & Subscribe',
+                'css_class' => 'btn-upgrade',
+                'url' => route('manager.billing.checkout'),
+            ];
+        }
+
+        $effectiveStatus = $this->resolveEffectiveSubscriptionStatus($subscription);
+        $planSlug = (string) ($subscription['plan_slug'] ?? '');
+        $cycle = ($subscription['billing_cycle'] ?? 'monthly') === 'annual' ? 'annual' : 'monthly';
+
+        if (in_array($effectiveStatus, ['expired', 'cancelled'], true)) {
+            return [
+                'type' => 'renew',
+                'label' => 'Renew Plan',
+                'css_class' => 'btn-renew',
+                'url' => route('manager.billing.checkout', array_filter([
+                    'plan' => $planSlug !== '' ? $planSlug : null,
+                    'cycle' => $cycle,
+                ])),
+            ];
+        }
+
+        if ($effectiveStatus === 'trial') {
+            return [
+                'type' => 'subscribe',
+                'label' => 'Subscribe Now',
+                'css_class' => 'btn-upgrade',
+                'url' => route('manager.billing.checkout', array_filter([
+                    'plan' => $planSlug !== '' ? $planSlug : null,
+                    'cycle' => $cycle,
+                ])),
+            ];
+        }
+
+        if ($planSlug === 'enterprise') {
+            return ['type' => 'none', 'label' => '', 'css_class' => '', 'url' => ''];
+        }
+
+        return [
+            'type' => 'upgrade',
+            'label' => 'Upgrade Plan',
+            'css_class' => 'btn-upgrade',
+            'url' => route('manager.billing.index').'#plans',
+        ];
+    }
+
+    /**
+     * @param  array{mode:string, reason:string, type:string}  $decision
+     * @return array{label:string, button_class:string, is_current_state:bool, variant:string}
+     */
+    public function getPlanChangeButtonPresentation(array $decision): array
+    {
+        $mode = $decision['mode'] ?? 'none';
+        $type = $decision['type'] ?? 'same';
+
+        if ($mode === 'none') {
+            return [
+                'label' => 'Current plan',
+                'button_class' => 'btn-select-plan current plan-action-current',
+                'is_current_state' => true,
+                'variant' => 'current',
+            ];
+        }
+
+        if ($type === 'renew') {
+            return [
+                'label' => 'Renew',
+                'button_class' => 'btn-select-plan btn-renew plan-action-btn',
+                'is_current_state' => false,
+                'variant' => 'renew',
+            ];
+        }
+
+        if ($mode === 'scheduled') {
+            return [
+                'label' => $type === 'downgrade' ? 'Schedule downgrade' : 'Schedule for period end',
+                'button_class' => 'btn-select-plan primary plan-action-btn',
+                'is_current_state' => false,
+                'variant' => 'scheduled',
+            ];
+        }
+
+        if ($type === 'upgrade') {
+            return [
+                'label' => 'Upgrade',
+                'button_class' => 'btn-select-plan primary plan-action-btn',
+                'is_current_state' => false,
+                'variant' => 'upgrade',
+            ];
+        }
+
+        if (in_array($type, ['subscribe', 'new'], true)) {
+            return [
+                'label' => 'Subscribe',
+                'button_class' => 'btn-select-plan primary plan-action-btn',
+                'is_current_state' => false,
+                'variant' => 'subscribe',
+            ];
+        }
+
+        return [
+            'label' => 'Continue',
+            'button_class' => 'btn-select-plan primary plan-action-btn',
+            'is_current_state' => false,
+            'variant' => 'default',
+        ];
+    }
+
+    /** @param  array<string, mixed>|null  $subscription */
+    public function getBillingPeriodLabel(?array $subscription, array $statusInfo): ?array
+    {
+        if (! $subscription) {
+            return null;
+        }
+
+        $effective = (string) ($statusInfo['effective_status'] ?? '');
+
+        if ($effective === 'trial' && ! empty($subscription['trial_ends_at'])) {
+            return [
+                'label' => 'Trial Ends',
+                'value' => Carbon::parse($subscription['trial_ends_at'])->format('M j, Y'),
+            ];
+        }
+
+        if (! empty($subscription['current_period_end'])) {
+            $date = Carbon::parse($subscription['current_period_end'])->format('M j, Y');
+
+            if (in_array($effective, ['expired', 'cancelled'], true)) {
+                return ['label' => 'Expired On', 'value' => $date];
+            }
+
+            if ($effective === 'active') {
+                return ['label' => 'Next Billing', 'value' => $date];
+            }
+        }
+
+        return null;
     }
 
     /** @return array<string, mixed>|null */

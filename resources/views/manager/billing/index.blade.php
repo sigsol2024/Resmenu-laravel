@@ -67,15 +67,10 @@
         </div>
 
         <div class="plan-details">
-            @if(($subscription['status'] ?? '') === 'trial' && !empty($subscription['trial_ends_at']))
+            @if($billingPeriod)
                 <div class="plan-detail-item">
-                    <span class="plan-detail-label">Trial Ends</span>
-                    <span class="plan-detail-value">{{ \Illuminate\Support\Carbon::parse($subscription['trial_ends_at'])->format('M j, Y') }}</span>
-                </div>
-            @elseif(!empty($subscription['current_period_end']))
-                <div class="plan-detail-item">
-                    <span class="plan-detail-label">Next Billing</span>
-                    <span class="plan-detail-value">{{ \Illuminate\Support\Carbon::parse($subscription['current_period_end'])->format('M j, Y') }}</span>
+                    <span class="plan-detail-label">{{ $billingPeriod['label'] }}</span>
+                    <span class="plan-detail-value">{{ $billingPeriod['value'] }}</span>
                 </div>
             @endif
             <div class="plan-detail-item">
@@ -89,8 +84,8 @@
         </div>
 
         <div class="plan-actions">
-            @if(($subscription['plan_slug'] ?? '') !== 'enterprise')
-                <a href="{{ route('manager.billing.checkout', ['upgrade' => 1]) }}" class="btn-upgrade">Upgrade Plan</a>
+            @if(($primaryBillingAction['type'] ?? '') !== 'none' && !empty($primaryBillingAction['url']) && ($statusInfo['effective_status'] ?? '') !== 'trial')
+                <a href="{{ $primaryBillingAction['url'] }}" class="{{ $primaryBillingAction['css_class'] }}">{{ $primaryBillingAction['label'] }}</a>
             @endif
         </div>
     </div>
@@ -167,7 +162,7 @@
     </div>
 @endif
 
-<div class="plans-section">
+<div class="plans-section" id="plans">
     <h2 class="section-title">Available Plans</h2>
     <div class="plans-grid">
         @foreach($plans as $plan)
@@ -183,6 +178,12 @@
                 $currentCycle = $subscription && $isCurrent ? ($subscription['billing_cycle'] ?? 'monthly') : 'monthly';
                 $defaultCycle = $currentCycle === 'annual' ? 'annual' : 'monthly';
                 $decisionForDefault = $defaultCycle === 'annual' ? $annualDecision : $monthlyDecision;
+                $subscriptionService = app(\App\Services\SubscriptionService::class);
+                $planPresentations = [
+                    'monthly' => $subscriptionService->getPlanChangeButtonPresentation($monthlyDecision),
+                    'annual' => $subscriptionService->getPlanChangeButtonPresentation($annualDecision),
+                ];
+                $defaultPresentation = $planPresentations[$defaultCycle];
             @endphp
             <div class="plan-option {{ $isCurrent ? 'current' : '' }} {{ $isPopular ? 'popular' : '' }}">
                 @if($isPopular)
@@ -212,7 +213,8 @@
                         {{ (int)($plan['max_templates'] ?? 0) === -1 ? 'All' : $plan['max_templates'] }} Templates
                     </li>
                 </ul>
-                <form method="post" action="{{ route('manager.billing.index') }}" class="plan-select-form" style="margin:0;" data-monthly-mode="{{ $monthlyDecision['mode'] }}" data-annual-mode="{{ $annualDecision['mode'] }}">
+                <form method="post" action="{{ route('manager.billing.index') }}" class="plan-select-form" style="margin:0;"
+                    data-presentations='@json($planPresentations)'>
                     @csrf
                     <input type="hidden" name="action" value="schedule_change">
                     <input type="hidden" name="target_plan_id" value="{{ (int)$plan['id'] }}">
@@ -222,17 +224,14 @@
                         <option value="annual" @selected($defaultCycle === 'annual')>Yearly</option>
                     </select>
                     <div class="plan-action-wrap" style="margin-top:8px;">
-                        @if($decisionForDefault['mode'] === 'none')
-                            <span class="btn-select-plan current plan-action-current" style="display:inline-block;width:100%;text-align:center;">Current plan</span>
-                            <button type="submit" class="btn-select-plan primary plan-action-btn" style="width:100%;border:none;cursor:pointer;display:none;">Subscribe</button>
-                        @else
-                            <span class="btn-select-plan current plan-action-current" style="display:none;width:100%;text-align:center;">Current plan</span>
-                            <button type="submit" class="btn-select-plan primary plan-action-btn" style="width:100%;border:none;cursor:pointer;">{{ $decisionForDefault['mode'] === 'scheduled' ? 'Schedule for period end' : 'Subscribe' }}</button>
-                        @endif
+                        <span class="{{ $defaultPresentation['button_class'] }} plan-action-current" style="{{ $defaultPresentation['is_current_state'] ? 'display:inline-block;width:100%;text-align:center;' : 'display:none;' }}">{{ $defaultPresentation['label'] }}</span>
+                        <button type="submit" class="{{ $defaultPresentation['is_current_state'] ? 'btn-select-plan primary plan-action-btn' : $defaultPresentation['button_class'] }} plan-action-btn" style="width:100%;border:none;cursor:pointer;{{ $defaultPresentation['is_current_state'] ? 'display:none;' : '' }}">{{ $defaultPresentation['label'] }}</button>
                     </div>
                 </form>
                 @php
-                    if ($isCurrent) {
+                    if ($isCurrent && in_array($statusInfo['effective_status'] ?? '', ['expired', 'cancelled'], true)) {
+                        $changeHint = 'Your plan has expired. Renew to restore your public menu and manager features.';
+                    } elseif ($isCurrent) {
                         $changeHint = 'Current plan. Upgrades are immediate; downgrades or billing-cycle changes are scheduled.';
                     } elseif ($monthlyDecision['mode'] === 'scheduled' || $annualDecision['mode'] === 'scheduled') {
                         $changeHint = 'Downgrades and billing-cycle changes are scheduled for your period end.';
@@ -249,24 +248,41 @@
 
 <script>
 (function() {
-    function updatePlanAction(form) {
-        var sel = form.querySelector('.plan-cycle-select');
-        var wrap = form.querySelector('.plan-action-wrap');
-        if (!sel || !wrap) return;
-        var mode = sel.value === 'annual' ? form.getAttribute('data-annual-mode') : form.getAttribute('data-monthly-mode');
+    function applyPresentation(wrap, presentation) {
         var currentSpan = wrap.querySelector('.plan-action-current');
         var btn = wrap.querySelector('.plan-action-btn');
-        if (mode === 'none') {
-            if (currentSpan) currentSpan.style.display = 'inline-block';
-            if (btn) { btn.style.display = 'none'; btn.disabled = true; }
+        if (!presentation || !wrap) return;
+
+        if (presentation.is_current_state) {
+            if (currentSpan) {
+                currentSpan.style.display = 'inline-block';
+                currentSpan.className = presentation.button_class + ' plan-action-current';
+                currentSpan.textContent = presentation.label;
+            }
+            if (btn) btn.style.display = 'none';
         } else {
             if (currentSpan) currentSpan.style.display = 'none';
             if (btn) {
                 btn.style.display = 'block';
                 btn.disabled = false;
-                btn.textContent = mode === 'scheduled' ? 'Schedule for period end' : 'Subscribe';
+                btn.textContent = presentation.label;
+                btn.className = presentation.button_class + ' plan-action-btn';
             }
         }
+    }
+
+    function updatePlanAction(form) {
+        var sel = form.querySelector('.plan-cycle-select');
+        var wrap = form.querySelector('.plan-action-wrap');
+        if (!sel || !wrap) return;
+        var presentations = {};
+        try {
+            presentations = JSON.parse(form.getAttribute('data-presentations') || '{}');
+        } catch (e) {
+            return;
+        }
+        var presentation = presentations[sel.value] || presentations.monthly;
+        applyPresentation(wrap, presentation);
     }
     document.querySelectorAll('.plan-select-form').forEach(function(form) {
         var sel = form.querySelector('.plan-cycle-select');

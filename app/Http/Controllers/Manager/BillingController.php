@@ -62,11 +62,14 @@ class BillingController extends Controller
 
         $subscription = $this->subscriptions->getRestaurantSubscription($restaurantId);
         $subscriptionId = (int) ($subscription['id'] ?? 0);
+        $statusInfo = $this->subscriptions->getSubscriptionStatusInfo($subscription);
 
         return view('manager.billing.index', [
             'restaurant' => $restaurant,
             'subscription' => $subscription,
-            'statusInfo' => $this->subscriptions->getSubscriptionStatusInfo($subscription),
+            'statusInfo' => $statusInfo,
+            'primaryBillingAction' => $this->subscriptions->getPrimaryBillingAction($subscription),
+            'billingPeriod' => $this->subscriptions->getBillingPeriodLabel($subscription, $statusInfo),
             'plans' => $this->subscriptions->getPlans(true),
             'usage' => $this->subscriptions->getUsageSummary($restaurantId),
             'paymentHistory' => $this->subscriptions->getPaymentHistory($restaurantId, 3),

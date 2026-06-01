@@ -199,6 +199,31 @@
     box-shadow: 0 4px 15px rgba(0,0,0,0.15);
 }
 
+.btn-renew {
+    background: #dc2626;
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: var(--radius);
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-block;
+}
+
+.btn-renew:hover {
+    background: #b91c1c;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.35);
+}
+
+.btn-select-plan.btn-renew {
+    width: 100%;
+    text-align: center;
+}
+
 .btn-manage {
     background: rgba(255,255,255,0.2);
     color: #fff;
