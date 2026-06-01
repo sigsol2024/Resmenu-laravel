@@ -13,6 +13,7 @@ use App\Services\SubscriptionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Validation\Rule;
 
 class BillingController extends Controller
 {
@@ -147,12 +148,13 @@ class BillingController extends Controller
         return redirect()->route('manager.billing.index');
     }
 
-    public function checkout(Request $request)
+    public function checkout(Request $request, PaymentGatewayService $gateway)
     {
         $restaurantId = (int) $request->attributes->get('restaurant_id');
         $plans = $this->subscriptions->getPlans(true);
         $usage = $this->subscriptions->getUsageSummary($restaurantId);
         $planComparisons = [];
+        $paymentGateways = $gateway->activePlatformGateways();
 
         foreach ($plans as $plan) {
             $planComparisons[(int) $plan['id']] = $this->planVisibility->compareToPlan($restaurantId, (int) $plan['id']);
@@ -178,15 +180,22 @@ class BillingController extends Controller
             'planComparisons' => $planComparisons,
             'selectedPlanId' => $selectedPlanId,
             'selectedCycle' => $selectedCycle,
+            'paymentGateways' => $paymentGateways,
         ]);
     }
 
     public function processPayment(Request $request, PaymentGatewayService $gateway)
     {
+        $activeGatewayCodes = array_column($gateway->activePlatformGateways(), 'code');
+
+        if ($activeGatewayCodes === []) {
+            return back()->with('error', 'No payment gateway is currently available. Please contact support.');
+        }
+
         $data = $request->validate([
             'plan_id' => 'required|integer',
             'billing_cycle' => 'nullable|in:monthly,annual',
-            'gateway' => 'nullable|in:paystack,flutterwave',
+            'gateway' => ['nullable', Rule::in($activeGatewayCodes)],
         ]);
 
         $restaurantId = (int) $request->attributes->get('restaurant_id');
@@ -194,7 +203,7 @@ class BillingController extends Controller
             $restaurantId,
             (int) $data['plan_id'],
             $data['billing_cycle'] ?? 'monthly',
-            $data['gateway'] ?? 'paystack',
+            $data['gateway'] ?? $activeGatewayCodes[0],
         );
 
         if (! empty($result['redirect_url'])) {

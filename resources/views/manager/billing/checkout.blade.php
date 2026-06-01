@@ -63,10 +63,16 @@
     </div>
     <div style="margin-bottom:20px;">
         <p class="font-medium" style="font-weight:600;margin-bottom:8px;">Payment gateway</p>
-        <label style="display:block;margin-bottom:4px;"><input type="radio" name="gateway" value="paystack" checked> Paystack</label>
-        <label style="display:block;"><input type="radio" name="gateway" value="flutterwave"> Flutterwave</label>
+        @forelse($paymentGateways ?? [] as $index => $paymentGateway)
+            <label style="display:block;margin-bottom:4px;">
+                <input type="radio" name="gateway" value="{{ $paymentGateway['code'] }}" @checked($index === 0) required>
+                {{ $paymentGateway['label'] }}
+            </label>
+        @empty
+            <p style="color:#b91c1c;margin:0;">No payment gateway is currently available. Please contact support.</p>
+        @endforelse
     </div>
-    <button type="submit" class="btn btn-primary">Continue to payment</button>
+    <button type="submit" class="btn btn-primary" @disabled(empty($paymentGateways))>Continue to payment</button>
 </form>
 
 <script>

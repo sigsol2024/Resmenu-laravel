@@ -11,6 +11,11 @@ use Illuminate\Support\Str;
 
 class PaymentGatewayService
 {
+    private const PLATFORM_GATEWAY_LABELS = [
+        'paystack' => 'Paystack',
+        'flutterwave' => 'Flutterwave',
+    ];
+
     public function __construct(private SubscriptionService $subscriptions) {}
 
     /** @return array{redirect_url?:string, reference?:string, error?:string} */
@@ -354,6 +359,28 @@ class PaymentGatewayService
             'public_key' => $test ? ($row->public_key_test ?? '') : ($row->public_key_live ?? ''),
             'secret_key' => LegacyEncryption::decrypt($test ? ($row->secret_key_test ?? '') : ($row->secret_key_live ?? '')),
         ];
+    }
+
+    public function isPlatformGatewayAvailable(string $gateway): bool
+    {
+        if (! isset(self::PLATFORM_GATEWAY_LABELS[$gateway])) {
+            return false;
+        }
+
+        return ($this->platformKeys($gateway)['secret_key'] ?? '') !== '';
+    }
+
+    /** @return list<array{code:string, label:string}> */
+    public function activePlatformGateways(): array
+    {
+        $gateways = [];
+        foreach (self::PLATFORM_GATEWAY_LABELS as $code => $label) {
+            if ($this->isPlatformGatewayAvailable($code)) {
+                $gateways[] = ['code' => $code, 'label' => $label];
+            }
+        }
+
+        return $gateways;
     }
 
     /** @return array{public_key:string, secret_key:string} */
