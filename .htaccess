@@ -11,6 +11,9 @@
     RewriteCond %{HTTP:X-Forwarded-Proto} !https
     RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
+    # Allow public storage URLs when doc root is project root
+    RewriteRule ^storage/(.*)$ public/storage/$1 [L]
+
     # Block web access to sensitive repo paths when doc root is the project root
     RewriteRule ^(\.env|artisan|composer\.(json|lock)|package\.json|phpunit\.xml|vendor|storage|bootstrap|config|database|resources|routes|tests|app)(/|$) - [F,L]
 
