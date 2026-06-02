@@ -1,0 +1,28 @@
+# cPanel primary domain: document root is the Laravel project root (public_html),
+# not public/. Forwards all web requests into public/ (Vogue Dress / Stay Eazi pattern).
+# When the vhost points at public/ instead, this file is never hit — safe on subdomain deploys.
+
+<IfModule mod_rewrite.c>
+    Options -Indexes +FollowSymLinks
+    RewriteEngine On
+
+    # HTTPS — required when SESSION_SECURE_COOKIE=true (proxy may send X-Forwarded-Proto)
+    RewriteCond %{HTTPS} !=on
+    RewriteCond %{HTTP:X-Forwarded-Proto} !https
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # Block web access to sensitive repo paths when doc root is the project root
+    RewriteRule ^(\.env|artisan|composer\.(json|lock)|package\.json|phpunit\.xml|vendor|storage|bootstrap|config|database|resources|routes|tests|app)(/|$) - [F,L]
+
+    # Already targeting /public/ — do not rewrite again
+    RewriteCond %{REQUEST_URI} ^/public/
+    RewriteRule ^ - [L]
+
+    # Real files at repo root only (not directories — those would skip rewrite and 403/list)
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+Options -Indexes
