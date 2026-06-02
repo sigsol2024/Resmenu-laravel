@@ -18,17 +18,28 @@ class TemplateApiController extends Controller
 
         $templates = DB::table('templates')
             ->where('is_active', 1)
-            ->orderBy('id')
+            ->whereRaw('COALESCE(is_private, 0) = 0')
+            ->orderByDesc('id')
             ->limit($limit)
             ->get()
-            ->map(fn ($t) => [
-                'id' => (int) $t->id,
-                'name' => $t->name,
-                'slug' => $t->slug,
-                'description' => $t->description,
-                'cover_image' => $t->preview_image ? $this->uploads->publicUrl('template-previews', $t->preview_image) : null,
-                'listing_image' => $t->listing_image ? $this->uploads->publicUrl('template-previews', $t->listing_image) : null,
-            ])
+            ->map(function ($t) {
+                $previewUrl = $t->preview_image
+                    ? $this->uploads->publicUrl('template-previews', $t->preview_image)
+                    : null;
+                $listingUrl = $t->listing_image
+                    ? $this->uploads->publicUrl('template-previews', $t->listing_image)
+                    : null;
+
+                return [
+                    'id' => (int) $t->id,
+                    'name' => $t->name,
+                    'slug' => $t->slug,
+                    'description' => $t->description,
+                    'preview_image' => $previewUrl,
+                    'listing_image' => $listingUrl,
+                    'cover_image' => $previewUrl,
+                ];
+            })
             ->values()
             ->all();
 
