@@ -151,7 +151,7 @@ class TemplatePreviewDemoService
             return null;
         }
 
-        return '../'.$filename;
+        return $filename;
     }
 
     /** @param  array<string, string>  $categoryImages */
@@ -162,7 +162,7 @@ class TemplatePreviewDemoService
             return null;
         }
 
-        return '../../'.$filename;
+        return $filename;
     }
 
     /** @param  array<string, mixed>  $imageMap */

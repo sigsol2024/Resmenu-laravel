@@ -1,17 +1,25 @@
 # Template preview demo images
 
-Used by `/templates/{id}/preview` when the database has no menu/category images to reuse.
+Used only by `/templates/{id}/preview` (marketing demos). Live restaurant menus use `public/uploads/`.
 
-Place files on the **Laravel app host** (`our-menu.online`):
+## Layout
 
 | Path | Purpose |
 |------|---------|
-| `menu-items/preview-item-01.jpg` … `preview-item-40.jpg` | Menu item photos in template previews |
-| `categories/preview-cat-starters.jpg` | Starters / salads category headers |
-| `categories/preview-cat-mains.jpg` | Mains / sides / pasta |
-| `categories/preview-cat-desserts.jpg` | Desserts / pastries |
-| `categories/preview-cat-drinks.jpg` | Drinks categories |
+| `menu-items/*.jpg` (and `.png`) | Item photos — URL: `{APP_URL}/assets/images/menu-items/{file}` |
+| `categories/*.jpg` | Category headers — URL: `{APP_URL}/assets/images/categories/{file}` |
+| Root `*.jpg` / `*.png` | Source copies (optional); run sync to populate subfolders |
 
-URLs resolve as: `{APP_URL}/assets/images/menu-items/{filename}`.
+Mapping is defined in `config/template_preview_images.php`.
 
-If the shared database already has `menu_items.image` / `categories.image`, previews use `{UPLOAD_URL}/menu-items/` and `{UPLOAD_URL}/categories/` instead (live production uploads).
+## Deploy / update server
+
+After pulling code (or adding new photos to the root folder):
+
+```bash
+php artisan resmenu:sync-preview-images
+```
+
+Commit the `menu-items/` and `categories/` copies so production serves them without running the command.
+
+Hero/cover images use `{APP_URL}/assets/images/{file}` directly (same root folder is fine).

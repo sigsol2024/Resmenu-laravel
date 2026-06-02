@@ -1,9 +1,10 @@
 <?php
 
 /**
- * Maps template preview demo menu items/categories to real files in public/assets/images/.
- * Filenames are stored as-is (hash names); TemplatePreviewDemoService prefixes ../ or ../../
- * so templates resolve: {uploadBaseUrl}/menu-items/../file.png → /assets/images/file.png
+ * Maps template preview demo menu items/categories to filenames under:
+ *   public/assets/images/menu-items/{filename}
+ *   public/assets/images/categories/{filename}
+ * Run `php artisan resmenu:sync-preview-images` after adding files to assets/images/ root.
  */
 return [
     'exclude' => [
@@ -79,7 +80,7 @@ return [
         'mixed-grill-platter' => 'TSx2MrnudIy3hZawlNIf0XkE6b0c215.jpg',
 
         'truffle-fries' => 'VAk9zR3aPcWmMZYOeb0TSYO8CAwe591.png',
-        'plantain-chips' => 'fVp9qhhehkg9hbOqHHe6DUsJm0I9257.png',
+        'plantain-chips' => 'fVp9qhhehkg9hbOqHe6DUsJm0I9257.png',
         'steamed-vegetables' => '87fhYpSB4hmsMJbq7Zm6eRb9lwM9adb.png',
         'coleslaw' => 'rcrYUjSmISVYGy7EOHdtNBFtcgA9adb.png',
 
