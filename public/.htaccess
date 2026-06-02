@@ -5,6 +5,11 @@
 
     RewriteEngine On
 
+    # Template preview demo photos are stored in assets/images/ (flat).
+    # Menu templates build URLs as assets/images/menu-items/{file} and assets/images/categories/{file}.
+    RewriteRule ^assets/images/menu-items/(.+)$ assets/images/$1 [L]
+    RewriteRule ^assets/images/categories/(.+)$ assets/images/$1 [L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

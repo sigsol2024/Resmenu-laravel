@@ -14,6 +14,10 @@
     # Allow public storage URLs when doc root is project root
     RewriteRule ^storage/(.*)$ public/storage/$1 [L]
 
+    # Template preview images (flat assets/images/ → menu-items/ & categories/ URL paths)
+    RewriteRule ^assets/images/menu-items/(.+)$ public/assets/images/$1 [L]
+    RewriteRule ^assets/images/categories/(.+)$ public/assets/images/$1 [L]
+
     # Block web access to sensitive repo paths when doc root is the project root
     RewriteRule ^(\.env|artisan|composer\.(json|lock)|package\.json|phpunit\.xml|vendor|storage|bootstrap|config|database|resources|routes|tests|app)(/|$) - [F,L]
 

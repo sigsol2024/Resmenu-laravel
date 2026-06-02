@@ -2,24 +2,20 @@
 
 Used only by `/templates/{id}/preview` (marketing demos). Live restaurant menus use `public/uploads/`.
 
-## Layout
+## Where files live
 
-| Path | Purpose |
-|------|---------|
-| `menu-items/*.jpg` (and `.png`) | Item photos — URL: `{APP_URL}/assets/images/menu-items/{file}` |
-| `categories/*.jpg` | Category headers — URL: `{APP_URL}/assets/images/categories/{file}` |
-| Root `*.jpg` / `*.png` | Source copies (optional); run sync to populate subfolders |
+Put photos in **this folder** (`public/assets/images/`), e.g. `5zm3C5SMKk7sgdYHRUP5eAlb86fe9.jpg`.
 
-Mapping is defined in `config/template_preview_images.php`.
+Templates request URLs like `/assets/images/menu-items/{file}` and `/assets/images/categories/{file}`.
+Apache rewrites those to the same file in this root folder (see `public/.htaccess` and project `.htaccess`).
+You do **not** need duplicate copies in `menu-items/` on the server unless you prefer physical subfolders.
 
-## Deploy / update server
+Mapping: `config/template_preview_images.php`.
 
-After pulling code (or adding new photos to the root folder):
+## Deploy
 
-```bash
-php artisan resmenu:sync-preview-images
-```
+1. Upload new/changed `*.jpg` / `*.png` files to `public/assets/images/` on the server.
+2. Deploy updated `.htaccess` rules (required for menu-items/category URLs).
+3. Optional: `php artisan resmenu:sync-preview-images` to mirror files into `menu-items/` and `categories/` locally.
 
-Commit the `menu-items/` and `categories/` copies so production serves them without running the command.
-
-Hero/cover images use `{APP_URL}/assets/images/{file}` directly (same root folder is fine).
+Hero/cover images use `/assets/images/{file}` directly.

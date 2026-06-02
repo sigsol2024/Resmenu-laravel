@@ -1,10 +1,8 @@
 <?php
 
 /**
- * Maps template preview demo menu items/categories to filenames under:
- *   public/assets/images/menu-items/{filename}
- *   public/assets/images/categories/{filename}
- * Run `php artisan resmenu:sync-preview-images` after adding files to assets/images/ root.
+ * Maps template preview demo menu items/categories to filenames in public/assets/images/.
+ * Templates request /assets/images/menu-items/{file} — .htaccess serves public/assets/images/{file}.
  */
 return [
     'exclude' => [
