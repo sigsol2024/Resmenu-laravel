@@ -27,6 +27,12 @@ class CustomizationService
         return $merged;
     }
 
+    /** Defaults for marketing template preview pages. */
+    public function templateDefaultsForPreview(int $templateId): array
+    {
+        return $this->templateDefaults($templateId);
+    }
+
     private function templateDefaults(int $templateId): array
     {
         $row = DB::table('template_customizations')->where('template_id', $templateId)->first();
