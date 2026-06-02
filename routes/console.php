@@ -27,3 +27,8 @@ Schedule::command('payments:cleanup-stale')
     ->dailyAt('02:00')
     ->withoutOverlapping(30)
     ->onOneServer();
+
+Schedule::command('payments:fail-stale-subscription')
+    ->hourly()
+    ->withoutOverlapping(30)
+    ->onOneServer();

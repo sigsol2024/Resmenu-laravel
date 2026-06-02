@@ -7,7 +7,6 @@ use App\Support\LegacyEncryption;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 class PaymentGatewayService
 {
@@ -16,7 +15,10 @@ class PaymentGatewayService
         'flutterwave' => 'Flutterwave',
     ];
 
-    public function __construct(private SubscriptionService $subscriptions) {}
+    public function __construct(
+        private SubscriptionService $subscriptions,
+        private SubscriptionPaymentLifecycleService $paymentLifecycle,
+    ) {}
 
     /** @return array{redirect_url?:string, reference?:string, error?:string} */
     public function initializeSubscriptionPayment(
@@ -48,20 +50,18 @@ class PaymentGatewayService
         }
 
         $amount = $cycle === 'annual' ? (float) ($plan->annual_price ?? 0) : (float) ($plan->monthly_price ?? 0);
-        $reference = ($gateway === 'flutterwave' ? 'FLW_' : 'PS_').time().'_'.Str::lower(Str::random(8));
 
-        $paymentId = DB::table('payments')->insertGetId([
-            'restaurant_id' => $restaurantId,
-            'subscription_id' => $subscription->id,
-            'plan_id' => $planId,
-            'billing_cycle' => $cycle,
-            'amount' => $amount,
-            'currency' => 'NGN',
-            'payment_gateway' => $gateway,
-            'transaction_reference' => $reference,
-            'status' => 'pending',
-            'created_at' => now(),
-        ]);
+        $resolved = $this->paymentLifecycle->resolvePendingPaymentRecord(
+            $restaurantId,
+            (int) $subscription->id,
+            $planId,
+            $cycle,
+            $gateway,
+            $amount,
+        );
+
+        $paymentId = $resolved['payment_id'];
+        $reference = $resolved['transaction_reference'];
 
         $metadata = [
             'payment_id' => $paymentId,
@@ -73,11 +73,13 @@ class PaymentGatewayService
 
         $keys = $this->platformKeys($gateway);
         if (empty($keys['secret_key'])) {
+            $this->paymentLifecycle->markFailed($paymentId, ['reason' => 'gateway_not_configured']);
+
             return ['error' => 'Payment gateway not configured'];
         }
 
         if ($gateway === 'flutterwave') {
-            return $this->flutterwaveInitialize(
+            $result = $this->flutterwaveInitialize(
                 $keys['secret_key'],
                 $amount,
                 $managerEmail,
@@ -86,16 +88,22 @@ class PaymentGatewayService
                 $metadata,
                 route('manager.billing.payment-callback', ['gateway' => 'flutterwave']),
             );
+        } else {
+            $result = $this->paystackInitialize(
+                $keys['secret_key'],
+                (int) round($amount * 100),
+                $managerEmail,
+                $reference,
+                $metadata,
+                route('manager.billing.payment-callback', ['gateway' => 'paystack']),
+            );
         }
 
-        return $this->paystackInitialize(
-            $keys['secret_key'],
-            (int) round($amount * 100),
-            $managerEmail,
-            $reference,
-            $metadata,
-            route('manager.billing.payment-callback', ['gateway' => 'paystack']),
-        );
+        if (! empty($result['error'])) {
+            $this->paymentLifecycle->markFailed($paymentId, $result);
+        }
+
+        return $result;
     }
 
     /** @return array{redirect_url?:string, reference?:string, error?:string} */
@@ -162,6 +170,8 @@ class PaymentGatewayService
             }
 
             if (! $this->verifyPlatformPayment($data, $payment, 'paystack')) {
+                $this->paymentLifecycle->markFailed((int) $payment->id, $data);
+
                 return false;
             }
 
@@ -197,6 +207,8 @@ class PaymentGatewayService
             }
 
             if (! $this->verifyPlatformPayment($data, $payment, 'flutterwave')) {
+                $this->paymentLifecycle->markFailed((int) $payment->id, $data);
+
                 return false;
             }
 

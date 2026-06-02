@@ -9,6 +9,7 @@ use App\Services\ManagerFeatureAccess;
 use App\Services\PaymentGatewayService;
 use App\Services\PlanVisibilityService;
 use App\Services\RestaurantPaymentSettingsService;
+use App\Services\SubscriptionPaymentLifecycleService;
 use App\Services\SubscriptionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,6 +21,7 @@ class BillingController extends Controller
     public function __construct(
         private SubscriptionService $subscriptions,
         private PlanVisibilityService $planVisibility,
+        private SubscriptionPaymentLifecycleService $paymentLifecycle,
     ) {}
 
     public function index(Request $request)
@@ -73,7 +75,7 @@ class BillingController extends Controller
             'billingPeriod' => $this->subscriptions->getBillingPeriodLabel($subscription, $statusInfo),
             'plans' => $this->subscriptions->getPlans(true),
             'usage' => $this->subscriptions->getUsageSummary($restaurantId),
-            'paymentHistory' => $this->subscriptions->getPaymentHistory($restaurantId, 3),
+            'paymentHistory' => $this->paymentLifecycle->paymentHistoryForDisplay($restaurantId, 3),
             'scheduledChange' => $subscriptionId > 0
                 ? $this->subscriptions->getScheduledSubscriptionChange($subscriptionId)
                 : null,
@@ -225,8 +227,18 @@ class BillingController extends Controller
                 if ($keys['secret_key']) {
                     $verify = Http::withToken($keys['secret_key'])
                         ->get('https://api.paystack.co/transaction/verify/'.urlencode($reference));
-                    if ($verify->successful() && $verify->json('data.status') === 'success') {
-                        $processed = $gateway->processPlatformPaystackSuccess($verify->json('data', []));
+                    if ($verify->successful()) {
+                        $data = $verify->json('data', []);
+                        if (($data['status'] ?? '') === 'success') {
+                            $processed = $gateway->processPlatformPaystackSuccess($data);
+                        } else {
+                            $this->paymentLifecycle->markFailedByReference($reference, $data);
+                        }
+                    } else {
+                        $this->paymentLifecycle->markFailedByReference($reference, [
+                            'reason' => 'verify_request_failed',
+                            'http_status' => $verify->status(),
+                        ]);
                     }
                 }
             } else {
@@ -234,9 +246,23 @@ class BillingController extends Controller
                 if ($keys['secret_key'] && $request->query('transaction_id')) {
                     $verify = Http::withToken($keys['secret_key'])
                         ->get('https://api.flutterwave.com/v3/transactions/'.urlencode($request->query('transaction_id')).'/verify');
-                    if ($verify->successful() && $verify->json('data.status') === 'successful') {
-                        $processed = $gateway->processPlatformFlutterwaveSuccess($verify->json('data', []));
+                    if ($verify->successful()) {
+                        $data = $verify->json('data', []);
+                        if (($data['status'] ?? '') === 'successful') {
+                            $processed = $gateway->processPlatformFlutterwaveSuccess($data);
+                        } else {
+                            $this->paymentLifecycle->markFailedByReference($reference, $data);
+                        }
+                    } else {
+                        $this->paymentLifecycle->markFailedByReference($reference, [
+                            'reason' => 'verify_request_failed',
+                            'http_status' => $verify->status(),
+                        ]);
                     }
+                } elseif ($reference !== '') {
+                    $this->paymentLifecycle->markFailedByReference($reference, [
+                        'reason' => 'flutterwave_verify_missing_transaction_id',
+                    ]);
                 }
             }
         }
@@ -250,14 +276,14 @@ class BillingController extends Controller
             if ($payment && $payment->status === 'success') {
                 return redirect()->route('manager.billing.index', ['payment_success' => '1', 'reference' => $reference]);
             }
-            if ($payment && $payment->status === 'pending') {
-                return redirect()->route('manager.billing.index', ['payment_success' => '1', 'reference' => $reference])
+            if ($payment && $payment->status === 'pending' && $this->paymentLifecycle->isPendingRecent($payment)) {
+                return redirect()->route('manager.billing.index')
                     ->with('info', 'Payment is being processed. Please refresh in a moment.');
             }
         }
 
         return redirect()->route('manager.billing.index', ['payment_error' => '1'])
-            ->with('error', 'Payment could not be confirmed. Contact support if you were charged.');
+            ->with('error', 'Payment was not completed. You can try again from billing.');
     }
 
     public function transactionHistory(Request $request)
@@ -266,11 +292,7 @@ class BillingController extends Controller
 
         return view('manager.billing.transactions', [
             'restaurant' => Restaurant::findOrFail($restaurantId),
-            'transactions' => DB::table('payments')
-                ->where('restaurant_id', $restaurantId)
-                ->orderByDesc('created_at')
-                ->limit(100)
-                ->get(),
+            'transactions' => $this->paymentLifecycle->paymentHistoryForDisplay($restaurantId, 100),
             'formatPrice' => fn ($amount, $currency = 'NGN') => $this->subscriptions->formatSubscriptionPrice($amount, $currency),
         ]);
     }

@@ -56,5 +56,7 @@ return [
 
     'rate_limit_dir' => env('RATE_LIMIT_DIR', ''),
 
+    'subscription_payment_pending_hours' => (int) env('SUBSCRIPTION_PAYMENT_PENDING_HOURS', 6),
+
     'cors_allowed_origins' => env('CORS_ALLOWED_ORIGINS', '*'),
 ];

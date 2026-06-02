@@ -139,7 +139,7 @@
                         </div>
                         <div class="payment-amount">
                             <div class="payment-value">{{ $formatPrice($payment['amount'], $payment['currency'] ?? 'NGN') }}</div>
-                            <span class="payment-status {{ $payment['status'] }}">{{ ucfirst($payment['status']) }}</span>
+                            <span class="payment-status {{ $payment['display']['css_class'] ?? $payment['status'] }}">{{ $payment['display']['label'] ?? ucfirst($payment['status']) }}</span>
                         </div>
                     </div>
                 @empty
