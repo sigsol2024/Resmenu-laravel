@@ -21,6 +21,14 @@
     let modalEl = null;
     let config = {};
 
+    function hideCheckoutForPreview(cfg, restaurantSlug) {
+        if (cfg && (cfg.hideCheckout === true || cfg.isTemplatePreview === true)) {
+            return true;
+        }
+
+        return restaurantSlug === 'template-preview';
+    }
+
     function close() {
         if (overlay) overlay.classList.add('hidden');
         if (modalEl) modalEl.classList.add('hidden');
@@ -45,6 +53,7 @@
         const uploadBaseUrl = config.uploadBaseUrl || '';
         const checkoutUrl = config.checkoutUrl || '#';
         const primaryColor = config.primaryColor || '#f20d0d';
+        const hideCheckout = hideCheckoutForPreview(config, slug);
 
         const subtotal = CART.getTotalAmount(slug);
         const deliveryFee = config.deliveryFee || 0;
@@ -118,13 +127,14 @@
                         <span class="text-2xl font-bold" style="color:${primaryColor}">${CART.formatPrice(total, symbol)}</span>
                     </div>
                     <div class="flex gap-3 items-stretch">
-                        <button type="button" id="resmenu-cart-continue" class="flex-1 flex items-center justify-center px-4 py-3 rounded-lg border border-gray-200 text-gray-700 font-bold hover:bg-gray-100 transition-colors text-center">
+                        <button type="button" id="resmenu-cart-continue" class="${hideCheckout ? 'w-full' : 'flex-1'} flex items-center justify-center px-4 py-3 rounded-lg border border-gray-200 text-gray-700 font-bold hover:bg-gray-100 transition-colors text-center">
                             Close cart
                         </button>
-                        <a href="${checkoutUrl}" id="resmenu-cart-checkout" class="flex-1 flex items-center justify-center px-4 py-3 rounded-lg text-white font-bold text-center transition-colors" style="background-color:${primaryColor}" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                        ${hideCheckout ? '' : `<a href="${checkoutUrl}" id="resmenu-cart-checkout" class="flex-1 flex items-center justify-center px-4 py-3 rounded-lg text-white font-bold text-center transition-colors" style="background-color:${primaryColor}" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
                             Checkout
-                        </a>
+                        </a>`}
                     </div>
+                    ${hideCheckout ? '<p class="text-xs text-gray-500 text-center mt-3">Demo preview — checkout is disabled. Publish your menu to accept orders.</p>' : ''}
                 </div>
             </div>
         `;
