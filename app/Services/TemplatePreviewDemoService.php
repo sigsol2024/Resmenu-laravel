@@ -65,9 +65,12 @@ class TemplatePreviewDemoService
 
         $customization = $this->customization->templateDefaultsForPreview($templateId);
 
+        $sections = LegacyMenuViewData::normalizeSections($sections);
+
         return LegacyMenuViewData::normalize([
             'restaurant' => $restaurant,
             'sections' => $sections,
+            'categories' => LegacyMenuViewData::flattenCategoriesFromSections($sections),
             'customization' => $customization,
             'headerMenuItems' => [],
             'singleSectionView' => false,

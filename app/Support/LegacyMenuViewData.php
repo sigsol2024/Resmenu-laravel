@@ -114,6 +114,29 @@ class LegacyMenuViewData
         return $data;
     }
 
+    /**
+     * Flat list of categories (section order preserved) for nav/sidebar links in PHP templates.
+     *
+     * @param  list<array<string, mixed>>  $sections
+     * @return list<array<string, mixed>>
+     */
+    public static function flattenCategoriesFromSections(array $sections): array
+    {
+        $categories = [];
+        foreach ($sections as $section) {
+            if (! is_array($section)) {
+                continue;
+            }
+            foreach ($section['categories'] ?? [] as $category) {
+                if (is_array($category)) {
+                    $categories[] = $category;
+                }
+            }
+        }
+
+        return $categories;
+    }
+
     /** @param list<array<string, mixed>> $sections */
     public static function normalizeSections(array $sections): array
     {

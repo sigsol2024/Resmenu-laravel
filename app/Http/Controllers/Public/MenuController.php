@@ -66,9 +66,13 @@ class MenuController extends Controller
             $sectionsForNav = $sections;
         }
 
+        $sections = LegacyMenuViewData::normalizeSections($sections);
+        $categories = LegacyMenuViewData::flattenCategoriesFromSections($sections);
+
         $viewData = [
             'restaurant' => LegacyMenuViewData::normalizeRestaurant($restaurant->toArray(), rtrim(config('resmenu.canonical_upload_url') ?: config('resmenu.upload_url'), '/')),
             'sections' => $sections,
+            'categories' => $categories,
             'customization' => $this->customization->forRestaurant($restaurant),
             'headerMenuItems' => $restaurant->header_menu_items ?? [],
             'singleSectionView' => $singleSection,
@@ -84,7 +88,6 @@ class MenuController extends Controller
 
         if ($this->templates->hasBladeView($templateId)) {
             $view = $this->templates->bladeViewFor($templateId);
-            $viewData['sections'] = LegacyMenuViewData::normalizeSections($viewData['sections']);
 
             return view($view, $viewData);
         }

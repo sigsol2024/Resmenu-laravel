@@ -132,6 +132,20 @@ function template3ItemAnchor(array $item): string {
     .t3-sidebar-cat:first-child {
         margin-top: 0;
     }
+    .t3-sidebar-section {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #64748b;
+        padding: 14px 16px 6px;
+        margin-top: 6px;
+    }
+    .t3-sidebar-section:first-child {
+        margin-top: 0;
+        padding-top: 0;
+    }
     .t3-sidebar-item {
         display: block;
         font-size: 0.8rem;
@@ -207,32 +221,57 @@ function template3ItemAnchor(array $item): string {
 <?php if (!empty($fullMenuUrl)): ?>
 <a href="<?php echo htmlspecialchars($fullMenuUrl); ?>#menu" onclick="toggleCategoryMenu()" class="text-white py-2 px-4 rounded-lg hover:bg-slate-800 transition-colors">View menu</a>
 <?php endif; ?>
-<?php if (!empty($sectionsForNav) && is_array($sectionsForNav)): ?>
-<?php foreach ($sectionsForNav as $navSection): ?>
-<a href="<?php echo htmlspecialchars($fullMenuUrl); ?>#section-<?php echo htmlspecialchars($navSection['slug'] ?? ''); ?>" onclick="toggleCategoryMenu()" class="text-white py-2 px-4 rounded-lg hover:bg-slate-800 transition-colors"><?php echo htmlspecialchars($navSection['name'] ?? ''); ?></a>
-<?php endforeach; ?>
-<?php endif; ?>
-<?php if (!empty($categories) && is_array($categories)): ?>
-<hr class="border-slate-700 my-2" aria-hidden="true" />
 <?php
-    foreach ($categories as $category):
-        if (empty($category['menu_items']) || !is_array($category['menu_items']) || empty($category['is_active'])) {
+$sidebarHasMenu = false;
+if (!empty($sections) && is_array($sections)):
+    $sidebarMultiSection = count($sections) > 1;
+    foreach ($sections as $section):
+        if (empty($section['categories']) || !is_array($section['categories'])) {
             continue;
         }
-        $catHash = (string) ($category['slug'] ?? '');
+        $sectionHasCategories = false;
+        foreach ($section['categories'] as $sidebarCategoryProbe) {
+            if (!empty($sidebarCategoryProbe['menu_items']) && is_array($sidebarCategoryProbe['menu_items']) && !empty($sidebarCategoryProbe['is_active'])) {
+                $sectionHasCategories = true;
+                break;
+            }
+        }
+        if (!$sectionHasCategories) {
+            continue;
+        }
+        if (!$sidebarHasMenu):
+            $sidebarHasMenu = true;
+?>
+<hr class="border-slate-700 my-2" aria-hidden="true" />
+<?php
+        endif;
+        if ($sidebarMultiSection && !empty($section['name'])):
+            $sectionHash = 'section-'.(string) ($section['slug'] ?? '');
+?>
+<span class="t3-sidebar-section"><?php echo htmlspecialchars($section['name']); ?></span>
+<?php
+        endif;
+        foreach ($section['categories'] as $category):
+            if (empty($category['menu_items']) || !is_array($category['menu_items']) || empty($category['is_active'])) {
+                continue;
+            }
+            $catHash = (string) ($category['slug'] ?? '');
 ?>
 <a href="<?php echo htmlspecialchars(template3MenuHref($fullMenuUrl ?? '', !empty($singleSectionView), $sections ?? [], $catHash)); ?>" onclick="toggleCategoryMenu()" class="t3-sidebar-cat block rounded-lg hover:bg-slate-800 transition-colors"><?php echo htmlspecialchars($category['name']); ?></a>
 <?php
-        foreach ($category['menu_items'] as $item):
-            if (empty($item['name'])) {
-                continue;
-            }
-            $itemAnchor = template3ItemAnchor($item);
+            foreach ($category['menu_items'] as $item):
+                if (empty($item['name'])) {
+                    continue;
+                }
+                $itemAnchor = template3ItemAnchor($item);
 ?>
 <a href="<?php echo htmlspecialchars(template3MenuHref($fullMenuUrl ?? '', !empty($singleSectionView), $sections ?? [], $itemAnchor)); ?>" onclick="toggleCategoryMenu()" class="t3-sidebar-item"><?php echo htmlspecialchars($item['name'] ?? ''); ?></a>
 <?php
+            endforeach;
         endforeach;
     endforeach;
+endif;
+if ($sidebarHasMenu):
 ?>
 <hr class="border-slate-700 my-2" aria-hidden="true" />
 <?php endif; ?>
