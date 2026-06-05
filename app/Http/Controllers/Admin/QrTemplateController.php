@@ -50,7 +50,7 @@ class QrTemplateController extends Controller
     return redirect()->route('admin.qr-templates.index', ['create' => 1]);
   }
 
-  public function store(Request $request, ActivityLogService $activityLog)
+  public function store(Request $request, ActivityLogService $activityLog, QrGeneratorService $qrGenerator)
   {
     $data = $this->validated($request);
     $adminId = (int) $request->user('admin')?->id;
@@ -63,6 +63,8 @@ class QrTemplateController extends Controller
       'created_at' => now(),
       'updated_at' => now(),
     ]);
+
+    $qrGenerator->generateTemplatePreview((int) $id);
 
     $activityLog->record('admin', $adminId, 'qr_template.created', null, 'qr_template', (int) $id, null, ['name' => $data['name']], $request->ip(), $request->userAgent());
 
@@ -78,7 +80,7 @@ class QrTemplateController extends Controller
     return redirect()->route('admin.qr-templates.index', ['edit' => $qrTemplate]);
   }
 
-  public function update(Request $request, int $qrTemplate, ActivityLogService $activityLog)
+  public function update(Request $request, int $qrTemplate, ActivityLogService $activityLog, QrGeneratorService $qrGenerator)
   {
     if (! DB::table('qr_templates')->where('id', $qrTemplate)->exists()) {
       abort(404);
@@ -94,6 +96,8 @@ class QrTemplateController extends Controller
       'is_active' => $request->boolean('is_active') ? 1 : 0,
       'updated_at' => now(),
     ]);
+
+    $qrGenerator->generateTemplatePreview($qrTemplate);
 
     $activityLog->record('admin', $adminId, 'qr_template.updated', null, 'qr_template', $qrTemplate, null, [
       'name' => $data['name'],

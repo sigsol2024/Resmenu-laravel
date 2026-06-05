@@ -183,9 +183,10 @@ function generateQRPreview(container, config, textContainer, size, onFallback) {
                 if (typeof onFallback === 'function') onFallback();
                 return;
             }
-            var styledSvg = svg;
+            var cleanedSvg = String(svg).replace(/<\?xml[^?]*\?>/gi, '').trim();
+            var styledSvg = cleanedSvg;
             if (config.frame.type !== 'none') {
-                styledSvg = applyFrameToSVG(svg, config.frame, size);
+                styledSvg = applyFrameToSVG(cleanedSvg, config.frame, size);
             }
             container.innerHTML = styledSvg;
             var svgEl = container.querySelector('svg');

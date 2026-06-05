@@ -89,21 +89,9 @@ class QrGeneratorService
             return null;
         }
 
-        $previewImage = $template->preview_image ?? '';
-        if ($previewImage !== '' && preg_match('/^[a-z0-9_.-]+\.(png|svg)$/i', $previewImage)) {
-            foreach ([
-                public_path('uploads/qr-templates/'.$previewImage),
-                public_path('legacy/uploads/qr-templates/'.$previewImage),
-            ] as $path) {
-                if (is_file($path) && is_readable($path)) {
-                    $ext = strtolower(pathinfo($previewImage, PATHINFO_EXTENSION));
-
-                    return [
-                        'body' => (string) file_get_contents($path),
-                        'content_type' => $ext === 'svg' ? 'image/svg+xml' : 'image/png',
-                    ];
-                }
-            }
+        $stored = $this->readStoredTemplatePreview((int) $templateId, (string) ($template->preview_image ?? ''));
+        if ($stored !== null) {
+            return $stored;
         }
 
         $config = is_string($template->config_json) ? json_decode($template->config_json, true) : $template->config_json;
@@ -180,6 +168,67 @@ class QrGeneratorService
         ]);
 
         return $filename;
+    }
+
+    /**
+     * @return array{body: string, content_type: string}|null
+     */
+    private function readStoredTemplatePreview(int $templateId, string $previewImage): ?array
+    {
+        $candidates = [];
+
+        if (preg_match('/^[a-z0-9_.-]+\.png$/i', $previewImage)) {
+            $candidates[] = $previewImage;
+        }
+
+        $candidates[] = $templateId.'.png';
+
+        if (preg_match('/^[a-z0-9_.-]+\.svg$/i', $previewImage)) {
+            $candidates[] = $previewImage;
+        }
+
+        $candidates[] = $templateId.'.svg';
+        $candidates = array_values(array_unique($candidates));
+
+        foreach ($candidates as $filename) {
+            if (! preg_match('/^[a-z0-9_.-]+\.(png|svg)$/i', $filename)) {
+                continue;
+            }
+
+            foreach ([
+                public_path('uploads/qr-templates/'.$filename),
+                public_path('legacy/uploads/qr-templates/'.$filename),
+            ] as $path) {
+                if (! is_file($path) || ! is_readable($path)) {
+                    continue;
+                }
+
+                $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+                $body = (string) file_get_contents($path);
+
+                if ($ext === 'svg') {
+                    $body = $this->sanitizeSvg($body);
+                    if ($body === '' || ! str_contains($body, '<svg')) {
+                        continue;
+                    }
+
+                    return ['body' => $body, 'content_type' => 'image/svg+xml'];
+                }
+
+                return ['body' => $body, 'content_type' => 'image/png'];
+            }
+        }
+
+        return null;
+    }
+
+    private function sanitizeSvg(string $svg): string
+    {
+        $svg = preg_replace('/^\xEF\xBB\xBF/', '', $svg) ?? $svg;
+        $svg = ltrim($svg);
+        $svg = preg_replace('/<\?xml[^?]*\?>/i', '', $svg) ?? $svg;
+
+        return trim($svg);
     }
 
     /** @return array<string, mixed>|null */

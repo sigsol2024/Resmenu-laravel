@@ -153,18 +153,17 @@ function formatPriceTemplate2($price, $currency = '$') {
     <a href="<?php echo htmlspecialchars($reservationUrl); ?>" class="text-[#1b0e0e] dark:text-gray-200 text-sm font-medium hover:text-primary transition-colors">Reserve Table</a>
 <?php endif; ?>
 </div>
-<div class="md:hidden text-[#1b0e0e] dark:text-white">
-<?php echo resmenu_icon('menu', ['size' => 28, 'class' => 'cursor-pointer text-3xl']); ?>
-</div>
+<button type="button" class="md:hidden text-[#1b0e0e] dark:text-white p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 transition-colors" onclick="toggleCategoryMenu()" aria-label="Open menu">
+<?php echo resmenu_icon('menu', ['size' => 28, 'class' => 'text-3xl']); ?>
+</button>
 </div>
 </nav>
 
-<!-- Mobile Category Sidebar -->
-<?php if ($useToggleMenu): ?>
-<div id="categorySidebar" class="fixed inset-y-0 right-0 w-80 bg-white dark:bg-[#1b0e0e] shadow-xl z-50 transform translate-x-full transition-transform duration-300">
+<!-- Mobile navigation sidebar -->
+<div id="categorySidebar" class="fixed inset-y-0 right-0 w-80 bg-white dark:bg-[#1b0e0e] shadow-xl z-[60] transform translate-x-full transition-transform duration-300">
 <div class="p-6">
 <div class="flex items-center justify-between mb-6">
-<h3 class="text-xl font-bold">Menu Categories</h3>
+<h3 class="text-xl font-bold"><?php echo $useToggleMenu ? 'Menu Categories' : 'Menu'; ?></h3>
 <button onclick="toggleCategoryMenu()" class="text-gray-500 hover:text-gray-700">
 <?php echo resmenu_icon('close', ['size' => 24]); ?>
 </button>
@@ -181,7 +180,9 @@ function formatPriceTemplate2($price, $currency = '$') {
 <a href="<?php echo htmlspecialchars($fullMenuUrl); ?>#section-<?php echo htmlspecialchars($navSection['slug'] ?? ''); ?>" onclick="toggleCategoryMenu()" class="text-[#1b0e0e] dark:text-white py-2 px-4 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"><?php echo htmlspecialchars($navSection['name'] ?? ''); ?></a>
 <?php endforeach; ?>
 <?php endif; ?>
+<?php if ($useToggleMenu): ?>
 <hr class="border-[#f3e7e8] dark:border-[#332222] my-2" aria-hidden="true" />
+<?php endif; ?>
 <?php
 if (!empty($categories) && is_array($categories)):
     foreach ($categories as $category):
@@ -193,15 +194,16 @@ if (!empty($categories) && is_array($categories)):
     endforeach;
 endif;
 ?>
+<?php if ($useToggleMenu): ?>
 <hr class="border-[#f3e7e8] dark:border-[#332222] my-2" aria-hidden="true" />
+<?php endif; ?>
 <?php if (!empty($supportsReservations)): ?>
 <a href="<?php echo htmlspecialchars($reservationUrl); ?>" onclick="toggleCategoryMenu()" class="text-[#1b0e0e] dark:text-white py-2 px-4 rounded-lg bg-primary text-white font-bold hover:opacity-90 transition-colors">Reserve Table</a>
 <?php endif; ?>
 </nav>
 </div>
 </div>
-<div id="categoryOverlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="toggleCategoryMenu()"></div>
-<?php endif; ?>
+<div id="categoryOverlay" class="fixed inset-0 bg-black/50 z-[55] hidden" onclick="toggleCategoryMenu()"></div>
 
 <div class="layout-container flex h-full grow flex-col max-w-[1440px] mx-auto w-full">
 <!-- Hero Section -->
@@ -413,11 +415,6 @@ endif;
 <?php endif; ?>
 
 <script>
-function toggleMobileMenu() {
-    // Mobile menu toggle functionality
-    alert('Mobile menu coming soon');
-}
-
 function toggleCategoryMenu() {
     const sidebar = document.getElementById('categorySidebar');
     const overlay = document.getElementById('categoryOverlay');

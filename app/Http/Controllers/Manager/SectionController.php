@@ -21,22 +21,28 @@ class SectionController extends Controller
             ->where('restaurant_id', $restaurantId)
             ->withCount('categories')
             ->orderBy('display_order')
+            ->orderBy('name')
             ->get();
+
+        $editSection = null;
+        if ($request->filled('edit')) {
+            $editSection = Section::query()
+                ->where('restaurant_id', $restaurantId)
+                ->where('id', $request->integer('edit'))
+                ->first();
+        }
 
         return view('manager.sections.index', [
             'sections' => $sections,
             'restaurant' => Restaurant::findOrFail($restaurantId),
+            'editSection' => $editSection,
+            'openCreateModal' => $request->query('open') === 'create',
         ]);
     }
 
     public function create(Request $request)
     {
-        $restaurantId = (int) $request->attributes->get('restaurant_id');
-
-        return view('manager.sections.form', [
-            'section' => new Section(['is_active' => true, 'display_order' => 0]),
-            'restaurant' => Restaurant::findOrFail($restaurantId),
-        ]);
+        return redirect()->route('manager.sections.index', ['open' => 'create']);
     }
 
     public function store(Request $request)
@@ -52,10 +58,7 @@ class SectionController extends Controller
     {
         $this->authorizeRestaurant($request, $section);
 
-        return view('manager.sections.form', [
-            'section' => $section,
-            'restaurant' => Restaurant::findOrFail((int) $request->attributes->get('restaurant_id')),
-        ]);
+        return redirect()->route('manager.sections.index', ['edit' => $section->id]);
     }
 
     public function update(Request $request, Section $section)

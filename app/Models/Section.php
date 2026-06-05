@@ -18,6 +18,15 @@ class Section extends Model
 
     protected $casts = ['is_active' => 'boolean'];
 
+    protected $fillable = [
+        'restaurant_id',
+        'name',
+        'slug',
+        'image',
+        'display_order',
+        'is_active',
+    ];
+
     public function restaurant(): BelongsTo
     {
         return $this->belongsTo(Restaurant::class);
