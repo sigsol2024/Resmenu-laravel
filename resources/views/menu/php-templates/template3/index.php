@@ -58,6 +58,25 @@ if (!empty($singleSectionView) && !empty($sections[0]['image'])) {
 function formatPriceTemplate3($price, $currency = '$') {
     return formatPrice($price, $currency);
 }
+
+function template3MenuHref(?string $fullMenuUrl, bool $singleSectionView, $sections, string $hash): string {
+    if (empty($fullMenuUrl)) {
+        return '#'.$hash;
+    }
+    if ($singleSectionView && !empty($sections) && is_array($sections) && !empty($sections[0]['slug'])) {
+        return $fullMenuUrl.'/'.$sections[0]['slug'].'#'.$hash;
+    }
+
+    return $fullMenuUrl.'#'.$hash;
+}
+
+function template3ItemAnchor(array $item): string {
+    if (!empty($item['slug'])) {
+        return 'item-'.preg_replace('/[^a-z0-9-]/', '', strtolower((string) $item['slug']));
+    }
+
+    return 'item-'.(int) ($item['id'] ?? 0);
+}
 ?>
 <!DOCTYPE html>
 <html class="light" lang="en">
@@ -98,6 +117,33 @@ function formatPriceTemplate3($price, $currency = '$') {
             transform: translateY(0);
         }
     }
+    #categorySidebar nav {
+        overflow-y: auto;
+        max-height: calc(100vh - 7rem);
+        padding-right: 4px;
+    }
+    .t3-sidebar-cat {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #fff;
+        padding: 10px 16px 4px;
+        margin-top: 4px;
+    }
+    .t3-sidebar-cat:first-child {
+        margin-top: 0;
+    }
+    .t3-sidebar-item {
+        display: block;
+        font-size: 0.8rem;
+        color: #94a3b8;
+        padding: 6px 16px 6px 28px;
+        border-radius: 8px;
+        transition: color 0.2s, background 0.2s;
+    }
+    .t3-sidebar-item:hover {
+        color: #fff;
+        background: rgba(30, 41, 59, 0.8);
+    }
     </style>
 </head>
 <body class="bg-gradient-to-br from-black via-slate-900 to-blue-900 font-display text-white antialiased overflow-x-hidden min-h-screen">
@@ -130,24 +176,10 @@ function formatPriceTemplate3($price, $currency = '$') {
     <?php endforeach; ?>
 <?php endif; ?>
 <span class="border-l border-white/30 h-4" aria-hidden="true"></span>
-<?php if ($useToggleMenu): ?>
-    <button class="flex items-center gap-2 text-white text-sm font-medium hover:text-primary transition-colors" onclick="toggleCategoryMenu()">
-        <?php echo resmenu_icon('menu', ['size' => 24]); ?>
-        <span>Categories</span>
-    </button>
-<?php else: ?>
-    <?php
-    if (!empty($categories) && is_array($categories)):
-        foreach ($categories as $category):
-            if (!empty($category['menu_items']) && is_array($category['menu_items']) && $category['is_active']):
-    ?>
-    <a class="text-white text-sm font-medium hover:text-primary transition-colors" href="<?php echo htmlspecialchars(!empty($fullMenuUrl) ? ((!empty($singleSectionView) && !empty($sections) && is_array($sections) && !empty($sections[0]['slug'])) ? $fullMenuUrl . '/' . $sections[0]['slug'] . '#' . $category['slug'] : $fullMenuUrl . '#' . $category['slug']) : '#' . $category['slug']); ?>"><?php echo htmlspecialchars($category['name']); ?></a>
-    <?php
-            endif;
-        endforeach;
-    endif;
-    ?>
-<?php endif; ?>
+<button type="button" class="flex items-center gap-2 text-white text-sm font-medium hover:text-primary transition-colors" onclick="toggleCategoryMenu()" aria-label="Open menu">
+    <?php echo resmenu_icon('menu', ['size' => 24]); ?>
+    <span>Menu</span>
+</button>
 <span class="border-l border-white/30 h-4" aria-hidden="true"></span>
 <?php if (!empty($supportsReservations)): ?>
     <a href="<?php echo htmlspecialchars($reservationUrl); ?>" class="text-white text-sm font-medium hover:text-primary transition-colors">Reserve Table</a>
@@ -163,7 +195,7 @@ function formatPriceTemplate3($price, $currency = '$') {
 <div id="categorySidebar" class="fixed inset-y-0 right-0 w-80 bg-slate-900 shadow-xl z-[60] transform translate-x-full transition-transform duration-300">
 <div class="p-6">
 <div class="flex items-center justify-between mb-6">
-<h3 class="text-xl font-bold text-white"><?php echo $useToggleMenu ? 'Menu Categories' : 'Menu'; ?></h3>
+<h3 class="text-xl font-bold text-white">Menu</h3>
 <button onclick="toggleCategoryMenu()" class="text-gray-400 hover:text-white">
 <?php echo resmenu_icon('close', ['size' => 24]); ?>
 </button>
@@ -180,32 +212,29 @@ function formatPriceTemplate3($price, $currency = '$') {
 <a href="<?php echo htmlspecialchars($fullMenuUrl); ?>#section-<?php echo htmlspecialchars($navSection['slug'] ?? ''); ?>" onclick="toggleCategoryMenu()" class="text-white py-2 px-4 rounded-lg hover:bg-slate-800 transition-colors"><?php echo htmlspecialchars($navSection['name'] ?? ''); ?></a>
 <?php endforeach; ?>
 <?php endif; ?>
-<?php if ($useToggleMenu): ?>
+<?php if (!empty($categories) && is_array($categories)): ?>
 <hr class="border-slate-700 my-2" aria-hidden="true" />
 <?php
-if (!empty($categories) && is_array($categories)):
     foreach ($categories as $category):
-        if (!empty($category['menu_items']) && is_array($category['menu_items']) && $category['is_active']):
+        if (empty($category['menu_items']) || !is_array($category['menu_items']) || empty($category['is_active'])) {
+            continue;
+        }
+        $catHash = (string) ($category['slug'] ?? '');
 ?>
-<a href="<?php echo htmlspecialchars(!empty($fullMenuUrl) ? ((!empty($singleSectionView) && !empty($sections) && is_array($sections) && !empty($sections[0]['slug'])) ? $fullMenuUrl . '/' . $sections[0]['slug'] . '#' . $category['slug'] : $fullMenuUrl . '#' . $category['slug']) : '#' . $category['slug']); ?>" onclick="toggleCategoryMenu()" class="text-white py-2 px-4 rounded-lg hover:bg-slate-800 transition-colors"><?php echo htmlspecialchars($category['name']); ?></a>
+<a href="<?php echo htmlspecialchars(template3MenuHref($fullMenuUrl ?? '', !empty($singleSectionView), $sections ?? [], $catHash)); ?>" onclick="toggleCategoryMenu()" class="t3-sidebar-cat block rounded-lg hover:bg-slate-800 transition-colors"><?php echo htmlspecialchars($category['name']); ?></a>
 <?php
-        endif;
+        foreach ($category['menu_items'] as $item):
+            if (empty($item['name'])) {
+                continue;
+            }
+            $itemAnchor = template3ItemAnchor($item);
+?>
+<a href="<?php echo htmlspecialchars(template3MenuHref($fullMenuUrl ?? '', !empty($singleSectionView), $sections ?? [], $itemAnchor)); ?>" onclick="toggleCategoryMenu()" class="t3-sidebar-item"><?php echo htmlspecialchars($item['name'] ?? ''); ?></a>
+<?php
+        endforeach;
     endforeach;
-endif;
 ?>
 <hr class="border-slate-700 my-2" aria-hidden="true" />
-<?php else: ?>
-<?php
-if (!empty($categories) && is_array($categories)):
-    foreach ($categories as $category):
-        if (!empty($category['menu_items']) && is_array($category['menu_items']) && $category['is_active']):
-?>
-<a href="<?php echo htmlspecialchars(!empty($fullMenuUrl) ? ((!empty($singleSectionView) && !empty($sections) && is_array($sections) && !empty($sections[0]['slug'])) ? $fullMenuUrl . '/' . $sections[0]['slug'] . '#' . $category['slug'] : $fullMenuUrl . '#' . $category['slug']) : '#' . $category['slug']); ?>" onclick="toggleCategoryMenu()" class="text-white py-2 px-4 rounded-lg hover:bg-slate-800 transition-colors"><?php echo htmlspecialchars($category['name']); ?></a>
-<?php
-        endif;
-    endforeach;
-endif;
-?>
 <?php endif; ?>
 <?php if (!empty($supportsReservations)): ?>
 <a href="<?php echo htmlspecialchars($reservationUrl); ?>" onclick="toggleCategoryMenu()" class="text-white py-2 px-4 rounded-lg bg-primary font-bold hover:opacity-90 transition-colors">Reserve Table</a>
@@ -278,7 +307,7 @@ endif;
 <?php $itemIndex = 0; ?>
 <?php foreach ($category['menu_items'] as $item): ?>
 <?php $itemIndex++; ?>
-<div class="relative flex flex-col group cursor-pointer" style="--index: <?php echo $itemIndex - 1; ?>;">
+<div id="<?php echo htmlspecialchars(template3ItemAnchor($item)); ?>" class="relative flex flex-col group cursor-pointer scroll-mt-28" style="--index: <?php echo $itemIndex - 1; ?>;">
 <?php if (!empty($item['image'])): ?>
 <div class="w-full aspect-[4/3] overflow-hidden rounded-xl bg-gray-100 relative mb-0">
 <div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style='background-image: url("<?php echo $uploadBaseUrl . '/menu-items/' . htmlspecialchars($item['image']); ?>");'></div>
