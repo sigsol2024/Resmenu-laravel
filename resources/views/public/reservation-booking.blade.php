@@ -260,16 +260,19 @@
 </footer>
 
 @if(!$success)
+@php
+    $reservationConfig = [
+        'primaryColor' => $primaryColor,
+        'baseUrl' => rtrim(url('/'), '/'),
+        'slug' => $restaurant->slug,
+        'partySize' => (int) old('party_size', 1),
+        'minDate' => $minDate,
+        'slotsUrl' => url('/api/reservations/slots'),
+        'availabilityUrl' => url('/api/reservations/availability'),
+    ];
+@endphp
 <script>
-window.RESERVATION_CONFIG = @json([
-    'primaryColor' => $primaryColor,
-    'baseUrl' => rtrim(url('/'), '/'),
-    'slug' => $restaurant->slug,
-    'partySize' => (int) old('party_size', 1),
-    'minDate' => $minDate,
-    'slotsUrl' => url('/api/reservations/slots'),
-    'availabilityUrl' => url('/api/reservations/availability'),
-]);
+window.RESERVATION_CONFIG = @json($reservationConfig);
 </script>
 <script src="{{ asset('assets/js/resmenu-icons.js') }}"></script>
 <script src="{{ asset('assets/js/reservation-wizard.js') }}"></script>
