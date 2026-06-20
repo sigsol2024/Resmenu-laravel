@@ -103,6 +103,7 @@ class ReservationController extends Controller
             'timeSlots' => $slotPayload['slots'] ?? [],
             'minDate' => date('Y-m-d'),
             'embed' => $request->boolean('embed'),
+            'theme' => $request->query('theme', ''),
         ]);
     }
 }

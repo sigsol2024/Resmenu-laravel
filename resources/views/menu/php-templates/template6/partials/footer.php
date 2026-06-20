@@ -1,7 +1,5 @@
 <?php
 $t6Platform = t6_platform_base($fullMenuUrl ?? '');
-$t6TermsUrl = $t6Platform.'/terms';
-$t6ContactUrl = $t6Platform.'/contact';
 $t6Logo = t6_logo_url($uploadBaseUrl ?? '', $restaurant ?? []);
 $t6Year = date('Y');
 ?>
@@ -42,11 +40,12 @@ $t6Year = date('Y');
 </ul>
 </div>
 <div>
-<h5 class="font-label-lg text-label-lg uppercase text-primary mb-6">Legal</h5>
-<ul class="space-y-4 font-label-md text-label-md uppercase tracking-wide">
-<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="<?php echo t6_esc($t6TermsUrl); ?>">Terms of Service</a></li>
-<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="<?php echo t6_esc($t6ContactUrl); ?>">Contact Us</a></li>
-</ul>
+<h5 class="font-label-lg text-label-lg uppercase text-primary mb-6">Information</h5>
+<div class="space-y-4 text-on-surface-variant font-body-sm text-body-sm leading-relaxed">
+<p>All dishes may contain allergens. Please inform your server of any dietary requirements before ordering.</p>
+<p>🍷 Alcohol is strictly for persons aged 18 and above. Drink responsibly.</p>
+<p class="font-label-md text-label-md uppercase tracking-[0.2em] text-primary pt-2">Superior Luxury Perfected</p>
+</div>
 </div>
 </div>
 <div class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-outline-variant/10">

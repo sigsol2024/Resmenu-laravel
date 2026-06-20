@@ -4,34 +4,166 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Table Reservation | {{ $restaurantName }}</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    @if(!empty($embed) && ($theme ?? '') === 'template6')
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400..900;1,400..900&amp;family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet">
+    @else
     <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+    @endif
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link rel="stylesheet" href="{{ asset('legacy/assets/css/resmenu-icons.css') }}">
+    @php
+        $t6Embed = !empty($embed) && ($theme ?? '') === 'template6';
+        $t6Primary = $t6Embed ? ($primaryColor ?: '#f0be78') : $primaryColor;
+    @endphp
     <script>
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
                     colors: {
-                        "primary": "{{ $primaryColor }}",
+                        "primary": "{{ $t6Primary }}",
                         "background-light": "{{ $bgColor }}",
-                        "background-dark": "#221010",
+                        "background-dark": "{{ $t6Embed ? '#17130e' : '#221010' }}",
+                        @if($t6Embed)
+                        "background": "#17130e",
+                        "surface-container": "#231f1a",
+                        "surface-container-low": "#1f1b16",
+                        "surface-container-high": "#2e2924",
+                        "on-surface": "#eae1d9",
+                        "on-surface-variant": "#d3c4b4",
+                        "on-primary": "#452b00",
+                        "outline-variant": "#4f4539",
+                        @endif
                     },
-                    fontFamily: { "display": ["Epilogue", "sans-serif"] },
+                    fontFamily: {
+                        "display": ["{{ $t6Embed ? 'Bodoni Moda' : 'Epilogue' }}", "serif"],
+                        "body": ["{{ $t6Embed ? 'Manrope' : 'Epilogue' }}", "sans-serif"],
+                    },
                     borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
                 },
             },
         }
     </script>
     <style>
-        body { font-family: 'Epilogue', sans-serif; }
+        body { font-family: {{ $t6Embed ? "'Manrope', sans-serif" : "'Epilogue', sans-serif" }}; }
         .hero-overlay { background: linear-gradient(rgba(34, 16, 16, 0.7), rgba(34, 16, 16, 0.85)); }
-        @if(!empty($embed))
+        @if($t6Embed)
+        html, body.t6-reservation-embed {
+            background: #231f1a;
+            color: #eae1d9;
+            min-height: 100%;
+            overflow-x: hidden;
+        }
+        .t6-reservation-embed .t6-res-card {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+        }
+        .t6-reservation-embed .t6-res-inner { padding: 0; }
+        .t6-reservation-embed .t6-res-title {
+            font-family: 'Bodoni Moda', serif;
+            color: #eae1d9;
+        }
+        .t6-reservation-embed label,
+        .t6-reservation-embed .t6-res-step-label { color: #d3c4b4 !important; }
+        .t6-reservation-embed #reservation-date-trigger,
+        .t6-reservation-embed #reservation-calendar-wrap,
+        .t6-reservation-embed input[type="text"],
+        .t6-reservation-embed input[type="email"],
+        .t6-reservation-embed input[type="tel"],
+        .t6-reservation-embed textarea,
+        .t6-reservation-embed .party-wrap {
+            background: #1f1b16 !important;
+            border-color: #4f4539 !important;
+            color: #eae1d9 !important;
+        }
+        .t6-reservation-embed #reservation-date-trigger:hover,
+        .t6-reservation-embed input:focus,
+        .t6-reservation-embed textarea:focus {
+            border-color: {{ $t6Primary }} !important;
+            outline: none;
+            box-shadow: none;
+        }
+        .t6-reservation-embed #res-cal-month,
+        .t6-reservation-embed #res-date-display,
+        .t6-reservation-embed #party-display { color: #eae1d9 !important; }
+        .t6-reservation-embed .time-slot {
+            background: #1f1b16 !important;
+            border-color: #4f4539 !important;
+            color: #eae1d9 !important;
+        }
+        .t6-reservation-embed .time-slot:hover:not(:disabled) {
+            border-color: {{ $t6Primary }} !important;
+            color: {{ $t6Primary }} !important;
+        }
+        .t6-reservation-embed .time-slot.selected {
+            background: {{ $t6Primary }} !important;
+            border-color: {{ $t6Primary }} !important;
+            color: #452b00 !important;
+        }
+        .t6-reservation-embed .res-step-indicator {
+            background: #2e2924 !important;
+            border-color: #4f4539 !important;
+            color: #d3c4b4 !important;
+        }
+        .t6-reservation-embed .res-step-indicator.active {
+            background: {{ $t6Primary }} !important;
+            border-color: {{ $t6Primary }} !important;
+            color: #452b00 !important;
+        }
+        .t6-reservation-embed .t6-res-step-text { color: #d3c4b4 !important; }
+        .t6-reservation-embed .t6-res-step-text.active { color: #eae1d9 !important; }
+        .t6-reservation-embed .res-back-btn {
+            background: transparent !important;
+            border-color: #4f4539 !important;
+            color: #d3c4b4 !important;
+        }
+        .t6-reservation-embed .res-back-btn:hover { border-color: {{ $t6Primary }} !important; color: {{ $t6Primary }} !important; }
+        .t6-reservation-embed .res-next-btn,
+        .t6-reservation-embed button[type="submit"] {
+            background: {{ $t6Primary }} !important;
+            color: #452b00 !important;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+        }
+        .t6-reservation-embed #res-review-summary {
+            background: #1f1b16 !important;
+            border-color: #4f4539 !important;
+            color: #eae1d9 !important;
+        }
+        .t6-reservation-embed .occasion-btn {
+            background: #1f1b16 !important;
+            border-color: #4f4539 !important;
+            color: #d3c4b4 !important;
+        }
+        .t6-reservation-embed .occasion-btn.selected {
+            background: {{ $t6Primary }} !important;
+            border-color: {{ $t6Primary }} !important;
+            color: #452b00 !important;
+        }
+        .t6-reservation-embed #party-minus,
+        .t6-reservation-embed #party-plus {
+            background: #2e2924 !important;
+            border-color: #4f4539 !important;
+            color: #eae1d9 !important;
+        }
+        .t6-reservation-embed #party-minus:hover,
+        .t6-reservation-embed #party-plus:hover {
+            background: {{ $t6Primary }} !important;
+            border-color: {{ $t6Primary }} !important;
+            color: #452b00 !important;
+        }
+        .t6-reservation-embed .t6-res-divider { background: #4f4539 !important; }
+        .t6-reservation-embed .t6-res-muted { color: #9c8f80 !important; }
+        .t6-reservation-embed ::placeholder { color: #9c8f80; opacity: 1; }
+        @elseif(!empty($embed))
         html, body { background: #231f1a; min-height: 100%; }
         @endif
     </style>
 </head>
-<body class="{{ empty($embed) ? 'bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen' : 'bg-[#231f1a] text-[#eae1d9] min-h-full' }}">
+<body class="{{ $t6Embed ? 't6-reservation-embed min-h-full' : (empty($embed) ? 'bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen' : 'bg-[#231f1a] text-[#eae1d9] min-h-full') }}">
 @if(empty($embed))
 <!-- Hero Background -->
 <div class="fixed inset-0 z-0">
@@ -56,9 +188,9 @@
 @endif
 
 <!-- Main Content -->
-<main class="{{ empty($embed) ? 'relative z-10 max-w-4xl mx-auto px-4 py-8 md:py-10' : 'max-w-4xl mx-auto px-4 py-4' }}">
-    <div class="{{ empty($embed) ? 'bg-white rounded-xl shadow-xl overflow-hidden border border-gray-200' : 'bg-[#2e2924] rounded-lg overflow-hidden border border-[#4f4539]/40' }}">
-        <div class="p-6 md:p-8">
+<main class="{{ empty($embed) ? 'relative z-10 max-w-4xl mx-auto px-4 py-8 md:py-10' : 'max-w-none mx-auto px-0 py-0' }}">
+    <div class="{{ empty($embed) ? 'bg-white rounded-xl shadow-xl overflow-hidden border border-gray-200' : ($t6Embed ? 't6-res-card' : 'bg-[#2e2924] rounded-lg overflow-hidden border border-[#4f4539]/40') }}">
+        <div class="{{ $t6Embed ? 't6-res-inner' : 'p-6 md:p-8' }}">
             @if($success)
                 <header class="text-center mb-10">
                     <h1 class="text-3xl md:text-4xl font-bold mb-2 dark:text-white">Reservation Confirmed</h1>
@@ -69,10 +201,17 @@
                     <a href="{{ $menuUrl }}" class="inline-block py-3 px-8 bg-primary hover:bg-red-700 text-white font-bold rounded-lg transition-colors">Back to Menu</a>
                 </div>
             @else
+                @if(!$t6Embed)
                 <header class="text-center mb-10">
                     <h1 class="text-3xl md:text-4xl font-bold mb-2 dark:text-white">Book Your Table</h1>
                     <p class="text-slate-500 dark:text-slate-400">Join us for an unforgettable culinary experience.</p>
                 </header>
+                @else
+                <header class="mb-6">
+                    <h1 class="t6-res-title text-2xl md:text-3xl font-semibold mb-1">Book Your Table</h1>
+                    <p class="t6-res-muted text-sm">Complete your reservation below.</p>
+                </header>
+                @endif
 
                 @if($errors->isNotEmpty())
                 <div class="mb-6 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300">
@@ -86,23 +225,23 @@
                 <div class="mb-6 md:mb-8">
                     <div class="flex items-center justify-between w-full text-xs md:text-sm">
                         <div class="flex items-center gap-2">
-                            <div class="res-step-indicator w-8 h-8 md:w-9 md:h-9 rounded-full font-semibold shadow-md ring-2 flex items-center justify-center" id="step-ind-1" data-step="1" style="background-color:{{ $primaryColor }};color:white;ring-color:{{ $bgColor }}">1</div>
-                            <span class="font-semibold text-gray-700">Date &amp; Time</span>
+                            <div class="res-step-indicator active w-8 h-8 md:w-9 md:h-9 rounded-full font-semibold shadow-md ring-2 flex items-center justify-center" id="step-ind-1" data-step="1" style="background-color:{{ $primaryColor }};color:{{ $t6Embed ? '#452b00' : 'white' }};ring-color:{{ $bgColor }}">1</div>
+                            <span class="t6-res-step-text active font-semibold {{ $t6Embed ? '' : 'text-gray-700' }}">Date &amp; Time</span>
                         </div>
-                        <div class="flex-1 h-px mx-2 bg-gray-200 hidden sm:block"></div>
+                        <div class="flex-1 h-px mx-2 t6-res-divider {{ $t6Embed ? '' : 'bg-gray-200' }} hidden sm:block"></div>
                         <div class="flex items-center gap-2">
                             <div class="res-step-indicator w-8 h-8 md:w-9 md:h-9 rounded-full bg-white border border-gray-300 text-gray-500 font-medium ring-2 flex items-center justify-center" id="step-ind-2" data-step="2" style="ring-color:{{ $bgColor }}">2</div>
-                            <span class="font-medium text-gray-600 hidden xs:inline">Guest Info</span>
+                            <span class="t6-res-step-text font-medium {{ $t6Embed ? '' : 'text-gray-600' }} hidden xs:inline">Guest Info</span>
                         </div>
-                        <div class="flex-1 h-px mx-2 bg-gray-200 hidden sm:block"></div>
+                        <div class="flex-1 h-px mx-2 t6-res-divider {{ $t6Embed ? '' : 'bg-gray-200' }} hidden sm:block"></div>
                         <div class="flex items-center gap-2">
                             <div class="res-step-indicator w-8 h-8 md:w-9 md:h-9 rounded-full bg-white border border-gray-300 text-gray-500 font-medium ring-2 flex items-center justify-center" id="step-ind-3" data-step="3" style="ring-color:{{ $bgColor }}">3</div>
-                            <span class="font-medium text-gray-600 hidden md:inline">Requests</span>
+                            <span class="t6-res-step-text font-medium {{ $t6Embed ? '' : 'text-gray-600' }} hidden md:inline">Requests</span>
                         </div>
-                        <div class="flex-1 h-px mx-2 bg-gray-200 hidden sm:block"></div>
+                        <div class="flex-1 h-px mx-2 t6-res-divider {{ $t6Embed ? '' : 'bg-gray-200' }} hidden sm:block"></div>
                         <div class="flex items-center gap-2">
                             <div class="res-step-indicator w-8 h-8 md:w-9 md:h-9 rounded-full bg-white border border-gray-300 text-gray-500 font-medium ring-2 flex items-center justify-center" id="step-ind-4" data-step="4" style="ring-color:{{ $bgColor }}">4</div>
-                            <span class="font-medium text-gray-600 hidden lg:inline">Confirm</span>
+                            <span class="t6-res-step-text font-medium {{ $t6Embed ? '' : 'text-gray-600' }} hidden lg:inline">Confirm</span>
                         </div>
                     </div>
                 </div>
@@ -133,7 +272,7 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold uppercase tracking-wider mb-3 text-gray-700">Number of Guests</label>
-                                <div class="flex items-center justify-between px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg">
+                                <div class="flex items-center justify-between px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg party-wrap">
                                     <button type="button" id="party-minus" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 border border-gray-300 text-gray-700 hover:bg-primary hover:text-white hover:border-primary transition-colors shadow-sm">
                                         @resmenuIcon('remove', ['size' => 16, 'class' => 'text-sm'])
                                     </button>
@@ -291,6 +430,7 @@
 @php
     $reservationConfig = [
         'primaryColor' => $primaryColor,
+        'onPrimaryColor' => $t6Embed ? '#452b00' : '#ffffff',
         'baseUrl' => rtrim(url('/'), '/'),
         'slug' => $restaurant->slug,
         'partySize' => (int) old('party_size', 1),
@@ -303,6 +443,25 @@
 window.RESERVATION_CONFIG = @json($reservationConfig);
 </script>
 <script src="{{ asset('assets/js/reservation-wizard.js') }}"></script>
+@if($t6Embed)
+<script>
+(function(){
+    function t6NotifyHeight() {
+        var h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+        window.parent.postMessage({ type: 't6-reservation-resize', height: h }, '*');
+    }
+    window.addEventListener('load', t6NotifyHeight);
+    window.addEventListener('resize', t6NotifyHeight);
+    if (window.MutationObserver) {
+        new MutationObserver(t6NotifyHeight).observe(document.body, { childList: true, subtree: true, attributes: true });
+    }
+    document.querySelectorAll('.res-next-btn, .res-back-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() { setTimeout(t6NotifyHeight, 50); });
+    });
+    setInterval(t6NotifyHeight, 500);
+})();
+</script>
+@endif
 @endif
 </body>
 </html>

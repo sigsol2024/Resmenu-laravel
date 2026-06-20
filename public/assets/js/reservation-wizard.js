@@ -1,6 +1,7 @@
 ﻿document.addEventListener('DOMContentLoaded', function() {
     var cfg = window.RESERVATION_CONFIG || {};
     var primaryColor = cfg.primaryColor || '#f20d0d';
+    var onPrimaryColor = cfg.onPrimaryColor || '#ffffff';
     var baseUrl = cfg.baseUrl || '';
     var slug = cfg.slug || '';
     var partySize = parseInt(cfg.partySize, 10) || 1;
@@ -44,10 +45,10 @@
             el.classList.remove('ring-4');
             if (n < step) {
                 el.style.backgroundColor = primaryColor;
-                el.style.color = 'white';
+                el.style.color = onPrimaryColor;
             } else if (n === step) {
                 el.style.backgroundColor = primaryColor;
-                el.style.color = 'white';
+                el.style.color = onPrimaryColor;
                 el.classList.add('ring-4');
             } else {
                 el.style.backgroundColor = '';
@@ -109,7 +110,7 @@
                             b.style.borderColor = '';
                         });
                         btn.style.backgroundColor = primaryColor;
-                        btn.style.color = 'white';
+                        btn.style.color = onPrimaryColor;
                         btn.style.borderColor = primaryColor;
                         timeInput.value = btn.getAttribute('data-time');
                     });
@@ -136,7 +137,7 @@
                 b.style.borderColor = '';
             });
             btn.style.backgroundColor = primaryColor;
-            btn.style.color = 'white';
+            btn.style.color = onPrimaryColor;
             btn.style.borderColor = primaryColor;
             timeInput.value = btn.getAttribute('data-time');
         });
@@ -147,7 +148,7 @@
         var sel = document.querySelector('#time-slots-container .time-slot[data-time="' + preSelected + '"]');
         if (sel && !sel.disabled) {
             sel.style.backgroundColor = primaryColor;
-            sel.style.color = 'white';
+            sel.style.color = onPrimaryColor;
             sel.style.borderColor = primaryColor;
         }
     }
@@ -294,7 +295,7 @@
                 b.classList.add('border-gray-200', 'bg-gray-50', 'text-gray-600');
             });
             btn.style.backgroundColor = primaryColor;
-            btn.style.color = 'white';
+            btn.style.color = onPrimaryColor;
             btn.classList.add('border-primary', 'text-white');
             btn.classList.remove('border-gray-200', 'bg-gray-50', 'text-gray-600');
             if (occasionInput) occasionInput.value = btn.getAttribute('data-occasion') || '';
