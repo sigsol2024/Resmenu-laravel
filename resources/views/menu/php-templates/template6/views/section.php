@@ -16,7 +16,7 @@ $sectionHeroUrl = ! empty($section) ? t6_section_image($uploadBaseUrl ?? '', $se
 </section>
 <?php endif; ?>
 
-<main class="<?php echo $sectionHeroUrl ? 'pt-8 md:pt-lg' : 'pt-20 md:pt-[100px]'; ?> pb-12 md:pb-xl px-4 md:px-gutter max-w-container-max mx-auto">
+<main class="<?php echo $sectionHeroUrl ? 'pt-10 md:pt-14' : 'pt-24 md:pt-28'; ?> pb-12 md:pb-xl px-4 md:px-gutter max-w-container-max mx-auto">
 <?php if (! $sectionHeroUrl): ?>
 <section class="mb-md md:mb-lg">
 <div class="max-w-2xl mx-auto text-center mb-md">
@@ -26,41 +26,42 @@ $sectionHeroUrl = ! empty($section) ? t6_section_image($uploadBaseUrl ?? '', $se
 </section>
 <?php endif; ?>
 
-<div class="grid grid-cols-2 md:grid-cols-4 md:grid-rows-3 gap-3 md:gap-6 auto-rows-fr">
-<?php
-$gridClasses = [
-    'col-span-2 row-span-2 min-h-[200px] md:min-h-[300px]',
-    'col-span-2 min-h-[150px] md:min-h-[300px]',
-    'col-span-1 min-h-[130px] md:min-h-[300px]',
-    'col-span-1 min-h-[130px] md:min-h-[300px]',
-    'col-span-2 min-h-[150px] md:min-h-[240px]',
-    'col-span-1 min-h-[130px] md:min-h-[240px]',
-];
-foreach ($categories as $i => $cat):
+<section class="mb-lg md:mb-xl">
+<div class="max-w-xl mx-auto relative group">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 text-primary/60 group-focus-within:text-primary transition-colors">
+<span class="material-symbols-outlined">search</span>
+</span>
+<input class="w-full h-12 md:h-14 pl-12 pr-4 bg-surface-container-low border-b border-primary/20 focus:border-primary focus:ring-0 text-on-surface font-body-md transition-all outline-none rounded-lg t6-page-search" placeholder="Search for a dish, cocktail or ingredient..." type="search" autocomplete="off">
+</div>
+</section>
+
+<div class="grid grid-cols-2 md:grid-cols-4 md:grid-rows-3 gap-3 md:gap-6 grid-flow-dense">
+<?php foreach ($categories as $i => $cat):
     $cslug = $cat['slug'] ?? ('cat-'.$i);
     $catUrl = t6_category_url($fullMenuUrl ?? '', $section['slug'] ?? '', $cslug);
     $catImg = t6_category_image($uploadBaseUrl ?? '', $cat);
-    $gridClass = $gridClasses[$i % count($gridClasses)];
-    $isLarge = ($i % count($gridClasses)) === 0;
+    $grid = t6_section_category_grid_class($i);
+    $gridClass = $grid['class'];
+    $isLarge = $grid['isLarge'];
 ?>
 <a href="<?php echo t6_esc($catUrl); ?>" class="<?php echo $gridClass; ?> relative category-card group cursor-pointer overflow-hidden rounded-xl shadow-xl block border border-outline-variant/10 <?php echo $catImg ? 'bg-surface-container' : 't6-category-box bg-surface-container-high'; ?>" data-t6-searchable data-t6-search-text="<?php echo t6_esc($cat['name'] ?? ''); ?>">
 <?php if ($catImg): ?>
 <div class="absolute inset-0 z-10 card-overlay transition-colors duration-500 bg-gradient-to-t from-background via-background/20 to-transparent"></div>
 <img class="w-full h-full object-cover transition-transform duration-700 absolute inset-0 group-hover:scale-105" alt="<?php echo t6_esc($cat['name'] ?? ''); ?>" src="<?php echo t6_esc($catImg); ?>" loading="lazy">
-<div class="absolute bottom-0 left-0 p-4 md:p-6 z-20 w-full">
+<div class="absolute bottom-0 left-0 p-3 md:p-6 z-20 w-full">
 <h3 class="font-headline-md md:text-headline-lg text-primary mb-1 serif leading-tight"><?php echo t6_esc($cat['name'] ?? ''); ?></h3>
 <?php if (! empty($cat['description']) && $isLarge): ?>
-<p class="font-body-sm md:text-body-md text-on-surface-variant max-w-sm line-clamp-2 hidden sm:block"><?php echo t6_esc($cat['description']); ?></p>
+<p class="font-body-sm md:text-body-md text-on-surface-variant max-w-sm line-clamp-2"><?php echo t6_esc($cat['description']); ?></p>
 <?php endif; ?>
 </div>
 <?php else: ?>
 <div class="absolute inset-0 z-0 bg-gradient-to-br from-surface-container-high via-surface-container to-surface-container-low opacity-90"></div>
 <div class="absolute inset-0 z-10 border border-primary/10 rounded-xl pointer-events-none"></div>
-<div class="relative z-20 h-full flex flex-col justify-center items-center text-center p-4 md:p-6">
-<span class="material-symbols-outlined text-primary/40 text-3xl md:text-4xl mb-2">restaurant</span>
+<div class="relative z-20 h-full flex flex-col justify-center items-center text-center p-3 md:p-6">
+<span class="material-symbols-outlined text-primary/40 text-2xl md:text-4xl mb-1 md:mb-2">restaurant</span>
 <h3 class="font-headline-md md:text-headline-lg text-primary serif leading-tight"><?php echo t6_esc($cat['name'] ?? ''); ?></h3>
 <?php if (! empty($cat['description'])): ?>
-<p class="font-body-sm text-on-surface-variant mt-1 line-clamp-2 max-w-[200px] md:max-w-xs"><?php echo t6_esc($cat['description']); ?></p>
+<p class="font-body-sm text-on-surface-variant mt-1 line-clamp-2 max-w-[160px] md:max-w-xs"><?php echo t6_esc($cat['description']); ?></p>
 <?php endif; ?>
 </div>
 <?php endif; ?>
@@ -89,3 +90,16 @@ foreach ($categories as $i => $cat):
 </section>
 <?php endif; ?>
 </main>
+<script>
+(function(){
+    var inp = document.querySelector('.t6-page-search');
+    if (!inp) return;
+    inp.addEventListener('input', function() {
+        var q = this.value.toLowerCase().trim();
+        document.querySelectorAll('[data-t6-searchable]').forEach(function(el) {
+            var text = (el.getAttribute('data-t6-search-text') || '').toLowerCase();
+            el.style.display = (!q || text.indexOf(q) !== -1) ? '' : 'none';
+        });
+    });
+})();
+</script>

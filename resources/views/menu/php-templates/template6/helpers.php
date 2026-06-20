@@ -152,6 +152,35 @@ function t6_connect_icon(string $icon): string
     };
 }
 
+/** @return array{class: string, isLarge: bool} */
+function t6_section_category_grid_class(int $index): array
+{
+    $slot = $index % 7;
+
+    $mobile = match ($slot) {
+        0 => 'col-span-1 row-span-2 min-h-[270px]',
+        1, 2 => 'col-span-1 row-span-1 min-h-[130px]',
+        3 => 'col-span-2 row-span-1 min-h-[140px]',
+        4, 5 => 'col-span-1 row-span-1 min-h-[130px]',
+        6 => 'col-span-1 row-span-2 min-h-[270px]',
+        default => 'col-span-1 row-span-1 min-h-[130px]',
+    };
+
+    $desktop = match ($slot) {
+        0 => 'md:col-span-2 md:row-span-2 md:min-h-[300px]',
+        1 => 'md:col-span-2 md:row-span-1 md:min-h-[300px]',
+        2, 3 => 'md:col-span-1 md:row-span-1 md:min-h-[300px]',
+        4 => 'md:col-span-2 md:row-span-1 md:min-h-[240px]',
+        5, 6 => 'md:col-span-1 md:row-span-1 md:min-h-[240px]',
+        default => 'md:col-span-1 md:min-h-[240px]',
+    };
+
+    return [
+        'class' => $mobile.' '.$desktop,
+        'isLarge' => in_array($slot, [0, 3], true),
+    ];
+}
+
 function t6_rating_display(array $restaurant): string
 {
     $rating = number_format((float) ($restaurant['google_rating'] ?? 4.5), 1);
