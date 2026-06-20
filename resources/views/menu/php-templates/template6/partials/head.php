@@ -24,21 +24,27 @@ $t6PageTitle = t6_esc($pageTitle ?? ($restaurant['name'] ?? 'Menu'));
 .hover-reveal { opacity: 0; transform: translateY(10px); transition: all 0.4s ease; }
 .glass-pill { background: rgba(35, 31, 26, 0.6); backdrop-filter: blur(8px); border: 1px solid rgba(240, 190, 120, 0.15); }
 .premium-shadow { box-shadow: 0 20px 40px -15px rgba(23, 19, 14, 0.8); }
+.t6-reservation-img-overlay {
+  background: linear-gradient(to right, rgba(35, 31, 26, 1) 0%, rgba(35, 31, 26, 0.55) 40%, rgba(35, 31, 26, 0.15) 70%, transparent 100%);
+}
+@media (max-width: 1023px) {
+  .t6-reservation-img-overlay {
+    background: linear-gradient(to bottom, rgba(35, 31, 26, 0.92) 0%, rgba(35, 31, 26, 0.5) 45%, rgba(35, 31, 26, 0.75) 100%);
+  }
+}
 .serif { font-family: 'Bodoni Moda', serif; }
 .hide-scrollbar::-webkit-scrollbar { display: none; }
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: #17130e; }
 ::-webkit-scrollbar-thumb { background: #b88b4a; }
-#t6-mobile-nav { transform: translateY(-110%); transition: transform 0.3s ease; }
-#t6-mobile-nav.is-open { transform: translateY(0); }
 #t6-search-bar { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+#t6-search-bar.is-open { max-height: 88px; }
 html { scroll-behavior: smooth; scroll-padding-top: 6rem; }
 body.t6-has-cart { padding-bottom: 5rem; }
 @media (min-width: 1024px) {
   body.t6-has-cart { padding-bottom: 2rem; }
 }
-#t6-search-bar.is-open { max-height: 88px; }
 </style>
 <script id="tailwind-config">
 tailwind.config = {

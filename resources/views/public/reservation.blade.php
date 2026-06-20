@@ -60,7 +60,7 @@
             border: none;
             box-shadow: none;
         }
-        .t6-reservation-embed .t6-res-inner { padding: 0; }
+        .t6-reservation-embed .t6-res-inner { padding: 0 0 12px 0; }
         .t6-reservation-embed .t6-res-title {
             font-family: 'Bodoni Moda', serif;
             color: #eae1d9;
@@ -449,22 +449,30 @@ window.RESERVATION_CONFIG = @json($reservationConfig);
 (function(){
     var lastSent = 0;
     function t6NotifyHeight() {
-        var root = document.querySelector('.t6-res-inner') || document.body;
-        var h = root.offsetHeight || document.body.offsetHeight;
-        h = Math.min(Math.max(h, 200), 880);
-        if (Math.abs(h - lastSent) < 8) return;
+        var form = document.getElementById('reservation-form');
+        var root = form ? form.closest('.t6-res-inner') || form.parentElement : (document.querySelector('.t6-res-inner') || document.body);
+        var h = 0;
+        if (root) h = root.scrollHeight || root.offsetHeight;
+        h = Math.max(h, document.body.scrollHeight, 320);
+        h = Math.min(h, 1550);
+        if (Math.abs(h - lastSent) < 4) return;
         lastSent = h;
         window.parent.postMessage({ type: 't6-reservation-resize', height: h }, '*');
     }
-    window.addEventListener('load', function() { setTimeout(t6NotifyHeight, 100); });
+    window.addEventListener('load', function() { setTimeout(t6NotifyHeight, 150); setTimeout(t6NotifyHeight, 400); });
     window.addEventListener('resize', t6NotifyHeight);
     document.querySelectorAll('.res-next-btn, .res-back-btn, #reservation-date-trigger, #res-cal-prev, #res-cal-next').forEach(function(btn) {
-        btn.addEventListener('click', function() { setTimeout(t6NotifyHeight, 120); });
+        btn.addEventListener('click', function() { setTimeout(t6NotifyHeight, 150); setTimeout(t6NotifyHeight, 350); });
     });
     var calWrap = document.getElementById('reservation-calendar-wrap');
     if (calWrap && window.MutationObserver) {
-        new MutationObserver(function() { setTimeout(t6NotifyHeight, 80); }).observe(calWrap, { attributes: true, attributeFilter: ['class'] });
+        new MutationObserver(function() { setTimeout(t6NotifyHeight, 100); }).observe(calWrap, { attributes: true, attributeFilter: ['class'] });
     }
+    document.querySelectorAll('.res-step').forEach(function(step) {
+        if (window.MutationObserver) {
+            new MutationObserver(function() { setTimeout(t6NotifyHeight, 100); }).observe(step, { attributes: true, attributeFilter: ['class'] });
+        }
+    });
 })();
 </script>
 @endif

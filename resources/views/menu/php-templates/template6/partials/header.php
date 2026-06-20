@@ -1,8 +1,5 @@
 <?php
 $t6Logo = t6_logo_url($uploadBaseUrl ?? '', $restaurant ?? []);
-$t6Platform = t6_platform_base($fullMenuUrl ?? '');
-$t6TermsUrl = $t6Platform.'/terms';
-$t6ContactUrl = $t6Platform.'/contact';
 $t6MenuViewLevel = $menuViewLevel ?? 'home';
 $t6ResLink = ($t6MenuViewLevel === 'home' && ! empty($supportsReservations)) ? '#reservation' : ($reservationUrl ?? '#');
 ?>
@@ -29,20 +26,11 @@ $t6ResLink = ($t6MenuViewLevel === 'home' && ! empty($supportsReservations)) ? '
 shopping_bag
 </button>
 <?php endif; ?>
-<button type="button" id="t6-mobile-menu-btn" class="md:hidden material-symbols-outlined text-on-surface-variant" aria-label="Open menu">menu</button>
 </div>
 </nav>
 <div id="t6-search-bar" class="border-t border-outline-variant/10 bg-background/95">
 <div class="max-w-container-max mx-auto px-4 md:px-gutter py-3">
 <input type="search" id="t6-search-input" class="w-full h-12 px-4 bg-surface-container-low border-b border-primary/20 focus:border-primary focus:ring-0 text-on-surface font-body-md outline-none rounded-lg" placeholder="Search dishes, categories..." autocomplete="off">
-</div>
-</div>
-<div id="t6-mobile-nav" class="md:hidden fixed top-[73px] left-0 right-0 z-40 bg-surface-container border-b border-outline-variant/10 shadow-lg">
-<div class="px-4 md:px-gutter py-4 flex flex-col gap-2 max-w-container-max mx-auto">
-<a href="<?php echo t6_esc($fullMenuUrl ?? '#'); ?>" class="text-on-surface py-2 font-label-lg text-label-lg">Menu</a>
-<?php if (! empty($supportsReservations)): ?>
-<a href="<?php echo t6_esc($t6ResLink); ?>" class="text-on-surface py-2 font-label-lg text-label-lg t6-scroll-anchor">Reservations</a>
-<?php endif; ?>
 </div>
 </div>
 </header>

@@ -4,18 +4,14 @@ if (empty($heroUrl) && ! empty($sections[0]['image'])) {
     $heroUrl = t6_section_image($uploadBaseUrl ?? '', $sections[0]);
 }
 $t6SectionCount = count($sections ?? []);
-if ($t6SectionCount <= 1) {
-    $t6SectionsGridClass = 'grid grid-cols-1 gap-gutter max-w-2xl mx-auto';
-    $t6SectionCardClass = 'relative aspect-[16/10] sm:aspect-[2/1] group overflow-hidden rounded-lg min-h-[220px]';
+if ($t6SectionCount === 1) {
+    $t6SectionsGridClass = 'grid grid-cols-1 gap-3 md:gap-gutter max-w-2xl mx-auto';
 } elseif ($t6SectionCount === 2) {
-    $t6SectionsGridClass = 'grid grid-cols-1 sm:grid-cols-2 gap-gutter max-w-4xl mx-auto';
-    $t6SectionCardClass = 'relative aspect-square sm:aspect-[4/5] group overflow-hidden rounded-lg min-h-[200px]';
+    $t6SectionsGridClass = 'grid grid-cols-2 gap-3 md:gap-gutter max-w-4xl mx-auto';
 } elseif ($t6SectionCount === 3) {
-    $t6SectionsGridClass = 'grid grid-cols-1 sm:grid-cols-3 gap-gutter';
-    $t6SectionCardClass = 'relative aspect-square group overflow-hidden rounded-lg min-h-[180px]';
+    $t6SectionsGridClass = 'grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-gutter';
 } else {
     $t6SectionsGridClass = 'grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-gutter';
-    $t6SectionCardClass = 'relative aspect-square group overflow-hidden rounded-lg min-h-[140px]';
 }
 ?>
 <main class="pb-8">
@@ -53,11 +49,22 @@ if ($t6SectionCount <= 1) {
 <section id="sections" class="py-12 md:py-xl max-w-container-max mx-auto px-4 md:px-gutter scroll-mt-28">
 <h2 class="font-display-lg text-headline-lg mb-8 md:mb-12 text-center serif">Curated Experiences</h2>
 <div class="<?php echo t6_esc($t6SectionsGridClass); ?>">
-<?php foreach ($sections as $section):
+<?php foreach ($sections as $i => $section):
     $secImg = t6_section_image($uploadBaseUrl ?? '', $section);
     $secUrl = t6_section_url($fullMenuUrl ?? '', $section['slug'] ?? '');
+    if ($t6SectionCount === 1) {
+        $cardClass = 'relative aspect-[16/10] sm:aspect-[2/1] group overflow-hidden rounded-lg min-h-[200px] block';
+    } elseif ($t6SectionCount === 2) {
+        $cardClass = 'relative aspect-square group overflow-hidden rounded-lg min-h-[140px] block';
+    } elseif ($t6SectionCount === 3) {
+        $cardClass = ($i === 2)
+            ? 'relative col-span-2 sm:col-span-1 aspect-[2/1] sm:aspect-square group overflow-hidden rounded-lg min-h-[140px] sm:min-h-[180px] block'
+            : 'relative aspect-square group overflow-hidden rounded-lg min-h-[140px] block';
+    } else {
+        $cardClass = 'relative aspect-square group overflow-hidden rounded-lg min-h-[140px] block';
+    }
 ?>
-<a href="<?php echo t6_esc($secUrl); ?>" class="<?php echo t6_esc($t6SectionCardClass); ?>" data-t6-searchable data-t6-search-text="<?php echo t6_esc($section['name'] ?? ''); ?>">
+<a href="<?php echo t6_esc($secUrl); ?>" class="<?php echo t6_esc($cardClass); ?>" data-t6-searchable data-t6-search-text="<?php echo t6_esc($section['name'] ?? ''); ?>">
 <?php if ($secImg): ?>
 <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt="<?php echo t6_esc($section['name'] ?? ''); ?>" src="<?php echo t6_esc($secImg); ?>" loading="lazy">
 <?php else: ?>
