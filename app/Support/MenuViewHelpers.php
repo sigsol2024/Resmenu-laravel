@@ -17,6 +17,11 @@ class MenuViewHelpers
             require_once $icons;
         }
 
+        $categoryIcons = __DIR__.'/legacy_category_icons.php';
+        if (is_file($categoryIcons)) {
+            require_once $categoryIcons;
+        }
+
         if (! defined('SITE_URL')) {
             define('SITE_URL', rtrim((string) config('app.url'), '/'));
         }
