@@ -46,7 +46,7 @@ $sectionHeroUrl = ! empty($section) ? t6_section_image($uploadBaseUrl ?? '', $se
 ?>
 <a href="<?php echo t6_esc($catUrl); ?>" class="<?php echo $gridClass; ?> relative category-card group cursor-pointer overflow-hidden rounded-xl shadow-xl block border border-outline-variant/10 <?php echo $catImg ? 'bg-surface-container' : 't6-category-box bg-surface-container-high'; ?>" data-t6-searchable data-t6-search-text="<?php echo t6_esc($cat['name'] ?? ''); ?>">
 <?php if ($catImg): ?>
-<div class="absolute inset-0 z-10 card-overlay transition-colors duration-500 bg-gradient-to-t from-background via-background/20 to-transparent"></div>
+<div class="absolute inset-0 z-10 t6-category-img-overlay transition-all duration-500"></div>
 <img class="w-full h-full object-cover transition-transform duration-700 absolute inset-0 group-hover:scale-105" alt="<?php echo t6_esc($cat['name'] ?? ''); ?>" src="<?php echo t6_esc($catImg); ?>" loading="lazy">
 <div class="absolute bottom-0 left-0 p-3 md:p-6 z-20 w-full">
 <h3 class="font-headline-md md:text-headline-lg text-primary mb-1 serif leading-tight"><?php echo t6_esc($cat['name'] ?? ''); ?></h3>

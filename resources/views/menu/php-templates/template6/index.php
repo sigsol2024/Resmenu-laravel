@@ -8,6 +8,7 @@ $menuViewLevel = $menuViewLevel ?? 'home';
 $GLOBALS['t6_is_template_preview'] = ! empty($isTemplatePreview);
 $uploadBaseUrl = $uploadBaseUrl ?? (defined('UPLOAD_URL') ? rtrim(UPLOAD_URL, '/') : '');
 $popularItems = $popularItems ?? [];
+$t6BackUrl = (($menuViewLevel === 'category') && ! empty($sectionMenuUrl ?? null)) ? $sectionMenuUrl : null;
 
 $pageTitle = $restaurant['name'] ?? 'Menu';
 if ($menuViewLevel === 'section' && ! empty($activeSection['name'])) {

@@ -1,5 +1,7 @@
 <?php
-if (empty($restaurant) || ! is_array($restaurant) || ! t6_has_contact_info($restaurant)) {
+$t6HasContact = ! empty($restaurant) && is_array($restaurant) && t6_has_contact_info($restaurant);
+$t6BackUrl = $t6BackUrl ?? null;
+if (! $t6HasContact && empty($t6BackUrl)) {
     return;
 }
 
@@ -8,13 +10,26 @@ $t6Email = trim((string) ($restaurant['email'] ?? ''));
 $t6Address = trim((string) ($restaurant['address'] ?? ''));
 $t6Whatsapp = trim((string) ($restaurant['whatsapp_link'] ?? ''));
 $t6Tel = $t6Phone !== '' ? 'tel:'.preg_replace('/\s+/', '', $t6Phone) : null;
-$t6MapEmbed = t6_map_embed_url($restaurant);
-$t6Directions = t6_directions_url($restaurant);
+$t6MapEmbed = $t6HasContact ? t6_map_embed_url($restaurant) : null;
+$t6Directions = $t6HasContact ? t6_directions_url($restaurant) : null;
 $t6RestName = trim((string) ($restaurant['name'] ?? 'Restaurant'));
 ?>
-<button type="button" id="t6-contact-toggle" class="t6-contact-anchor fixed left-0 top-1/2 -translate-y-1/2 z-50 flex items-center justify-center p-3 rounded-r-full shadow-2xl transition-all duration-300 hover:translate-x-1" aria-label="Contact us" aria-controls="t6-contact-drawer" aria-expanded="false">
+<nav class="t6-left-dock fixed left-0 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-0.5 shadow-2xl" aria-label="Quick actions">
+<?php if ($t6HasContact): ?>
+<button type="button" id="t6-contact-toggle" class="t6-dock-btn flex items-center justify-center p-3 rounded-r-full" aria-label="Contact us" aria-controls="t6-contact-drawer" aria-expanded="false">
 <span class="material-symbols-outlined text-primary text-2xl">support_agent</span>
 </button>
+<?php endif; ?>
+<?php if (! empty($t6BackUrl)): ?>
+<a href="<?php echo t6_esc($t6BackUrl); ?>" class="t6-dock-btn flex items-center justify-center p-3 rounded-r-full" aria-label="Go back">
+<span class="material-symbols-outlined text-primary text-2xl">arrow_back</span>
+</a>
+<?php endif; ?>
+</nav>
+
+<?php if (! $t6HasContact) {
+    return;
+} ?>
 
 <div id="t6-contact-backdrop" class="hidden fixed inset-0 z-[90] bg-surface/60 backdrop-blur-sm" aria-hidden="true"></div>
 

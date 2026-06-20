@@ -8,11 +8,6 @@ $sectionSlug = $activeSection['slug'] ?? '';
 <main class="t6-main-offset pb-12 md:pb-xl px-4 md:px-gutter max-w-container-max mx-auto min-h-screen">
 <section class="flex flex-col md:flex-row md:items-end justify-between gap-md mb-lg">
 <div>
-<?php if (! empty($sectionMenuUrl)): ?>
-<a href="<?php echo t6_esc($sectionMenuUrl); ?>" class="text-on-surface-variant hover:text-primary font-label-md text-label-md mb-2 inline-flex items-center gap-1">
-<span class="material-symbols-outlined text-sm">arrow_back</span> Back to categories
-</a>
-<?php endif; ?>
 <h1 class="font-display-lg text-display-lg-mobile md:text-display-lg serif mb-xs"><?php echo t6_esc($catName); ?></h1>
 <p class="font-body-md text-body-md text-on-surface-variant/80 italic"><?php echo (int) $itemCount; ?> Selection<?php echo $itemCount === 1 ? '' : 's'; ?><?php if (! empty($category['description'])): ?> &bull; <?php echo t6_esc($category['description']); ?><?php endif; ?></p>
 </div>

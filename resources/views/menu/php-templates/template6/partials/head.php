@@ -23,14 +23,26 @@ $t6PageTitle = t6_esc($pageTitle ?? ($restaurant['name'] ?? 'Menu'));
 .t6-category-box:hover {
   border-color: rgba(240, 190, 120, 0.25);
 }
-.t6-contact-anchor {
+.t6-dock-btn {
   background: rgba(35, 31, 26, 0.92);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(156, 143, 128, 0.15);
   border-left: none;
+  transition: all 0.3s;
 }
-.t6-contact-anchor:hover {
+.t6-dock-btn:hover {
   background: rgba(46, 41, 36, 0.98);
+  transform: translateX(4px);
+}
+.t6-left-dock .t6-dock-btn:first-child { border-top-right-radius: 9999px; }
+.t6-left-dock .t6-dock-btn:last-child { border-bottom-right-radius: 9999px; }
+.t6-left-dock .t6-dock-btn:only-child { border-radius: 0 9999px 9999px 0; }
+.t6-category-img-overlay {
+  background: linear-gradient(to top, rgba(23, 19, 14, 0.98) 0%, rgba(23, 19, 14, 0.9) 30%, rgba(23, 19, 14, 0.55) 55%, rgba(23, 19, 14, 0.15) 75%, transparent 100%);
+  pointer-events: none;
+}
+.category-card:hover .t6-category-img-overlay {
+  background: linear-gradient(to top, rgba(23, 19, 14, 0.99) 0%, rgba(23, 19, 14, 0.92) 35%, rgba(23, 19, 14, 0.6) 60%, rgba(23, 19, 14, 0.2) 80%, transparent 100%);
 }
 @keyframes t6SlideInRight {
   from { transform: translateX(100%); }
