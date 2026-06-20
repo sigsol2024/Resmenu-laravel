@@ -40,6 +40,9 @@ Route::get('/order-payment/callback/{gateway}', \App\Http\Controllers\Public\Ord
     ->name('public.order.payment-callback');
 
 Route::get('/restaurant/{slug}', [MenuController::class, 'show'])->name('public.menu');
+Route::get('/restaurant/{slug}/{section}/{category}', [MenuController::class, 'show'])
+    ->name('public.menu.category')
+    ->where(['section' => '[a-z0-9-]+', 'category' => '[a-z0-9-]+']);
 Route::get('/restaurant/{slug}/{section}', [MenuController::class, 'show'])
     ->name('public.menu.section')
     ->where('section', '[a-z0-9-]+');

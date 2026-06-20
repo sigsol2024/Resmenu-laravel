@@ -1,0 +1,443 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>LUSSO ABUJA | The Art of Fine Dining</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400..900;1,400..900&amp;family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .lusso-gradient {
+            background: linear-gradient(to bottom, rgba(23, 19, 14, 0) 0%, rgba(23, 19, 14, 0.9) 80%, rgba(23, 19, 14, 1) 100%);
+        }
+        .editorial-line {
+            position: relative;
+        }
+        .editorial-line::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60px;
+            height: 1px;
+            background-color: #f0be78;
+        }
+        .glass-card {
+            background: rgba(51, 33, 29, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(156, 143, 128, 0.1);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#002e4f",
+                        "secondary-container": "#50453b",
+                        "on-error": "#690005",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-lowest": "#110e09",
+                        "surface-bright": "#3d3833",
+                        "on-primary-container": "#3f2700",
+                        "on-secondary": "#392e26",
+                        "background": "#17130e",
+                        "inverse-on-surface": "#34302a",
+                        "secondary": "#d4c3b7",
+                        "error-container": "#93000a",
+                        "secondary-fixed-dim": "#d4c3b7",
+                        "on-surface-variant": "#d3c4b4",
+                        "inverse-surface": "#eae1d9",
+                        "on-surface": "#eae1d9",
+                        "error": "#ffb4ab",
+                        "tertiary-fixed": "#d0e4ff",
+                        "primary-container": "#b88b4a",
+                        "on-primary": "#452b00",
+                        "tertiary-container": "#7096c0",
+                        "outline": "#9c8f80",
+                        "primary": "#f0be78",
+                        "outline-variant": "#4f4539",
+                        "inverse-primary": "#7d571b",
+                        "surface-container-low": "#1f1b16",
+                        "primary-fixed": "#ffddb3",
+                        "on-primary-fixed": "#291800",
+                        "on-tertiary-fixed-variant": "#20496f",
+                        "on-tertiary": "#003256",
+                        "surface-variant": "#39342e",
+                        "surface-container-high": "#2e2924",
+                        "on-background": "#eae1d9",
+                        "surface-container": "#231f1a",
+                        "on-primary-fixed-variant": "#624002",
+                        "surface": "#17130e",
+                        "on-secondary-container": "#c2b2a6",
+                        "surface-tint": "#f0be78",
+                        "primary-fixed-dim": "#f0be78",
+                        "secondary-fixed": "#f1dfd3",
+                        "on-tertiary-fixed": "#001d35",
+                        "surface-container-highest": "#39342e",
+                        "tertiary": "#a3caf6",
+                        "tertiary-fixed-dim": "#a3caf6",
+                        "on-secondary-fixed-variant": "#50453b",
+                        "surface-dim": "#17130e",
+                        "on-secondary-fixed": "#231a12"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "lg": "48px",
+                        "container-max": "1280px",
+                        "margin-mobile": "16px",
+                        "md": "24px",
+                        "sm": "12px",
+                        "xl": "80px",
+                        "base": "8px",
+                        "xs": "4px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Manrope"],
+                        "display-lg": ["Bodoni Moda"],
+                        "body-sm": ["Manrope"],
+                        "label-md": ["Manrope"],
+                        "display-lg-mobile": ["Bodoni Moda"],
+                        "headline-xl": ["Bodoni Moda"],
+                        "body-lg": ["Manrope"],
+                        "headline-md": ["Bodoni Moda"],
+                        "headline-lg": ["Bodoni Moda"],
+                        "label-lg": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "display-lg": ["72px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "label-md": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "display-lg-mobile": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-xl": ["48px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                        "label-lg": ["14px", {"lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full z-50 bg-background/95 backdrop-blur-md border-b border-outline-variant/10 shadow-sm">
+<nav class="flex justify-between items-center px-gutter py-4 max-w-container-max mx-auto">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-2">
+<img alt="LUSSO ABUJA Logo" class="w-8 h-8 object-contain" src="https://lh3.googleusercontent.com/aida/AP1WRLvC8An272g_KTpWT2wFKQYQSNkhm5Gp--kOANlKOUZJaXJCg5daMBEje-bc-Jklr4ytAUHuHx4pGIhV_AQNH60IxpKTg7r-TEPJywF8-IP-QlsQKj080WOtoJcfLdiBt_KmFvsRF7v0n8lJGEdMNqBLnJpRUoLWnSm4bwQ_KAvc3Ue3DVimjAWULPSAGnJ_Nr2I7dcQNBWCpRsrm0OPJqWhFJSu7o5dJ2XTc2o1ju6TUPULizMIOjyOxw">
+<span class="font-display-lg text-headline-md tracking-widest text-primary">LUSSO ABUJA</span>
+</div>
+<div class="hidden md:flex items-center gap-6">
+<a class="font-label-lg text-label-lg text-primary font-bold border-b-2 border-primary pb-1" href="#">Menu</a>
+<a class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary transition-colors" href="#">Reservations</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">search</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">shopping_bag</button>
+<button class="md:hidden material-symbols-outlined">menu</button>
+</div>
+</nav>
+</header>
+<main>
+<!-- Hero Section -->
+<section class="relative h-[95vh] w-full flex flex-col justify-end overflow-hidden">
+<div class="absolute inset-0 z-0">
+<div class="w-full h-full bg-cover bg-center" data-alt="An ultra-luxurious, dimly lit executive dining lounge in Abuja, featuring plush velvet seating in deep espresso, warm amber ambient lighting from sculptural gold fixtures, and polished dark mahogany tables. Large floor-to-ceiling windows reveal a soft twilight city view. The aesthetic is sophisticated, tactile, and private, emphasizing high-contrast editorial photography style and West African refined heritage." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDYr9KSkMT9eRJmps5D1ISWmdGU_SYF8QfYJQEXEPGaUcVpakUTxJDa0gcDDborx9IevYDpyLBP-K0qnwblQ8p04pFBrplvfPTEvFFhCPkwCmxi_qumhd7Z56uZEzt1eCJwQRapt4wVvNK4izrGiGdTLPixgPLkUX1Q41NBIqZPlnnKSAMYepe1iJQ6REe7F3ElmafFopK0u9rrK_DhFmxZ4q-4o7sOBjbbV6rZQ-tke9e8u0SkONALVeGD4e6TM5ZTB2FwHE_aDw')"></div>
+<div class="absolute inset-0 lusso-gradient"></div>
+</div>
+<div class="relative z-10 max-w-container-max mx-auto px-gutter w-full pb-xl">
+<div class="flex flex-wrap items-center gap-3 mb-6">
+<span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full font-label-md text-label-md flex items-center gap-1.5 uppercase">
+<span class="w-1.5 h-1.5 bg-on-primary rounded-full animate-pulse"></span>
+                        Open Now
+                    </span>
+<span class="bg-surface-container-highest text-primary border border-primary/20 px-3 py-1 rounded-full font-label-md text-label-md flex items-center gap-1.5 uppercase">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+                        4.9 Rating
+                    </span>
+</div>
+<h1 class="font-display-lg text-[clamp(48px,10vw,72px)] mb-8 max-w-3xl leading-[1.05]">
+                    The Art of <span class="italic text-primary">Fine Dining</span>
+</h1>
+<div class="flex flex-wrap gap-4">
+<button class="bg-primary text-on-primary px-8 py-4 font-label-lg text-label-lg uppercase tracking-widest hover:scale-[0.98] transition-transform duration-300">
+                        Explore Menu
+                    </button>
+<button class="border border-primary text-on-background px-8 py-4 font-label-lg text-label-lg uppercase tracking-widest hover:bg-primary/10 transition-colors duration-300">
+                        Book a Table
+                    </button>
+</div>
+</div>
+</section>
+<!-- Popular Dishes Bento Grid -->
+<section class="py-xl max-w-container-max mx-auto px-gutter">
+<div class="flex justify-between items-end mb-12">
+<div>
+<p class="text-primary font-label-lg text-label-lg uppercase tracking-[0.2em] mb-2">Exquisite Choices</p>
+<h2 class="font-display-lg text-headline-xl">Popular Dishes</h2>
+</div>
+<a class="text-on-surface-variant hover:text-primary font-label-lg text-label-lg flex items-center gap-2 group" href="#">
+                    View Full Menu
+                    <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<!-- Dish 1 -->
+<div class="group bg-surface-container rounded-lg overflow-hidden border border-outline-variant/10 transition-all hover:border-primary/30">
+<div class="aspect-[4/5] overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A gourmet presentation of butter-poached lobster tail served on a custom ceramic plate, garnished with edible gold leaf and delicate micro-greens. The lighting is focused and dramatic, highlighting the texture of the lobster and the rich citrus butter sauce. Dark, atmospheric background with subtle warm reflections on the table surface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNNOgeDb2AYKxKFHan07QAG1v7exu1kpv2M0Qrt_pzA8pmuQbRW8JkLKby5Nq8EshgV6Q42G7WhbM-qvNNnYLw5wKTFHY3US7jY_4qtJo9QYkSroPKz4Njs-67wQtyW1wKGZat-LF1uxqpAqyyQ_op9lenLwAhOkFrHbb5DnCi5XRCyxi3nCBbygx-pLeYbmxDyBYDWQgsFiJRzeiRmoHxsaPPIysv31BSQolGFbDsZojD2iCpxcBC7g4eANSuU_5PUXQoPj5Asw">
+</div>
+<div class="p-md">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-md text-headline-md">Atlantic Lobster</h3>
+<span class="text-primary font-bold">₦45,000</span>
+</div>
+<p class="text-on-surface-variant font-body-sm text-body-sm mb-6 line-clamp-2">Slow-poached in heritage butter, served with saffron-infused yam mousseline and citrus reduction.</p>
+<button class="w-full py-3 border border-outline-variant text-on-surface-variant font-label-md text-label-md uppercase tracking-widest hover:bg-primary hover:text-on-primary hover:border-primary transition-all">
+                            Quick View
+                        </button>
+</div>
+</div>
+<!-- Dish 2 -->
+<div class="group bg-surface-container rounded-lg overflow-hidden border border-outline-variant/10 transition-all hover:border-primary/30">
+<div class="aspect-[4/5] overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Perfectly seared A5 Wagyu beef steak sliced to reveal a medium-rare center, resting on a bed of roasted root vegetables. The meat has an exquisite marbling and a glossy glaze. Accompanied by a small pour-over bowl of truffle jus. The scene is lit with warm, moody highlights in a luxury restaurant setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAItVl3ASjIygSeXyhwnWYFvtQkkhjRk795-DFntthTRVH_j0o4s8wPI0YX4Qw2UuB8znLIEXzA2VyOEfcXftFxXtULQa-R1h1BjmSkUUeI2ZhQsixRQQqPNlAqNAkvWZap7-iTdPDFh7PzNZ7HbUCF4vjeO5go7VMLARshdM4un_ttQYq4EDIksC2qNuMZP2IMsai82pRxUjmtRcvnhzv9Id_alcX7P4IUqchyyfQARp-c8hU1sA1q9gjPNBWw4-GHtrG5Wtjacw">
+</div>
+<div class="p-md">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-md text-headline-md">Wagyu Ribeye</h3>
+<span class="text-primary font-bold">₦68,000</span>
+</div>
+<p class="text-on-surface-variant font-body-sm text-body-sm mb-6 line-clamp-2">Grade A5 Miyazaki Wagyu, charcoal-grilled, served with truffle-scented indigenous mushrooms.</p>
+<button class="w-full py-3 border border-outline-variant text-on-surface-variant font-label-md text-label-md uppercase tracking-widest hover:bg-primary hover:text-on-primary hover:border-primary transition-all">
+                            Quick View
+                        </button>
+</div>
+</div>
+<!-- Dish 3 -->
+<div class="group bg-surface-container rounded-lg overflow-hidden border border-outline-variant/10 transition-all hover:border-primary/30">
+<div class="aspect-[4/5] overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A modern interpretation of a West African seafood specialty, featuring grilled jumbo prawns and sea bass over a vibrant jollof-inspired risotto. The dish is garnished with artisanal oils and herbs. The photography is professional and high-contrast, emphasizing the rich, warm colors of the food against dark tableware." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkeNmqyI4QiUoP2M4oxh26oNgfcYuwm8ZUbSwu7iebAJJzh5jImPHmUfDiBt5j1X_FIBfr9GZL3hN44h-Fby29rXb2IM_we7gDIjBTQYc4Pmmbd5S0_90Ib_80IgNrw7hhHSmpZjNt7SVvdsf46VjdZX3PvDk1YvICm1wpuecVBDlvmlBtxIaoMmm-xVG7lmdTtiFcBBbykt1v2eXQU3w5ga3CLUsrjISQ9sOUGmjP8PUAS908CxrPyDrCeBWDsUnEX7ALEZwuAw">
+</div>
+<div class="p-md">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-headline-md text-headline-md">Lusso Seafood</h3>
+<span class="text-primary font-bold">₦38,000</span>
+</div>
+<p class="text-on-surface-variant font-body-sm text-body-sm mb-6 line-clamp-2">Pan-seared Atlantic sea bass and tiger prawns over a rich, spicy jollof-inspired risotto.</p>
+<button class="w-full py-3 border border-outline-variant text-on-surface-variant font-label-md text-label-md uppercase tracking-widest hover:bg-primary hover:text-on-primary hover:border-primary transition-all">
+                            Quick View
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Signature Selections Editorial -->
+<section class="bg-surface-container-low py-xl">
+<div class="max-w-container-max mx-auto px-gutter">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-xl items-center">
+<div class="relative">
+<div class="aspect-[3/4] rounded-lg overflow-hidden border border-primary/20">
+<img class="w-full h-full object-cover" data-alt="A close-up shot of a professional chef's hands carefully placing a final garnish on a sophisticated dish in a dark, high-end kitchen. The chef is wearing a clean black uniform. Steam rises softly from the plate, captured in sharp detail by warm spotlighting. The focus is on the precision and artistry of the culinary process." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnb8pZzLaz9fMCpAms8CvjJGIqPqrsieNauIYbfCmofIXrFZmMzFQOwJHAYj04TuIUhhbnBLmbMzYD5daFJRIionO5eHdH9FPxt4Qh2Xh3u-syKHjcY3Sl52LNz8L0v2p7kftzTeTg_-bQ2m3nIbJiGnU1F7kJkLTGmlhn761nckONEJMPczO3AMECRq0Hr0Aorp0ALMFBJEz4SzV-p08r7XPeiDOFFIINrnpOZjSyiOnjR5D-agg5zS5Px75J1LJ-k0OTxHlHsQ">
+</div>
+<div class="absolute -bottom-6 -right-6 glass-card p-6 rounded-lg max-w-xs hidden md:block">
+<p class="font-display-lg text-headline-md text-primary mb-2">Chef's Special</p>
+<p class="text-on-surface font-body-sm">Our Signature Short-Rib is slow-braised for 48 hours in a reduction of local spices and aged Bordeaux.</p>
+</div>
+</div>
+<div>
+<h2 class="font-display-lg text-[48px] mb-8 leading-tight">Signature Selections <br><span class="text-primary italic">by Chef Akande</span></h2>
+<div class="space-y-8">
+<div class="border-b border-outline-variant/20 pb-6 group cursor-pointer">
+<div class="flex justify-between items-center mb-2">
+<h4 class="font-headline-md text-headline-md group-hover:text-primary transition-colors">48-Hour Short Rib</h4>
+<span class="font-display-lg text-headline-md text-primary opacity-30">01</span>
+</div>
+<p class="text-on-surface-variant font-body-md">Served with honey-glazed carrots, parsnip puree, and a rich bone marrow reduction.</p>
+</div>
+<div class="border-b border-outline-variant/20 pb-6 group cursor-pointer">
+<div class="flex justify-between items-center mb-2">
+<h4 class="font-headline-md text-headline-md group-hover:text-primary transition-colors">The Abuja Garden</h4>
+<span class="font-display-lg text-headline-md text-primary opacity-30">02</span>
+</div>
+<p class="text-on-surface-variant font-body-md">A seasonal selection of heritage vegetables prepared five ways, celebrating local terroir.</p>
+</div>
+<div class="border-b border-outline-variant/20 pb-6 group cursor-pointer">
+<div class="flex justify-between items-center mb-2">
+<h4 class="font-headline-md text-headline-md group-hover:text-primary transition-colors">Spiced Lamb Rack</h4>
+<span class="font-display-lg text-headline-md text-primary opacity-30">03</span>
+</div>
+<p class="text-on-surface-variant font-body-md">Crusted with indigenous herbs, served with a minty pea foam and roasted tubers.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Browse Categories -->
+<section class="py-xl max-w-container-max mx-auto px-gutter">
+<h2 class="font-display-lg text-headline-lg mb-12 text-center">Curated Experiences</h2>
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-gutter">
+<a class="relative aspect-square group overflow-hidden rounded-lg" href="#">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" data-alt="A luxury breakfast setting with fresh artisanal pastries, tropical fruit, and gourmet coffee on a marble table. Warm morning light filters through sheer curtains, creating a soft, inviting atmosphere. Elegant tableware and gold cutlery are visible. Professional editorial photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRsHr4VApiRnpNN0S2OGBMnDP33mfC9UVk1NjN6HjWKIcv-aHvVE7eo8nqc24K15ZuWV4ZZ4jlb0Gf-IhZQYVYUyVs9kUysHnTpclVBJGEDMUp0sPCt7s8svQAINOOi7vvucO0quO2A3zjtVWQgzt9xEDMde2yPZ3nXHLPzUNHxqGOu1oCYwJ0FQZ4e3B4oKZh_g8xWL_WdVVEGSu3r5u2InBFB99mmO8YXZMgCtnkPByu5yIfoTGkbwoxAfub1KVoi6p1XNSAbQ">
+<div class="absolute inset-0 bg-background/40 group-hover:bg-background/20 transition-colors"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="font-display-lg text-headline-md text-on-background tracking-widest uppercase">Breakfast</span>
+</div>
+</a>
+<a class="relative aspect-square group overflow-hidden rounded-lg" href="#">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" data-alt="A sophisticated business lunch arrangement in a bright, modern dining room. A light salad and a gourmet sandwich are paired with sparkling water. The setting is professional yet relaxed, with clean lines and high-quality finishes. The color palette is composed of neutrals with warm wood accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKOmI7CtQKUTtxWkIzNB9ln9emHlE9VHE9mWeMu--K5ZEKClobGKoEpLdx3CSFJ93N5Zyf9_1n3P9gmkVzinykBWgZ8JHivNIjmGGzXTL8F6hAQMN3yCuWeszCr_Tc2iAJ4JiYP1vtzCdC-GkK6yEoGlzWEImtDwC59CeoOMBFVZU_OrcThTw21hu1LcmzVM9tBAn6DJ3PI0H5-4mGeRA58HVACmd8l7DMTjz3nU6WxqT5bL99N5GpdudHPLeWbruT3LRTCzVZfQ">
+<div class="absolute inset-0 bg-background/40 group-hover:bg-background/20 transition-colors"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="font-display-lg text-headline-md text-on-background tracking-widest uppercase">Lunch</span>
+</div>
+</a>
+<a class="relative aspect-square group overflow-hidden rounded-lg" href="#">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" data-alt="A romantic evening dinner scene with candlelight and fine wine. Dark, intimate atmosphere with warm amber lighting. The table is set with premium glassware and white linens. A steak dish is beautifully presented. Sophisticated, high-contrast digital photography focusing on texture and mood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPrZ1XhGZvMc3a1BetzFBxBlC_Tl9npYnWdbG_foxWM3nRxeKiFUBUr_V3KqC_p6bOMkEwWIQVxErWGcS-uZ3A-gKPBN7y0rboKQkL1jX0l9l5NtsY95MEbevhTVtJ6azOBBz16vxptMLan9s_Fdt55LLvY0JYGD69nbuWRll893z4asInK0AD5oJKShy7qMi6vKpb9twwhy9E7aPYaDnlpcAu8WpPCqwQ1l_HxGwt_d_I9fmwSYhl9NC15vF56hXDtKevilN1Bg">
+<div class="absolute inset-0 bg-background/40 group-hover:bg-background/20 transition-colors"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="font-display-lg text-headline-md text-on-background tracking-widest uppercase">Dinner</span>
+</div>
+</a>
+<a class="relative aspect-square group overflow-hidden rounded-lg" href="#">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" data-alt="A collection of artisanal cocktails and rare spirits arranged on a dark, backlit bar counter. The glassware is crystal and the garnishes are intricate. Warm lighting creates a sophisticated lounge feel. The scene emphasizes luxury nightlife and expert mixology." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOj7k_DvIDNGo3PgIhyHtSUWAoXJvu7beYjl2PmLtaIhOrJZU8DE7wpJ8WAOIto6cKNOqi1iUIDn_CQxMSVS664aFFy8V1TkkdknnYa-Wvb5V6sk8g5AJKGj9y2cmGWusaADA8GfvtGelndduUg5xXt4jfw42bw2ALUxyzR7pS08JoQh0eRpg5M2HUNOpgnBDLYf-w0mBJWIE5ZpSDy9UT_U3gaC2nMqzPLpzlvYpJmw32NztTFnr9KG49VhiVLiQIf-DSr4dJ3Q">
+<div class="absolute inset-0 bg-background/40 group-hover:bg-background/20 transition-colors"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="font-display-lg text-headline-md text-on-background tracking-widest uppercase">Drinks</span>
+</div>
+</a>
+</div>
+</section>
+<!-- Reservation Section -->
+<section class="py-xl">
+<div class="max-w-container-max mx-auto px-gutter">
+<div class="bg-surface-container rounded-xl overflow-hidden border border-outline-variant/10">
+<div class="grid grid-cols-1 lg:grid-cols-2">
+<div class="p-lg md:p-xl flex flex-col justify-center">
+<h2 class="font-display-lg text-headline-xl mb-6">Secure Your <br><span class="text-primary italic">Sanctuary</span></h2>
+<p class="text-on-surface-variant font-body-md mb-8 max-w-md">Experience the pinnacle of culinary excellence. Reservations are recommended to ensure your preferred seating in our main lounge or private vaults.</p>
+<form class="space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="space-y-2">
+<label class="font-label-md text-label-md uppercase text-on-surface-variant">Date</label>
+<input class="w-full bg-surface-container-low border-b border-outline-variant/30 text-on-surface p-3 focus:border-primary outline-none transition-colors" type="date">
+</div>
+<div class="space-y-2">
+<label class="font-label-md text-label-md uppercase text-on-surface-variant">Time</label>
+<select class="w-full bg-surface-container-low border-b border-outline-variant/30 text-on-surface p-3 focus:border-primary outline-none transition-colors">
+<option>19:00</option>
+<option>19:30</option>
+<option>20:00</option>
+<option>20:30</option>
+</select>
+</div>
+</div>
+<div class="space-y-2">
+<label class="font-label-md text-label-md uppercase text-on-surface-variant">Guests</label>
+<select class="w-full bg-surface-container-low border-b border-outline-variant/30 text-on-surface p-3 focus:border-primary outline-none transition-colors">
+<option>2 Persons</option>
+<option>4 Persons</option>
+<option>6 Persons</option>
+<option>Private Event</option>
+</select>
+</div>
+<button class="w-full bg-primary text-on-primary py-4 font-label-lg text-label-lg uppercase tracking-widest hover:opacity-90 transition-opacity" type="submit">
+                                    Confirm Availability
+                                </button>
+</form>
+</div>
+<div class="hidden lg:block relative">
+<img class="w-full h-full object-cover" data-alt="A warm and inviting interior shot of a luxury private dining booth. Soft candlelight, plush textures, and intimate spacing. The background shows a hint of a high-end wine cellar. The lighting is low and amber-toned, emphasizing discretion and comfort in a sophisticated West African luxury setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9D5dWzeB3LF1kc9Up40lXr2c5o8MV7GbPtFhnavgpgnA0OMUdEzvAwD4rgEkXDMN_8w33fcqKIv4m7xzLrzBCZcO-lOXixnHg5tzaTN_yrT6nb1QLenXAHR41OOzTSmXqLUd929Tsp0mqd6y_3DXU_egOLq9xqCRw_RiPdLiTc8nU1fEaaqU2aPs9MrcN1-RmzRZ5ThN99NP6bwfkQV2KflHkwAmAtEfAOcnOc-MKX0MTE-mcPlyXkGJU7KYAEdE3MuPCAZ-QqQ">
+<div class="absolute inset-0 bg-gradient-to-r from-surface-container to-transparent"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- About Section -->
+<section class="py-xl bg-background border-t border-outline-variant/10">
+<div class="max-w-container-max mx-auto px-gutter text-center">
+<img alt="LUSSO Logo" class="w-16 h-16 mx-auto mb-8 opacity-50" src="https://lh3.googleusercontent.com/aida/AP1WRLvC8An272g_KTpWT2wFKQYQSNkhm5Gp--kOANlKOUZJaXJCg5daMBEje-bc-Jklr4ytAUHuHx4pGIhV_AQNH60IxpKTg7r-TEPJywF8-IP-QlsQKj080WOtoJcfLdiBt_KmFvsRF7v0n8lJGEdMNqBLnJpRUoLWnSm4bwQ_KAvc3Ue3DVimjAWULPSAGnJ_Nr2I7dcQNBWCpRsrm0OPJqWhFJSu7o5dJ2XTc2o1ju6TUPULizMIOjyOxw">
+<p class="text-primary font-label-lg text-label-lg uppercase tracking-[0.3em] mb-4">Our Philosophy</p>
+<h2 class="font-display-lg text-headline-xl mb-8">Modern African Luxury</h2>
+<div class="max-w-3xl mx-auto">
+<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+                        Lusso Dining is a tribute to the evolving culinary heritage of West Africa, reimagined through the lens of global sophistication. We source the finest local ingredients and elevate them with contemporary techniques, creating a dialogue between tradition and modernity. Every detail, from the tactile warmth of our mahogany furniture to the precision of our plating, is designed to evoke the intimacy of a private members' club.
+                    </p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low dark:bg-surface-container-low border-t border-outline-variant/20">
+<div class="max-w-container-max mx-auto px-gutter py-lg">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-xl mb-xl">
+<div class="md:col-span-2">
+<div class="flex items-center gap-2 mb-6">
+<img alt="LUSSO Logo" class="w-10 h-10 object-contain" src="https://lh3.googleusercontent.com/aida/AP1WRLvC8An272g_KTpWT2wFKQYQSNkhm5Gp--kOANlKOUZJaXJCg5daMBEje-bc-Jklr4ytAUHuHx4pGIhV_AQNH60IxpKTg7r-TEPJywF8-IP-QlsQKj080WOtoJcfLdiBt_KmFvsRF7v0n8lJGEdMNqBLnJpRUoLWnSm4bwQ_KAvc3Ue3DVimjAWULPSAGnJ_Nr2I7dcQNBWCpRsrm0OPJqWhFJSu7o5dJ2XTc2o1ju6TUPULizMIOjyOxw">
+<span class="font-display-lg text-headline-md text-primary tracking-widest">LUSSO ABUJA</span>
+</div>
+<p class="text-on-surface-variant font-body-md max-w-sm">Elevating the standards of hospitality in Nigeria's capital. A sanctuary for the global citizen.</p>
+</div>
+<div>
+<h5 class="font-label-lg text-label-lg uppercase text-primary mb-6">Connect</h5>
+<ul class="space-y-4 font-label-md text-label-md uppercase tracking-wide">
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Instagram</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Twitter (X)</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">LinkedIn</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-label-lg text-label-lg uppercase text-primary mb-6">Legal</h5>
+<ul class="space-y-4 font-label-md text-label-md uppercase tracking-wide">
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Contact Us</a></li>
+</ul>
+</div>
+</div>
+<div class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-outline-variant/10">
+<p class="text-on-surface-variant font-body-sm text-body-sm mb-4 md:mb-0">© 2024 Lusso Hotels Abuja. All rights reserved.</p>
+<div class="flex gap-8">
+<a class="text-on-surface-variant hover:text-primary font-label-md text-label-md" href="#">Careers</a>
+<a class="text-on-surface-variant hover:text-primary font-label-md text-label-md" href="#">Press Kit</a>
+</div>
+</div>
+</div>
+</footer>
+<script>
+        // Micro-interaction for buttons
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.classList.add('scale-95');
+                setTimeout(() => button.classList.remove('scale-95'), 200);
+            });
+        });
+
+        // Smooth scroll reveal (simple implementation)
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('header');
+            if (window.scrollY > 50) {
+                nav.classList.add('py-2');
+                nav.classList.remove('py-4');
+            } else {
+                nav.classList.add('py-4');
+                nav.classList.remove('py-2');
+            }
+        });
+    </script>
+</body></html>

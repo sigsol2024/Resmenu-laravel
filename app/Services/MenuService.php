@@ -68,6 +68,132 @@ class MenuService
         return $mapped;
     }
 
+    /** Section with category metadata only (no menu_items) for Template 6 category grid. */
+    public function sectionWithCategoriesOnlyBySlug(Restaurant $restaurant, string $sectionSlug): ?array
+    {
+        $section = $this->sectionWithMenuBySlug($restaurant, $sectionSlug);
+        if ($section === null) {
+            return null;
+        }
+
+        $section['categories'] = $this->stripMenuItemsFromCategories($section['categories'] ?? []);
+
+        return $section;
+    }
+
+    /**
+     * @return array{section: array<string, mixed>, category: array<string, mixed>}|null
+     */
+    public function categoryWithMenuInSection(Restaurant $restaurant, string $sectionSlug, string $categorySlug): ?array
+    {
+        $sectionRow = Section::query()
+            ->where('restaurant_id', $restaurant->id)
+            ->where('slug', $sectionSlug)
+            ->where('is_active', 1)
+            ->first();
+
+        if (! $sectionRow) {
+            return null;
+        }
+
+        $category = Category::query()
+            ->where('restaurant_id', $restaurant->id)
+            ->where('slug', $categorySlug)
+            ->where('is_active', 1)
+            ->first();
+
+        if (! $category) {
+            return null;
+        }
+
+        if (! $this->categoryBelongsToSection($restaurant->id, (int) $sectionRow->id, (int) $category->id)) {
+            return null;
+        }
+
+        $mappedCategory = $this->mapCategory($category, $restaurant->id);
+        if ($mappedCategory === null) {
+            return null;
+        }
+
+        $section = $sectionRow->toArray();
+        $section['categories'] = $this->stripMenuItemsFromCategories(
+            $this->categoriesForSectionPage($restaurant->id, (int) $sectionRow->id)
+        );
+
+        return [
+            'section' => $section,
+            'category' => $mappedCategory,
+        ];
+    }
+
+    /** @return list<array<string, mixed>> */
+    public function popularMenuItems(Restaurant $restaurant, int $limit = 3): array
+    {
+        $items = [];
+        foreach ($this->sectionsWithMenu($restaurant) as $section) {
+            foreach ($section['categories'] ?? [] as $category) {
+                foreach ($category['menu_items'] ?? [] as $item) {
+                    if (! empty($item['is_available'])) {
+                        $items[] = $item;
+                    }
+                }
+            }
+        }
+
+        return array_slice($items, 0, max(0, $limit));
+    }
+
+    /** @return list<array<string, mixed>> */
+    public function sectionsForHome(Restaurant $restaurant): array
+    {
+        $sections = $this->sectionsWithMenu($restaurant);
+
+        return array_values(array_filter(array_map(function (array $section): ?array {
+            $categories = array_values(array_filter($section['categories'] ?? [], static function (array $cat): bool {
+                return ! empty($cat['menu_items']) && is_array($cat['menu_items']);
+            }));
+            if ($categories === []) {
+                return null;
+            }
+            $section['categories'] = $this->stripMenuItemsFromCategories($categories);
+
+            return $section;
+        }, $sections)));
+    }
+
+    /** @param list<array<string, mixed>> $categories */
+    public function stripMenuItemsFromCategories(array $categories): array
+    {
+        return array_values(array_map(static function (array $category): array {
+            unset($category['menu_items']);
+
+            return $category;
+        }, $categories));
+    }
+
+    private function categoryBelongsToSection(int $restaurantId, int $sectionId, int $categoryId): bool
+    {
+        $primary = Category::query()
+            ->where('id', $categoryId)
+            ->where('restaurant_id', $restaurantId)
+            ->where('section_id', $sectionId)
+            ->exists();
+
+        if ($primary) {
+            return true;
+        }
+
+        try {
+            return DB::table('category_secondary_sections')
+                ->where('category_id', $categoryId)
+                ->where('section_id', $sectionId)
+                ->where('is_active', 1)
+                ->exists();
+        } catch (\Throwable) {
+            return false;
+        }
+    }
+
     /** @return list<array{id:int,name:string,slug:string}> */
     public function sectionsForNav(int $restaurantId): array
     {

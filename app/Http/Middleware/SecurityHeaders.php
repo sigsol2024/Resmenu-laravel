@@ -13,7 +13,7 @@ class SecurityHeaders
         $response = $next($request);
 
         $routeName = $request->route()?->getName();
-        $isPublicMenuRoute = in_array($routeName, ['public.menu', 'public.menu.section'], true);
+        $isPublicMenuRoute = in_array($routeName, ['public.menu', 'public.menu.section', 'public.menu.category'], true);
 
         if ($isPublicMenuRoute) {
             // Allow iframe embedding only for public menu routes, and only from configured parent origins.

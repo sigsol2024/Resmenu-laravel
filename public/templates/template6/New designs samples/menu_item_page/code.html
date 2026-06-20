@@ -1,0 +1,376 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Lusso Dining | Dinner Collection</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400..900;1,400..900&amp;family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error": "#ffb4ab",
+                    "error-container": "#93000a",
+                    "secondary-fixed-dim": "#d4c3b7",
+                    "outline": "#9c8f80",
+                    "on-secondary-fixed-variant": "#50453b",
+                    "on-surface-variant": "#d3c4b4",
+                    "surface-container-high": "#2e2924",
+                    "on-tertiary-fixed-variant": "#20496f",
+                    "surface-container-highest": "#39342e",
+                    "inverse-surface": "#eae1d9",
+                    "tertiary-fixed-dim": "#a3caf6",
+                    "on-tertiary-container": "#002e4f",
+                    "on-error": "#690005",
+                    "on-error-container": "#ffdad6",
+                    "surface-bright": "#3d3833",
+                    "tertiary-fixed": "#d0e4ff",
+                    "on-surface": "#eae1d9",
+                    "on-primary": "#452b00",
+                    "outline-variant": "#4f4539",
+                    "surface": "#17130e",
+                    "tertiary": "#a3caf6",
+                    "surface-dim": "#17130e",
+                    "primary-fixed": "#ffddb3",
+                    "on-secondary-fixed": "#231a12",
+                    "secondary-fixed": "#f1dfd3",
+                    "on-background": "#eae1d9",
+                    "surface-container": "#231f1a",
+                    "on-primary-fixed": "#291800",
+                    "on-secondary-container": "#c2b2a6",
+                    "on-secondary": "#392e26",
+                    "secondary": "#d4c3b7",
+                    "inverse-on-surface": "#34302a",
+                    "on-tertiary-fixed": "#001d35",
+                    "primary-fixed-dim": "#f0be78",
+                    "inverse-primary": "#7d571b",
+                    "surface-tint": "#f0be78",
+                    "surface-container-lowest": "#110e09",
+                    "surface-container-low": "#1f1b16",
+                    "primary": "#f0be78",
+                    "primary-container": "#b88b4a",
+                    "tertiary-container": "#7096c0",
+                    "secondary-container": "#50453b",
+                    "on-primary-container": "#3f2700",
+                    "surface-variant": "#39342e",
+                    "on-tertiary": "#003256",
+                    "background": "#17130e",
+                    "on-primary-fixed-variant": "#624002"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "xl": "80px",
+                    "gutter": "24px",
+                    "lg": "48px",
+                    "base": "8px",
+                    "container-max": "1280px",
+                    "sm": "12px",
+                    "md": "24px",
+                    "xs": "4px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Manrope"],
+                    "body-md": ["Manrope"],
+                    "headline-md": ["Bodoni Moda"],
+                    "body-sm": ["Manrope"],
+                    "display-lg": ["Bodoni Moda"],
+                    "label-lg": ["Manrope"],
+                    "headline-xl": ["Bodoni Moda"],
+                    "display-lg-mobile": ["Bodoni Moda"],
+                    "label-md": ["Manrope"],
+                    "headline-lg": ["Bodoni Moda"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                    "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "display-lg": ["72px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-lg": ["14px", {"lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "600"}],
+                    "headline-xl": ["48px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                    "display-lg-mobile": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-md": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #17130e;
+            color: #eae1d9;
+            font-family: 'Manrope', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .serif { font-family: 'Bodoni Moda', serif; }
+        
+        .premium-shadow {
+            box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.7);
+        }
+
+        .hover-reveal {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .card-container:hover .hover-reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .card-container:hover img {
+            transform: scale(1.05);
+        }
+
+        .glass-pill {
+            background: rgba(51, 33, 29, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(184, 139, 74, 0.1);
+        }
+
+        .side-dock {
+            background: rgba(35, 31, 26, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(156, 143, 128, 0.1);
+        }
+    </style>
+</head>
+<body class="selection:bg-primary selection:text-on-primary">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-background/95 dark:bg-background/95 backdrop-blur-md border-b border-outline-variant/10 shadow-sm">
+<div class="flex justify-between items-center px-gutter py-4 max-w-container-max mx-auto">
+<a class="font-display-lg text-headline-md tracking-widest text-primary dark:text-primary" href="#">LUSSO ABUJA</a>
+<nav class="hidden md:flex items-center space-x-8">
+<a class="font-label-lg text-label-lg text-primary font-bold border-b-2 border-primary pb-1" href="#">Menu</a>
+<a class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">Reservations</a>
+</nav>
+<div class="flex items-center gap-6">
+<button class="text-on-surface-variant hover:text-primary transition-all duration-300 active:scale-95">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-all duration-300 active:scale-95 relative">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+<span class="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full"></span>
+</button>
+<button class="md:hidden text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</div>
+</div>
+</header>
+<main class="pt-32 pb-xl px-gutter max-w-container-max mx-auto min-h-screen">
+<!-- Header & Filters -->
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-md mb-lg">
+<div>
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg serif mb-xs">Dinner</h1>
+<p class="font-body-md text-body-md text-on-surface-variant/80 italic">A curated collection of contemporary West African evening delicacies • 24 Selections</p>
+</div>
+<div class="flex flex-wrap gap-xs">
+<button class="glass-pill px-5 py-2.5 rounded-full font-label-md text-label-md text-primary border border-primary/40 hover:bg-primary/10 transition-all">All Dishes</button>
+<button class="glass-pill px-5 py-2.5 rounded-full font-label-md text-label-md text-on-surface-variant hover:text-primary hover:border-primary/40 transition-all">Vegetarian</button>
+<button class="glass-pill px-5 py-2.5 rounded-full font-label-md text-label-md text-on-surface-variant hover:text-primary hover:border-primary/40 transition-all">Signature</button>
+<button class="glass-pill px-5 py-2.5 rounded-full font-label-md text-label-md text-on-surface-variant hover:text-primary hover:border-primary/40 transition-all">Spicy</button>
+</div>
+</section>
+<!-- Product Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md lg:gap-lg">
+<!-- Card 1 -->
+<div class="group card-container relative">
+<div class="relative overflow-hidden rounded-xl bg-surface-container aspect-[4/5] mb-md premium-shadow">
+<img class="w-full h-full object-cover transition-transform duration-700" data-alt="A gourmet presentation of Jollof rice elevated for fine dining, served in a handmade ceramic bowl. The dish is garnished with micro-greens and slow-roasted short rib, illuminated by warm, directional spot lighting. The background is a dark, moody luxury restaurant setting in Abuja, emphasizing rich textures of wood and gold. Professional food photography style with shallow depth of field." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZBljLmtuacYP8njMqb8A7iPISPMVmemImELq4alxkuy6sWxVIuKUwDxTrW85zS1btml-0pqGY3UMxUsQAjvBpU7DqiprksHXrIqIDqIdPzNAXnoeyX_5--jXURm-e_dzKBO_9R75dIc8lAC6nR6_8C8gvMx6e0ZVFWMq1RSnMUNgXlgwZA-x2aRFPoWzk625eip8P8unT2DEfjvPTfSA5xpzbOzcJucFrrHRaYf6SFJ0G9U0ipWtlo_EhEaqQzbJPGRVq3Hpo2Q">
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+<span class="hover-reveal font-label-lg text-label-lg tracking-[0.2em] text-white uppercase bg-black/40 px-6 py-2 backdrop-blur-sm rounded-full pointer-events-auto cursor-pointer">Quick View</span>
+</div>
+<button class="absolute top-md right-md w-12 h-12 rounded-full bg-primary text-on-primary flex items-center justify-center transition-transform hover:scale-110 active:scale-90 shadow-xl z-10">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-headline-md serif mb-xs group-hover:text-primary transition-colors">Heritage Jollof Risotto</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Signature smoked rice, beef short rib, plantain mousse.</p>
+</div>
+<span class="font-label-lg text-label-lg text-primary">₦28,500</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="group card-container relative">
+<div class="relative overflow-hidden rounded-xl bg-surface-container aspect-[4/5] mb-md premium-shadow">
+<img class="w-full h-full object-cover transition-transform duration-700" data-alt="A high-end seafood dish featuring seared Atlantic prawns and scallops on a bed of citrus-infused yam puree. The plate is artistic, with vibrant edible flowers and a saffron-gold sauce drizzle. The environment is a dimly lit, private members' club with deep brown leather and brass accents. Soft amber rim lighting highlights the steam and texture of the seafood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPP6wgkSKCPVR65Kb49pfKgT3wW0wMwwv2UWmpH0r7BbEJ8wNH0q18mF1p2NTJIa-YA_dugrS3oo5tqGXiWaaDlBn9tghtGg3QIFwEn41k-MFCLJGbxfvnDX7n73w4PJCbMkAcDnw9O9E4FfCuAkVweypkpkJo1U-ArVSC3OC-TaNZ1EhZSBa4g41jYNZmI8KjErpyCSrxGxIgG-qPeupRuwdauRgWlXc0WIs7IXLAqcZ-ELjpfop9-8E8dp-Bv9BF3p2B7LWEMw">
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+<span class="hover-reveal font-label-lg text-label-lg tracking-[0.2em] text-white uppercase bg-black/40 px-6 py-2 backdrop-blur-sm rounded-full pointer-events-auto cursor-pointer">Quick View</span>
+</div>
+<button class="absolute top-md right-md w-12 h-12 rounded-full bg-primary text-on-primary flex items-center justify-center transition-transform hover:scale-110 active:scale-90 shadow-xl z-10">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+<span class="absolute top-md left-md px-3 py-1 bg-tertiary text-on-tertiary font-label-md text-[10px] uppercase tracking-wider rounded-sm">Signature</span>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-headline-md serif mb-xs group-hover:text-primary transition-colors">Saffron Seafood Medley</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Atlantic prawns, seared scallops, yam silk.</p>
+</div>
+<span class="font-label-lg text-label-lg text-primary">₦42,000</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="group card-container relative">
+<div class="relative overflow-hidden rounded-xl bg-surface-container aspect-[4/5] mb-md premium-shadow">
+<img class="w-full h-full object-cover transition-transform duration-700" data-alt="A beautifully plated vegetarian entree featuring roasted cauliflower steaks with a spicy chimichurri and toasted nut crumble. The dish sits on a minimalist dark stone plate. The background suggests a luxury lounge with warm golden backlighting and a bokeh effect of crystalline glassware. The overall mood is sophisticated, earthy, and exclusive." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5k4f0m98275SADJLaj8PoqyVv8SoF4YbHYM7y43072vokgARaOBsh7FHemCc1bK3cme7sC1kAnIwZ-cQ76YqckrNWP8h7zKw_gSpxlr5hqvYPUCvpmnCWs8R_droxI5FucQR9eZRp8GFhTrAgIfOX9iPA-EHa4vO3zT6_N6DoPCvsbH5eXWPpIhX4rMsN-hgqunU_z-zUrh8cBePoSLUvVmjEP_gEmvLHjCU_wyzqO_PHNKQW4rmrpgTTWtx-RXc-GmsZWT87Ow">
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+<span class="hover-reveal font-label-lg text-label-lg tracking-[0.2em] text-white uppercase bg-black/40 px-6 py-2 backdrop-blur-sm rounded-full pointer-events-auto cursor-pointer">Quick View</span>
+</div>
+<button class="absolute top-md right-md w-12 h-12 rounded-full bg-primary text-on-primary flex items-center justify-center transition-transform hover:scale-110 active:scale-90 shadow-xl z-10">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-headline-md serif mb-xs group-hover:text-primary transition-colors">Roasted Cauliflower Crown</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Spiced pottage, toasted hazelnuts, herb oil.</p>
+</div>
+<span class="font-label-lg text-label-lg text-primary">₦19,500</span>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="group card-container relative">
+<div class="relative overflow-hidden rounded-xl bg-surface-container aspect-[4/5] mb-md premium-shadow">
+<img class="w-full h-full object-cover transition-transform duration-700" data-alt="A premium cut of Wagyu beef Suya, sliced thin and arranged elegantly with traditional yaji spice rub. Served with charred onions and fresh tomatoes on a bespoke ebony tray. The lighting is cinematic, highlighting the marbling of the meat and the crystalline texture of the spice. The aesthetic is high-contrast and masculine luxury." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzwx2v5Oc7_qzPkz_azrTauCVdS-oY8marHE0kY1XJeCb9JALaacKT4iroVL2rPMRUp-UTACd5_uLXs3a73i554JWnrbu2wxMdwh6P3yHSoxsR1m6hAvf-d1Sd1yenxLmRzrNa7cXbu0OWLQ_8IYaof8Osrd7ATOrw0Y1Yg3hUc7RHn5fwbQhgw2zl4vX8sTbIwX0cCLKbywfjDZLyy9iKYya37B3TYZHHCLbvRvpi4IhzpFDLOcm96OB07nSen9IeGZsU0-e7Gg">
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+<span class="hover-reveal font-label-lg text-label-lg tracking-[0.2em] text-white uppercase bg-black/40 px-6 py-2 backdrop-blur-sm rounded-full pointer-events-auto cursor-pointer">Quick View</span>
+</div>
+<button class="absolute top-md right-md w-12 h-12 rounded-full bg-primary text-on-primary flex items-center justify-center transition-transform hover:scale-110 active:scale-90 shadow-xl z-10">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+<span class="absolute top-md left-md px-3 py-1 bg-error-container text-on-error-container font-label-md text-[10px] uppercase tracking-wider rounded-sm">Spicy</span>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-headline-md serif mb-xs group-hover:text-primary transition-colors">Wagyu Suya Platter</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Grade A5 Wagyu, traditional yaji, heritage vegetables.</p>
+</div>
+<span class="font-label-lg text-label-lg text-primary">₦65,000</span>
+</div>
+</div>
+<!-- Card 5 -->
+<div class="group card-container relative">
+<div class="relative overflow-hidden rounded-xl bg-surface-container aspect-[4/5] mb-md premium-shadow">
+<img class="w-full h-full object-cover transition-transform duration-700" data-alt="Fine dining presentation of a whole grilled snapper with citrus zest and aromatic herbs. The fish is perfectly charred and glistening under warm golden light. Set on a dark marble table with a glass of white wine in the background. The atmosphere is intimate and refined, typical of an upscale African dining experience." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDFxJM3Gl9jxV4kyHYiL16StizrLWFpU4jYGzVdzmiO4YzCbQZw8K8XoGmLuM5QGY5-gAcE9bVo0ZXk7ogxar78b0Vq7JKMKGpQ-4Y_aFMbLVUWabSs73nno5JLdA3Wd7xVRUATtLNvxIlY7NLLPFkdJoJzSqiHV6Ag3oYr_4dZylcn3sUlkqJ_Uwf-e7-5FLjyCrLOtOU9kc2YIm3myCtApor42Zbfjli5xxpZWkqdwxMCspmwZmRqqRMnZNxRqqG-0R3hNKHwA">
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+<span class="hover-reveal font-label-lg text-label-lg tracking-[0.2em] text-white uppercase bg-black/40 px-6 py-2 backdrop-blur-sm rounded-full pointer-events-auto cursor-pointer">Quick View</span>
+</div>
+<button class="absolute top-md right-md w-12 h-12 rounded-full bg-primary text-on-primary flex items-center justify-center transition-transform hover:scale-110 active:scale-90 shadow-xl z-10">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-headline-md serif mb-xs group-hover:text-primary transition-colors">Citrus Charred Snapper</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Whole grilled snapper, lemon-butter reduction.</p>
+</div>
+<span class="font-label-lg text-label-lg text-primary">₦34,000</span>
+</div>
+</div>
+<!-- Card 6 -->
+<div class="group card-container relative">
+<div class="relative overflow-hidden rounded-xl bg-surface-container aspect-[4/5] mb-md premium-shadow">
+<img class="w-full h-full object-cover transition-transform duration-700" data-alt="Artisanal African dessert featuring hibiscus-poached pears with a coconut crumble and ginger sorbet. Plated on a dark glass dish with edible gold leaf accents. High-end food photography with deep shadows and vibrant saturated colors of the hibiscus. The setting is an exclusive luxury hotel dining room." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZ-Mru713FcJ4B92o4Tujr-LuQ3QFX2EnnL-K-mp7VMApPq08rjQV1-P7Gz_QPhwHcIhluWMlD00U54lPShPwKxvAxhLqUlPbs5HZZXYGL5jLfsblBblM69slGGhFKdIMDaGOq5-9ExaGYbewD8ngd6o-CMwUKK7UjrZxGC-CfdsTz2TW3mG1exPuJecv0LbGd9eQY3QVoy_RQxHB_IA8Q86V2vv-eFgg8uOC0yfez3_erlbddurxOBedcDbx0RnjZpKbqL-MpGw">
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+<span class="hover-reveal font-label-lg text-label-lg tracking-[0.2em] text-white uppercase bg-black/40 px-6 py-2 backdrop-blur-sm rounded-full pointer-events-auto cursor-pointer">Quick View</span>
+</div>
+<button class="absolute top-md right-md w-12 h-12 rounded-full bg-primary text-on-primary flex items-center justify-center transition-transform hover:scale-110 active:scale-90 shadow-xl z-10">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-headline-md serif mb-xs group-hover:text-primary transition-colors">Hibiscus Poached Pears</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Zobo reduction, coconut crumble, ginger sorbet.</p>
+</div>
+<span class="font-label-lg text-label-lg text-primary">₦15,000</span>
+</div>
+</div>
+</div>
+<!-- Floating Side Dock -->
+<aside class="fixed right-6 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-40 hidden lg:flex">
+<div class="side-dock p-3 rounded-full flex flex-col gap-6 shadow-2xl items-center">
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-primary hover:bg-primary/10 transition-all" title="View Menu">
+<span class="material-symbols-outlined" data-icon="restaurant_menu">restaurant_menu</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:text-primary transition-all" title="Wine List">
+<span class="material-symbols-outlined" data-icon="wine_bar">wine_bar</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:text-primary transition-all" title="My Orders">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+</button>
+<div class="w-6 h-[1px] bg-outline-variant/30"></div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:text-primary transition-all" title="Live Concierge">
+<span class="material-symbols-outlined" data-icon="support_agent">support_agent</span>
+</button>
+</div>
+</aside>
+</main>
+<!-- Footer -->
+<footer class="w-full mt-xl bg-surface-container-low dark:bg-surface-container-low border-t border-outline-variant/20">
+<div class="max-w-container-max mx-auto px-gutter py-lg flex flex-col md:flex-row justify-between items-center gap-md">
+<div class="flex flex-col items-center md:items-start gap-4">
+<span class="font-display-lg text-headline-md text-primary">LUSSO ABUJA</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">© 2024 Lusso Hotels Abuja. All rights reserved.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-x-8 gap-y-4">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Privacy Policy</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Terms of Service</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Contact Us</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Careers</a>
+</div>
+<div class="flex gap-6">
+<a class="text-on-surface-variant hover:text-primary transition-all" href="#"><span class="material-symbols-outlined" data-icon="public">public</span></a>
+<a class="text-on-surface-variant hover:text-primary transition-all" href="#"><span class="material-symbols-outlined" data-icon="photo_camera">photo_camera</span></a>
+</div>
+</div>
+</footer>
+<!-- Micro-interactions Script -->
+<script>
+        // Simple scroll header effect
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.classList.add('py-2');
+                header.classList.remove('py-4');
+            } else {
+                header.classList.add('py-4');
+                header.classList.remove('py-2');
+            }
+        });
+
+        // Add to cart feedback
+        const addButtons = document.querySelectorAll('[data-icon="add"]');
+        addButtons.forEach(btn => {
+            btn.parentElement.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const icon = btn;
+                icon.textContent = 'check';
+                setTimeout(() => {
+                    icon.textContent = 'add';
+                }, 2000);
+            });
+        });
+    </script>
+</body></html>

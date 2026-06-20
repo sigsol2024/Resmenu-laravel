@@ -67,7 +67,7 @@ class TemplatePreviewDemoService
 
         $sections = LegacyMenuViewData::normalizeSections($sections);
 
-        return LegacyMenuViewData::normalize([
+        $payload = LegacyMenuViewData::normalize([
             'restaurant' => $restaurant,
             'sections' => $sections,
             'categories' => LegacyMenuViewData::flattenCategoriesFromSections($sections),
@@ -83,7 +83,46 @@ class TemplatePreviewDemoService
             'supportsReservations' => true,
             'reservationUrl' => '#',
             'isTemplatePreview' => true,
+            'menuViewLevel' => 'home',
+            'activeSection' => null,
+            'activeCategory' => null,
+            'sectionMenuUrl' => null,
+            'categoryMenuUrl' => null,
+            'popularItems' => [],
         ]);
+
+        if ($templateId === 6) {
+            $popular = [];
+            foreach ($sections as $section) {
+                foreach ($section['categories'] ?? [] as $category) {
+                    foreach ($category['menu_items'] ?? [] as $item) {
+                        $popular[] = $item;
+                    }
+                }
+            }
+            $payload['popularItems'] = LegacyMenuViewData::normalizeMenuItems(array_slice($popular, 0, 3));
+            $homeSections = [];
+            foreach ($sections as $section) {
+                $cats = [];
+                foreach ($section['categories'] ?? [] as $category) {
+                    if (empty($category['menu_items'])) {
+                        continue;
+                    }
+                    $catCopy = $category;
+                    unset($catCopy['menu_items']);
+                    $cats[] = $catCopy;
+                }
+                if ($cats !== []) {
+                    $sectionCopy = $section;
+                    $sectionCopy['categories'] = $cats;
+                    $homeSections[] = $sectionCopy;
+                }
+            }
+            $payload['sections'] = $homeSections;
+            $payload['categories'] = LegacyMenuViewData::flattenCategoriesFromSections($homeSections);
+        }
+
+        return $payload;
     }
 
     /**

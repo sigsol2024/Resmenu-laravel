@@ -1,0 +1,329 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Lusso Dining | Menu Categories</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400..900;1,400..900&amp;family=Manrope:wght@200..800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@100..900&amp;family=Manrope:wght@100..900&amp;display=swap" rel="stylesheet">
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "error": "#ffb4ab",
+                "error-container": "#93000a",
+                "secondary-fixed-dim": "#d4c3b7",
+                "outline": "#9c8f80",
+                "on-secondary-fixed-variant": "#50453b",
+                "on-surface-variant": "#d3c4b4",
+                "surface-container-high": "#2e2924",
+                "on-tertiary-fixed-variant": "#20496f",
+                "surface-container-highest": "#39342e",
+                "inverse-surface": "#eae1d9",
+                "tertiary-fixed-dim": "#a3caf6",
+                "on-tertiary-container": "#002e4f",
+                "on-error": "#690005",
+                "on-error-container": "#ffdad6",
+                "surface-bright": "#3d3833",
+                "tertiary-fixed": "#d0e4ff",
+                "on-surface": "#eae1d9",
+                "on-primary": "#452b00",
+                "outline-variant": "#4f4539",
+                "surface": "#17130e",
+                "tertiary": "#a3caf6",
+                "surface-dim": "#17130e",
+                "primary-fixed": "#ffddb3",
+                "on-secondary-fixed": "#231a12",
+                "secondary-fixed": "#f1dfd3",
+                "on-background": "#eae1d9",
+                "surface-container": "#231f1a",
+                "on-primary-fixed": "#291800",
+                "on-secondary-container": "#c2b2a6",
+                "on-secondary": "#392e26",
+                "secondary": "#d4c3b7",
+                "inverse-on-surface": "#34302a",
+                "on-tertiary-fixed": "#001d35",
+                "primary-fixed-dim": "#f0be78",
+                "inverse-primary": "#7d571b",
+                "surface-tint": "#f0be78",
+                "surface-container-lowest": "#110e09",
+                "surface-container-low": "#1f1b16",
+                "primary": "#f0be78",
+                "primary-container": "#b88b4a",
+                "tertiary-container": "#7096c0",
+                "secondary-container": "#50453b",
+                "on-primary-container": "#3f2700",
+                "surface-variant": "#39342e",
+                "on-tertiary": "#003256",
+                "background": "#17130e",
+                "on-primary-fixed-variant": "#624002"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+            },
+            "spacing": {
+                "xl": "80px",
+                "gutter": "24px",
+                "lg": "48px",
+                "base": "8px",
+                "container-max": "1280px",
+                "sm": "12px",
+                "md": "24px",
+                "xs": "4px",
+                "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                "body-lg": ["Manrope"],
+                "body-md": ["Manrope"],
+                "headline-md": ["Bodoni Moda"],
+                "body-sm": ["Manrope"],
+                "display-lg": ["Bodoni Moda"],
+                "label-lg": ["Manrope"],
+                "headline-xl": ["Bodoni Moda"],
+                "display-lg-mobile": ["Bodoni Moda"],
+                "label-md": ["Manrope"],
+                "headline-lg": ["Bodoni Moda"]
+            },
+            "fontSize": {
+                "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                "display-lg": ["72px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "label-lg": ["14px", {"lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "600"}],
+                "headline-xl": ["48px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                "display-lg-mobile": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "label-md": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "600"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body {
+            background-color: #17130e; /* surface-dim */
+            color: #eae1d9; /* on-surface */
+            overflow-x: hidden;
+        }
+
+        .lusso-glass {
+            background: rgba(43, 28, 24, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .category-card:hover .card-overlay {
+            background: rgba(33, 21, 18, 0.4);
+        }
+
+        .category-card:hover img {
+            scale: 1.05;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #17130e; }
+        ::-webkit-scrollbar-thumb { background: #b88b4a; }
+    </style>
+</head>
+<body class="font-body-md text-body-md antialiased">
+<!-- TopNavBar (Shared Component) -->
+<header class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-outline-variant/10 shadow-sm">
+<div class="flex justify-between items-center px-gutter py-4 max-w-container-max mx-auto">
+<div class="flex items-center gap-8">
+<h1 class="font-display-lg text-headline-md tracking-widest text-primary">LUSSO ABUJA</h1>
+<nav class="hidden md:flex gap-6">
+<a class="font-label-lg text-label-lg text-primary font-bold border-b-2 border-primary pb-1" href="#">Menu</a>
+<a class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">Reservations</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<button class="active:scale-95 duration-200 text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+<button class="active:scale-95 duration-200 text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+</button>
+<button class="md:hidden">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-[100px] pb-xl px-gutter max-w-container-max mx-auto">
+<!-- Search & Welcome -->
+<section class="mb-lg">
+<div class="max-w-2xl mx-auto text-center mb-md">
+<h2 class="font-display-lg text-headline-xl mb-4 text-primary">Curated Flavors</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Experience the pinnacle of West African and Continental culinary artistry.</p>
+</div>
+<div class="max-w-xl mx-auto relative group">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 text-primary/60 group-focus-within:text-primary transition-colors">
+<span class="material-symbols-outlined">search</span>
+</span>
+<input class="w-full h-14 pl-12 pr-4 bg-surface-container-low border-b border-primary/20 focus:border-primary focus:ring-0 text-on-surface font-body-md transition-all outline-none rounded-lg" placeholder="Search for a dish, cocktail or ingredient..." type="text">
+</div>
+</section>
+<!-- Sticky Category Nav -->
+<div class="sticky top-[73px] z-40 lusso-glass py-4 -mx-gutter px-gutter mb-lg border-y border-outline-variant/10 overflow-x-auto whitespace-nowrap hide-scrollbar flex justify-center gap-8">
+<button class="font-label-lg text-label-lg text-primary border-b border-primary">All Categories</button>
+<button class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary transition-colors">Breakfast</button>
+<button class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary transition-colors">Lunch</button>
+<button class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary transition-colors">Dinner</button>
+<button class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary transition-colors">Late Night</button>
+<button class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary transition-colors">Spirits</button>
+</div>
+<!-- Bento Grid Categories -->
+<div class="grid grid-cols-1 md:grid-cols-4 md:grid-rows-3 gap-6">
+<!-- Breakfast - Large Feature -->
+<div class="md:col-span-2 md:row-span-2 relative category-card group cursor-pointer overflow-hidden rounded-xl bg-surface-container shadow-xl">
+<div class="absolute inset-0 z-10 card-overlay transition-colors duration-500 bg-gradient-to-t from-background via-transparent to-transparent"></div>
+<img class="w-full h-full object-cover transition-transform duration-700" data-alt="A high-end gourmet breakfast spread in a dimly lit luxury hotel suite in Abuja. Warm morning sunlight filters through heavy linen curtains, illuminating a silver tray with fresh croissants, local honey, exotic fruits, and a ceramic cup of dark coffee. The atmosphere is intimate and quiet, with rich mahogany textures and soft golden highlights reflecting the Lusso brand's tactile luxury aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHmDZ4Z72kM8vBgJvNvjcoWb9oVQg_CtxN-fkgcUL6dGlSufztXwkazyEmU6pxHEq_93dffUEK53b8RLxmNbohA3-s7TfGrCHtDMwXccKcHwLwjHCwvM6GbJwR2hRr3Eb_8QCKA4iKi7rzrTdYEStxH6xD-sp91ZVIDyHK-EVJLHXM3yOlEIWpcLQ-cr3pyvUn9AN7j5izzEg75hyw1eLrKuZHii6twPRBXMlccFfP5r0_qoOZVat0bBuC-mMty5HKwWnEE6G1Ow">
+<div class="absolute bottom-0 left-0 p-8 z-20">
+<span class="font-label-md text-label-md text-primary tracking-widest uppercase mb-2 block">06:00 — 11:00</span>
+<h3 class="font-display-lg text-headline-xl text-primary mb-2">Breakfast</h3>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-sm">Awaken your palate with our signature dawn selections and local infusions.</p>
+</div>
+</div>
+<!-- Lunch -->
+<div class="md:col-span-2 relative category-card group cursor-pointer overflow-hidden rounded-xl bg-surface-container shadow-xl min-h-[300px]">
+<div class="absolute inset-0 z-10 card-overlay transition-colors duration-500 bg-black/30 group-hover:bg-black/10"></div>
+<img class="w-full h-full object-cover transition-transform duration-700" data-alt="A sophisticated lunch scene featuring a gourmet grilled sea bass with artisanal vegetables on a slate plate. The setting is a bright, upscale West African lounge with contemporary African art in the background. The lighting is warm and natural, emphasizing the vibrant colors of the food and the elegant bone-white table linens. Professional food photography style with shallow depth of field." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5niztzsZG4ns68m1SV9ZUGdXRaBCQDJDs9O8ZLwsVmcR89Z044K7LKU2my6YJ2ndZY89kVJ6EJaSTs3btdls4uX0gzM82bZiSkc8FEiNJoP5IZ_j-uWRaLIXZLK-ylb8VwOjSOMB4IbaoDo1TIz_8oYAmg09bYQ2UXSOyxtTcBqacfMRmsc01MSvAjuqKxIZDiDsxCpFqFcW7XGKN0fjZ3GwWCcCmrZAK3vo-5vMGF6p9qsklud_ptwQwsHAzcGn6t3FM8uMpMg">
+<div class="absolute inset-0 flex items-center justify-center z-20">
+<h3 class="font-display-lg text-headline-lg text-primary tracking-widest uppercase">Lunch</h3>
+</div>
+</div>
+<!-- Drinks -->
+<div class="md:col-span-1 relative category-card group cursor-pointer overflow-hidden rounded-xl bg-surface-container shadow-xl min-h-[300px]">
+<div class="absolute inset-0 z-10 card-overlay bg-black/40"></div>
+<img class="w-full h-full object-cover transition-transform duration-700" data-alt="Close-up of a sparkling gold-tinted beverage being poured into a crystal glass. The background is a dark, moody bar environment with blurred amber lights. Tiny bubbles are visible, catching the light. The aesthetic is extremely premium, focusing on the texture of the glass and the liquid. Deep browns and warm gold tones dominate the palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAj71hVQtjCTKlpUQsmkxHlFk18lBevw7AqKL5WWr-5xgD-R-wTshkZ9qh3aF2BBNm6Ev8Dn5TXtqqlN6mTa3Mo2EEIDo_x3g3dWcWhIRIOUKhpnya0QeZb2jhAh5MTM0A0FlfmqdD7IH2RIorGzgohbmPfwJrOr6LuMDj35DhCgsfnsaMRmXXBjC5eQXMAziBOneIfy5PNCp1FQ3T98KAEpMTr4yy9-4GVB0Jj4gtUo1NfoNpNSPjsLJIaU2tc_SHhbbnq5B2hpg">
+<div class="absolute inset-0 flex flex-col items-center justify-center z-20">
+<h3 class="font-headline-md text-headline-md text-primary">Drinks</h3>
+<span class="font-label-md text-label-md text-on-surface-variant">Refreshment</span>
+</div>
+</div>
+<!-- Cocktails -->
+<div class="md:col-span-1 relative category-card group cursor-pointer overflow-hidden rounded-xl bg-surface-container shadow-xl min-h-[300px]">
+<div class="absolute inset-0 z-10 card-overlay bg-black/50"></div>
+<img class="w-full h-full object-cover transition-transform duration-700" data-alt="A masterfully crafted cocktail with a sprig of burnt rosemary and a large clear ice cube. The glass is condensation-beaded, set on a dark marble bar top. The lighting is low and focused, highlighting the amber liquid and the thin wisp of smoke. Luxury lounge vibes with a focus on artisanal mixology and heritage sophistication." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuc6m853ExCn8DPlsNK5SGzqQLVLvTyK_VtfeJdbtxcG8mYeHKDn-sLohIpGhNagNy0UNVgnjiyzLYsDKnzlYRR1Q-TNbOziwb1hDB3yioN04XnD5NOKTD6RvCnckrzsb60BMBn-wwX3a9E0XBoUegLPDzLd67UmcYnxVwVMRmQoLStyy9g-hn8KLIG1l5zwHpsZD5ahYhYD3PH8BfLc7IH-GaLVizbO-ASeimZ5b5EVgVkwD1GU8RAY0MUcd-GK8eEvO-HZ8HTg">
+<div class="absolute inset-0 flex flex-col items-center justify-center z-20 text-center">
+<h3 class="font-headline-md text-headline-md text-primary">Cocktails</h3>
+<span class="font-label-md text-label-md text-on-surface-variant">Mixology</span>
+</div>
+</div>
+<!-- Dinner - Feature -->
+<div class="md:col-span-2 md:row-span-1 relative category-card group cursor-pointer overflow-hidden rounded-xl bg-surface-container shadow-xl min-h-[240px]">
+<div class="absolute inset-0 z-10 card-overlay transition-colors duration-500 bg-gradient-to-r from-black/80 to-transparent"></div>
+<img class="w-full h-full object-cover transition-transform duration-700" data-alt="An elegant evening dinner table set for two. Fine crystal glassware, gold cutlery, and candlelight create a romantic and exclusive atmosphere. The focus is on a perfectly plated steak dish with a rich reduction sauce. Dark, luxurious interior with wood paneling and soft focus on the background. High contrast, editorial food photography for a private members club." src="https://lh3.googleusercontent.com/aida-public/AB6AXuASZOI0yfwO5eC629oLQQ-cMpE9jwZ_cx2gwwf9YrlbeuBm7WA7WPydDMxiwGybHz2X-ME2TMjvrkxOo3EfReYmP7dqTT35b1LJ8Fo5HBcj_qX00BRuC91jQxzCFBkfOgby77IWitpSO8goxE5hI2GT0h8jByj6e90BooD2hDZABPN3YcP8gEuoJI2OHX3bHlXUEfA5q071_e3E3gfSzyohSrH7CbVlaZK8ln2vA9SjjcbYXOJlV7PRMuZrtHpezUDeR4Yf5aNqvg">
+<div class="absolute inset-y-0 left-0 p-8 flex flex-col justify-center z-20">
+<h3 class="font-display-lg text-headline-lg text-primary mb-2">Dinner</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-[200px]">Our evening gala of curated international delicacies.</p>
+</div>
+</div>
+<!-- Desserts -->
+<div class="md:col-span-1 relative category-card group cursor-pointer overflow-hidden rounded-xl bg-surface-container shadow-xl">
+<div class="absolute inset-0 z-10 card-overlay bg-black/40"></div>
+<img class="w-full h-full object-cover transition-transform duration-700" data-alt="A decadent dark chocolate souffle with a molten center, dusted with gold leaf. Served on a dark ceramic plate. The aesthetic is indulgent and rich, with high-contrast lighting that emphasizes the texture of the chocolate. Warm brown and gold color palette. Minimalist and ultra-premium food presentation." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkdQR2pUfqsSu_iP7c-PCHsl-P0xZVv_Ce57z7hB_j5aJ7Qyud5UAR-tJSMu0cwsu-JpccPh0FKChEWDrRL7Io67PVf2MDE1mvscmpfWtS7Cf5hLE6WoS3kp4yKJr0EMtYygXU98nmf_v5q-kRqlK07SZx0rEBoFQ5-OG6sef_qVZIPARHdadda5zxsOUEERSQnTl4ou36HQ2ZuhjNISWTOHIVB9RjPZtcZED-5CdpTQA7HLJiSSGAOJPVlYUQ9kGzrmDGrlkzXA">
+<div class="absolute inset-0 flex items-center justify-center z-20">
+<h3 class="font-headline-md text-headline-md text-primary">Desserts</h3>
+</div>
+</div>
+<!-- Wine -->
+<div class="md:col-span-1 relative category-card group cursor-pointer overflow-hidden rounded-xl bg-surface-container shadow-xl">
+<div class="absolute inset-0 z-10 card-overlay bg-black/40"></div>
+<img class="w-full h-full object-cover transition-transform duration-700" data-alt="Rows of premium vintage wine bottles stored in a dark, climate-controlled cellar with soft warm spot-lighting on the labels. The atmosphere is quiet, aged, and sophisticated. The focus is on the glass texture and the dusty labels of rare vintages. Deep blacks and amber tones evoke a sense of heritage and exclusivity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqwypEBYdmnPONqXtTuKHmeU-H004MrmWgjFlZ3HirZPlaWA4WAUhI1mjh5MPR2l12pTVmUoAQoF6r53Ht1-FiwGR2h2W3VtS3w-qHC_bBp5P_jZOTGrh6tF5xbHnIQ18ihiWFtO4CWnOcuOlNWEnQldgq5KtUcQ94jA9vClOpI3KOtyN1g-HGx2Admps0iRbrANbjD_EQhDcG_N5PVjJ3uVbDBiuE1xDB0GheBPCgYroy2wAfaPsc0gb3Gpwn0NRMAfIRgP1x1Q">
+<div class="absolute inset-0 flex items-center justify-center z-20">
+<h3 class="font-headline-md text-headline-md text-primary">Wine</h3>
+</div>
+</div>
+</div>
+<!-- Room Service Floating Section -->
+<section class="mt-lg">
+<div class="bg-surface-container-high rounded-xl p-8 border border-outline-variant/10 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative group">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-20 -mt-20 blur-3xl group-hover:bg-primary/10 transition-all duration-700"></div>
+<div class="relative z-10">
+<h2 class="font-display-lg text-headline-lg text-primary mb-2">Room Service</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-lg">In-room dining experience available 24/7. Exquisite meals delivered with discretion to your private sanctuary.</p>
+</div>
+<div class="relative z-10 flex gap-4">
+<button class="bg-primary text-on-primary px-8 py-3 rounded-full font-label-lg text-label-lg active:scale-95 duration-200 transition-all">Order Now</button>
+<button class="border border-primary text-primary px-8 py-3 rounded-full font-label-lg text-label-lg hover:bg-primary/5 active:scale-95 duration-200 transition-all">Schedule</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Side Action Dock -->
+<aside class="fixed right-6 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-40 hidden lg:flex">
+<div class="lusso-glass p-2 rounded-full border border-outline-variant/20 flex flex-col gap-4">
+<button class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-all duration-300" title="Recent Orders">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+</button>
+<button class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-all duration-300" title="My Favorites">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+</button>
+<button class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-all duration-300" title="Dietary Preferences">
+<span class="material-symbols-outlined" data-icon="restaurant">restaurant</span>
+</button>
+<div class="w-8 h-[1px] bg-outline-variant/30 mx-auto"></div>
+<button class="w-12 h-12 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shadow-lg hover:shadow-primary/20 transition-all duration-300" title="Concierge">
+<span class="material-symbols-outlined" data-icon="concierge">concierge</span>
+</button>
+</div>
+</aside>
+<!-- Footer (Shared Component) -->
+<footer class="w-full mt-xl bg-surface-container-low border-t border-outline-variant/20">
+<div class="max-w-container-max mx-auto px-gutter py-lg flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="text-center md:text-left">
+<h4 class="font-display-lg text-headline-md text-primary mb-2">LUSSO HOTELS</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-xs">Uncompromising luxury and West African heritage in the heart of Abuja.</p>
+</div>
+<div class="flex gap-8">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Privacy Policy</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Terms of Service</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Contact Us</a>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant opacity-60">© 2024 Lusso Hotels Abuja. All rights reserved.</p>
+</div>
+</footer>
+<!-- Micro-interactions Script -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Category card scroll reveal effect
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('opacity-100', 'translate-y-0');
+                        entry.target.classList.remove('opacity-0', 'translate-y-8');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.category-card').forEach(card => {
+                card.classList.add('transition-all', 'duration-1000', 'opacity-0', 'translate-y-8');
+                observer.observe(card);
+            });
+
+            // Smooth sticky behavior for category bar
+            const stickyNav = document.querySelector('.sticky');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 100) {
+                    stickyNav.classList.add('shadow-2xl', 'bg-background/95');
+                } else {
+                    stickyNav.classList.remove('shadow-2xl', 'bg-background/95');
+                }
+            });
+        });
+    </script>
+</body></html>
