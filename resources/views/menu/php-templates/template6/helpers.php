@@ -79,24 +79,20 @@ function t6_design_on_primary(): string
     return '#452b00';
 }
 
-function t6_google_maps_api_key(): string
-{
-    return 'AIzaSyBFw0Qbyq9zTFTd-tUY6dS6fa4U5iKJ';
-}
-
 function t6_map_embed_url(array $restaurant): ?string
 {
-    $key = t6_google_maps_api_key();
     $lat = $restaurant['map_latitude'] ?? null;
     $lng = $restaurant['map_longitude'] ?? null;
     if ($lat !== null && $lat !== '' && $lng !== null && $lng !== '') {
-        return 'https://www.google.com/maps/embed/v1/place?key='.rawurlencode($key).'&q='.rawurlencode((string) $lat.','.(string) $lng);
+        $query = (string) $lat.','.(string) $lng;
+    } else {
+        $query = trim((string) ($restaurant['address'] ?? ''));
+        if ($query === '') {
+            return null;
+        }
     }
-    $address = trim((string) ($restaurant['address'] ?? ''));
 
-    return $address !== ''
-        ? 'https://www.google.com/maps/embed/v1/place?key='.rawurlencode($key).'&q='.rawurlencode($address)
-        : null;
+    return 'https://maps.google.com/maps?q='.rawurlencode($query).'&z=15&output=embed';
 }
 
 function t6_directions_url(array $restaurant): ?string
