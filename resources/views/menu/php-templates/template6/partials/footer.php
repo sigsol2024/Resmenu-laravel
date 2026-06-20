@@ -6,7 +6,7 @@ $t6Logo = t6_logo_url($uploadBaseUrl ?? '', $restaurant ?? []);
 $t6Year = date('Y');
 ?>
 <footer class="bg-surface-container-low border-t border-outline-variant/20 w-full mt-xl">
-<div class="max-w-container-max mx-auto px-gutter py-lg">
+<div class="max-w-container-max mx-auto px-4 md:px-gutter py-lg">
 <div class="grid grid-cols-1 md:grid-cols-4 gap-xl mb-xl">
 <div class="md:col-span-2">
 <div class="flex items-center gap-2 mb-6">

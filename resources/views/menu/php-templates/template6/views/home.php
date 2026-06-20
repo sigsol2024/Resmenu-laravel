@@ -15,7 +15,7 @@ $popularItems = $popularItems ?? [];
 <?php endif; ?>
 <div class="absolute inset-0 lusso-gradient"></div>
 </div>
-<div class="relative z-10 max-w-container-max mx-auto px-gutter w-full pb-12 md:pb-xl pt-24">
+<div class="relative z-10 max-w-container-max mx-auto px-4 md:px-gutter w-full pb-12 md:pb-xl pt-24">
 <div class="flex flex-wrap items-center gap-3 mb-6">
 <span class="bg-surface-container-highest text-primary border border-primary/20 px-3 py-1 rounded-full font-label-md text-label-md flex items-center gap-1.5 uppercase">
 <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
@@ -38,7 +38,7 @@ $popularItems = $popularItems ?? [];
 </section>
 
 <?php if (! empty($popularItems)): ?>
-<section class="py-12 md:py-xl max-w-container-max mx-auto px-gutter">
+<section class="py-12 md:py-xl max-w-container-max mx-auto px-4 md:px-gutter">
 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 mb-8 md:mb-12">
 <div>
 <p class="text-primary font-label-lg text-label-lg uppercase tracking-[0.2em] mb-2">Exquisite Choices</p>
@@ -74,7 +74,7 @@ View Full Menu
 </section>
 <?php endif; ?>
 
-<section id="sections" class="py-12 md:py-xl max-w-container-max mx-auto px-gutter scroll-mt-28">
+<section id="sections" class="py-12 md:py-xl max-w-container-max mx-auto px-4 md:px-gutter scroll-mt-28">
 <h2 class="font-display-lg text-headline-lg mb-8 md:mb-12 text-center serif">Curated Experiences</h2>
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-gutter">
 <?php foreach ($sections as $section):
@@ -99,7 +99,7 @@ View Full Menu
 <?php include __DIR__.'/../partials/reservation-embed.php'; ?>
 
 <section class="py-12 md:py-xl bg-background border-t border-outline-variant/10">
-<div class="max-w-container-max mx-auto px-gutter text-center">
+<div class="max-w-container-max mx-auto px-4 md:px-gutter text-center">
 <p class="text-primary font-label-lg text-label-lg uppercase tracking-[0.3em] mb-4">Our Philosophy</p>
 <h2 class="font-display-lg text-headline-xl mb-6 md:mb-8 serif">Modern African Luxury</h2>
 <div class="max-w-3xl mx-auto">

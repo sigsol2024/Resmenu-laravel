@@ -5,7 +5,7 @@ $itemCount = count($items);
 $catName = $category['name'] ?? 'Menu';
 $sectionSlug = $activeSection['slug'] ?? '';
 ?>
-<main class="pt-32 pb-xl px-gutter max-w-container-max mx-auto min-h-screen">
+<main class="pt-20 md:pt-28 pb-12 md:pb-xl px-4 md:px-gutter max-w-container-max mx-auto min-h-screen">
 <section class="flex flex-col md:flex-row md:items-end justify-between gap-md mb-lg">
 <div>
 <?php if (! empty($sectionMenuUrl)): ?>
@@ -72,6 +72,5 @@ $sectionSlug = $activeSection['slug'] ?? '';
             el.style.display = (!q || text.indexOf(q) !== -1) ? '' : 'none';
         });
     });
-    if (window.t6BindCartButtons) window.t6BindCartButtons();
 })();
 </script>

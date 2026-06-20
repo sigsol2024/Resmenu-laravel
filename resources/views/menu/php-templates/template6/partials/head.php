@@ -33,7 +33,12 @@ $t6PageTitle = t6_esc($pageTitle ?? ($restaurant['name'] ?? 'Menu'));
 #t6-mobile-nav { transform: translateY(-110%); transition: transform 0.3s ease; }
 #t6-mobile-nav.is-open { transform: translateY(0); }
 #t6-search-bar { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
-#t6-search-bar.is-open { max-height: 120px; }
+html { scroll-behavior: smooth; scroll-padding-top: 6rem; }
+body.t6-has-cart { padding-bottom: 5rem; }
+@media (min-width: 1024px) {
+  body.t6-has-cart { padding-bottom: 2rem; }
+}
+#t6-search-bar.is-open { max-height: 88px; }
 </style>
 <script id="tailwind-config">
 tailwind.config = {
@@ -79,4 +84,4 @@ tailwind.config = {
 };
 </script>
 </head>
-<body class="bg-background text-on-background font-body-md text-body-md antialiased selection:bg-primary-container selection:text-on-primary-container">
+<body class="bg-background text-on-background font-body-md text-body-md antialiased selection:bg-primary-container selection:text-on-primary-container<?php echo ! empty($supportsOrdering) ? ' t6-has-cart' : ''; ?>">

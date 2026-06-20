@@ -3,7 +3,7 @@ $section = $activeSection ?? ($sections[0] ?? null);
 $categories = $section['categories'] ?? [];
 $sectionName = $section['name'] ?? 'Menu';
 ?>
-<main class="pt-[100px] pb-xl px-gutter max-w-container-max mx-auto">
+<main class="pt-20 md:pt-[100px] pb-12 md:pb-xl px-4 md:px-gutter max-w-container-max mx-auto">
 <section class="mb-lg">
 <div class="max-w-2xl mx-auto text-center mb-md">
 <h2 class="font-display-lg text-headline-xl mb-4 text-primary serif"><?php echo t6_esc($sectionName); ?></h2>
@@ -18,7 +18,7 @@ $sectionName = $section['name'] ?? 'Menu';
 </section>
 
 <?php if (count($categories) > 1): ?>
-<div class="sticky top-[73px] z-40 lusso-glass py-4 -mx-gutter px-gutter mb-lg border-y border-outline-variant/10 overflow-x-auto whitespace-nowrap hide-scrollbar flex justify-center gap-8">
+<div class="sticky top-[72px] md:top-[80px] z-40 lusso-glass py-4 -mx-4 md:-mx-gutter px-4 md:px-gutter mb-lg border-y border-outline-variant/10 overflow-x-auto whitespace-nowrap hide-scrollbar flex justify-start md:justify-center gap-6 md:gap-8">
 <?php foreach ($categories as $i => $cat):
     $cslug = $cat['slug'] ?? ('cat-'.$i);
 ?>
@@ -27,7 +27,7 @@ $sectionName = $section['name'] ?? 'Menu';
 </div>
 <?php endif; ?>
 
-<div class="grid grid-cols-1 md:grid-cols-4 md:grid-rows-3 gap-6">
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 md:grid-rows-3 gap-4 md:gap-6">
 <?php
 $gridClasses = [
     'md:col-span-2 md:row-span-2 relative category-card group cursor-pointer overflow-hidden rounded-xl bg-surface-container shadow-xl min-h-[300px]',

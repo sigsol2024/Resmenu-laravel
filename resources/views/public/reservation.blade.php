@@ -26,9 +26,13 @@
     <style>
         body { font-family: 'Epilogue', sans-serif; }
         .hero-overlay { background: linear-gradient(rgba(34, 16, 16, 0.7), rgba(34, 16, 16, 0.85)); }
+        @if(!empty($embed))
+        html, body { background: #231f1a; min-height: 100%; }
+        @endif
     </style>
 </head>
-<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen">
+<body class="{{ empty($embed) ? 'bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen' : 'bg-[#231f1a] text-[#eae1d9] min-h-full' }}">
+@if(empty($embed))
 <!-- Hero Background -->
 <div class="fixed inset-0 z-0">
     <img class="w-full h-full object-cover" alt="Restaurant interior" src="{{ $heroBgImage }}"/>
@@ -49,10 +53,11 @@
     </a>
     <a class="ml-auto text-sm font-medium text-white/80 hover:text-primary transition-colors" href="{{ $menuUrl }}">OUR MENU</a>
 </nav>
+@endif
 
 <!-- Main Content -->
-<main class="relative z-10 max-w-4xl mx-auto px-4 py-8 md:py-10">
-    <div class="bg-white rounded-xl shadow-xl overflow-hidden border border-gray-200">
+<main class="{{ empty($embed) ? 'relative z-10 max-w-4xl mx-auto px-4 py-8 md:py-10' : 'max-w-4xl mx-auto px-4 py-4' }}">
+    <div class="{{ empty($embed) ? 'bg-white rounded-xl shadow-xl overflow-hidden border border-gray-200' : 'bg-[#2e2924] rounded-lg overflow-hidden border border-[#4f4539]/40' }}">
         <div class="p-6 md:p-8">
             @if($success)
                 <header class="text-center mb-10">
@@ -219,6 +224,7 @@
     </div>
 </main>
 
+@if(empty($embed))
 <!-- Footer -->
 <footer class="relative z-10 mt-20 bg-zinc-900 text-white py-16">
     <div class="max-w-7xl mx-auto px-6 md:px-8">
@@ -279,6 +285,7 @@
         </div>
     </div>
 </footer>
+@endif
 
 @if(!$success)
 @php

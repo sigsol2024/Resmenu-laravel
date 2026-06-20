@@ -89,7 +89,7 @@ class ReservationController extends Controller
             ->where('restaurant_id', $restaurant->id)
             ->value('deposit_amount') ?? 0);
 
-        return view('public.reservation', [
+    return view('public.reservation', [
             'restaurant' => $restaurant,
             'restaurantName' => $restaurant->name,
             'success' => session('success') === true,
@@ -102,6 +102,7 @@ class ReservationController extends Controller
             'selectedDate' => $selectedDate,
             'timeSlots' => $slotPayload['slots'] ?? [],
             'minDate' => date('Y-m-d'),
+            'embed' => $request->boolean('embed'),
         ]);
     }
 }
