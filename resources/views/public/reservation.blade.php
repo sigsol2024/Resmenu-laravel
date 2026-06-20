@@ -51,7 +51,8 @@
         html, body.t6-reservation-embed {
             background: #231f1a;
             color: #eae1d9;
-            min-height: 100%;
+            height: auto !important;
+            min-height: 0 !important;
             overflow-x: hidden;
         }
         .t6-reservation-embed .t6-res-card {
@@ -163,7 +164,7 @@
         @endif
     </style>
 </head>
-<body class="{{ $t6Embed ? 't6-reservation-embed min-h-full' : (empty($embed) ? 'bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen' : 'bg-[#231f1a] text-[#eae1d9] min-h-full') }}">
+<body class="{{ $t6Embed ? 't6-reservation-embed' : (empty($embed) ? 'bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen' : 'bg-[#231f1a] text-[#eae1d9] min-h-full') }}">
 @if(empty($embed))
 <!-- Hero Background -->
 <div class="fixed inset-0 z-0">
@@ -446,19 +447,24 @@ window.RESERVATION_CONFIG = @json($reservationConfig);
 @if($t6Embed)
 <script>
 (function(){
+    var lastSent = 0;
     function t6NotifyHeight() {
-        var h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+        var root = document.querySelector('.t6-res-inner') || document.body;
+        var h = root.offsetHeight || document.body.offsetHeight;
+        h = Math.min(Math.max(h, 200), 880);
+        if (Math.abs(h - lastSent) < 8) return;
+        lastSent = h;
         window.parent.postMessage({ type: 't6-reservation-resize', height: h }, '*');
     }
-    window.addEventListener('load', t6NotifyHeight);
+    window.addEventListener('load', function() { setTimeout(t6NotifyHeight, 100); });
     window.addEventListener('resize', t6NotifyHeight);
-    if (window.MutationObserver) {
-        new MutationObserver(t6NotifyHeight).observe(document.body, { childList: true, subtree: true, attributes: true });
-    }
-    document.querySelectorAll('.res-next-btn, .res-back-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() { setTimeout(t6NotifyHeight, 50); });
+    document.querySelectorAll('.res-next-btn, .res-back-btn, #reservation-date-trigger, #res-cal-prev, #res-cal-next').forEach(function(btn) {
+        btn.addEventListener('click', function() { setTimeout(t6NotifyHeight, 120); });
     });
-    setInterval(t6NotifyHeight, 500);
+    var calWrap = document.getElementById('reservation-calendar-wrap');
+    if (calWrap && window.MutationObserver) {
+        new MutationObserver(function() { setTimeout(t6NotifyHeight, 80); }).observe(calWrap, { attributes: true, attributeFilter: ['class'] });
+    }
 })();
 </script>
 @endif

@@ -43,11 +43,6 @@ shopping_bag
 <?php if (! empty($supportsReservations)): ?>
 <a href="<?php echo t6_esc($t6ResLink); ?>" class="text-on-surface py-2 font-label-lg text-label-lg t6-scroll-anchor">Reservations</a>
 <?php endif; ?>
-<?php if (! empty($sectionsForNav) && is_array($sectionsForNav)): ?>
-<?php foreach ($sectionsForNav as $navSection): ?>
-<a href="<?php echo t6_esc(t6_section_url($fullMenuUrl ?? '', $navSection['slug'] ?? '')); ?>" class="text-on-surface-variant py-2 pl-2 font-body-md"><?php echo t6_esc($navSection['name'] ?? ''); ?></a>
-<?php endforeach; ?>
-<?php endif; ?>
 </div>
 </div>
 </header>
