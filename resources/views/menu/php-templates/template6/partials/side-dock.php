@@ -19,7 +19,7 @@ $t6RestName = trim((string) ($restaurant['name'] ?? 'Restaurant'));
 <div id="t6-contact-backdrop" class="hidden fixed inset-0 z-[90] bg-surface/60 backdrop-blur-sm" aria-hidden="true"></div>
 
 <aside id="t6-contact-drawer" class="hidden fixed right-0 top-0 h-full w-full sm:w-96 md:w-[420px] bg-surface-container-highest shadow-2xl z-[100] border-l border-outline-variant/10 overflow-y-auto hide-scrollbar" aria-labelledby="t6-contact-drawer-title" role="dialog" aria-modal="true">
-<div class="p-gutter flex items-center justify-between sticky top-0 bg-surface-container-highest/95 backdrop-blur-md z-20 border-b border-outline-variant/10">
+<div class="px-gutter py-4 flex items-center justify-between sticky top-0 bg-surface-container-highest/95 backdrop-blur-md z-20 border-b border-outline-variant/10">
 <div>
 <h2 id="t6-contact-drawer-title" class="font-headline-md text-headline-md text-primary">Contact Us</h2>
 <p class="font-label-md text-label-md text-on-surface-variant/70 uppercase"><?php echo t6_esc($t6RestName); ?></p>
@@ -27,51 +27,48 @@ $t6RestName = trim((string) ($restaurant['name'] ?? 'Restaurant'));
 <button type="button" id="t6-contact-close" class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors text-3xl" aria-label="Close contact panel">close</button>
 </div>
 
-<div class="px-gutter pb-gutter space-y-md">
-<p class="font-body-md text-body-md text-on-surface-variant border-l-2 border-primary pl-4 py-1 italic">
-Reach our team for reservations, private dining, and general inquiries.
-</p>
-<div class="grid grid-cols-1 gap-sm">
+<div class="px-gutter pt-4 pb-3">
+<div class="grid grid-cols-1 gap-2">
 <?php if ($t6Tel): ?>
-<a class="group flex items-center justify-between p-md bg-surface-container-high rounded-xl hover:bg-surface-variant transition-all duration-300 border border-outline-variant/5" href="<?php echo t6_esc($t6Tel); ?>">
-<div class="flex items-center gap-md min-w-0">
-<div class="w-12 h-12 shrink-0 flex items-center justify-center bg-primary-container/20 rounded-full group-hover:scale-110 transition-transform">
-<span class="material-symbols-outlined text-primary text-2xl">call</span>
+<a class="group flex items-center justify-between py-2.5 px-3 bg-surface-container-high rounded-lg hover:bg-surface-variant transition-all duration-300 border border-outline-variant/5" href="<?php echo t6_esc($t6Tel); ?>">
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="w-8 h-8 shrink-0 flex items-center justify-center bg-primary-container/20 rounded-full">
+<span class="material-symbols-outlined text-primary text-lg">call</span>
 </div>
 <div class="min-w-0">
-<span class="font-label-lg text-label-lg text-on-surface block">Call Us</span>
-<span class="font-body-sm text-body-sm text-on-surface-variant truncate block"><?php echo t6_esc($t6Phone); ?></span>
+<span class="font-label-md text-label-md text-on-surface block leading-tight">Call Us</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate block leading-snug"><?php echo t6_esc($t6Phone); ?></span>
 </div>
 </div>
-<span class="material-symbols-outlined text-primary opacity-0 group-hover:opacity-100 transition-opacity shrink-0">arrow_forward_ios</span>
+<span class="material-symbols-outlined text-primary text-sm opacity-0 group-hover:opacity-100 transition-opacity shrink-0">arrow_forward_ios</span>
 </a>
 <?php endif; ?>
 <?php if ($t6Whatsapp !== ''): ?>
-<a class="group flex items-center justify-between p-md bg-surface-container-high rounded-xl hover:bg-surface-variant transition-all duration-300 border border-outline-variant/5" href="<?php echo t6_esc($t6Whatsapp); ?>" target="_blank" rel="noopener">
-<div class="flex items-center gap-md min-w-0">
-<div class="w-12 h-12 shrink-0 flex items-center justify-center bg-primary-container/20 rounded-full group-hover:scale-110 transition-transform">
-<span class="material-symbols-outlined text-primary text-2xl">chat</span>
+<a class="group flex items-center justify-between py-2.5 px-3 bg-surface-container-high rounded-lg hover:bg-surface-variant transition-all duration-300 border border-outline-variant/5" href="<?php echo t6_esc($t6Whatsapp); ?>" target="_blank" rel="noopener">
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="w-8 h-8 shrink-0 flex items-center justify-center bg-primary-container/20 rounded-full">
+<span class="material-symbols-outlined text-primary text-lg">chat</span>
 </div>
 <div class="min-w-0">
-<span class="font-label-lg text-label-lg text-on-surface block">WhatsApp</span>
-<span class="font-body-sm text-body-sm text-on-surface-variant">Message us directly</span>
+<span class="font-label-md text-label-md text-on-surface block leading-tight">WhatsApp</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant leading-snug">Message us</span>
 </div>
 </div>
-<span class="material-symbols-outlined text-primary opacity-0 group-hover:opacity-100 transition-opacity shrink-0">arrow_forward_ios</span>
+<span class="material-symbols-outlined text-primary text-sm opacity-0 group-hover:opacity-100 transition-opacity shrink-0">arrow_forward_ios</span>
 </a>
 <?php endif; ?>
 <?php if ($t6Email !== ''): ?>
-<a class="group flex items-center justify-between p-md bg-surface-container-high rounded-xl hover:bg-surface-variant transition-all duration-300 border border-outline-variant/5" href="mailto:<?php echo t6_esc($t6Email); ?>">
-<div class="flex items-center gap-md min-w-0">
-<div class="w-12 h-12 shrink-0 flex items-center justify-center bg-primary-container/20 rounded-full group-hover:scale-110 transition-transform">
-<span class="material-symbols-outlined text-primary text-2xl">mail</span>
+<a class="group flex items-center justify-between py-2.5 px-3 bg-surface-container-high rounded-lg hover:bg-surface-variant transition-all duration-300 border border-outline-variant/5" href="mailto:<?php echo t6_esc($t6Email); ?>">
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="w-8 h-8 shrink-0 flex items-center justify-center bg-primary-container/20 rounded-full">
+<span class="material-symbols-outlined text-primary text-lg">mail</span>
 </div>
 <div class="min-w-0">
-<span class="font-label-lg text-label-lg text-on-surface block">Email</span>
-<span class="font-body-sm text-body-sm text-on-surface-variant truncate block"><?php echo t6_esc($t6Email); ?></span>
+<span class="font-label-md text-label-md text-on-surface block leading-tight">Email</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate block leading-snug"><?php echo t6_esc($t6Email); ?></span>
 </div>
 </div>
-<span class="material-symbols-outlined text-primary opacity-0 group-hover:opacity-100 transition-opacity shrink-0">arrow_forward_ios</span>
+<span class="material-symbols-outlined text-primary text-sm opacity-0 group-hover:opacity-100 transition-opacity shrink-0">arrow_forward_ios</span>
 </a>
 <?php endif; ?>
 </div>
@@ -79,40 +76,35 @@ Reach our team for reservations, private dining, and general inquiries.
 
 <?php if ($t6Address !== ''): ?>
 <div class="px-gutter pb-gutter">
-<h3 class="font-label-lg text-label-lg text-on-surface-variant mb-sm uppercase">Our Location</h3>
+<h3 class="font-label-lg text-label-lg text-on-surface-variant mb-2 uppercase">Our Location</h3>
 <div class="relative group">
-<div class="w-full h-48 rounded-xl overflow-hidden border border-outline-variant/10 shadow-lg bg-surface-container-low">
+<div class="w-full h-40 rounded-xl overflow-hidden border border-outline-variant/10 shadow-lg bg-surface-container-low">
 <?php if ($t6MapEmbed): ?>
 <iframe class="w-full h-full border-0" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" title="<?php echo t6_esc($t6RestName); ?> location map" src="<?php echo t6_esc($t6MapEmbed); ?>"></iframe>
+<div class="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-surface-container-highest from-30% via-surface-container-highest/90 to-transparent"></div>
+<div class="absolute bottom-0 left-0 right-0 p-3 flex items-end justify-between gap-2 z-10">
+<div class="min-w-0">
+<p class="font-label-md text-label-md text-on-surface font-semibold truncate leading-tight"><?php echo t6_esc($t6RestName); ?></p>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 leading-snug mt-0.5"><?php echo t6_esc($t6Address); ?></p>
+</div>
+<?php if ($t6Directions): ?>
+<a href="<?php echo t6_esc($t6Directions); ?>" target="_blank" rel="noopener" class="shrink-0 bg-primary text-on-primary p-1.5 rounded-full shadow-lg active:scale-95 transition-transform" aria-label="Get directions">
+<span class="material-symbols-outlined text-lg">directions</span>
+</a>
+<?php endif; ?>
+</div>
 <?php else: ?>
-<div class="w-full h-full flex items-center justify-center p-6 text-center">
+<div class="w-full h-full flex items-center justify-center p-4 text-center">
 <p class="font-body-sm text-body-sm text-on-surface-variant"><?php echo t6_esc($t6Address); ?></p>
 </div>
 <?php endif; ?>
-<?php if ($t6MapEmbed): ?>
-<div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-surface-container-highest/80 via-transparent to-transparent"></div>
-<div class="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-3">
-<div class="min-w-0">
-<p class="font-body-md text-body-md text-on-surface font-semibold truncate"><?php echo t6_esc($t6RestName); ?></p>
-<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2"><?php echo t6_esc($t6Address); ?></p>
-</div>
-<?php if ($t6Directions): ?>
-<a href="<?php echo t6_esc($t6Directions); ?>" target="_blank" rel="noopener" class="shrink-0 bg-primary text-on-primary p-2 rounded-full shadow-lg active:scale-95 transition-transform" aria-label="Get directions">
-<span class="material-symbols-outlined">directions</span>
-</a>
-<?php endif; ?>
-</div>
-<?php endif; ?>
 </div>
 </div>
-<?php if (! $t6MapEmbed): ?>
-<p class="mt-md font-body-sm text-body-sm text-on-surface-variant"><?php echo t6_esc($t6Address); ?></p>
-<?php if ($t6Directions): ?>
-<a href="<?php echo t6_esc($t6Directions); ?>" target="_blank" rel="noopener" class="inline-flex items-center gap-2 mt-sm font-label-md text-label-md text-primary hover:underline uppercase">
+<?php if (! $t6MapEmbed && $t6Directions): ?>
+<a href="<?php echo t6_esc($t6Directions); ?>" target="_blank" rel="noopener" class="inline-flex items-center gap-2 mt-2 font-label-md text-label-md text-primary hover:underline uppercase">
 <span class="material-symbols-outlined text-base">directions</span>
 Get Directions
 </a>
-<?php endif; ?>
 <?php endif; ?>
 </div>
 <?php endif; ?>
