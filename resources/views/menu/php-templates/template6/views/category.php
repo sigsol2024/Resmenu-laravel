@@ -5,7 +5,7 @@ $itemCount = count($items);
 $catName = $category['name'] ?? 'Menu';
 $sectionSlug = $activeSection['slug'] ?? '';
 ?>
-<main class="pt-20 md:pt-28 pb-12 md:pb-xl px-4 md:px-gutter max-w-container-max mx-auto min-h-screen">
+<main class="t6-main-offset pb-12 md:pb-xl px-4 md:px-gutter max-w-container-max mx-auto min-h-screen">
 <section class="flex flex-col md:flex-row md:items-end justify-between gap-md mb-lg">
 <div>
 <?php if (! empty($sectionMenuUrl)): ?>

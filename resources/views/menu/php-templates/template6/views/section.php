@@ -16,7 +16,7 @@ $sectionHeroUrl = ! empty($section) ? t6_section_image($uploadBaseUrl ?? '', $se
 </section>
 <?php endif; ?>
 
-<main class="<?php echo $sectionHeroUrl ? 'pt-10 md:pt-14' : 'pt-24 md:pt-28'; ?> pb-12 md:pb-xl px-4 md:px-gutter max-w-container-max mx-auto">
+<main class="<?php echo $sectionHeroUrl ? 't6-main-after-hero' : 't6-main-offset'; ?> pb-12 md:pb-xl px-4 md:px-gutter max-w-container-max mx-auto">
 <?php if (! $sectionHeroUrl): ?>
 <section class="mb-md md:mb-lg">
 <div class="max-w-2xl mx-auto text-center mb-md">

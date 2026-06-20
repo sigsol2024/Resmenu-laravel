@@ -1,6 +1,13 @@
 <script>
 (function(){
     var header = document.getElementById('t6-header');
+    function syncHeaderHeight() {
+        if (!header) return;
+        document.documentElement.style.setProperty('--t6-header-h', header.offsetHeight + 'px');
+    }
+    syncHeaderHeight();
+    window.addEventListener('resize', syncHeaderHeight);
+
     window.addEventListener('scroll', function() {
         if (!header) return;
         if (window.scrollY > 50) {
@@ -10,6 +17,7 @@
             header.classList.add('py-4');
             header.classList.remove('py-2');
         }
+        syncHeaderHeight();
     });
 
     var searchToggle = document.getElementById('t6-search-toggle');
@@ -19,6 +27,7 @@
         searchToggle.addEventListener('click', function() {
             searchBar.classList.toggle('is-open');
             if (searchBar.classList.contains('is-open') && searchInput) searchInput.focus();
+            setTimeout(syncHeaderHeight, 320);
         });
     }
 

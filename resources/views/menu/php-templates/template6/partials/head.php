@@ -64,6 +64,22 @@ body.t6-drawer-open { overflow: hidden; }
 #t6-search-bar { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
 #t6-search-bar.is-open { max-height: 88px; }
 html { scroll-behavior: smooth; scroll-padding-top: 6rem; }
+:root {
+  --t6-header-h: 88px;
+  --t6-header-gap: 3.5rem;
+}
+@media (min-width: 768px) {
+  :root { --t6-header-gap: 2.5rem; }
+}
+.t6-main-offset {
+  padding-top: calc(var(--t6-header-h) + var(--t6-header-gap));
+}
+.t6-main-after-hero {
+  padding-top: 2.75rem;
+}
+@media (min-width: 768px) {
+  .t6-main-after-hero { padding-top: 3.25rem; }
+}
 body.t6-has-cart { padding-bottom: 5rem; }
 @media (min-width: 1024px) {
   body.t6-has-cart { padding-bottom: 2rem; }
