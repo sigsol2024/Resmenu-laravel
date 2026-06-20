@@ -68,6 +68,17 @@ function t6_esc(?string $value): string
     return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 }
 
+/** Lusso Template 6 design accent — always gold, not restaurant customization. */
+function t6_design_primary(): string
+{
+    return '#f0be78';
+}
+
+function t6_design_on_primary(): string
+{
+    return '#452b00';
+}
+
 function t6_rating_display(array $restaurant): string
 {
     $rating = number_format((float) ($restaurant['google_rating'] ?? 4.5), 1);

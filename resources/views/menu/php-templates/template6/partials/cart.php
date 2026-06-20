@@ -1,6 +1,6 @@
 <?php if (! empty($supportsOrdering)):
     $t6SiteBase = defined('SITE_URL') ? rtrim((string) SITE_URL, '/') : t6_platform_base($fullMenuUrl ?? '');
-    $t6Primary = $customization['primary_color'] ?? '#f0be78';
+    $t6Primary = t6_design_primary();
 ?>
 <link rel="stylesheet" href="<?php echo t6_esc($t6SiteBase); ?>/legacy/assets/css/cart-modal.css">
 <div id="resmenu-cart-widget" class="fixed bottom-6 left-6 z-50 hidden"></div>

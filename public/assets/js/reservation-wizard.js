@@ -1,15 +1,15 @@
 ﻿document.addEventListener('DOMContentLoaded', function() {
     var cfg = window.RESERVATION_CONFIG || {};
-    var primaryColor = cfg.primaryColor || '#f20d0d';
-    var onPrimaryColor = cfg.onPrimaryColor || '#ffffff';
+    var theme = cfg.theme || 'default';
+    var isT6 = theme === 'template6';
+    var primaryColor = isT6 ? (cfg.primaryColor || '#f0be78') : (cfg.primaryColor || '#f20d0d');
+    var onPrimaryColor = cfg.onPrimaryColor || (isT6 ? '#452b00' : '#ffffff');
     var baseUrl = cfg.baseUrl || '';
     var slug = cfg.slug || '';
     var partySize = parseInt(cfg.partySize, 10) || 1;
     var minDateStr = cfg.minDate || new Date().toISOString().slice(0, 10);
     var slotsUrl = cfg.slotsUrl || (baseUrl + '/api/reservations/slots');
     var availabilityUrl = cfg.availabilityUrl || (baseUrl + '/api/reservations/availability');
-    var theme = cfg.theme || 'default';
-    var isT6 = theme === 'template6';
 
     function clearTimeSlotStyles(btn) {
         btn.style.backgroundColor = '';
@@ -66,14 +66,14 @@
             var n = parseInt(el.getAttribute('data-step'), 10);
             el.classList.remove('ring-4');
             if (isT6) {
-                if (n <= step) {
-                    el.style.backgroundColor = primaryColor;
-                    el.style.color = onPrimaryColor;
-                    el.style.borderColor = primaryColor;
-                } else {
-                    el.style.backgroundColor = '';
-                    el.style.color = '';
-                    el.style.borderColor = '';
+                el.classList.remove('t6-step-active', 't6-step-done');
+                el.style.backgroundColor = '';
+                el.style.color = '';
+                el.style.borderColor = '';
+                if (n < step) {
+                    el.classList.add('t6-step-done');
+                } else if (n === step) {
+                    el.classList.add('t6-step-active');
                 }
                 return;
             }
@@ -124,7 +124,7 @@
             .then(function(data) {
                 var payload = unwrap(data);
                 if (!data.success || !payload || !payload.slots) {
-                    container.innerHTML = '<p class="col-span-full text-center py-4' + (isT6 ? ' text-red-400' : ' text-red-500') + '">Failed to load slots.</p>';
+                    container.innerHTML = '<p class="col-span-full text-center py-4' + (isT6 ? ' text-on-surface-variant' : ' text-red-500') + '">Failed to load slots.</p>';
                     return;
                 }
                 var html = '';
@@ -134,7 +134,7 @@
                         : 'time-slot py-3 px-2 text-sm font-bold rounded-lg transition-all border ';
                     if (isT6) {
                         cls += slot.available
-                            ? 'border-outline-variant/40 text-on-surface bg-surface-container-low hover:border-primary'
+                            ? 'border-outline-variant/40 text-on-surface bg-surface-container-low'
                             : 'opacity-40 cursor-not-allowed line-through border-outline-variant/40';
                     } else {
                         cls += slot.available ? 'border-gray-200 hover:border-primary text-gray-700' : 'opacity-50 cursor-not-allowed line-through border-gray-200 text-gray-500';
@@ -153,7 +153,7 @@
                 });
             })
             .catch(function() {
-                container.innerHTML = '<p class="col-span-full text-center py-4' + (isT6 ? ' text-red-400' : ' text-red-500') + '">Failed to load slots.</p>';
+                container.innerHTML = '<p class="col-span-full text-center py-4' + (isT6 ? ' text-on-surface-variant' : ' text-red-500') + '">Failed to load slots.</p>';
             });
     }
 

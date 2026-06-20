@@ -79,8 +79,85 @@ body.t6-has-cart { padding-bottom: 5rem; }
 .t6-res-form #reservation-calendar .t6-cal-open:hover,
 .t6-res-form #reservation-calendar .t6-cal-limited:hover { background: rgba(240, 190, 120, 0.22); }
 .t6-res-form #reservation-calendar .t6-cal-selected { box-shadow: 0 0 0 2px var(--t6-primary, #f0be78); font-weight: 600; }
+.t6-res-form .t6-res-input:focus,
+.t6-res-form .t6-res-field:focus-within {
+  border-color: var(--t6-primary, #f0be78) !important;
+  outline: none;
+  box-shadow: none;
+}
+.t6-res-form .res-step-indicator {
+  background: transparent !important;
+  border: 1px solid #4f4539 !important;
+  color: #d3c4b4 !important;
+}
+.t6-res-form .res-step-indicator.t6-step-active,
+.t6-res-form .res-step-indicator.t6-step-done {
+  background: var(--t6-primary, #f0be78) !important;
+  border-color: var(--t6-primary, #f0be78) !important;
+  color: #452b00 !important;
+}
+.t6-res-form .t6-time-slot:not(:disabled):hover {
+  border-color: var(--t6-primary, #f0be78) !important;
+}
+.t6-res-form .t6-res-qty-btn:hover {
+  border-color: var(--t6-primary, #f0be78) !important;
+  color: var(--t6-primary, #f0be78) !important;
+}
+.t6-res-form .t6-res-alert-error {
+  border: 1px solid rgba(240, 190, 120, 0.35);
+  background: rgba(240, 190, 120, 0.08);
+  color: #eae1d9;
+}
+.t6-res-form .t6-res-alert-success {
+  border: 1px solid rgba(240, 190, 120, 0.35);
+  background: rgba(240, 190, 120, 0.12);
+  color: #eae1d9;
+}
+.t6-res-form input:focus,
+.t6-res-form button:focus-visible {
+  outline: 2px solid var(--t6-primary, #f0be78);
+  outline-offset: 2px;
+}
+.t6-res-form .t6-res-btn-primary,
+.t6-res-form .res-next-btn,
+.t6-res-form button[type="submit"] {
+  background: var(--t6-primary, #f0be78) !important;
+  color: #452b00 !important;
+  border: none !important;
+}
+.t6-res-form #time-slots-container .text-red-400,
 .t6-res-form #time-slots-container .text-red-500,
 .t6-res-form #time-slots-container .text-gray-500 { color: #d3c4b4 !important; }
+.t6-res-form input:invalid,
+.t6-res-form textarea:invalid {
+  border-color: #4f4539 !important;
+  box-shadow: none !important;
+}
+.t6-res-form input:user-invalid,
+.t6-res-form textarea:user-invalid {
+  border-color: rgba(240, 190, 120, 0.55) !important;
+}
+.t6-res-form .res-step-indicator[style*="background"] {
+  background: transparent !important;
+}
+.t6-res-form .res-step-indicator.t6-step-active[style],
+.t6-res-form .res-step-indicator.t6-step-done[style] {
+  background: var(--t6-primary, #f0be78) !important;
+  color: #452b00 !important;
+  border-color: var(--t6-primary, #f0be78) !important;
+}
+.t6-res-form .time-slot[style],
+.t6-res-form .t6-time-slot[style] {
+  background: inherit !important;
+  color: inherit !important;
+  border-color: inherit !important;
+}
+.t6-res-form .time-slot.selected,
+.t6-res-form .t6-time-slot.selected {
+  background: var(--t6-primary, #f0be78) !important;
+  border-color: var(--t6-primary, #f0be78) !important;
+  color: #452b00 !important;
+}
 </style>
 <script id="tailwind-config">
 tailwind.config = {

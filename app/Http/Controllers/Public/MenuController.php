@@ -193,10 +193,6 @@ class MenuController extends Controller
 
         $selectedDate = date('Y-m-d');
         $slotPayload = $this->reservationSlots->slotsForDate((int) $restaurant->id, $selectedDate);
-        $custom = $this->customization->forRestaurant($restaurant);
-        $primaryColor = is_array($custom)
-            ? ($custom['primary_color'] ?? '#f0be78')
-            : ($custom->primary_color ?? '#f0be78');
         $depositAmount = (float) (DB::table('restaurant_reservation_settings')
             ->where('restaurant_id', $restaurant->id)
             ->value('deposit_amount') ?? 0);
@@ -210,7 +206,7 @@ class MenuController extends Controller
                 'selectedDate' => $selectedDate,
                 'minDate' => date('Y-m-d'),
                 'timeSlots' => $slotPayload['slots'] ?? [],
-                'primaryColor' => $primaryColor,
+                'primaryColor' => '#f0be78',
                 'siteBase' => rtrim(url('/'), '/'),
             ],
         ];
