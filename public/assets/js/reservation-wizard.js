@@ -8,6 +8,28 @@
     var minDateStr = cfg.minDate || new Date().toISOString().slice(0, 10);
     var slotsUrl = cfg.slotsUrl || (baseUrl + '/api/reservations/slots');
     var availabilityUrl = cfg.availabilityUrl || (baseUrl + '/api/reservations/availability');
+    var theme = cfg.theme || 'default';
+    var isT6 = theme === 'template6';
+
+    function clearTimeSlotStyles(btn) {
+        btn.style.backgroundColor = '';
+        btn.style.color = '';
+        btn.style.borderColor = '';
+        btn.classList.remove('selected');
+    }
+
+    function applyTimeSlotSelected(btn) {
+        if (isT6) {
+            btn.classList.add('selected');
+            btn.style.backgroundColor = '';
+            btn.style.color = '';
+            btn.style.borderColor = '';
+            return;
+        }
+        btn.style.backgroundColor = primaryColor;
+        btn.style.color = onPrimaryColor;
+        btn.style.borderColor = primaryColor;
+    }
 
     var partyInput = document.getElementById('party-size-input');
     var partyDisplay = document.getElementById('party-display');
@@ -43,6 +65,18 @@
         document.querySelectorAll('.res-step-indicator').forEach(function(el) {
             var n = parseInt(el.getAttribute('data-step'), 10);
             el.classList.remove('ring-4');
+            if (isT6) {
+                if (n <= step) {
+                    el.style.backgroundColor = primaryColor;
+                    el.style.color = onPrimaryColor;
+                    el.style.borderColor = primaryColor;
+                } else {
+                    el.style.backgroundColor = '';
+                    el.style.color = '';
+                    el.style.borderColor = '';
+                }
+                return;
+            }
             if (n < step) {
                 el.style.backgroundColor = primaryColor;
                 el.style.color = onPrimaryColor;
@@ -84,19 +118,27 @@
     function loadTimeSlots(date) {
         var container = document.getElementById('time-slots-container');
         if (!container) return;
-        container.innerHTML = '<p class="col-span-full text-center text-gray-500 py-4">Loading...</p>';
+        container.innerHTML = '<p class="col-span-full text-center py-4' + (isT6 ? ' text-on-surface-variant' : ' text-gray-500') + '">Loading...</p>';
         fetch(slotsUrl + '?slug=' + encodeURIComponent(slug) + '&date=' + encodeURIComponent(date))
             .then(function(r) { return r.json(); })
             .then(function(data) {
                 var payload = unwrap(data);
                 if (!data.success || !payload || !payload.slots) {
-                    container.innerHTML = '<p class="col-span-full text-center text-red-500 py-4">Failed to load slots.</p>';
+                    container.innerHTML = '<p class="col-span-full text-center py-4' + (isT6 ? ' text-red-400' : ' text-red-500') + '">Failed to load slots.</p>';
                     return;
                 }
                 var html = '';
                 payload.slots.forEach(function(slot) {
-                    var cls = 'time-slot py-3 px-2 text-sm font-bold rounded-lg transition-all border ';
-                    cls += slot.available ? 'border-gray-200 hover:border-primary text-gray-700' : 'opacity-50 cursor-not-allowed line-through border-gray-200 text-gray-500';
+                    var cls = isT6
+                        ? 'time-slot t6-time-slot py-2.5 px-1 text-xs sm:text-sm font-label-md rounded border transition-all '
+                        : 'time-slot py-3 px-2 text-sm font-bold rounded-lg transition-all border ';
+                    if (isT6) {
+                        cls += slot.available
+                            ? 'border-outline-variant/40 text-on-surface bg-surface-container-low hover:border-primary'
+                            : 'opacity-40 cursor-not-allowed line-through border-outline-variant/40';
+                    } else {
+                        cls += slot.available ? 'border-gray-200 hover:border-primary text-gray-700' : 'opacity-50 cursor-not-allowed line-through border-gray-200 text-gray-500';
+                    }
                     html += '<button type="button" data-time="' + slot.time + '" class="' + cls + '"' + (slot.available ? '' : ' disabled') + '>' + slot.time + '</button>';
                 });
                 container.innerHTML = html;
@@ -104,20 +146,14 @@
                 container.querySelectorAll('.time-slot').forEach(function(btn) {
                     if (btn.disabled) return;
                     btn.addEventListener('click', function() {
-                        container.querySelectorAll('.time-slot').forEach(function(b) {
-                            b.style.backgroundColor = '';
-                            b.style.color = '';
-                            b.style.borderColor = '';
-                        });
-                        btn.style.backgroundColor = primaryColor;
-                        btn.style.color = onPrimaryColor;
-                        btn.style.borderColor = primaryColor;
+                        container.querySelectorAll('.time-slot').forEach(clearTimeSlotStyles);
+                        applyTimeSlotSelected(btn);
                         timeInput.value = btn.getAttribute('data-time');
                     });
                 });
             })
             .catch(function() {
-                container.innerHTML = '<p class="col-span-full text-center text-red-500 py-4">Failed to load slots.</p>';
+                container.innerHTML = '<p class="col-span-full text-center py-4' + (isT6 ? ' text-red-400' : ' text-red-500') + '">Failed to load slots.</p>';
             });
     }
 
@@ -131,14 +167,8 @@
         slotsContainer.addEventListener('click', function(e) {
             var btn = e.target.closest('.time-slot');
             if (!btn || btn.disabled) return;
-            document.querySelectorAll('#time-slots-container .time-slot').forEach(function(b) {
-                b.style.backgroundColor = '';
-                b.style.color = '';
-                b.style.borderColor = '';
-            });
-            btn.style.backgroundColor = primaryColor;
-            btn.style.color = onPrimaryColor;
-            btn.style.borderColor = primaryColor;
+            document.querySelectorAll('#time-slots-container .time-slot').forEach(clearTimeSlotStyles);
+            applyTimeSlotSelected(btn);
             timeInput.value = btn.getAttribute('data-time');
         });
     }
@@ -147,9 +177,7 @@
     if (preSelected) {
         var sel = document.querySelector('#time-slots-container .time-slot[data-time="' + preSelected + '"]');
         if (sel && !sel.disabled) {
-            sel.style.backgroundColor = primaryColor;
-            sel.style.color = onPrimaryColor;
-            sel.style.borderColor = primaryColor;
+            applyTimeSlotSelected(sel);
         }
     }
 
@@ -192,39 +220,40 @@
         var selectedVal = dateInput.value || '';
 
         var html = '';
-        ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(function(d) { html += '<div class="font-semibold text-gray-500 py-1">' + d + '</div>'; });
+        var dayHeadClass = isT6 ? 'font-label-md text-on-surface-variant py-1' : 'font-semibold text-gray-500 py-1';
+        ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(function(d) { html += '<div class="' + dayHeadClass + '">' + d + '</div>'; });
         for (var i = 0; i < startPad; i++) {
             var d = prevLast - startPad + i + 1;
-            html += '<div class="py-2 text-gray-300">' + d + '</div>';
+            html += '<div class="py-2 ' + (isT6 ? 'text-outline-variant/50' : 'text-gray-300') + '">' + d + '</div>';
         }
         for (var d = 1; d <= daysInMonth; d++) {
             var dateStr = calYear + '-' + String(calMonth + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
             var info = dates[dateStr] || { available: 0, total: 10, status: 'full' };
             var status = info.status;
             if (dateStr < today) status = 'past';
-            var cls = 'py-2 rounded cursor-pointer transition-colors ';
+            var cls = 'py-2 rounded transition-colors ';
             var clickable = false;
             if (status === 'past') {
-                cls += 'text-gray-300 cursor-default';
+                cls += isT6 ? 't6-cal-past cursor-default' : 'text-gray-300 cursor-default';
             } else if (status === 'full') {
-                cls += 'text-gray-400 bg-gray-100 cursor-not-allowed';
+                cls += isT6 ? 't6-cal-full' : 'text-gray-400 bg-gray-100 cursor-not-allowed';
             } else if (status === 'limited') {
-                cls += 'bg-amber-100 text-amber-900 hover:bg-amber-200';
+                cls += isT6 ? 't6-cal-limited cursor-pointer' : 'bg-amber-100 text-amber-900 hover:bg-amber-200';
                 clickable = true;
             } else {
-                cls += 'bg-green-100 text-green-800 hover:bg-green-200';
+                cls += isT6 ? 't6-cal-open cursor-pointer' : 'bg-green-100 text-green-800 hover:bg-green-200';
                 clickable = true;
             }
-            if (dateStr === selectedVal) cls += ' ring-2 ring-offset-1 font-bold';
+            if (dateStr === selectedVal) cls += isT6 ? ' t6-cal-selected' : ' ring-2 ring-offset-1 font-bold';
             var label = status === 'past' ? '' : (status === 'limited' ? info.available + ' left' : '');
-            var style = (dateStr === selectedVal) ? ' box-shadow: 0 0 0 2px ' + primaryColor + ';' : '';
+            var style = (!isT6 && dateStr === selectedVal) ? ' box-shadow: 0 0 0 2px ' + primaryColor + ';' : '';
             html += '<div class="' + cls + '" data-date="' + dateStr + '" data-clickable="' + (clickable ? '1' : '0') + '" style="' + style + '">' + d + (label ? '<br><span class="text-[10px]">' + label + '</span>' : '') + '</div>';
         }
         var totalCells = startPad + daysInMonth;
         var remainder = totalCells % 7;
         var nextDays = remainder === 0 ? 0 : 7 - remainder;
         for (var i = 1; i <= nextDays; i++) {
-            html += '<div class="py-2 text-gray-300">' + i + '</div>';
+            html += '<div class="py-2 ' + (isT6 ? 'text-outline-variant/50' : 'text-gray-300') + '">' + i + '</div>';
         }
         var calEl = document.getElementById('reservation-calendar');
         if (!calEl) return;
@@ -237,11 +266,15 @@
                 loadTimeSlots(dt);
                 timeInput.value = '';
                 document.querySelectorAll('#reservation-calendar [data-date]').forEach(function(c) {
-                    c.classList.remove('ring-2','ring-offset-1','font-bold');
+                    c.classList.remove('ring-2', 'ring-offset-1', 'font-bold', 't6-cal-selected');
                     c.style.boxShadow = '';
                 });
-                this.classList.add('ring-2','ring-offset-1','font-bold');
-                this.style.boxShadow = '0 0 0 2px ' + primaryColor;
+                if (isT6) {
+                    this.classList.add('t6-cal-selected');
+                } else {
+                    this.classList.add('ring-2', 'ring-offset-1', 'font-bold');
+                    this.style.boxShadow = '0 0 0 2px ' + primaryColor;
+                }
                 var disp = document.getElementById('res-date-display');
                 var wrap = document.getElementById('reservation-calendar-wrap');
                 if (disp) disp.textContent = new Date(dt + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
@@ -291,13 +324,21 @@
             document.querySelectorAll('.occasion-btn').forEach(function(b) {
                 b.style.backgroundColor = '';
                 b.style.color = '';
-                b.classList.remove('border-primary', 'text-white');
-                b.classList.add('border-gray-200', 'bg-gray-50', 'text-gray-600');
+                b.classList.remove('selected', 'border-primary', 'text-white');
+                if (isT6) {
+                    b.classList.remove('selected');
+                } else {
+                    b.classList.add('border-gray-200', 'bg-gray-50', 'text-gray-600');
+                }
             });
-            btn.style.backgroundColor = primaryColor;
-            btn.style.color = onPrimaryColor;
-            btn.classList.add('border-primary', 'text-white');
-            btn.classList.remove('border-gray-200', 'bg-gray-50', 'text-gray-600');
+            if (isT6) {
+                btn.classList.add('selected');
+            } else {
+                btn.style.backgroundColor = primaryColor;
+                btn.style.color = onPrimaryColor;
+                btn.classList.add('border-primary', 'text-white');
+                btn.classList.remove('border-gray-200', 'bg-gray-50', 'text-gray-600');
+            }
             if (occasionInput) occasionInput.value = btn.getAttribute('data-occasion') || '';
         });
     });

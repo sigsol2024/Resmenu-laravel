@@ -45,6 +45,42 @@ body.t6-has-cart { padding-bottom: 5rem; }
 @media (min-width: 1024px) {
   body.t6-has-cart { padding-bottom: 2rem; }
 }
+.t6-res-form .t6-res-field,
+.t6-res-form .t6-res-input {
+  background: #1f1b16;
+  border-color: #4f4539;
+  border-radius: 0.125rem;
+}
+.t6-res-form .t6-res-field { border-bottom-width: 1px; }
+.t6-res-form .t6-res-btn-primary {
+  background: var(--t6-primary, #f0be78);
+  color: #452b00;
+  border-radius: 0.125rem;
+  transition: opacity 0.2s;
+}
+.t6-res-form .t6-res-btn-primary:hover { opacity: 0.9; }
+.t6-res-form .t6-res-btn-ghost {
+  background: transparent;
+  color: #d3c4b4;
+  border: 1px solid #4f4539;
+  border-radius: 0.125rem;
+}
+.t6-res-form .t6-res-btn-ghost:hover { border-color: var(--t6-primary, #f0be78); color: var(--t6-primary, #f0be78); }
+.t6-res-form .t6-time-slot.selected,
+.t6-res-form .t6-occasion-btn.selected {
+  background: var(--t6-primary, #f0be78) !important;
+  border-color: var(--t6-primary, #f0be78) !important;
+  color: #452b00 !important;
+}
+.t6-res-form #reservation-calendar .t6-cal-past { color: #4f4539; }
+.t6-res-form #reservation-calendar .t6-cal-full { color: #9c8f80; background: #2e2924; cursor: not-allowed; }
+.t6-res-form #reservation-calendar .t6-cal-limited { background: rgba(245, 158, 11, 0.15); color: #f0be78; }
+.t6-res-form #reservation-calendar .t6-cal-open { background: rgba(240, 190, 120, 0.12); color: #eae1d9; }
+.t6-res-form #reservation-calendar .t6-cal-open:hover,
+.t6-res-form #reservation-calendar .t6-cal-limited:hover { background: rgba(240, 190, 120, 0.22); }
+.t6-res-form #reservation-calendar .t6-cal-selected { box-shadow: 0 0 0 2px var(--t6-primary, #f0be78); font-weight: 600; }
+.t6-res-form #time-slots-container .text-red-500,
+.t6-res-form #time-slots-container .text-gray-500 { color: #d3c4b4 !important; }
 </style>
 <script id="tailwind-config">
 tailwind.config = {

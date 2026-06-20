@@ -6,7 +6,6 @@ if (empty($heroUrl)) {
         $heroUrl = t6_section_image($uploadBaseUrl ?? '', $sections[0]);
     }
 }
-$t6EmbedReservationUrl = ($reservationUrl ?? '').(str_contains($reservationUrl ?? '', '?') ? '&' : '?').'embed=1&theme=template6';
 ?>
 <section id="reservation" class="py-12 md:py-xl scroll-mt-28">
 <div class="max-w-container-max mx-auto px-4 md:px-gutter">
@@ -28,32 +27,7 @@ $t6EmbedReservationUrl = ($reservationUrl ?? '').(str_contains($reservationUrl ?
 <?php if (! empty($isTemplatePreview)): ?>
 <p class="font-label-md text-label-md uppercase text-on-surface-variant text-center py-12">Reservation form (Demo Preview)</p>
 <?php else: ?>
-<iframe
-    id="t6-reservation-iframe"
-    src="<?php echo t6_esc($t6EmbedReservationUrl); ?>"
-    title="Table reservation for <?php echo t6_esc($restaurant['name'] ?? ''); ?>"
-    class="w-full border-0 bg-transparent block"
-    scrolling="no"
-    style="height:560px;min-height:560px;display:block;"
-    loading="lazy"
-></iframe>
-<script>
-(function(){
-    var iframe = document.getElementById('t6-reservation-iframe');
-    if (!iframe) return;
-    var lastH = 0;
-    window.addEventListener('message', function(e) {
-        if (!e.data || e.data.type !== 't6-reservation-resize') return;
-        var h = parseInt(e.data.height, 10);
-        if (!h || h < 200) return;
-        h = Math.min(h + 12, 1600);
-        if (Math.abs(h - lastH) < 4) return;
-        lastH = h;
-        iframe.style.height = h + 'px';
-        iframe.style.minHeight = h + 'px';
-    });
-})();
-</script>
+<?php include __DIR__.'/reservation-form.php'; ?>
 <?php endif; ?>
 </div>
 </div>

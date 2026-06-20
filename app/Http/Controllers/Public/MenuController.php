@@ -6,12 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Services\CustomizationService;
 use App\Services\MenuService;
 use App\Services\MenuTemplateRenderService;
+use App\Services\ReservationSlotService;
 use App\Services\SubscriptionService;
 use App\Services\UploadService;
 use App\Support\LegacyMenuViewData;
 use App\Support\MenuTemplateResolver;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 class MenuController extends Controller
@@ -25,6 +27,7 @@ class MenuController extends Controller
         private UploadService $uploads,
         private MenuTemplateResolver $templates,
         private MenuTemplateRenderService $templateRenderer,
+        private ReservationSlotService $reservationSlots,
     ) {}
 
     public function show(Request $request, string $slug, ?string $section = null, ?string $category = null): Response|RedirectResponse
@@ -178,7 +181,39 @@ class MenuController extends Controller
             'activeCategory' => $activeCategory,
             'sectionMenuUrl' => $sectionMenuUrl,
             'categoryMenuUrl' => $categoryMenuUrl,
-        ], $extraPopular)));
+        ], $extraPopular, ($menuViewLevel === 'home' ? $this->reservationFormPayload($restaurant, $slug) : []))));
+    }
+
+    /** @return array<string, mixed> */
+    private function reservationFormPayload($restaurant, string $slug): array
+    {
+        if (! ($restaurant->enable_table_reservations ?? false)) {
+            return [];
+        }
+
+        $selectedDate = date('Y-m-d');
+        $slotPayload = $this->reservationSlots->slotsForDate((int) $restaurant->id, $selectedDate);
+        $custom = $this->customization->forRestaurant($restaurant);
+        $primaryColor = is_array($custom)
+            ? ($custom['primary_color'] ?? '#f0be78')
+            : ($custom->primary_color ?? '#f0be78');
+        $depositAmount = (float) (DB::table('restaurant_reservation_settings')
+            ->where('restaurant_id', $restaurant->id)
+            ->value('deposit_amount') ?? 0);
+
+        return [
+            'reservationFormData' => [
+                'csrfToken' => csrf_token(),
+                'actionUrl' => url('/restaurant/'.$slug.'/reservation'),
+                'slug' => $slug,
+                'depositAmount' => $depositAmount,
+                'selectedDate' => $selectedDate,
+                'minDate' => date('Y-m-d'),
+                'timeSlots' => $slotPayload['slots'] ?? [],
+                'primaryColor' => $primaryColor,
+                'siteBase' => rtrim(url('/'), '/'),
+            ],
+        ];
     }
 
     /**

@@ -55,20 +55,31 @@ class ReservationController extends Controller
                 'party_size' => 'required|integer|min:1|max:10',
                 'special_occasion' => 'nullable|string|max:50',
                 'notes' => 'nullable|string|max:1000',
+                'return_url' => 'nullable|string|max:500',
             ]);
+
+            $returnUrl = $this->safeReservationReturnUrl($request->input('return_url'), $restaurant->slug);
 
             $phoneDigits = preg_replace('/\D/', '', $data['guest_phone']);
             if (strlen($phoneDigits) < 10 || strlen($phoneDigits) > 15) {
-                return back()->withErrors(['guest_phone' => 'Please enter a valid phone number (10-15 digits).'])->withInput();
+                return $this->reservationFormResponse($returnUrl, $restaurant->slug)
+                    ->withErrors(['guest_phone' => 'Please enter a valid phone number (10-15 digits).'])
+                    ->withInput();
             }
 
             $result = $this->booking->create($restaurant->id, $data);
             if (! $result['success']) {
-                return back()->withErrors(['reservation' => implode(' ', $result['errors'] ?? [])])->withInput();
+                return $this->reservationFormResponse($returnUrl, $restaurant->slug)
+                    ->withErrors(['reservation' => implode(' ', $result['errors'] ?? [])])
+                    ->withInput();
             }
 
             if (! empty($result['checkout_url'])) {
                 return redirect($result['checkout_url']);
+            }
+
+            if ($returnUrl) {
+                return redirect($returnUrl)->with('reservation_success', true);
             }
 
             return back()->with('success', true);
@@ -105,5 +116,27 @@ class ReservationController extends Controller
             'embed' => $request->boolean('embed'),
             'theme' => $request->query('theme', ''),
         ]);
+    }
+
+    private function safeReservationReturnUrl(?string $returnUrl, string $slug): ?string
+    {
+        if ($returnUrl === null || $returnUrl === '') {
+            return null;
+        }
+        $allowedPrefix = url('/restaurant/'.$slug);
+        if (! str_starts_with($returnUrl, $allowedPrefix)) {
+            return null;
+        }
+
+        return $returnUrl;
+    }
+
+    private function reservationFormResponse(?string $returnUrl, string $slug): \Illuminate\Http\RedirectResponse
+    {
+        if ($returnUrl) {
+            return redirect($returnUrl);
+        }
+
+        return back();
     }
 }
