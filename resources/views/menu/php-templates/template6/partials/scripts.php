@@ -55,6 +55,41 @@
             setTimeout(function() { button.classList.remove('scale-95'); }, 200);
         });
     });
+
+    var contactToggle = document.getElementById('t6-contact-toggle');
+    var contactDrawer = document.getElementById('t6-contact-drawer');
+    var contactBackdrop = document.getElementById('t6-contact-backdrop');
+    var contactClose = document.getElementById('t6-contact-close');
+
+    function openContactDrawer() {
+        if (!contactDrawer || !contactBackdrop) return;
+        contactDrawer.classList.remove('hidden');
+        contactDrawer.classList.add('is-open');
+        contactBackdrop.classList.remove('hidden');
+        document.body.classList.add('t6-drawer-open');
+        if (contactToggle) contactToggle.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeContactDrawer() {
+        if (!contactDrawer || !contactBackdrop) return;
+        contactDrawer.classList.add('hidden');
+        contactDrawer.classList.remove('is-open');
+        contactBackdrop.classList.add('hidden');
+        document.body.classList.remove('t6-drawer-open');
+        if (contactToggle) contactToggle.setAttribute('aria-expanded', 'false');
+    }
+
+    if (contactToggle) contactToggle.addEventListener('click', openContactDrawer);
+    if (contactClose) contactClose.addEventListener('click', closeContactDrawer);
+    if (contactBackdrop) contactBackdrop.addEventListener('click', closeContactDrawer);
+    if (contactDrawer) {
+        contactDrawer.addEventListener('click', function(e) { e.stopPropagation(); });
+    }
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && contactDrawer && !contactDrawer.classList.contains('hidden')) {
+            closeContactDrawer();
+        }
+    });
 })();
 </script>
 </body>

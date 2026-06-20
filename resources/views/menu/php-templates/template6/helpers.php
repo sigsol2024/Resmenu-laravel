@@ -79,6 +79,47 @@ function t6_design_on_primary(): string
     return '#452b00';
 }
 
+function t6_google_maps_api_key(): string
+{
+    return 'AIzaSyBFw0Qbyq9zTFTd-tUY6dS6fa4U5iKJ';
+}
+
+function t6_map_embed_url(array $restaurant): ?string
+{
+    $key = t6_google_maps_api_key();
+    $lat = $restaurant['map_latitude'] ?? null;
+    $lng = $restaurant['map_longitude'] ?? null;
+    if ($lat !== null && $lat !== '' && $lng !== null && $lng !== '') {
+        return 'https://www.google.com/maps/embed/v1/place?key='.rawurlencode($key).'&q='.rawurlencode((string) $lat.','.(string) $lng);
+    }
+    $address = trim((string) ($restaurant['address'] ?? ''));
+
+    return $address !== ''
+        ? 'https://www.google.com/maps/embed/v1/place?key='.rawurlencode($key).'&q='.rawurlencode($address)
+        : null;
+}
+
+function t6_directions_url(array $restaurant): ?string
+{
+    $lat = $restaurant['map_latitude'] ?? null;
+    $lng = $restaurant['map_longitude'] ?? null;
+    if ($lat !== null && $lat !== '' && $lng !== null && $lng !== '') {
+        return 'https://www.google.com/maps/dir/?api=1&destination='.rawurlencode((string) $lat.','.(string) $lng);
+    }
+    $address = trim((string) ($restaurant['address'] ?? ''));
+
+    return $address !== ''
+        ? 'https://www.google.com/maps/dir/?api=1&destination='.rawurlencode($address)
+        : null;
+}
+
+function t6_has_contact_info(array $restaurant): bool
+{
+    return trim((string) ($restaurant['phone'] ?? '')) !== ''
+        || trim((string) ($restaurant['email'] ?? '')) !== ''
+        || trim((string) ($restaurant['address'] ?? '')) !== '';
+}
+
 function t6_rating_display(array $restaurant): string
 {
     $rating = number_format((float) ($restaurant['google_rating'] ?? 4.5), 1);

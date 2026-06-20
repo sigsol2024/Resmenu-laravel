@@ -46,7 +46,7 @@
             if (w) w.click();
         }
     }
-    ['t6-header-cart', 't6-dock-cart'].forEach(function(id) {
+    ['t6-header-cart'].forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.addEventListener('click', openCart);
     });
