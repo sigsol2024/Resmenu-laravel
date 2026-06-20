@@ -32,6 +32,9 @@ switch ($menuViewLevel) {
 }
 
 include __DIR__.'/partials/side-dock.php';
+if (($menuViewLevel ?? '') === 'section') {
+    include __DIR__.'/partials/category-menu-drawer.php';
+}
 include __DIR__.'/partials/footer.php';
 include __DIR__.'/partials/cart.php';
 include __DIR__.'/partials/scripts.php';

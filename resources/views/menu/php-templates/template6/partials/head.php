@@ -17,6 +17,12 @@ $t6PageTitle = t6_esc($pageTitle ?? ($restaurant['name'] ?? 'Menu'));
 .lusso-gradient { background: linear-gradient(to bottom, rgba(23, 19, 14, 0) 0%, rgba(23, 19, 14, 0.9) 80%, rgba(23, 19, 14, 1) 100%); }
 .glass-card { background: rgba(51, 33, 29, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(156, 143, 128, 0.1); }
 .lusso-glass { background: rgba(43, 28, 24, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.t6-category-box {
+  background: linear-gradient(135deg, rgba(46, 41, 36, 0.95) 0%, rgba(35, 31, 26, 0.98) 100%);
+}
+.t6-category-box:hover {
+  border-color: rgba(240, 190, 120, 0.25);
+}
 .t6-contact-anchor {
   background: rgba(35, 31, 26, 0.92);
   backdrop-filter: blur(12px);
@@ -30,7 +36,8 @@ $t6PageTitle = t6_esc($pageTitle ?? ($restaurant['name'] ?? 'Menu'));
   from { transform: translateX(100%); }
   to { transform: translateX(0); }
 }
-#t6-contact-drawer.is-open {
+#t6-contact-drawer.is-open,
+#t6-menu-drawer.is-open {
   animation: t6SlideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 body.t6-drawer-open { overflow: hidden; }

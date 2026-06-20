@@ -63,6 +63,7 @@
 
     function openContactDrawer() {
         if (!contactDrawer || !contactBackdrop) return;
+        closeMenuDrawer();
         contactDrawer.classList.remove('hidden');
         contactDrawer.classList.add('is-open');
         contactBackdrop.classList.remove('hidden');
@@ -85,9 +86,42 @@
     if (contactDrawer) {
         contactDrawer.addEventListener('click', function(e) { e.stopPropagation(); });
     }
+
+    var menuToggle = document.getElementById('t6-menu-toggle');
+    var menuDrawer = document.getElementById('t6-menu-drawer');
+    var menuBackdrop = document.getElementById('t6-menu-backdrop');
+    var menuClose = document.getElementById('t6-menu-close');
+
+    function openMenuDrawer() {
+        if (!menuDrawer || !menuBackdrop) return;
+        closeContactDrawer();
+        menuDrawer.classList.remove('hidden');
+        menuDrawer.classList.add('is-open');
+        menuBackdrop.classList.remove('hidden');
+        document.body.classList.add('t6-drawer-open');
+        if (menuToggle) menuToggle.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeMenuDrawer() {
+        if (!menuDrawer || !menuBackdrop) return;
+        menuDrawer.classList.add('hidden');
+        menuDrawer.classList.remove('is-open');
+        menuBackdrop.classList.add('hidden');
+        document.body.classList.remove('t6-drawer-open');
+        if (menuToggle) menuToggle.setAttribute('aria-expanded', 'false');
+    }
+
+    if (menuToggle) menuToggle.addEventListener('click', openMenuDrawer);
+    if (menuClose) menuClose.addEventListener('click', closeMenuDrawer);
+    if (menuBackdrop) menuBackdrop.addEventListener('click', closeMenuDrawer);
+    if (menuDrawer) {
+        menuDrawer.addEventListener('click', function(e) { e.stopPropagation(); });
+    }
+
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && contactDrawer && !contactDrawer.classList.contains('hidden')) {
-            closeContactDrawer();
+        if (e.key === 'Escape') {
+            if (contactDrawer && !contactDrawer.classList.contains('hidden')) closeContactDrawer();
+            if (menuDrawer && !menuDrawer.classList.contains('hidden')) closeMenuDrawer();
         }
     });
 })();

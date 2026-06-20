@@ -2,6 +2,8 @@
 $t6Logo = t6_logo_url($uploadBaseUrl ?? '', $restaurant ?? []);
 $t6MenuViewLevel = $menuViewLevel ?? 'home';
 $t6ResLink = ($t6MenuViewLevel === 'home' && ! empty($supportsReservations)) ? '#reservation' : ($reservationUrl ?? '#');
+$t6SectionCategories = ($t6MenuViewLevel === 'section') ? ($activeSection['categories'] ?? []) : [];
+$t6ShowCategoryMenu = $t6MenuViewLevel === 'section' && ! empty($t6SectionCategories);
 ?>
 <header class="fixed top-0 w-full z-50 bg-background/95 backdrop-blur-md border-b border-outline-variant/10 shadow-sm" id="t6-header">
 <nav class="flex justify-between items-center px-4 md:px-gutter py-4 max-w-container-max mx-auto gap-3">
@@ -20,7 +22,11 @@ $t6ResLink = ($t6MenuViewLevel === 'home' && ! empty($supportsReservations)) ? '
 </div>
 </div>
 <div class="flex items-center gap-3 md:gap-4 shrink-0">
+<?php if ($t6ShowCategoryMenu): ?>
+<button type="button" id="t6-menu-toggle" class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" aria-label="Open category menu" aria-controls="t6-menu-drawer" aria-expanded="false">menu</button>
+<?php else: ?>
 <button type="button" id="t6-search-toggle" class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" aria-label="Search">search</button>
+<?php endif; ?>
 <?php if (! empty($supportsOrdering)): ?>
 <button type="button" id="t6-header-cart" class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors relative" aria-label="Cart">
 shopping_bag
