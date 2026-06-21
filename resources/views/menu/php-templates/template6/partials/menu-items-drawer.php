@@ -29,16 +29,9 @@ Back to categories
 <div class="px-gutter py-4 pb-gutter space-y-1">
 <?php foreach ($drawerItems as $item):
     $anchor = t6_item_anchor($item);
-    $price = t6_price($item['price'] ?? 0);
 ?>
-<a href="#<?php echo t6_esc($anchor); ?>" class="t6-menu-item-jump group flex items-center justify-between py-3 px-3 rounded-lg bg-surface-container-high/50 hover:bg-surface-container-high border border-transparent hover:border-outline-variant/20 transition-all">
-<div class="min-w-0">
-<span class="font-label-lg text-label-lg text-on-surface block group-hover:text-primary transition-colors"><?php echo t6_esc($item['name'] ?? ''); ?></span>
-<?php if (! empty($item['description'])): ?>
-<span class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1"><?php echo t6_esc($item['description']); ?></span>
-<?php endif; ?>
-</div>
-<span class="font-label-md text-label-md text-primary shrink-0 ml-2"><?php echo t6_esc($price); ?></span>
+<a href="#<?php echo t6_esc($anchor); ?>" class="t6-menu-item-jump block py-2.5 px-3 rounded-lg font-label-lg text-label-lg text-on-surface hover:text-primary hover:bg-surface-container-high transition-colors">
+<?php echo t6_esc($item['name'] ?? ''); ?>
 </a>
 <?php endforeach; ?>
 </div>

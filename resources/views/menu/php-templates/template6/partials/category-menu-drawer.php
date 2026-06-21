@@ -30,14 +30,8 @@ All Sections
     $cslug = $cat['slug'] ?? ('cat-'.$i);
     $catUrl = t6_category_url($fullMenuUrl ?? '', $drawerSectionSlug, $cslug);
 ?>
-<a href="<?php echo t6_esc($catUrl); ?>" class="group flex items-center justify-between py-3 px-3 rounded-lg bg-surface-container-high/50 hover:bg-surface-container-high border border-transparent hover:border-outline-variant/20 transition-all">
-<div class="min-w-0">
-<span class="font-label-lg text-label-lg text-on-surface block group-hover:text-primary transition-colors"><?php echo t6_esc($cat['name'] ?? ''); ?></span>
-<?php if (! empty($cat['description'])): ?>
-<span class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1"><?php echo t6_esc($cat['description']); ?></span>
-<?php endif; ?>
-</div>
-<span class="material-symbols-outlined text-primary text-sm opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ml-2">arrow_forward_ios</span>
+<a href="<?php echo t6_esc($catUrl); ?>" class="group block py-2.5 px-3 rounded-lg font-label-lg text-label-lg text-on-surface hover:text-primary hover:bg-surface-container-high transition-colors">
+<?php echo t6_esc($cat['name'] ?? ''); ?>
 </a>
 <?php endforeach; ?>
 </div>

@@ -41,6 +41,16 @@
         });
     }
 
+    document.querySelectorAll('.t6-page-search').forEach(function(pageSearch) {
+        pageSearch.addEventListener('input', function() {
+            var q = this.value.toLowerCase().trim();
+            document.querySelectorAll('[data-t6-searchable]').forEach(function(el) {
+                var text = (el.getAttribute('data-t6-search-text') || el.textContent || '').toLowerCase();
+                el.style.display = (!q || text.indexOf(q) !== -1) ? '' : 'none';
+            });
+        });
+    });
+
     document.querySelectorAll('a.t6-scroll-anchor[href^="#"]').forEach(function(link) {
         link.addEventListener('click', function(e) {
             var id = this.getAttribute('href');

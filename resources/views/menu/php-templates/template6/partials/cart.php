@@ -38,18 +38,6 @@
     }
     bindCartButtons();
     window.t6BindCartButtons = bindCartButtons;
-    function openCart() {
-        if (window.RESMENU_CART_MODAL && typeof window.RESMENU_CART_MODAL.open === 'function') {
-            window.RESMENU_CART_MODAL.open();
-        } else {
-            var w = document.getElementById('resmenu-cart-widget-btn');
-            if (w) w.click();
-        }
-    }
-    ['t6-header-cart'].forEach(function(id) {
-        var el = document.getElementById(id);
-        if (el) el.addEventListener('click', openCart);
-    });
 })();
 </script>
 <?php endif; ?>

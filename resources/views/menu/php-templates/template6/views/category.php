@@ -68,11 +68,11 @@ if (! empty($category['description'])) {
 <p class="font-body-sm text-body-sm text-on-surface-variant text-justify leading-relaxed"><?php echo t6_esc($item['description']); ?></p>
 <?php endif; ?>
 <?php if (! empty($supportsOrdering)): ?>
-<div class="mt-4 pt-3 border-t border-outline-variant/10">
+<div class="mt-3 pt-2 border-t border-outline-variant/10">
 <?php if ($canOrder): ?>
-<button type="button" class="add-to-bag-btn inline-flex items-center justify-center gap-1.5 font-label-md text-label-md uppercase text-on-primary bg-primary px-3 py-1.5 rounded-md hover:opacity-90 active:scale-[0.98] transition-all" data-item-id="<?php echo (int) ($item['id'] ?? 0); ?>" data-item-name="<?php echo t6_esc($item['name'] ?? ''); ?>" data-item-price="<?php echo t6_esc((string) ($item['price'] ?? '')); ?>" data-item-image="<?php echo t6_esc($item['image'] ?? ''); ?>">
-<span class="material-symbols-outlined text-base">add_shopping_cart</span>
-Add to bag
+<button type="button" class="add-to-bag-btn inline-flex items-center gap-1 text-[10px] leading-tight font-semibold uppercase tracking-wide text-on-primary bg-primary px-2 py-0.5 rounded hover:opacity-90 active:scale-[0.98] transition-all" data-item-id="<?php echo (int) ($item['id'] ?? 0); ?>" data-item-name="<?php echo t6_esc($item['name'] ?? ''); ?>" data-item-price="<?php echo t6_esc((string) ($item['price'] ?? '')); ?>" data-item-image="<?php echo t6_esc($item['image'] ?? ''); ?>">
+<span class="material-symbols-outlined text-[13px]">add_shopping_cart</span>
+Add
 </button>
 <?php else: ?>
 <p class="font-label-md text-label-md uppercase text-on-surface-variant/70 text-center">Currently unavailable</p>
