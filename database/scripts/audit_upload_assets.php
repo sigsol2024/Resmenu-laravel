@@ -10,7 +10,11 @@
 
 $root = dirname(__DIR__, 2);
 $dump = $argv[1] ?? $root.'/../backup/resmenu_server_original/database/sigsolmenu_resmenu.sql';
-$uploadRoot = $root.'/public/uploads';
+require $root.'/vendor/autoload.php';
+$app = require $root.'/bootstrap/app.php';
+$app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+
+$uploadRoot = rtrim((string) config('resmenu.upload_root'), '/\\');
 
 if (! is_file($dump)) {
     fwrite(STDERR, "Dump not found: {$dump}\n");

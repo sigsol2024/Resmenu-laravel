@@ -1,13 +1,31 @@
 <?php
 
+$uploadUrl = rtrim(env('UPLOAD_URL', env('APP_URL', 'http://localhost').'/uploads'), '/');
+
 $uploadRoot = env('UPLOAD_ROOT');
+if (is_string($uploadRoot)) {
+    $uploadRoot = trim($uploadRoot);
+}
+if ($uploadRoot === '') {
+    $uploadRoot = null;
+}
 if ($uploadRoot && ! str_starts_with($uploadRoot, '/') && ! preg_match('#^[A-Za-z]:\\\\#', $uploadRoot)) {
     $uploadRoot = base_path($uploadRoot);
 }
 
+if (! $uploadRoot) {
+    // Keep disk path in sync with UPLOAD_URL (production uses /storage/uploads).
+    // Applies to all manager uploads: logos, heroes, sections, categories, menu items, QR previews, etc.
+    if (preg_match('#/storage/uploads/?$#', $uploadUrl) || str_contains($uploadUrl, '/storage/uploads/')) {
+        $uploadRoot = public_path('storage/uploads');
+    } else {
+        $uploadRoot = public_path('uploads');
+    }
+}
+
 return [
-    'upload_root' => $uploadRoot ?: public_path('uploads'),
-    'upload_url' => rtrim(env('UPLOAD_URL', env('APP_URL', 'http://localhost').'/uploads'), '/'),
+    'upload_root' => $uploadRoot,
+    'upload_url' => $uploadUrl,
     'canonical_upload_url' => env('CANONICAL_UPLOAD_URL') ? rtrim(env('CANONICAL_UPLOAD_URL'), '/') : null,
 
     'password_min_length' => (int) env('PASSWORD_MIN_LENGTH', 8),

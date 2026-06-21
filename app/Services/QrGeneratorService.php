@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\DB;
 
 class QrGeneratorService
 {
+    public function __construct(private UploadService $uploads) {}
+
     public function menuUrl(Restaurant $restaurant, ?string $sectionSlug = null): string
     {
         $base = url('/qr/'.$restaurant->slug);
@@ -145,20 +147,14 @@ class QrGeneratorService
 
         $writer = new PngWriter();
         $result = $writer->write($qrCode);
-        $dir = public_path('uploads/qr-templates');
-        if (! is_dir($dir)) {
-            @mkdir($dir, 0755, true);
-        }
 
         foreach (['png', 'svg'] as $ext) {
-            $old = $dir.'/'.$templateId.'.'.$ext;
-            if (is_file($old)) {
-                @unlink($old);
-            }
+            $oldName = $templateId.'.'.$ext;
+            $this->uploads->delete('qr-templates', $oldName);
         }
 
         $filename = $templateId.'.png';
-        if (@file_put_contents($dir.'/'.$filename, $result->getString()) === false) {
+        if ($this->uploads->storeRawContents('qr-templates', $filename, $result->getString()) === null) {
             return null;
         }
 
@@ -195,28 +191,24 @@ class QrGeneratorService
                 continue;
             }
 
-            foreach ([
-                public_path('uploads/qr-templates/'.$filename),
-                public_path('legacy/uploads/qr-templates/'.$filename),
-            ] as $path) {
-                if (! is_file($path) || ! is_readable($path)) {
+            $path = $this->uploads->resolveExistingPath('qr-templates', $filename);
+            if ($path === null || ! is_readable($path)) {
+                continue;
+            }
+
+            $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+            $body = (string) file_get_contents($path);
+
+            if ($ext === 'svg') {
+                $body = $this->sanitizeSvg($body);
+                if ($body === '' || ! str_contains($body, '<svg')) {
                     continue;
                 }
 
-                $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-                $body = (string) file_get_contents($path);
-
-                if ($ext === 'svg') {
-                    $body = $this->sanitizeSvg($body);
-                    if ($body === '' || ! str_contains($body, '<svg')) {
-                        continue;
-                    }
-
-                    return ['body' => $body, 'content_type' => 'image/svg+xml'];
-                }
-
-                return ['body' => $body, 'content_type' => 'image/png'];
+                return ['body' => $body, 'content_type' => 'image/svg+xml'];
             }
+
+            return ['body' => $body, 'content_type' => 'image/png'];
         }
 
         return null;

@@ -50,7 +50,7 @@ class MenuTemplateRenderService
     private function normalizeUploadUrls(string $html, string $uploadBaseUrl): string
     {
         return (string) preg_replace(
-            '#https?://[^"\'\s]*/uploads/(?=(?:menu-items|heroes|logos|categories|sections|site)/)#',
+            '#https?://[^"\'\s]*/(?:storage/)?uploads/(?=(?:menu-items|heroes|logos|categories|sections|site|qr-templates|template-previews)/)#',
             $uploadBaseUrl.'/',
             $html
         );
