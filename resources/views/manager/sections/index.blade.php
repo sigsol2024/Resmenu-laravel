@@ -35,7 +35,8 @@
             @endif
             <form method="POST"
                   action="{{ $isEditing ? route('manager.sections.update', $editSection) : route('manager.sections.store') }}"
-                  id="sectionForm">
+                  id="sectionForm"
+                  enctype="multipart/form-data">
                 @csrf
                 @if($isEditing)
                     @method('PUT')
@@ -44,6 +45,22 @@
                 <div class="form-group">
                     <label class="form-label" for="name">Section Name *</label>
                     <input type="text" id="name" name="name" class="form-input" required value="{{ old('name', $editSection->name ?? '') }}">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="image">Section Image</label>
+                    <input type="file" id="image" name="image" class="form-input" accept="image/*">
+                    <p style="margin: 6px 0 0; font-size: 0.8rem; color: #6b7280;">Optional hero/cover image for this section on your menu (JPG, PNG, WebP, max 5MB).</p>
+                    @if($isEditing && $editSection->image)
+                        <div class="section-image-preview" style="margin-top: 12px;">
+                            <p style="margin-bottom: 6px; color: #6b7280; font-size: 0.875rem;">Current image:</p>
+                            <img src="{{ $uploadUrl }}/sections/{{ rawurlencode($editSection->image) }}" alt="Section image" class="section-image-thumb">
+                            <label style="display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 0.875rem; color: #374151; cursor: pointer;">
+                                <input type="checkbox" name="remove_image" value="1" @checked(old('remove_image'))>
+                                Remove current image
+                            </label>
+                        </div>
+                    @endif
                 </div>
 
                 <div class="form-group">
@@ -106,6 +123,7 @@
         <table class="table">
             <thead>
                 <tr>
+                    <th>Image</th>
                     <th>Name</th>
                     <th>Slug</th>
                     <th>Categories</th>
@@ -117,6 +135,13 @@
             <tbody>
                 @forelse($sections as $section)
                     <tr>
+                        <td>
+                            @if($section->image)
+                                <img src="{{ $uploadUrl }}/sections/{{ rawurlencode($section->image) }}" alt="" class="section-list-thumb">
+                            @else
+                                <span class="section-no-image">No image</span>
+                            @endif
+                        </td>
                         <td><strong>{{ $section->name }}</strong></td>
                         <td><code style="font-size: 0.8rem; background: #f3f4f6; padding: 2px 6px; border-radius: 4px;">{{ $section->slug }}</code></td>
                         <td>
@@ -146,7 +171,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" style="text-align:center;padding:40px;color:#6b7280;">
+                        <td colspan="7" style="text-align:center;padding:40px;color:#6b7280;">
                             No sections yet.
                             <button type="button" class="btn btn-primary btn-small" style="margin-top:12px;" onclick="openSectionModal()">Create your first section</button>
                         </td>
@@ -176,6 +201,13 @@
                     </div>
                 </summary>
                 <div class="sec-body">
+                    <div class="sec-kv"><span class="sec-k">Image</span><span class="sec-v">
+                        @if($section->image)
+                            <img src="{{ $uploadUrl }}/sections/{{ rawurlencode($section->image) }}" alt="" class="section-list-thumb">
+                        @else
+                            <span class="section-no-image">No image</span>
+                        @endif
+                    </span></div>
                     <div class="sec-kv"><span class="sec-k">Slug</span><span class="sec-v">{{ $section->slug }}</span></div>
                     <div class="sec-actions">
                         <a class="btn btn-secondary" href="{{ $editLink($section->id) }}">Edit</a>

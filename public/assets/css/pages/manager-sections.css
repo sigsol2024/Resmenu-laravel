@@ -463,3 +463,26 @@
         overflow: visible;
     }
 }
+
+.section-image-thumb {
+    max-width: 280px;
+    max-height: 160px;
+    border-radius: 8px;
+    border: 2px solid #e5e7eb;
+    object-fit: cover;
+    display: block;
+}
+
+.section-list-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid #e5e7eb;
+    display: block;
+}
+
+.section-no-image {
+    font-size: 0.75rem;
+    color: #9ca3af;
+}

@@ -35,6 +35,7 @@ class SectionController extends Controller
         return view('manager.sections.index', [
             'sections' => $sections,
             'restaurant' => Restaurant::findOrFail($restaurantId),
+            'uploadUrl' => rtrim(config('resmenu.canonical_upload_url') ?: config('resmenu.upload_url'), '/'),
             'editSection' => $editSection,
             'openCreateModal' => $request->query('open') === 'create',
         ]);
@@ -49,6 +50,15 @@ class SectionController extends Controller
     {
         $restaurantId = (int) $request->attributes->get('restaurant_id');
         $data = $this->validated($request, $restaurantId);
+
+        if ($request->hasFile('image')) {
+            $upload = $this->uploads->storeImage($request->file('image'), 'sections');
+            if (! $upload['success']) {
+                return back()->withErrors(['image' => $upload['message']])->withInput();
+            }
+            $data['image'] = $upload['filename'];
+        }
+
         Section::create($data);
 
         return redirect()->route('manager.sections.index')->with('success', 'Section created.');
@@ -64,7 +74,21 @@ class SectionController extends Controller
     public function update(Request $request, Section $section)
     {
         $this->authorizeRestaurant($request, $section);
-        $section->update($this->validated($request, (int) $section->restaurant_id, $section->id));
+        $data = $this->validated($request, (int) $section->restaurant_id, $section->id);
+
+        if ($request->hasFile('image')) {
+            $upload = $this->uploads->storeImage($request->file('image'), 'sections');
+            if (! $upload['success']) {
+                return back()->withErrors(['image' => $upload['message']])->withInput();
+            }
+            $this->uploads->delete('sections', $section->image);
+            $data['image'] = $upload['filename'];
+        } elseif ($request->boolean('remove_image') && $section->image) {
+            $this->uploads->delete('sections', $section->image);
+            $data['image'] = null;
+        }
+
+        $section->update($data);
 
         return redirect()->route('manager.sections.index')->with('success', 'Section updated.');
     }
@@ -72,6 +96,7 @@ class SectionController extends Controller
     public function destroy(Request $request, Section $section)
     {
         $this->authorizeRestaurant($request, $section);
+        $this->uploads->delete('sections', $section->image);
         $section->delete();
 
         return redirect()->route('manager.sections.index')->with('success', 'Section deleted.');
@@ -83,6 +108,8 @@ class SectionController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'display_order' => ['nullable', 'integer'],
             'is_active' => ['nullable', 'boolean'],
+            'image' => ['nullable', 'image', 'max:5120'],
+            'remove_image' => ['nullable', 'boolean'],
         ]);
 
         $slug = Str::slug($data['name']);
