@@ -181,7 +181,7 @@ class MenuController extends Controller
             'activeCategory' => $activeCategory,
             'sectionMenuUrl' => $sectionMenuUrl,
             'categoryMenuUrl' => $categoryMenuUrl,
-        ], $extraPopular, ($menuViewLevel === 'home' ? $this->reservationFormPayload($restaurant, $slug) : []))));
+        ], $extraPopular, (in_array($menuViewLevel, ['home', 'section'], true) ? $this->reservationFormPayload($restaurant, $slug) : []))));
     }
 
     /** @return array<string, mixed> */

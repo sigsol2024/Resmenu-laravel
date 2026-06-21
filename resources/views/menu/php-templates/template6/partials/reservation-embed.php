@@ -1,5 +1,9 @@
 <?php if (! empty($supportsReservations)): ?>
 <?php
+$heroUrl = null;
+if (! empty($activeSection['image'])) {
+    $heroUrl = t6_section_image($uploadBaseUrl ?? '', $activeSection);
+}
 if (empty($heroUrl)) {
     $heroUrl = $restaurant['hero_image_url'] ?? null;
     if (empty($heroUrl) && ! empty($sections[0]['image'])) {

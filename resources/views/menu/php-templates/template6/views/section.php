@@ -89,6 +89,7 @@ $sectionHeroUrl = ! empty($section) ? t6_section_image($uploadBaseUrl ?? '', $se
 </div>
 </section>
 <?php endif; ?>
+<?php include __DIR__.'/../partials/reservation-embed.php'; ?>
 </main>
 <script>
 (function(){

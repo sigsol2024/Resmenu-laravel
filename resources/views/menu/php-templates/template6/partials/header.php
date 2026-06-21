@@ -1,7 +1,9 @@
 <?php
 $t6Logo = t6_logo_url($uploadBaseUrl ?? '', $restaurant ?? []);
 $t6MenuViewLevel = $menuViewLevel ?? 'home';
-$t6ResLink = ($t6MenuViewLevel === 'home' && ! empty($supportsReservations)) ? '#reservation' : ($reservationUrl ?? '#');
+$t6ResLink = ! empty($supportsReservations) && in_array($t6MenuViewLevel, ['home', 'section'], true)
+    ? '#reservation'
+    : ($reservationUrl ?? '#');
 $t6SectionCategories = ($t6MenuViewLevel === 'section') ? ($activeSection['categories'] ?? []) : [];
 $t6ShowCategoryMenu = $t6MenuViewLevel === 'section' && ! empty($t6SectionCategories);
 ?>

@@ -23,6 +23,12 @@ $t6PageTitle = t6_esc($pageTitle ?? ($restaurant['name'] ?? 'Menu'));
 .t6-category-box:hover {
   border-color: rgba(240, 190, 120, 0.25);
 }
+.t6-menu-item-card {
+  background: linear-gradient(180deg, rgba(46, 41, 36, 0.98) 0%, rgba(35, 31, 26, 1) 100%);
+}
+.t6-menu-item-card:hover {
+  border-color: rgba(240, 190, 120, 0.25);
+}
 .t6-dock-btn {
   background: rgba(35, 31, 26, 0.92);
   backdrop-filter: blur(12px);
