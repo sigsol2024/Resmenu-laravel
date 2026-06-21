@@ -3,14 +3,36 @@ $category = $activeCategory ?? null;
 $items = $category['menu_items'] ?? [];
 $itemCount = count($items);
 $catName = $category['name'] ?? 'Menu';
+$catHeroUrl = ! empty($category) ? t6_category_image($uploadBaseUrl ?? '', $category) : null;
+$catSubtitle = (int) $itemCount.' Selection'.($itemCount === 1 ? '' : 's');
+if (! empty($category['description'])) {
+    $catSubtitle .= ' • '.$category['description'];
+}
 ?>
-<main class="t6-main-offset pb-12 md:pb-xl px-4 md:px-gutter max-w-container-max mx-auto min-h-screen">
-<section class="flex flex-col md:flex-row md:items-end justify-between gap-md mb-lg md:mb-xl">
-<div>
-<h1 class="font-display-lg text-headline-lg md:text-headline-xl serif mb-2 text-primary"><?php echo t6_esc($catName); ?></h1>
-<p class="font-body-md text-body-md text-on-surface-variant/80"><?php echo (int) $itemCount; ?> Selection<?php echo $itemCount === 1 ? '' : 's'; ?><?php if (! empty($category['description'])): ?> &bull; <?php echo t6_esc($category['description']); ?><?php endif; ?></p>
+<?php if ($catHeroUrl): ?>
+<section class="relative w-full h-[38vh] md:h-[42vh] min-h-[220px] max-h-[440px] overflow-hidden">
+<img class="absolute inset-0 w-full h-full object-cover" alt="<?php echo t6_esc($catName); ?>" src="<?php echo t6_esc($catHeroUrl); ?>" loading="eager">
+<div class="absolute inset-0 lusso-gradient"></div>
+<div class="absolute inset-0 bg-surface/30"></div>
+<div class="absolute bottom-0 left-0 right-0 px-4 md:px-gutter pb-8 md:pb-10 pt-24 max-w-container-max mx-auto">
+<h1 class="font-display-lg text-headline-md md:text-headline-lg text-primary serif mb-2"><?php echo t6_esc($catName); ?></h1>
+<p class="font-body-md md:text-body-lg text-on-surface-variant max-w-xl"><?php echo t6_esc($catSubtitle); ?></p>
 </div>
-<div class="max-w-xl w-full md:w-auto relative group">
+</section>
+<?php endif; ?>
+
+<main class="<?php echo $catHeroUrl ? 't6-main-after-hero' : 't6-main-offset'; ?> pb-12 md:pb-xl px-4 md:px-gutter max-w-container-max mx-auto min-h-screen">
+<?php if (! $catHeroUrl): ?>
+<section class="mb-md md:mb-lg">
+<div class="max-w-2xl">
+<h1 class="font-display-lg text-headline-md md:text-headline-lg mb-2 text-primary serif"><?php echo t6_esc($catName); ?></h1>
+<p class="font-body-md text-body-md text-on-surface-variant/80"><?php echo t6_esc($catSubtitle); ?></p>
+</div>
+</section>
+<?php endif; ?>
+
+<section class="mb-lg md:mb-xl">
+<div class="max-w-xl w-full md:ml-auto relative group">
 <span class="absolute left-4 top-1/2 -translate-y-1/2 text-primary/60 group-focus-within:text-primary transition-colors">
 <span class="material-symbols-outlined">search</span>
 </span>
