@@ -34,7 +34,7 @@
             const formGroup = input.closest('.form-group');
             if (formGroup) {
                 const existingImg = formGroup.querySelector('img[src*="uploads"]');
-                if (existingImg) {
+                if (existingImg && ! existingImg.closest('.sec-img-current-box, .sec-img-cell')) {
                     // Mark existing image as preview
                     existingImg.classList.add('image-preview-live');
                     existingImg.style.marginTop = '10px';
@@ -58,7 +58,11 @@
                         let maxWidth = '300px';
                         let maxHeight = '200px';
                         
-                        if (input.name === 'logo') {
+                        if (input.closest('#sectionForm')) {
+                            previewClass = 'sec-img-file-preview';
+                            maxWidth = '160px';
+                            maxHeight = '96px';
+                        } else if (input.name === 'logo') {
                             previewClass = 'logo-preview';
                             maxWidth = '200px';
                             maxHeight = '200px';

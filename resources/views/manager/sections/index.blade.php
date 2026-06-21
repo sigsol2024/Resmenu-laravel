@@ -52,10 +52,12 @@
                     <input type="file" id="image" name="image" class="form-input" accept="image/*">
                     <p style="margin: 6px 0 0; font-size: 0.8rem; color: #6b7280;">Optional hero/cover image for this section on your menu (JPG, PNG, WebP, max 5MB).</p>
                     @if($isEditing && $editSection->image)
-                        <div class="section-image-preview" style="margin-top: 12px;">
-                            <p style="margin-bottom: 6px; color: #6b7280; font-size: 0.875rem;">Current image:</p>
-                            <img src="{{ $uploadUrl }}/sections/{{ rawurlencode($editSection->image) }}" alt="Section image" class="section-image-thumb">
-                            <label style="display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 0.875rem; color: #374151; cursor: pointer;">
+                        <div class="sec-img-current">
+                            <p class="sec-img-current-label">Current image:</p>
+                            <div class="sec-img-current-box">
+                                <img src="{{ $uploadUrl }}/sections/{{ rawurlencode($editSection->image) }}" alt="Section image">
+                            </div>
+                            <label class="sec-img-remove">
                                 <input type="checkbox" name="remove_image" value="1" @checked(old('remove_image'))>
                                 Remove current image
                             </label>
@@ -135,9 +137,9 @@
             <tbody>
                 @forelse($sections as $section)
                     <tr>
-                        <td>
+                        <td class="sec-img-cell">
                             @if($section->image)
-                                <img src="{{ $uploadUrl }}/sections/{{ rawurlencode($section->image) }}" alt="" class="section-list-thumb">
+                                <img src="{{ $uploadUrl }}/sections/{{ rawurlencode($section->image) }}" alt="" width="48" height="48">
                             @else
                                 <span class="section-no-image">No image</span>
                             @endif
@@ -203,7 +205,9 @@
                 <div class="sec-body">
                     <div class="sec-kv"><span class="sec-k">Image</span><span class="sec-v">
                         @if($section->image)
-                            <img src="{{ $uploadUrl }}/sections/{{ rawurlencode($section->image) }}" alt="" class="section-list-thumb">
+                            <span class="sec-img-cell sec-img-cell--inline">
+                                <img src="{{ $uploadUrl }}/sections/{{ rawurlencode($section->image) }}" alt="" width="48" height="48">
+                            </span>
                         @else
                             <span class="section-no-image">No image</span>
                         @endif

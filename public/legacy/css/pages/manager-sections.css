@@ -207,6 +207,7 @@
 
 .modal-body {
     padding: 24px;
+    overflow-x: hidden;
 }
 
 .modal-footer {
@@ -471,6 +472,78 @@
     border: 2px solid #e5e7eb;
     object-fit: cover;
     display: block;
+}
+
+.sec-img-current {
+    margin-top: 12px;
+}
+
+.sec-img-current-label {
+    margin: 0 0 6px;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.sec-img-current-box {
+    width: 160px;
+    height: 96px;
+    max-width: 100%;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+    background: #f3f4f6;
+}
+
+.sec-img-current-box img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+}
+
+#sectionForm .sec-img-file-preview {
+    width: 160px !important;
+    height: 96px !important;
+    max-width: 160px !important;
+    max-height: 96px !important;
+    object-fit: cover !important;
+}
+
+.sec-img-remove {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    font-size: 0.875rem;
+    color: #374151;
+    cursor: pointer;
+}
+
+.sec-img-cell {
+    width: 64px;
+    max-width: 64px;
+    vertical-align: middle;
+}
+
+.sec-img-cell img,
+.sec-img-cell--inline img {
+    width: 48px !important;
+    height: 48px !important;
+    max-width: 48px !important;
+    max-height: 48px !important;
+    object-fit: cover !important;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    display: block;
+}
+
+.sec-img-cell--inline {
+    display: inline-block;
+    width: auto;
+    max-width: none;
+    vertical-align: middle;
 }
 
 .section-list-thumb {
