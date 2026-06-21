@@ -49,7 +49,7 @@ if (! empty($category['description'])) {
     $itemAvailable = ! isset($item['is_available']) || $item['is_available'];
     $canOrder = ! empty($supportsOrdering) && $itemAvailable;
 ?>
-<article class="t6-menu-item-card t6-category-box group flex flex-col rounded-xl border border-outline-variant/10 premium-shadow overflow-hidden bg-surface-container-high" data-t6-searchable data-t6-search-text="<?php echo t6_esc(($item['name'] ?? '').' '.($item['description'] ?? '')); ?>">
+<article id="<?php echo t6_esc(t6_item_anchor($item)); ?>" class="t6-menu-item-card t6-category-box group flex flex-col rounded-xl border border-outline-variant/10 premium-shadow overflow-hidden bg-surface-container-high scroll-mt-28" data-t6-searchable data-t6-search-text="<?php echo t6_esc(($item['name'] ?? '').' '.($item['description'] ?? '')); ?>">
 <?php if ($img): ?>
 <div class="relative h-32 sm:h-36 md:h-40 overflow-hidden shrink-0 border-b border-outline-variant/10 bg-surface-container">
 <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="<?php echo t6_esc($item['name'] ?? ''); ?>" src="<?php echo t6_esc($img); ?>" loading="lazy">
@@ -70,8 +70,8 @@ if (! empty($category['description'])) {
 <?php if (! empty($supportsOrdering)): ?>
 <div class="mt-4 pt-3 border-t border-outline-variant/10">
 <?php if ($canOrder): ?>
-<button type="button" class="add-to-bag-btn w-full inline-flex items-center justify-center gap-2 font-label-md text-label-md uppercase text-on-primary bg-primary px-4 py-2.5 rounded-lg hover:opacity-90 active:scale-[0.98] transition-all" data-item-id="<?php echo (int) ($item['id'] ?? 0); ?>" data-item-name="<?php echo t6_esc($item['name'] ?? ''); ?>" data-item-price="<?php echo t6_esc((string) ($item['price'] ?? '')); ?>" data-item-image="<?php echo t6_esc($item['image'] ?? ''); ?>">
-<span class="material-symbols-outlined text-lg">add_shopping_cart</span>
+<button type="button" class="add-to-bag-btn inline-flex items-center justify-center gap-1.5 font-label-md text-label-md uppercase text-on-primary bg-primary px-3 py-1.5 rounded-md hover:opacity-90 active:scale-[0.98] transition-all" data-item-id="<?php echo (int) ($item['id'] ?? 0); ?>" data-item-name="<?php echo t6_esc($item['name'] ?? ''); ?>" data-item-price="<?php echo t6_esc((string) ($item['price'] ?? '')); ?>" data-item-image="<?php echo t6_esc($item['image'] ?? ''); ?>">
+<span class="material-symbols-outlined text-base">add_shopping_cart</span>
 Add to bag
 </button>
 <?php else: ?>

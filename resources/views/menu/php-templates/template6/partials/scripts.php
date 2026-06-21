@@ -127,6 +127,33 @@
         menuDrawer.addEventListener('click', function(e) { e.stopPropagation(); });
     }
 
+    function scrollToMenuTarget(hash) {
+        if (!hash || hash.charAt(0) !== '#') return;
+        var target = document.querySelector(hash);
+        if (!target) return;
+        var headerEl = document.getElementById('t6-header');
+        var offset = headerEl ? headerEl.offsetHeight + 12 : 96;
+        var top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({ top: top, behavior: 'smooth' });
+        if (history.replaceState) {
+            history.replaceState(null, '', hash);
+        }
+    }
+
+    document.querySelectorAll('.t6-menu-item-jump').forEach(function(link) {
+        link.addEventListener('click', function(e) {
+            var href = this.getAttribute('href');
+            if (!href || href.charAt(0) !== '#') return;
+            e.preventDefault();
+            closeMenuDrawer();
+            scrollToMenuTarget(href);
+        });
+    });
+
+    if (window.location.hash && document.querySelector(window.location.hash)) {
+        setTimeout(function() { scrollToMenuTarget(window.location.hash); }, 100);
+    }
+
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             if (contactDrawer && !contactDrawer.classList.contains('hidden')) closeContactDrawer();

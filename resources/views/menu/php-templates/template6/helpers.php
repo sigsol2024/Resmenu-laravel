@@ -51,6 +51,15 @@ function t6_item_image(string $uploadBaseUrl, array $item): ?string
     return rtrim($uploadBaseUrl, '/').'/menu-items/'.ltrim((string) $item['image'], '/');
 }
 
+function t6_item_anchor(array $item): string
+{
+    if (! empty($item['slug'])) {
+        return 'item-'.preg_replace('/[^a-z0-9-]/', '', strtolower((string) $item['slug']));
+    }
+
+    return 'item-'.(int) ($item['id'] ?? 0);
+}
+
 function t6_logo_url(string $uploadBaseUrl, array $restaurant): ?string
 {
     if (! empty($GLOBALS['t6_is_template_preview'] ?? false)) {
