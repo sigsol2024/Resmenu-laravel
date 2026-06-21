@@ -260,4 +260,4 @@ tailwind.config = {
 };
 </script>
 </head>
-<body class="bg-background text-on-background font-body-md text-body-md antialiased selection:bg-primary-container selection:text-on-primary-container<?php echo ! empty($supportsOrdering) ? ' t6-has-cart' : ''; ?>">
+<body class="t6-template bg-background text-on-background font-body-md text-body-md antialiased selection:bg-primary-container selection:text-on-primary-container<?php echo ! empty($supportsOrdering) ? ' t6-has-cart' : ''; ?>">

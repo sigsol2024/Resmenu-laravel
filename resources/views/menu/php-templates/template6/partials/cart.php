@@ -3,6 +3,7 @@
     $t6Primary = t6_design_primary();
 ?>
 <link rel="stylesheet" href="<?php echo t6_esc($t6SiteBase); ?>/legacy/assets/css/cart-modal.css">
+<link rel="stylesheet" href="<?php echo t6_esc($t6SiteBase); ?>/assets/css/cart-modal-template6.css">
 <div id="resmenu-cart-widget" class="fixed bottom-6 left-6 z-50 hidden"></div>
 <script src="<?php echo t6_esc($t6SiteBase); ?>/assets/js/cart.js"></script>
 <script src="<?php echo t6_esc($t6SiteBase); ?>/assets/js/cart-widget.js"></script>

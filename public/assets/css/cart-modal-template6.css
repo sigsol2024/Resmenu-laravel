@@ -1,0 +1,119 @@
+/**
+ * Template 6 (Lusso) cart modal — dark theme overrides only.
+ * Loaded after cart-modal.css on template 6 pages.
+ */
+
+body.t6-template #resmenu-cart-overlay {
+  background: rgba(23, 19, 14, 0.72) !important;
+  backdrop-filter: blur(4px);
+}
+
+body.t6-template #resmenu-cart-modal {
+  background: linear-gradient(180deg, #39342e 0%, #2e2924 45%, #231f1a 100%) !important;
+  border: 1px solid rgba(79, 69, 57, 0.65) !important;
+  border-radius: 0.5rem !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(240, 190, 120, 0.08) !important;
+}
+
+body.t6-template #resmenu-cart-modal-content .flex.items-center.justify-between.p-6.border-b {
+  border-bottom-color: #4f4539 !important;
+  background: rgba(35, 31, 26, 0.55) !important;
+}
+
+body.t6-template #resmenu-cart-modal-content h3 {
+  font-family: 'Bodoni Moda', serif !important;
+  color: #f0be78 !important;
+  letter-spacing: 0.02em !important;
+}
+
+body.t6-template #resmenu-cart-modal-close {
+  color: #d3c4b4 !important;
+}
+
+body.t6-template #resmenu-cart-modal-close:hover {
+  color: #f0be78 !important;
+}
+
+body.t6-template #resmenu-cart-modal-content .flex-1.overflow-y-auto {
+  background: transparent !important;
+}
+
+body.t6-template #resmenu-cart-modal-content [data-item-id] {
+  border-bottom-color: #4f4539 !important;
+}
+
+body.t6-template #resmenu-cart-modal-content [data-item-id] > div:first-child {
+  background-color: #1f1b16 !important;
+  border: 1px solid rgba(79, 69, 57, 0.5) !important;
+}
+
+body.t6-template #resmenu-cart-modal-content [data-item-id] p {
+  color: #eae1d9 !important;
+}
+
+body.t6-template #resmenu-cart-modal-content .cart-qty-minus,
+body.t6-template #resmenu-cart-modal-content .cart-qty-plus {
+  color: #9c8f80 !important;
+}
+
+body.t6-template #resmenu-cart-modal-content .cart-qty-minus:hover,
+body.t6-template #resmenu-cart-modal-content .cart-qty-plus:hover {
+  color: #f0be78 !important;
+}
+
+body.t6-template #resmenu-cart-modal-content [data-item-id] span.text-xs.font-medium {
+  color: #eae1d9 !important;
+}
+
+body.t6-template #resmenu-cart-modal-content p.text-gray-600 {
+  color: #d3c4b4 !important;
+}
+
+body.t6-template #resmenu-cart-modal-content .border-t.border-gray-200.bg-white {
+  border-top-color: #4f4539 !important;
+  background: rgba(35, 31, 26, 0.85) !important;
+}
+
+body.t6-template #resmenu-cart-modal-content .flex.flex-col.gap-2.mb-4 span:first-child {
+  color: #d3c4b4 !important;
+}
+
+body.t6-template #resmenu-cart-modal-content .flex.flex-col.gap-2.mb-4 span.font-medium {
+  color: #eae1d9 !important;
+}
+
+body.t6-template #resmenu-cart-modal-content .pt-4.border-t.border-dashed {
+  border-top-color: #4f4539 !important;
+}
+
+body.t6-template #resmenu-cart-modal-content .pt-4.border-t.border-dashed span.text-base {
+  color: #eae1d9 !important;
+}
+
+body.t6-template #resmenu-cart-continue {
+  background: transparent !important;
+  border-color: #4f4539 !important;
+  color: #d3c4b4 !important;
+  border-radius: 0.125rem !important;
+}
+
+body.t6-template #resmenu-cart-continue:hover {
+  background: rgba(240, 190, 120, 0.08) !important;
+  border-color: #f0be78 !important;
+  color: #f0be78 !important;
+}
+
+body.t6-template #resmenu-cart-checkout {
+  color: #452b00 !important;
+  border-radius: 0.125rem !important;
+}
+
+body.t6-template #resmenu-cart-modal-content .text-xs.text-gray-500 {
+  color: #9c8f80 !important;
+}
+
+@media (max-width: 768px) {
+  body.t6-template #resmenu-cart-modal-content .border-t.border-gray-200.bg-white {
+    background: rgba(35, 31, 26, 0.92) !important;
+  }
+}
