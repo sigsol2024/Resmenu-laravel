@@ -47,6 +47,14 @@ $t6PageTitle = t6_esc($pageTitle ?? ($restaurant['name'] ?? 'Menu'));
   background: linear-gradient(to top, rgba(23, 19, 14, 0.98) 0%, rgba(23, 19, 14, 0.9) 30%, rgba(23, 19, 14, 0.55) 55%, rgba(23, 19, 14, 0.15) 75%, transparent 100%);
   pointer-events: none;
 }
+.t6-section-card-overlay {
+  background: rgba(23, 19, 14, 0.68);
+  pointer-events: none;
+  transition: background 0.4s ease;
+}
+.group:hover .t6-section-card-overlay {
+  background: rgba(23, 19, 14, 0.58);
+}
 .category-card:hover .t6-category-img-overlay {
   background: linear-gradient(to top, rgba(23, 19, 14, 0.99) 0%, rgba(23, 19, 14, 0.92) 35%, rgba(23, 19, 14, 0.6) 60%, rgba(23, 19, 14, 0.2) 80%, transparent 100%);
 }

@@ -70,9 +70,9 @@ if ($t6SectionCount === 1) {
 <?php else: ?>
 <div class="w-full h-full bg-surface-container-high"></div>
 <?php endif; ?>
-<div class="absolute inset-0 bg-background/40 group-hover:bg-background/20 transition-colors"></div>
-<div class="absolute inset-0 flex items-center justify-center p-3 md:p-4 text-center">
-<span class="font-display-lg text-[clamp(0.875rem,3vw,1.5rem)] text-on-background tracking-widest uppercase leading-tight"><?php echo t6_esc($section['name'] ?? ''); ?></span>
+<div class="absolute inset-0 t6-section-card-overlay"></div>
+<div class="absolute inset-0 flex items-center justify-center p-3 md:p-4 text-center z-10">
+<span class="font-display-lg text-[clamp(0.875rem,3vw,1.5rem)] text-on-background tracking-widest uppercase leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]"><?php echo t6_esc($section['name'] ?? ''); ?></span>
 </div>
 </a>
 <?php endforeach; ?>
