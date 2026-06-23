@@ -46,7 +46,7 @@ class MenuController extends Controller
 
         $access = $this->subscriptions->checkAccess((int) $restaurant->id);
         if (! $access['valid']) {
-            return view('public.subscription-blocked', [
+            return response()->view('public.subscription-blocked', [
                 'restaurant' => $restaurant,
                 'access' => $access,
                 'uploads' => $this->uploads,
@@ -259,7 +259,7 @@ class MenuController extends Controller
     private function renderMenu(int $templateId, array $viewData): Response
     {
         if ($this->templates->hasBladeView($templateId)) {
-            return view($this->templates->bladeViewFor($templateId), $viewData);
+            return response()->view($this->templates->bladeViewFor($templateId), $viewData);
         }
 
         return $this->templateRenderer->render($templateId, $viewData);
