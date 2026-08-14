@@ -42,6 +42,32 @@ tailwind.config = { darkMode: "class", theme: { extend: {
 .food-pattern::before { content:''; position:fixed; inset:0; background-image:url('{{ $template4BaseUrl }}/bg_black.png'); background-repeat:repeat; background-size:280px; opacity:.1; pointer-events:none; z-index:0; }
 #menuPanel { right:-288px; transition:right .3s ease; }
 #menuPanel.open { right:0; }
+.hero-title {
+    font-weight: 900;
+    letter-spacing: -0.025em;
+    line-height: 1.08;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    hyphens: auto;
+    font-size: clamp(1.85rem, 9vw, 6rem);
+}
+.hero-title.is-long { font-size: clamp(1.55rem, 7vw, 4.25rem); }
+.hero-title.is-xl { font-size: clamp(1.35rem, 5.5vw, 3.25rem); }
+.hero-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 0.65rem 1.35rem;
+    border-radius: 0.75rem;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+@media (min-width: 640px) {
+    .hero-cta { width: auto; font-size: 0.875rem; padding: 0.7rem 1.6rem; }
+}
 </style>
 </head>
 <body class="font-display bg-background-light text-charcoal">
@@ -72,15 +98,27 @@ tailwind.config = { darkMode: "class", theme: { extend: {
     </nav>
 </div>
 
-<section class="relative min-h-[85vh] flex items-center justify-center bg-charcoal overflow-hidden pt-20">
+@php
+    $heroName = (string) ($restaurant['name'] ?? '');
+    $heroNameLen = mb_strlen($heroName);
+    $heroTitleClass = 'hero-title';
+    if ($heroNameLen > 28) {
+        $heroTitleClass .= ' is-xl';
+    } elseif ($heroNameLen > 16) {
+        $heroTitleClass .= ' is-long';
+    }
+@endphp
+<section class="relative min-h-[85vh] flex items-end sm:items-center justify-center bg-charcoal overflow-hidden pt-28 pb-24 sm:pb-20">
     <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('{{ $heroBgImage }}')"></div>
     <div class="absolute inset-0 bg-gradient-to-t from-charcoal via-black/70 to-transparent opacity-90"></div>
-    <div class="relative z-10 text-center max-w-4xl px-6">
-        <h2 class="text-white text-5xl md:text-7xl font-serif font-black mb-6">{{ $restaurant['name'] }}</h2>
+    <div class="relative z-10 text-center max-w-4xl w-full px-5 sm:px-6">
+        <h2 class="text-white font-serif mb-4 sm:mb-6 {{ $heroTitleClass }}">{{ $heroName }}</h2>
         @if(!empty($restaurant['description']))
-            <p class="text-lg text-white/90 mb-8">{{ $restaurant['description'] }}</p>
+            <p class="text-sm sm:text-lg md:text-xl mb-6 sm:mb-8 text-white/90 font-light tracking-wide max-w-2xl mx-auto leading-relaxed">{{ $restaurant['description'] }}</p>
         @endif
-        <a href="#menu" class="inline-block bg-primary text-white font-bold px-10 py-4 rounded-xl">VIEW MENU</a>
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2.5 sm:gap-3 max-w-xs sm:max-w-none mx-auto">
+            <a href="#menu" class="hero-cta bg-primary text-white hover:bg-charcoal transform hover:scale-105">VIEW MENU</a>
+        </div>
     </div>
 </section>
 
