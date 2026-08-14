@@ -498,7 +498,10 @@
 
                         <div class="form-group">
                             <label class="form-label" for="display_order">Display Order</label>
-                            <input type="number" id="display_order" name="display_order" class="form-input" value="{{ $editMenuItem->display_order ?? 0 }}">
+                            <input type="number" id="display_order" name="display_order" class="form-input" min="0"
+                                   value="{{ $editMenuItem->display_order ?? ($nextMenuItemOrderByCategory[(int) ($editMenuItem->category_id ?? 0)] ?? $nextMenuItemOrder) }}"
+                                   @unless($editMenuItem) data-auto-order="1" @endunless>
+                            <p style="margin-top: 6px; font-size: 12px; color: var(--muted);">Lower numbers appear first within the category. New items are given the next free slot automatically.</p>
                         </div>
 
                         <div class="form-group">
@@ -640,7 +643,10 @@
 
                         <div class="form-group">
                             <label class="form-label" for="cat_display_order">Display Order</label>
-                            <input type="number" id="cat_display_order" name="display_order" class="form-input" value="{{ $editCategory->display_order ?? 0 }}">
+                            <input type="number" id="cat_display_order" name="display_order" class="form-input" min="0"
+                                   value="{{ $editCategory->display_order ?? ($nextCategoryOrderBySection[$primarySectionId] ?? $nextCategoryOrder) }}"
+                                   @unless($editCategory) data-auto-order="1" @endunless>
+                            <p style="margin-top: 6px; font-size: 12px; color: var(--muted);">Lower numbers appear first within the section. New categories are given the next free slot automatically.</p>
                         </div>
 
                         <div class="form-group">
@@ -869,6 +875,25 @@
             updateAdminSecondarySectionsUI();
             document.getElementById('cat_section_id')?.addEventListener('change', updateAdminSecondarySectionsUI);
         });
+
+        // Suggest the next free display order when the parent section/category changes
+        function bindAutoDisplayOrder(orderInputId, parentSelectId, nextOrders, fallbackOrder) {
+            const orderInput = document.getElementById(orderInputId);
+            const parentSelect = document.getElementById(parentSelectId);
+            if (!orderInput || !parentSelect || !orderInput.hasAttribute('data-auto-order')) return;
+
+            orderInput.addEventListener('input', function() {
+                orderInput.removeAttribute('data-auto-order');
+            });
+
+            parentSelect.addEventListener('change', function() {
+                if (!orderInput.hasAttribute('data-auto-order')) return;
+                orderInput.value = nextOrders[parentSelect.value] ?? fallbackOrder;
+            });
+        }
+
+        bindAutoDisplayOrder('display_order', 'category_id', @json((object) $nextMenuItemOrderByCategory), @json($nextMenuItemOrder));
+        bindAutoDisplayOrder('cat_display_order', 'cat_section_id', @json((object) $nextCategoryOrderBySection), @json($nextCategoryOrder));
 
         // Open modal if editing category
         @if ($editCategory)

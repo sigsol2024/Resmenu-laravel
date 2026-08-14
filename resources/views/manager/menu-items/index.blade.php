@@ -10,6 +10,9 @@
     $indexParams = array_filter(['category_id' => $selectedCategoryId]);
     $editLink = fn (int $id) => route('manager.menu-items.index', array_merge($indexParams, ['edit' => $id]));
     $availableChecked = filter_var(old('is_available', $editItem?->is_available ?? true), FILTER_VALIDATE_BOOLEAN);
+    $formCategoryId = (int) old('category_id', $editItem->category_id ?? $selectedCategoryId ?? 0);
+    $suggestedOrder = $nextDisplayOrderByCategory[$formCategoryId] ?? $nextDisplayOrder;
+    $orderValue = old('display_order', $editItem->display_order ?? $suggestedOrder);
 @endphp
 
 <div class="page-header">
@@ -104,7 +107,7 @@
                     <select id="category_id" name="category_id" class="form-select" required>
                         <option value="">Select Category</option>
                         @foreach($categories as $cat)
-                            <option value="{{ $cat->id }}" @selected((string) old('category_id', $editItem->category_id ?? '') === (string) $cat->id)>{{ $cat->name }}</option>
+                            <option value="{{ $cat->id }}" @selected($formCategoryId === (int) $cat->id)>{{ $cat->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -137,7 +140,10 @@
 
                 <div class="form-group">
                     <label class="form-label" for="display_order">Display Order</label>
-                    <input type="number" id="display_order" name="display_order" class="form-input" value="{{ old('display_order', $editItem->display_order ?? 0) }}">
+                    <input type="number" id="display_order" name="display_order" class="form-input" min="0"
+                           value="{{ $orderValue }}"
+                           @unless($isEditing) data-auto-order="1" @endunless>
+                    <p style="margin-top: 6px; font-size: 12px; color: #6b7280;">Lower numbers appear first within the category. New items are given the next free slot automatically.</p>
                 </div>
 
                 <div class="form-group">
@@ -349,6 +355,28 @@
         document.getElementById('deleteModal').style.display = 'none';
         document.body.style.overflow = '';
     }
+
+    (function () {
+        const orderInput = document.getElementById('display_order');
+        const categorySelect = document.getElementById('category_id');
+        if (!orderInput || !categorySelect || !orderInput.hasAttribute('data-auto-order')) {
+            return;
+        }
+
+        const nextOrders = @json((object) $nextDisplayOrderByCategory);
+        const fallbackOrder = @json($nextDisplayOrder);
+
+        orderInput.addEventListener('input', function () {
+            orderInput.removeAttribute('data-auto-order');
+        });
+
+        categorySelect.addEventListener('change', function () {
+            if (!orderInput.hasAttribute('data-auto-order')) {
+                return;
+            }
+            orderInput.value = nextOrders[categorySelect.value] ?? fallbackOrder;
+        });
+    })();
 
     @if($showModal)
     document.addEventListener('DOMContentLoaded', function() {

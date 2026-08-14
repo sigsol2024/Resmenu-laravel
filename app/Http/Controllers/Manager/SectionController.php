@@ -5,13 +5,17 @@ namespace App\Http\Controllers\Manager;
 use App\Http\Controllers\Controller;
 use App\Models\Restaurant;
 use App\Models\Section;
+use App\Services\DisplayOrderService;
 use App\Services\UploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class SectionController extends Controller
 {
-    public function __construct(private UploadService $uploads) {}
+    public function __construct(
+        private UploadService $uploads,
+        private DisplayOrderService $displayOrders,
+    ) {}
 
     public function index(Request $request)
     {
@@ -38,6 +42,7 @@ class SectionController extends Controller
             'uploadUrl' => rtrim(config('resmenu.canonical_upload_url') ?: config('resmenu.upload_url'), '/'),
             'editSection' => $editSection,
             'openCreateModal' => $request->query('open') === 'create',
+            'nextDisplayOrder' => $this->displayOrders->nextSectionOrder($restaurantId),
         ]);
     }
 
@@ -74,7 +79,7 @@ class SectionController extends Controller
     public function update(Request $request, Section $section)
     {
         $this->authorizeRestaurant($request, $section);
-        $data = $this->validated($request, (int) $section->restaurant_id, $section->id);
+        $data = $this->validated($request, (int) $section->restaurant_id, $section);
 
         if ($request->hasFile('image')) {
             $upload = $this->uploads->storeImage($request->file('image'), 'sections');
@@ -102,7 +107,7 @@ class SectionController extends Controller
         return redirect()->route('manager.sections.index')->with('success', 'Section deleted.');
     }
 
-    private function validated(Request $request, int $restaurantId, ?int $ignoreId = null): array
+    private function validated(Request $request, int $restaurantId, ?Section $existing = null): array
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -112,17 +117,25 @@ class SectionController extends Controller
             'remove_image' => ['nullable', 'boolean'],
         ]);
 
+        $ignoreId = $existing?->id;
         $slug = Str::slug($data['name']);
         if (Section::query()->where('restaurant_id', $restaurantId)->where('slug', $slug)
             ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))->exists()) {
             $slug .= '-'.Str::random(4);
         }
 
+        $order = $request->input('display_order');
+        if ($order === null || $order === '') {
+            $order = $existing
+                ? (int) $existing->display_order
+                : $this->displayOrders->nextSectionOrder($restaurantId);
+        }
+
         return [
             'restaurant_id' => $restaurantId,
             'name' => $data['name'],
             'slug' => $slug,
-            'display_order' => (int) ($data['display_order'] ?? 0),
+            'display_order' => (int) $order,
             'is_active' => $request->boolean('is_active', true),
         ];
     }

@@ -11,6 +11,8 @@
     $activeChecked = old('is_active') !== null ? (bool) old('is_active') : ($editCategory->is_active ?? true);
     $primarySectionId = (int) old('section_id', $editCategory->section_id ?? 0);
     $selectedSecondary = array_map('intval', old('secondary_section_ids', $secondarySectionIds ?? []));
+    $suggestedOrder = $nextDisplayOrderBySection[$primarySectionId] ?? $nextDisplayOrder;
+    $orderValue = old('display_order', $editCategory->display_order ?? $suggestedOrder);
 @endphp
 
 <div class="page-header">
@@ -119,7 +121,10 @@
 
                 <div class="form-group">
                     <label class="form-label" for="display_order">Display Order</label>
-                    <input type="number" id="display_order" name="display_order" class="form-input" value="{{ old('display_order', $editCategory->display_order ?? 0) }}">
+                    <input type="number" id="display_order" name="display_order" class="form-input" min="0"
+                           value="{{ $orderValue }}"
+                           @unless($isEditing) data-auto-order="1" @endunless>
+                    <p style="margin-top: 6px; font-size: 12px; color: #6b7280;">Lower numbers appear first within the section. New categories are given the next free slot automatically.</p>
                 </div>
 
                 <div class="form-group">
@@ -339,6 +344,28 @@
         document.getElementById('deleteModal').style.display = 'none';
         document.body.style.overflow = '';
     }
+
+    (function () {
+        const orderInput = document.getElementById('display_order');
+        const sectionSelect = document.getElementById('section_id');
+        if (!orderInput || !sectionSelect || !orderInput.hasAttribute('data-auto-order')) {
+            return;
+        }
+
+        const nextOrders = @json((object) $nextDisplayOrderBySection);
+        const fallbackOrder = @json($nextDisplayOrder);
+
+        orderInput.addEventListener('input', function () {
+            orderInput.removeAttribute('data-auto-order');
+        });
+
+        sectionSelect.addEventListener('change', function () {
+            if (!orderInput.hasAttribute('data-auto-order')) {
+                return;
+            }
+            orderInput.value = nextOrders[sectionSelect.value] ?? fallbackOrder;
+        });
+    })();
 
     @if($showModal)
     document.addEventListener('DOMContentLoaded', function() {

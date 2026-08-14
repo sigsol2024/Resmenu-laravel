@@ -67,8 +67,8 @@
 
                 <div class="form-group">
                     <label class="form-label" for="display_order">Display Order</label>
-                    <input type="number" id="display_order" name="display_order" class="form-input" value="{{ old('display_order', $editSection->display_order ?? 0) }}" min="0">
-                    <p style="margin: 6px 0 0; font-size: 0.8rem; color: #6b7280;">Lower numbers appear first on your menu.</p>
+                    <input type="number" id="display_order" name="display_order" class="form-input" value="{{ old('display_order', $editSection->display_order ?? $nextDisplayOrder) }}" min="0">
+                    <p style="margin: 6px 0 0; font-size: 0.8rem; color: #6b7280;">Lower numbers appear first on your menu. New sections are given the next free slot automatically.</p>
                 </div>
 
                 <div class="form-group">

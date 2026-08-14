@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\MenuItem;
 use App\Models\Restaurant;
 use App\Support\TenantScope;
+use App\Services\DisplayOrderService;
 use App\Services\PlanVisibilityService;
 use App\Services\SubscriptionService;
 use App\Services\UploadService;
@@ -19,6 +20,7 @@ class MenuItemController extends Controller
         private UploadService $uploads,
         private SubscriptionService $subscriptions,
         private PlanVisibilityService $planVisibility,
+        private DisplayOrderService $displayOrders,
     ) {}
 
     public function index(Request $request)
@@ -60,6 +62,8 @@ class MenuItemController extends Controller
             'uploadUrl' => rtrim(config('resmenu.canonical_upload_url') ?: config('resmenu.upload_url'), '/'),
             'editItem' => $editItem,
             'openCreateModal' => $request->query('open') === 'create',
+            'nextDisplayOrder' => $this->displayOrders->nextMenuItemOrder($restaurantId, $categoryId),
+            'nextDisplayOrderByCategory' => $this->displayOrders->nextMenuItemOrderPerCategory($restaurantId),
             'planVisibility' => $this->planVisibility->resolve($restaurantId),
             'subscription' => $this->subscriptions->getRestaurantSubscription($restaurantId),
         ]);
@@ -109,7 +113,7 @@ class MenuItemController extends Controller
     {
         $this->authorizeRestaurant($request, $menuItem);
         $restaurantId = (int) $request->attributes->get('restaurant_id');
-        $data = $this->validated($request, $restaurantId, $menuItem->id);
+        $data = $this->validated($request, $restaurantId, $menuItem);
 
         if ($request->hasFile('image')) {
             $upload = $this->uploads->storeImage($request->file('image'), 'menu-items');
@@ -152,8 +156,10 @@ class MenuItemController extends Controller
         ), fn ($value) => $value !== null && $value !== '');
     }
 
-    private function validated(Request $request, int $restaurantId, ?int $ignoreId = null): array
+    private function validated(Request $request, int $restaurantId, ?MenuItem $existing = null): array
     {
+        $ignoreId = $existing?->id;
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'category_id' => ['required', 'integer'],
@@ -176,6 +182,13 @@ class MenuItemController extends Controller
 
         TenantScope::assertCategoryBelongsToRestaurant((int) $data['category_id'], $restaurantId);
 
+        $order = $request->input('display_order');
+        if ($order === null || $order === '') {
+            $order = $existing
+                ? (int) $existing->display_order
+                : $this->displayOrders->nextMenuItemOrder($restaurantId, (int) $data['category_id']);
+        }
+
         return [
             'restaurant_id' => $restaurantId,
             'category_id' => (int) $data['category_id'],
@@ -183,7 +196,7 @@ class MenuItemController extends Controller
             'slug' => $slug,
             'description' => $data['description'] ?? null,
             'price' => $data['price'],
-            'display_order' => (int) ($data['display_order'] ?? 0),
+            'display_order' => (int) $order,
             'is_available' => $request->boolean('is_available'),
         ];
     }

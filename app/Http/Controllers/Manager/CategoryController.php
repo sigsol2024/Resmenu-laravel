@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Restaurant;
 use App\Models\Section;
 use App\Services\CategorySecondarySectionService;
+use App\Services\DisplayOrderService;
 use App\Services\PlanVisibilityService;
 use App\Services\SubscriptionService;
 use App\Support\TenantScope;
@@ -21,6 +22,7 @@ class CategoryController extends Controller
         private SubscriptionService $subscriptions,
         private CategorySecondarySectionService $secondarySections,
         private PlanVisibilityService $planVisibility,
+        private DisplayOrderService $displayOrders,
     ) {}
 
     public function index(Request $request)
@@ -61,6 +63,8 @@ class CategoryController extends Controller
             'editCategory' => $editCategory,
             'secondarySectionIds' => $secondarySectionIds,
             'openCreateModal' => $request->query('open') === 'create',
+            'nextDisplayOrder' => $this->displayOrders->nextCategoryOrder($restaurantId),
+            'nextDisplayOrderBySection' => $this->displayOrders->nextCategoryOrderPerSection($restaurantId),
             'planVisibility' => $this->planVisibility->resolve($restaurantId),
             'subscription' => $this->subscriptions->getRestaurantSubscription($restaurantId),
         ]);
@@ -110,7 +114,7 @@ class CategoryController extends Controller
     {
         $this->authorizeRestaurant($request, $category);
         $restaurantId = (int) $request->attributes->get('restaurant_id');
-        $data = $this->validated($request, $restaurantId, $category->id);
+        $data = $this->validated($request, $restaurantId, $category);
 
         if ($request->hasFile('image')) {
             $upload = $this->uploads->storeImage($request->file('image'), 'categories');
@@ -152,8 +156,10 @@ class CategoryController extends Controller
         );
     }
 
-    private function validated(Request $request, int $restaurantId, ?int $ignoreId = null): array
+    private function validated(Request $request, int $restaurantId, ?Category $existing = null): array
     {
+        $ignoreId = $existing?->id;
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'section_id' => ['required', 'integer'],
@@ -179,13 +185,20 @@ class CategoryController extends Controller
             $restaurantId,
         );
 
+        $order = $request->input('display_order');
+        if ($order === null || $order === '') {
+            $order = $existing
+                ? (int) $existing->display_order
+                : $this->displayOrders->nextCategoryOrder($restaurantId, (int) $data['section_id']);
+        }
+
         return [
             'restaurant_id' => $restaurantId,
             'section_id' => (int) $data['section_id'],
             'name' => $data['name'],
             'slug' => $slug,
             'description' => $data['description'] ?? null,
-            'display_order' => (int) ($data['display_order'] ?? 0),
+            'display_order' => (int) $order,
             'is_active' => $request->boolean('is_active', true),
         ];
     }

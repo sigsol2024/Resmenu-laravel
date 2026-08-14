@@ -10,6 +10,7 @@ use App\Models\Section;
 use App\Models\Subscription;
 use App\Services\CategorySecondarySectionService;
 use App\Services\CustomizationService;
+use App\Services\DisplayOrderService;
 use App\Services\PlanVisibilityService;
 use App\Services\UploadService;
 use Illuminate\Http\Request;
@@ -24,6 +25,7 @@ class RestaurantHubController extends Controller
         private CustomizationService $customization,
         private CategorySecondarySectionService $secondarySections,
         private PlanVisibilityService $planVisibility,
+        private DisplayOrderService $displayOrders,
     ) {}
 
     public function show(Request $request, Restaurant $restaurant)
@@ -62,6 +64,10 @@ class RestaurantHubController extends Controller
             'customization' => $this->customization->forRestaurant($restaurant),
             'activeTab' => $tab,
             'headerMenuItems' => json_decode($restaurant->header_menu_items ?? '[]', true) ?: [],
+            'nextCategoryOrder' => $this->displayOrders->nextCategoryOrder((int) $restaurant->id),
+            'nextCategoryOrderBySection' => $this->displayOrders->nextCategoryOrderPerSection((int) $restaurant->id),
+            'nextMenuItemOrder' => $this->displayOrders->nextMenuItemOrder((int) $restaurant->id),
+            'nextMenuItemOrderByCategory' => $this->displayOrders->nextMenuItemOrderPerCategory((int) $restaurant->id),
             'menuTemplates' => $menuTemplates,
             'showBackToDashboard' => true,
         ]);
@@ -150,12 +156,19 @@ class RestaurantHubController extends Controller
             }
         }
 
+        $order = $request->input('display_order');
+        if ($order === null || $order === '') {
+            $order = $category->exists
+                ? (int) $category->display_order
+                : $this->displayOrders->nextCategoryOrder((int) $restaurant->id, (int) $data['section_id']);
+        }
+
         $category->fill([
             'section_id' => $data['section_id'],
             'name' => $data['name'],
             'slug' => $slug,
             'description' => $data['description'] ?? null,
-            'display_order' => (int) ($data['display_order'] ?? 0),
+            'display_order' => (int) $order,
             'is_active' => $request->boolean('is_active', true),
         ]);
         $category->save();
@@ -209,13 +222,20 @@ class RestaurantHubController extends Controller
             }
         }
 
+        $order = $request->input('display_order');
+        if ($order === null || $order === '') {
+            $order = $item->exists
+                ? (int) $item->display_order
+                : $this->displayOrders->nextMenuItemOrder((int) $restaurant->id, (int) $data['category_id']);
+        }
+
         $item->fill([
             'category_id' => $data['category_id'],
             'name' => $data['name'],
             'slug' => Str::slug($data['name']),
             'description' => $data['description'] ?? null,
             'price' => $data['price'],
-            'display_order' => (int) ($data['display_order'] ?? 0),
+            'display_order' => (int) $order,
             'is_available' => $request->boolean('is_available'),
         ]);
         $item->save();
