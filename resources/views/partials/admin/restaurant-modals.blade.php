@@ -21,8 +21,16 @@
         <div class="filter-group" style="margin-top:12px"><label>Address</label><textarea name="address" rows="2" class="form-input" style="width:100%">{{ old('address', $modalRestaurant->address ?? '') }}</textarea></div>
         <div class="filter-group" style="margin-top:12px"><label>Template ID</label><input type="number" name="template_id" min="1" class="form-input" value="{{ old('template_id', $modalRestaurant->template_id ?? 4) }}" style="width:100%"></div>
         @if(!$isEdit)
+          @php
+            $defaultPlanId = old('plan_id', optional($plans->firstWhere('slug', 'professional') ?? $plans->first())->id);
+          @endphp
           <div class="filter-group" style="margin-top:12px"><label>Plan</label>
-            <select name="plan_id" class="form-input" style="width:100%"><option value="">—</option>@foreach($plans as $p)<option value="{{ $p->id }}">{{ $p->name }}</option>@endforeach</select>
+            <select name="plan_id" class="form-input" style="width:100%">
+              @foreach($plans as $p)
+                <option value="{{ $p->id }}" @selected((string) $defaultPlanId === (string) $p->id)>{{ $p->name }}</option>
+              @endforeach
+            </select>
+            <p style="margin-top:6px;font-size:0.8rem;color:#6b7280;">A 7-day trial starts automatically on this plan.</p>
           </div>
         @endif
         <label style="display:flex;align-items:center;gap:8px;margin-top:12px"><input type="checkbox" name="is_active" value="1" @checked(old('is_active', $editRestaurant->is_active ?? true))> Active</label>

@@ -81,14 +81,17 @@
         </div>
 
         @if(!$restaurant->exists)
+            @php
+                $defaultPlanId = old('plan_id', optional($plans->firstWhere('slug', 'professional') ?? $plans->first())->id);
+            @endphp
             <div class="form-group">
                 <label class="form-label" for="plan_id">Subscription Plan</label>
                 <select id="plan_id" name="plan_id" class="form-select">
-                    <option value="">—</option>
                     @foreach($plans as $p)
-                        <option value="{{ $p->id }}" @selected(old('plan_id') == $p->id)>{{ $p->name }}</option>
+                        <option value="{{ $p->id }}" @selected((string) $defaultPlanId === (string) $p->id)>{{ $p->name }}</option>
                     @endforeach
                 </select>
+                <p style="margin-top:6px;font-size:0.85rem;color:#6b7280;">A {{ \App\Services\SubscriptionService::TRIAL_DAYS }}-day trial starts automatically on this plan.</p>
             </div>
         @endif
 

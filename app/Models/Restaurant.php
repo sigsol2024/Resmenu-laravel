@@ -42,4 +42,9 @@ class Restaurant extends Model
     {
         return $this->hasMany(MenuItem::class);
     }
+
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
 }

@@ -48,6 +48,44 @@
   @endif
 </form>
 
+@if($restaurantsWithoutSubscription->isNotEmpty())
+  <div class="admin-list-card" style="margin-bottom:20px;">
+    <div class="table-card">
+      <h3 style="margin:0 0 12px;font-size:1rem;">Restaurants with no subscription</h3>
+      <p style="margin:0 0 16px;color:#6b7280;font-size:0.875rem;">These restaurants never received a trial. Assign one so they appear in the list below and can use billing.</p>
+      <table class="subscriptions-table">
+        <thead>
+          <tr><th>Restaurant</th><th>Assign trial</th></tr>
+        </thead>
+        <tbody>
+        @foreach($restaurantsWithoutSubscription as $restaurant)
+          <tr>
+            <td>
+              <div class="restaurant-info">
+                <span class="restaurant-name">{{ $restaurant->name }}</span>
+                <span class="restaurant-slug">{{ $restaurant->slug }}</span>
+              </div>
+            </td>
+            <td>
+              <form method="post" action="{{ route('admin.subscriptions.store') }}" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                @csrf
+                <input type="hidden" name="restaurant_id" value="{{ $restaurant->id }}">
+                <select name="plan_id" class="form-input" style="min-width:160px;">
+                  @foreach($plans as $plan)
+                    <option value="{{ $plan->id }}" @selected($plan->slug === 'professional')>{{ $plan->name }}</option>
+                  @endforeach
+                </select>
+                <button type="submit" class="btn-filter">Start 7-day trial</button>
+              </form>
+            </td>
+          </tr>
+        @endforeach
+        </tbody>
+      </table>
+    </div>
+  </div>
+@endif
+
 <div class="admin-list-card">
   <div class="table-card">
     @if($subscriptions->isEmpty())

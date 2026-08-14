@@ -184,7 +184,7 @@ class MenuItemController extends Controller
             'description' => $data['description'] ?? null,
             'price' => $data['price'],
             'display_order' => (int) ($data['display_order'] ?? 0),
-            'is_available' => $request->boolean('is_available', true),
+            'is_available' => $request->boolean('is_available'),
         ];
     }
 

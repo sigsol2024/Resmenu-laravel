@@ -503,7 +503,8 @@
 
                         <div class="form-group">
                             <div style="display: flex; align-items: center; gap: 10px;">
-                                <input type="checkbox" id="is_available" name="is_available" style="width: 20px; height: 20px;" {{ (data_get($editMenuItem, 'is_available', 1)) ? 'checked' : '' }}>
+                                <input type="hidden" name="is_available" value="0">
+                                <input type="checkbox" id="is_available" name="is_available" value="1" style="width: 20px; height: 20px;" {{ filter_var(data_get($editMenuItem, 'is_available', 1), FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
                                 <label class="form-label" for="is_available" style="margin: 0;">Available</label>
                             </div>
                         </div>

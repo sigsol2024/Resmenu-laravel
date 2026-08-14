@@ -9,7 +9,7 @@
     $showModal = $isEditing || $openCreateModal || $errors->any();
     $indexParams = array_filter(['category_id' => $selectedCategoryId]);
     $editLink = fn (int $id) => route('manager.menu-items.index', array_merge($indexParams, ['edit' => $id]));
-    $availableChecked = old('is_available') !== null ? (bool) old('is_available') : ($editItem->is_available ?? true);
+    $availableChecked = filter_var(old('is_available', $editItem?->is_available ?? true), FILTER_VALIDATE_BOOLEAN);
 @endphp
 
 <div class="page-header">
@@ -142,6 +142,7 @@
 
                 <div class="form-group">
                     <div style="display: flex; align-items: center; gap: 10px;">
+                        <input type="hidden" name="is_available" value="0">
                         <input type="checkbox" id="is_available" name="is_available" value="1" style="width: 20px; height: 20px;" @checked($availableChecked)>
                         <label class="form-label" for="is_available" style="margin: 0;">Available</label>
                     </div>

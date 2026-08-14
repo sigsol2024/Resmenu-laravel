@@ -5,11 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
+use App\Models\Restaurant;
 use App\Services\ActivityLogService;
 use App\Services\PlanVisibilityService;
 use App\Services\SubscriptionService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class SubscriptionController extends Controller
 {
@@ -39,6 +39,11 @@ class SubscriptionController extends Controller
       ->pluck('count', 'status')
       ->all();
 
+    $restaurantsWithoutSubscription = Restaurant::query()
+      ->whereDoesntHave('subscriptions')
+      ->orderBy('name')
+      ->get(['id', 'name', 'slug']);
+
     return view('admin.subscriptions.index', [
       'subscriptions' => $query->paginate(25)->withQueryString(),
       'plans' => SubscriptionPlan::orderBy('display_order')->get(),
@@ -46,7 +51,48 @@ class SubscriptionController extends Controller
       'planFilter' => $planFilter,
       'search' => $search,
       'statusCounts' => $statusCounts,
+      'restaurantsWithoutSubscription' => $restaurantsWithoutSubscription,
     ]);
+  }
+
+  public function store(Request $request, SubscriptionService $service, ActivityLogService $activityLog)
+  {
+    $data = $request->validate([
+      'restaurant_id' => 'required|integer|exists:restaurants,id',
+      'plan_id' => 'nullable|integer|exists:subscription_plans,id',
+    ]);
+
+    $restaurantId = (int) $data['restaurant_id'];
+    if (Subscription::query()->where('restaurant_id', $restaurantId)->exists()) {
+      return back()->with('error', 'This restaurant already has a subscription.');
+    }
+
+    $subscription = $service->startTrialForRestaurant(
+      $restaurantId,
+      ! empty($data['plan_id']) ? (int) $data['plan_id'] : null,
+    );
+
+    if (! $subscription) {
+      return back()->with('error', 'Could not start a trial. Add an active subscription plan first.');
+    }
+
+    $activityLog->record(
+      'admin',
+      (int) $request->user('admin')?->id,
+      'subscription.trial_assigned',
+      $restaurantId,
+      'subscription',
+      (int) $subscription->id,
+      null,
+      ['plan_id' => (int) $subscription->plan_id, 'status' => $subscription->status],
+      $request->ip(),
+      $request->userAgent(),
+    );
+
+    $planVisibility = app(PlanVisibilityService::class);
+    $planVisibility->forgetCache($restaurantId);
+
+    return back()->with('success', '7-day trial assigned.');
   }
 
   public function update(Request $request, Subscription $subscription, SubscriptionService $service, ActivityLogService $activityLog, PlanVisibilityService $planVisibility)

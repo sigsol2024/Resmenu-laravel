@@ -8,6 +8,7 @@ use App\Models\Restaurant;
 use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
 use App\Services\ActivityLogService;
+use App\Services\SubscriptionService;
 use App\Services\UploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -56,14 +57,14 @@ class RestaurantController extends Controller
     ]);
   }
 
-  public function store(Request $request, UploadService $uploads, ActivityLogService $activityLog)
+  public function store(Request $request, UploadService $uploads, ActivityLogService $activityLog, SubscriptionService $subscriptions)
   {
     $data = $this->validated($request);
     $slug = $this->uniqueSlug($data['slug'] ?: Str::slug($data['name']));
     $adminId = (int) $request->user('admin')?->id;
     $restaurantId = 0;
 
-    DB::transaction(function () use ($request, $data, $slug, $uploads, $activityLog, $adminId, &$restaurantId) {
+    DB::transaction(function () use ($request, $data, $slug, $uploads, $activityLog, $adminId, $subscriptions, &$restaurantId) {
       $logo = $request->hasFile('logo') ? ($uploads->storeImage($request->file('logo'), 'logos')['filename'] ?? null) : null;
       $hero = $request->hasFile('hero_image') ? ($uploads->storeImage($request->file('hero_image'), 'heroes')['filename'] ?? null) : null;
 
@@ -88,24 +89,20 @@ class RestaurantController extends Controller
         'restaurant_id' => $restaurant->id,
       ]);
 
-      if (! empty($data['plan_id'])) {
-        Subscription::forceCreate([
-          'restaurant_id' => $restaurant->id,
-          'plan_id' => $data['plan_id'],
-          'billing_cycle' => 'monthly',
-          'status' => 'trial',
-          'trial_ends_at' => now()->addDays(14),
-        ]);
-      }
+      $trial = $subscriptions->startTrialForRestaurant(
+        $restaurant->id,
+        ! empty($data['plan_id']) ? (int) $data['plan_id'] : null,
+      );
 
       $activityLog->record('admin', $adminId, 'restaurant.created', $restaurantId, 'restaurant', $restaurantId, null, [
         'name' => $data['name'],
         'slug' => $slug,
-        'plan_id' => $data['plan_id'] ?? null,
+        'plan_id' => $trial?->plan_id,
+        'subscription_id' => $trial?->id,
       ], $request->ip(), $request->userAgent());
     });
 
-    return redirect()->route('admin.restaurants.index')->with('success', 'Restaurant created.');
+    return redirect()->route('admin.restaurants.index')->with('success', 'Restaurant created with a '.SubscriptionService::TRIAL_DAYS.'-day trial.');
   }
 
   public function show(Restaurant $restaurant)

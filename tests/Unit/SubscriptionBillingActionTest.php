@@ -76,4 +76,13 @@ class SubscriptionBillingActionTest extends TestCase
         $this->assertSame('Expired On', $period['label']);
         $this->assertSame('Jul 1, 2026', $period['value']);
     }
+
+    public function test_missing_subscription_is_treated_as_new_immediate_subscribe(): void
+    {
+        $decision = $this->service()->getSubscriptionChangeDecision(null, ['id' => 2, 'display_order' => 2], 'monthly');
+
+        $this->assertSame('immediate', $decision['mode']);
+        $this->assertSame('new', $decision['type']);
+        $this->assertSame('new_subscription', $decision['reason']);
+    }
 }

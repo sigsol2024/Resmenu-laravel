@@ -201,6 +201,45 @@ class SubscriptionService
         return $sub;
     }
 
+    public const TRIAL_DAYS = 7;
+
+    public function defaultTrialPlanId(): ?int
+    {
+        $planId = SubscriptionPlan::query()
+            ->where('is_active', 1)
+            ->where('slug', 'professional')
+            ->value('id');
+
+        if ($planId) {
+            return (int) $planId;
+        }
+
+        $planId = SubscriptionPlan::query()->where('is_active', 1)->orderBy('display_order')->value('id');
+
+        return $planId ? (int) $planId : null;
+    }
+
+    public function startTrialForRestaurant(int $restaurantId, ?int $planId = null, ?int $days = null): ?Subscription
+    {
+        $existing = Subscription::query()->where('restaurant_id', $restaurantId)->orderByDesc('id')->first();
+        if ($existing) {
+            return $existing;
+        }
+
+        $resolvedPlanId = $planId ?: $this->defaultTrialPlanId();
+        if (! $resolvedPlanId) {
+            return null;
+        }
+
+        return Subscription::forceCreate([
+            'restaurant_id' => $restaurantId,
+            'plan_id' => $resolvedPlanId,
+            'billing_cycle' => 'monthly',
+            'status' => 'trial',
+            'trial_ends_at' => now()->addDays($days ?? self::TRIAL_DAYS),
+        ]);
+    }
+
     public function isSubscriptionActive(int $restaurantId): bool
     {
         return $this->checkAccess($restaurantId)['valid'];

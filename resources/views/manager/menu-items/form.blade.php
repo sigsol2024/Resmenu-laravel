@@ -24,7 +24,7 @@
     <div class="form-group"><label for="description">Description</label><textarea name="description" id="description" rows="3">{{ old('description', $item->description) }}</textarea></div>
     <div class="form-group"><label for="price">Price</label><input type="number" step="0.01" name="price" id="price" value="{{ old('price', $item->price) }}" required></div>
     <div class="form-group"><label for="display_order">Display order</label><input type="number" name="display_order" id="display_order" value="{{ old('display_order', $item->display_order) }}"></div>
-    <div class="form-group"><label><input type="checkbox" name="is_available" value="1" @checked(old('is_available', $item->is_available))> Available</label></div>
+    <div class="form-group"><label><input type="hidden" name="is_available" value="0"><input type="checkbox" name="is_available" value="1" @checked(old('is_available', $item->is_available))> Available</label></div>
     <div class="form-group"><label for="image">Image</label><input type="file" name="image" id="image" accept="image/*"></div>
     <button type="submit" class="btn btn-primary">Save</button>
     <a href="{{ route('manager.menu-items.index') }}" style="margin-left:12px;">Cancel</a>

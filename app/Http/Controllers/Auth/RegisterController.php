@@ -6,12 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Manager;
 use App\Services\SiteSettingsService;
 use App\Models\Restaurant;
-use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
 use App\Services\DisposableEmailService;
 use App\Services\EmailDeliverabilityService;
 use App\Services\RecaptchaService;
 use App\Services\RegistrationOtpService;
+use App\Services\SubscriptionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -111,24 +111,7 @@ class RegisterController extends Controller
                 'restaurant_id' => $restaurant->id,
             ]);
 
-            $planId = SubscriptionPlan::query()
-                ->where('is_active', 1)
-                ->where('slug', 'professional')
-                ->value('id');
-
-            if (! $planId) {
-                $planId = SubscriptionPlan::query()->where('is_active', 1)->orderBy('display_order')->value('id');
-            }
-
-            if ($planId) {
-                Subscription::forceCreate([
-                    'restaurant_id' => $restaurant->id,
-                    'plan_id' => $planId,
-                    'billing_cycle' => 'monthly',
-                    'status' => 'trial',
-                    'trial_ends_at' => now()->addDays(7),
-                ]);
-            }
+            app(SubscriptionService::class)->startTrialForRestaurant($restaurant->id);
 
             Auth::guard('manager')->login($manager);
             $request->session()->regenerate();

@@ -89,10 +89,6 @@ class BillingController extends Controller
         $action = $request->input('action', '');
         $subscription = $this->subscriptions->getRestaurantSubscription($restaurantId);
 
-        if (! $subscription) {
-            return redirect()->route('manager.billing.index')->with('error', 'No active subscription found to update.');
-        }
-
         if ($action === 'schedule_change') {
             $targetPlanId = (int) $request->input('target_plan_id', 0);
             $targetCycle = strtolower(trim((string) $request->input('target_cycle', 'monthly'))) === 'annual'
@@ -102,6 +98,13 @@ class BillingController extends Controller
 
             if (! $targetPlan) {
                 return redirect()->route('manager.billing.index')->with('error', 'Selected plan could not be found.');
+            }
+
+            if (! $subscription) {
+                return redirect()->route('manager.billing.checkout', [
+                    'plan' => $targetPlan['slug'] ?? '',
+                    'cycle' => $targetCycle,
+                ]);
             }
 
             $decision = $this->subscriptions->getSubscriptionChangeDecision($subscription, $targetPlan, $targetCycle);
@@ -139,6 +142,10 @@ class BillingController extends Controller
         }
 
         if ($action === 'cancel_scheduled_change') {
+            if (! $subscription) {
+                return redirect()->route('manager.billing.index')->with('error', 'No subscription found to update.');
+            }
+
             $cancelled = $this->subscriptions->cancelScheduledSubscriptionChange((int) $subscription['id']);
 
             return redirect()->route('manager.billing.index')->with(
