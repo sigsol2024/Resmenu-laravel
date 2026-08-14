@@ -49,27 +49,14 @@
 </form>
 
 @if($restaurantsWithoutSubscription->isNotEmpty())
-  <section class="unassigned-card">
-    <div class="unassigned-header">
-      <div class="unassigned-icon" aria-hidden="true">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-        </svg>
+  <div class="admin-list-card">
+    <div class="table-card">
+      <div class="card-header">
+        <h2 class="card-title">Restaurants with no subscription</h2>
       </div>
-      <div class="unassigned-header-text">
-        <p class="unassigned-kicker">Needs attention</p>
-        <h2 class="unassigned-title">Restaurants with no subscription</h2>
-        <p class="unassigned-copy">These restaurants never received a trial. Assign a plan so they appear in the list below and can use billing.</p>
-      </div>
-      <span class="unassigned-count">{{ $restaurantsWithoutSubscription->count() }}</span>
-    </div>
-    <div class="unassigned-body">
       <table class="subscriptions-table">
         <thead>
-          <tr>
-            <th>Restaurant</th>
-            <th>Assign trial</th>
-          </tr>
+          <tr><th>Restaurant</th><th>Plan</th><th>Status</th><th>Billing</th><th>Period</th><th>Actions</th></tr>
         </thead>
         <tbody>
         @foreach($restaurantsWithoutSubscription as $restaurant)
@@ -77,30 +64,63 @@
             <td>
               <div class="restaurant-info">
                 <span class="restaurant-name">{{ $restaurant->name }}</span>
-                <span class="restaurant-slug">/{{ $restaurant->slug }}</span>
+                <span class="restaurant-slug">{{ $restaurant->slug }}</span>
+              </div>
+            </td>
+            <td><span class="plan-badge">—</span></td>
+            <td><span class="status-badge status-pending">None</span></td>
+            <td>
+              <div class="billing-info">
+                <div class="billing-cycle">—</div>
               </div>
             </td>
             <td>
-              <form method="post" action="{{ route('admin.subscriptions.store') }}" class="unassigned-assign">
-                @csrf
-                <input type="hidden" name="restaurant_id" value="{{ $restaurant->id }}">
-                <label class="unassigned-plan-label">
-                  <span>Plan</span>
-                  <select name="plan_id" class="unassigned-plan">
-                    @foreach($plans as $plan)
-                      <option value="{{ $plan->id }}" @selected($plan->slug === 'professional')>{{ $plan->name }}</option>
-                    @endforeach
-                  </select>
-                </label>
-                <button type="submit" class="btn-search">Start 7-day trial</button>
-              </form>
+              <div class="date-info">
+                <span class="date-label">Period:</span><br>N/A
+              </div>
+            </td>
+            <td>
+              @php
+                $assignItems = [['type' => 'title', 'label' => 'Assign 7-day trial']];
+                foreach ($plans as $plan) {
+                  $assignItems[] = [
+                    'type' => 'form',
+                    'label' => $plan->name,
+                    'action' => route('admin.subscriptions.store'),
+                    'hidden' => [
+                      'restaurant_id' => $restaurant->id,
+                      'plan_id' => $plan->id,
+                      'include_trial' => 1,
+                    ],
+                    'confirm' => 'Start a 7-day '.$plan->name.' trial for '.$restaurant->name.'?',
+                  ];
+                }
+                $assignItems[] = ['type' => 'divider'];
+                $assignItems[] = ['type' => 'title', 'label' => 'Assign active plan'];
+                foreach ($plans as $plan) {
+                  $assignItems[] = [
+                    'type' => 'form',
+                    'label' => $plan->name,
+                    'action' => route('admin.subscriptions.store'),
+                    'hidden' => [
+                      'restaurant_id' => $restaurant->id,
+                      'plan_id' => $plan->id,
+                      'include_trial' => 0,
+                    ],
+                    'confirm' => 'Assign an active '.$plan->name.' subscription to '.$restaurant->name.'?',
+                  ];
+                }
+                $assignItems[] = ['type' => 'divider'];
+                $assignItems[] = ['label' => 'View Restaurant', 'url' => route('admin.restaurants.hub', $restaurant)];
+              @endphp
+              @include('partials.admin.actions-dropdown', ['items' => $assignItems])
             </td>
           </tr>
         @endforeach
         </tbody>
       </table>
     </div>
-  </section>
+  </div>
 @endif
 
 <div class="admin-list-card">

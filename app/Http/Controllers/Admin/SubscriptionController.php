@@ -60,6 +60,7 @@ class SubscriptionController extends Controller
     $data = $request->validate([
       'restaurant_id' => 'required|integer|exists:restaurants,id',
       'plan_id' => 'nullable|integer|exists:subscription_plans,id',
+      'include_trial' => 'nullable|boolean',
     ]);
 
     $restaurantId = (int) $data['restaurant_id'];
@@ -67,19 +68,21 @@ class SubscriptionController extends Controller
       return back()->with('error', 'This restaurant already has a subscription.');
     }
 
-    $subscription = $service->startTrialForRestaurant(
+    $includeTrial = $request->boolean('include_trial', true);
+    $subscription = $service->assignSubscriptionForRestaurant(
       $restaurantId,
       ! empty($data['plan_id']) ? (int) $data['plan_id'] : null,
+      $includeTrial,
     );
 
     if (! $subscription) {
-      return back()->with('error', 'Could not start a trial. Add an active subscription plan first.');
+      return back()->with('error', 'Could not assign a subscription. Add an active subscription plan first.');
     }
 
     $activityLog->record(
       'admin',
       (int) $request->user('admin')?->id,
-      'subscription.trial_assigned',
+      $includeTrial ? 'subscription.trial_assigned' : 'subscription.assigned',
       $restaurantId,
       'subscription',
       (int) $subscription->id,
@@ -92,7 +95,7 @@ class SubscriptionController extends Controller
     $planVisibility = app(PlanVisibilityService::class);
     $planVisibility->forgetCache($restaurantId);
 
-    return back()->with('success', '7-day trial assigned.');
+    return back()->with('success', $includeTrial ? '7-day trial assigned.' : 'Active subscription assigned.');
   }
 
   public function update(Request $request, Subscription $subscription, SubscriptionService $service, ActivityLogService $activityLog, PlanVisibilityService $planVisibility)

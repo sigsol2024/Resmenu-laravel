@@ -28,16 +28,15 @@
           <div class="filter-group" style="margin-top:12px">
             <label>Subscription Plan *</label>
             <select name="plan_id" class="form-input" required style="width:100%">
-              <option value="">Select a plan</option>
               @foreach($plans as $p)
                 <option value="{{ $p->id }}" @selected((string) $defaultPlanId === (string) $p->id)>{{ $p->name }}</option>
               @endforeach
             </select>
           </div>
-          <label style="display:flex;align-items:flex-start;gap:8px;margin-top:12px">
+          <label style="display:flex;align-items:center;gap:8px;margin-top:12px">
             <input type="hidden" name="include_trial" value="0">
-            <input type="checkbox" name="include_trial" value="1" @checked($includeTrialChecked) style="margin-top:3px">
-            <span>Include 7-day free trial<br><small style="color:#6b7280">If unchecked, this plan is assigned as an active subscription immediately.</small></span>
+            <input type="checkbox" name="include_trial" value="1" @checked($includeTrialChecked)>
+            Include 7-day free trial
           </label>
         @endif
         <label style="display:flex;align-items:center;gap:8px;margin-top:12px"><input type="checkbox" name="is_active" value="1" @checked(old('is_active', $editRestaurant->is_active ?? true))> Active</label>
