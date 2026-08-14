@@ -50,10 +50,10 @@
 
 @if($restaurantsWithoutSubscription->isNotEmpty())
   <div class="admin-list-card">
-    <div class="table-card">
-      <div class="card-header">
-        <h2 class="card-title">Restaurants with no subscription</h2>
-      </div>
+    <div class="card-header">
+      <h2 class="card-title">Restaurants with no subscription</h2>
+    </div>
+    <div class="table-wrap">
       <table class="subscriptions-table">
         <thead>
           <tr><th>Restaurant</th><th>Plan</th><th>Status</th><th>Billing</th><th>Period</th><th>Actions</th></tr>
@@ -124,9 +124,12 @@
 @endif
 
 <div class="admin-list-card">
-  <div class="table-card">
+  <div class="card-header">
+    <h2 class="card-title">All subscriptions</h2>
+  </div>
+  <div class="table-wrap">
     @if($subscriptions->isEmpty())
-      <div class="empty-state" style="padding:40px;text-align:center;color:#6b7280">No subscriptions found.</div>
+      <div class="empty-state">No subscriptions found.</div>
     @else
       <table class="subscriptions-table">
         <thead>
@@ -219,7 +222,9 @@
     @endif
   </div>
   @if($subscriptions->hasPages())
-    {{ $subscriptions->links() }}
+    <div class="pagination-wrap">
+      {{ $subscriptions->links() }}
+    </div>
   @endif
 </div>
 @endsection
