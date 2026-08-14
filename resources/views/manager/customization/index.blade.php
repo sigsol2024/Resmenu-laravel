@@ -153,7 +153,7 @@
                 <div class="color-input-group">
                     <div class="form-group">
                         <label class="form-label">Color</label>
-                        <input type="color" name="category_title_color" value="{{ $c['category_title_color'] ?? '#000000' }}" style="width: 60px; height: 40px; border: 2px solid #e5e7eb; border-radius: 8px; cursor: pointer;">
+                        <input type="color" name="category_title_color" value="{{ $c['category_title_color'] ?? '#ffffff' }}" style="width: 60px; height: 40px; border: 2px solid #e5e7eb; border-radius: 8px; cursor: pointer;">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Size (px)</label>
