@@ -23,15 +23,22 @@
         @if(!$isEdit)
           @php
             $defaultPlanId = old('plan_id', optional($plans->firstWhere('slug', 'professional') ?? $plans->first())->id);
+            $includeTrialChecked = filter_var(old('include_trial', true), FILTER_VALIDATE_BOOLEAN);
           @endphp
-          <div class="filter-group" style="margin-top:12px"><label>Plan</label>
-            <select name="plan_id" class="form-input" style="width:100%">
+          <div class="filter-group" style="margin-top:12px">
+            <label>Subscription Plan *</label>
+            <select name="plan_id" class="form-input" required style="width:100%">
+              <option value="">Select a plan</option>
               @foreach($plans as $p)
                 <option value="{{ $p->id }}" @selected((string) $defaultPlanId === (string) $p->id)>{{ $p->name }}</option>
               @endforeach
             </select>
-            <p style="margin-top:6px;font-size:0.8rem;color:#6b7280;">A 7-day trial starts automatically on this plan.</p>
           </div>
+          <label style="display:flex;align-items:flex-start;gap:8px;margin-top:12px">
+            <input type="hidden" name="include_trial" value="0">
+            <input type="checkbox" name="include_trial" value="1" @checked($includeTrialChecked) style="margin-top:3px">
+            <span>Include 7-day free trial<br><small style="color:#6b7280">If unchecked, this plan is assigned as an active subscription immediately.</small></span>
+          </label>
         @endif
         <label style="display:flex;align-items:center;gap:8px;margin-top:12px"><input type="checkbox" name="is_active" value="1" @checked(old('is_active', $editRestaurant->is_active ?? true))> Active</label>
         <div class="filter-group" style="margin-top:12px"><label>Logo</label><input type="file" name="logo" accept="image/*" class="form-input"></div>

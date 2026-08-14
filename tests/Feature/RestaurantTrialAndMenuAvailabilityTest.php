@@ -54,6 +54,8 @@ class RestaurantTrialAndMenuAvailabilityTest extends TestCase
                 'manager_email' => 'mgr'.$suffix.'@example.com',
                 'manager_password' => 'password12',
                 'is_active' => 1,
+                'plan_id' => $plan->id,
+                'include_trial' => 1,
             ])
             ->assertRedirect(route('admin.restaurants.index'));
 
@@ -65,6 +67,45 @@ class RestaurantTrialAndMenuAvailabilityTest extends TestCase
         $this->assertSame('trial', $subscription->status);
         $this->assertNotNull($subscription->trial_ends_at);
         $this->assertTrue($subscription->trial_ends_at->isFuture());
+    }
+
+    public function test_admin_create_restaurant_can_assign_active_plan_without_trial(): void
+    {
+        if (! $this->schemaReady()) {
+            $this->markTestSkipped('Database schema not available.');
+        }
+
+        $admin = Admin::query()->where('username', 'staging-admin')->first();
+        $plan = SubscriptionPlan::query()->where('is_active', 1)->orderBy('display_order')->first();
+        if (! $admin || ! $plan) {
+            $this->markTestSkipped('Staging admin or subscription plan not available.');
+        }
+
+        $suffix = uniqid();
+        $slug = 'paid-rest-'.$suffix;
+
+        $this->actingAs($admin, 'admin')
+            ->post(route('admin.restaurants.store'), [
+                'name' => 'Paid Restaurant '.$suffix,
+                'slug' => $slug,
+                'manager_username' => 'paid'.$suffix,
+                'manager_email' => 'paid'.$suffix.'@example.com',
+                'manager_password' => 'password12',
+                'is_active' => 1,
+                'plan_id' => $plan->id,
+                'include_trial' => 0,
+            ])
+            ->assertRedirect(route('admin.restaurants.index'));
+
+        $restaurant = Restaurant::query()->where('slug', $slug)->first();
+        $this->assertNotNull($restaurant);
+
+        $subscription = Subscription::query()->where('restaurant_id', $restaurant->id)->first();
+        $this->assertNotNull($subscription);
+        $this->assertSame('active', $subscription->status);
+        $this->assertSame((int) $plan->id, (int) $subscription->plan_id);
+        $this->assertNotNull($subscription->current_period_end);
+        $this->assertTrue($subscription->current_period_end->isFuture());
     }
 
     public function test_manager_billing_subscribe_without_subscription_goes_to_checkout(): void

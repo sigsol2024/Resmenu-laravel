@@ -221,6 +221,16 @@ class SubscriptionService
 
     public function startTrialForRestaurant(int $restaurantId, ?int $planId = null, ?int $days = null): ?Subscription
     {
+        return $this->assignSubscriptionForRestaurant($restaurantId, $planId, true, 'monthly', $days);
+    }
+
+    public function assignSubscriptionForRestaurant(
+        int $restaurantId,
+        ?int $planId = null,
+        bool $includeTrial = true,
+        string $billingCycle = 'monthly',
+        ?int $trialDays = null,
+    ): ?Subscription {
         $existing = Subscription::query()->where('restaurant_id', $restaurantId)->orderByDesc('id')->first();
         if ($existing) {
             return $existing;
@@ -231,13 +241,32 @@ class SubscriptionService
             return null;
         }
 
-        return Subscription::forceCreate([
-            'restaurant_id' => $restaurantId,
-            'plan_id' => $resolvedPlanId,
-            'billing_cycle' => 'monthly',
-            'status' => 'trial',
-            'trial_ends_at' => now()->addDays($days ?? self::TRIAL_DAYS),
-        ]);
+        $cycle = $billingCycle === 'annual' ? 'annual' : 'monthly';
+
+        if ($includeTrial) {
+            $subscription = Subscription::forceCreate([
+                'restaurant_id' => $restaurantId,
+                'plan_id' => $resolvedPlanId,
+                'billing_cycle' => $cycle,
+                'status' => 'trial',
+                'trial_ends_at' => now()->addDays($trialDays ?? self::TRIAL_DAYS),
+            ]);
+        } else {
+            $periodEnd = $cycle === 'annual' ? now()->addYear() : now()->addMonth();
+            $subscription = Subscription::forceCreate([
+                'restaurant_id' => $restaurantId,
+                'plan_id' => $resolvedPlanId,
+                'billing_cycle' => $cycle,
+                'status' => 'active',
+                'trial_ends_at' => null,
+                'current_period_start' => now(),
+                'current_period_end' => $periodEnd,
+            ]);
+        }
+
+        app(PlanVisibilityService::class)->forgetCache($restaurantId);
+
+        return $subscription;
     }
 
     public function isSubscriptionActive(int $restaurantId): bool

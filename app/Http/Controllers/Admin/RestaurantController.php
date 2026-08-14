@@ -89,20 +89,26 @@ class RestaurantController extends Controller
         'restaurant_id' => $restaurant->id,
       ]);
 
-      $trial = $subscriptions->startTrialForRestaurant(
+      $subscription = $subscriptions->assignSubscriptionForRestaurant(
         $restaurant->id,
         ! empty($data['plan_id']) ? (int) $data['plan_id'] : null,
+        $request->boolean('include_trial'),
       );
 
       $activityLog->record('admin', $adminId, 'restaurant.created', $restaurantId, 'restaurant', $restaurantId, null, [
         'name' => $data['name'],
         'slug' => $slug,
-        'plan_id' => $trial?->plan_id,
-        'subscription_id' => $trial?->id,
+        'plan_id' => $subscription?->plan_id,
+        'subscription_id' => $subscription?->id,
+        'subscription_status' => $subscription?->status,
       ], $request->ip(), $request->userAgent());
     });
 
-    return redirect()->route('admin.restaurants.index')->with('success', 'Restaurant created with a '.SubscriptionService::TRIAL_DAYS.'-day trial.');
+    $message = $request->boolean('include_trial')
+      ? 'Restaurant created with a '.SubscriptionService::TRIAL_DAYS.'-day trial.'
+      : 'Restaurant created with an active subscription.';
+
+    return redirect()->route('admin.restaurants.index')->with('success', $message);
   }
 
   public function show(Restaurant $restaurant)
@@ -226,7 +232,8 @@ class RestaurantController extends Controller
       'phone' => 'nullable|string|max:50',
       'address' => 'nullable|string',
       'template_id' => 'nullable|integer|min:1',
-      'plan_id' => 'nullable|integer|exists:subscription_plans,id',
+      'plan_id' => $ignoreId ? 'nullable|integer|exists:subscription_plans,id' : 'required|integer|exists:subscription_plans,id',
+      'include_trial' => 'nullable|boolean',
       'manager_username' => 'required|string|max:100',
       'manager_email' => 'required|email|max:255',
       'manager_password' => $ignoreId ? 'nullable|string|min:'.config('resmenu.password_min_length', 8) : 'required|string|min:'.config('resmenu.password_min_length', 8),

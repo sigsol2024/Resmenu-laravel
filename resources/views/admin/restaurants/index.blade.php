@@ -29,7 +29,7 @@
 </div>
 
 <!-- Create/Edit Restaurant Modal -->
-        <div class="modal" id="restaurantModal" style="display: {{ $editRestaurant && $editRestaurant->exists ? 'flex' : 'none' }};">
+        <div class="modal" id="restaurantModal" style="display: {{ ($showCreateModal || ($editRestaurant && $editRestaurant->exists)) ? 'flex' : 'none' }};">
             <div class="modal-overlay" onclick="closeRestaurantModal()"></div>
             <div class="modal-content">
                 <div class="modal-header">
@@ -134,7 +134,37 @@
                         <label class="form-label" for="is_active" style="margin: 0;">Active</label>
                     </div>
                 </div>
-                
+
+                @if(!$editRestaurant || !$editRestaurant->exists)
+                    @php
+                        $defaultPlanId = old('plan_id', optional($plans->firstWhere('slug', 'professional') ?? $plans->first())->id);
+                        $includeTrialChecked = filter_var(old('include_trial', true), FILTER_VALIDATE_BOOLEAN);
+                    @endphp
+                    <hr style="margin: 30px 0; border: none; border-top: 2px solid #e5e7eb;">
+                    <h3 style="margin-bottom: 8px; font-weight: 600;">Subscription</h3>
+                    <p style="margin: 0 0 20px; color: var(--muted); font-size: 0.875rem;">Choose the plan for this restaurant. Optionally start them on a 7-day trial.</p>
+
+                    <div class="form-group">
+                        <label class="form-label" for="plan_id">Subscription Plan *</label>
+                        <select id="plan_id" name="plan_id" class="form-select" required>
+                            <option value="">Select a plan</option>
+                            @foreach($plans as $p)
+                                <option value="{{ $p->id }}" @selected((string) $defaultPlanId === (string) $p->id)>{{ $p->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <div style="display: flex; align-items: flex-start; gap: 10px;">
+                            <input type="hidden" name="include_trial" value="0">
+                            <input type="checkbox" id="include_trial" name="include_trial" value="1" style="width: 20px; height: 20px; margin-top: 2px;" @checked($includeTrialChecked)>
+                            <div>
+                                <label class="form-label" for="include_trial" style="margin: 0;">Include 7-day free trial</label>
+                                <small style="color: var(--muted); display: block; margin-top: 4px;">If unchecked, this plan is assigned as an active subscription immediately.</small>
+                            </div>
+                        </div>
+                    </div>
+                @endif 
                 @if(!$editRestaurant || !$editRestaurant->exists)
                     <hr style="margin: 30px 0; border: none; border-top: 2px solid #e5e7eb;">
                     <h3 style="margin-bottom: 20px; font-weight: 600;">Manager Account</h3>

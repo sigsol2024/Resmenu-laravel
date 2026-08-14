@@ -83,15 +83,26 @@
         @if(!$restaurant->exists)
             @php
                 $defaultPlanId = old('plan_id', optional($plans->firstWhere('slug', 'professional') ?? $plans->first())->id);
+                $includeTrialChecked = filter_var(old('include_trial', true), FILTER_VALIDATE_BOOLEAN);
             @endphp
             <div class="form-group">
-                <label class="form-label" for="plan_id">Subscription Plan</label>
-                <select id="plan_id" name="plan_id" class="form-select">
+                <label class="form-label" for="plan_id">Subscription Plan *</label>
+                <select id="plan_id" name="plan_id" class="form-select" required>
+                    <option value="">Select a plan</option>
                     @foreach($plans as $p)
                         <option value="{{ $p->id }}" @selected((string) $defaultPlanId === (string) $p->id)>{{ $p->name }}</option>
                     @endforeach
                 </select>
-                <p style="margin-top:6px;font-size:0.85rem;color:#6b7280;">A {{ \App\Services\SubscriptionService::TRIAL_DAYS }}-day trial starts automatically on this plan.</p>
+            </div>
+            <div class="form-group">
+                <div style="display: flex; align-items: flex-start; gap: 10px;">
+                    <input type="hidden" name="include_trial" value="0">
+                    <input type="checkbox" id="include_trial" name="include_trial" value="1" style="width: 20px; height: 20px; margin-top: 2px;" @checked($includeTrialChecked)>
+                    <div>
+                        <label class="form-label" for="include_trial" style="margin: 0;">Include 7-day free trial</label>
+                        <small style="color: var(--muted); display: block; margin-top: 4px;">If unchecked, this plan is assigned as an active subscription immediately.</small>
+                    </div>
+                </div>
             </div>
         @endif
 
