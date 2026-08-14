@@ -166,50 +166,11 @@
 }
 
 /* Table */
-.admin-list-card {
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    margin-bottom: 24px;
-    overflow: visible;
-}
-
-.admin-list-card .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 24px;
-    border-bottom: 1px solid #e5e7eb;
-    margin-bottom: 0;
-    flex-wrap: wrap;
-    gap: 12px;
-}
-
-.admin-list-card .card-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #111827;
-    margin: 0;
-}
-
-.admin-list-card .table-wrap {
-    width: 100%;
-    overflow-x: auto;
-}
-
 .table-card {
     background: #fff;
-    border: 1px solid #e5e7eb;
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    overflow: visible;
-    margin-bottom: 24px;
-}
-
-.pagination-wrap {
-    padding: 8px 16px 16px;
-    border-top: 1px solid #f3f4f6;
+    overflow: hidden;
 }
 
 .subscriptions-table {
