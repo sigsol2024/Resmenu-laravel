@@ -13,9 +13,17 @@ if ($baseUrl === '') {
 }
 $nfmTemplateDir = __DIR__;
 $nfmTemplateBaseUrl = isset($templateAssetBaseUrl) ? $templateAssetBaseUrl : (rtrim($baseUrl, '/') . '/templates/template18');
-$nfmPageBgFile = 'bg_white.png';
-if (!file_exists($nfmTemplateDir . '/' . $nfmPageBgFile)) {
-    $nfmPageBgFile = (file_exists($nfmTemplateDir . '/bg_white.jpg')) ? 'bg_white.jpg' : 'bg_white.png';
+$nfmPageBgFile = 'Nostalgia_MENU_BACKGROUND.jpg';
+$nfmBgPath = $nfmTemplateDir . DIRECTORY_SEPARATOR . $nfmPageBgFile;
+if (!is_file($nfmBgPath) && function_exists('public_path')) {
+    $nfmBgPath = public_path('templates/template18/' . $nfmPageBgFile);
+}
+if (!is_file($nfmBgPath)) {
+    if (is_file($nfmTemplateDir . '/bg_white.png') || (function_exists('public_path') && is_file(public_path('templates/template18/bg_white.png')))) {
+        $nfmPageBgFile = 'bg_white.png';
+    } elseif (is_file($nfmTemplateDir . '/bg_white.jpg') || (function_exists('public_path') && is_file(public_path('templates/template18/bg_white.jpg')))) {
+        $nfmPageBgFile = 'bg_white.jpg';
+    }
 }
 $reservationUrl = $baseUrl . '/restaurant/' . ($restaurant['slug'] ?? '') . '/reservation';
 $currencySymbol = '₦';
@@ -70,19 +78,20 @@ body.nfm-body {
   min-height: 100vh;
   min-height: 100dvh;
 }
-/* Subtle texture (fixed layer — not background-attachment on body) */
+/* Page background image (fixed layer — not background-attachment on body) */
 .nfm-page-bg {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
   background-image: url('<?php echo htmlspecialchars($nfmTemplateBaseUrl . '/' . $nfmPageBgFile); ?>');
-  background-repeat: repeat;
-  background-size: 260px 260px;
-  opacity: 0.17;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 0.28;
 }
 @media (min-width: 768px) {
-  .nfm-page-bg { background-size: 240px 240px; opacity: 0.14; }
+  .nfm-page-bg { opacity: 0.22; }
 }
 .nfm-vignette {
   position: fixed;
