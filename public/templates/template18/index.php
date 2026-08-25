@@ -75,17 +75,17 @@ body.nfm-body {
   background-image: url('<?php echo htmlspecialchars($nfmTemplateBaseUrl); ?>/Nostalgia_MENU_BACKGROUND.jpg');
   background-repeat: repeat;
   background-size: 720px 720px;
-  opacity: 0.17;
+  opacity: 0.55;
 }
 @media (min-width: 768px) {
-  .nfm-page-bg { background-size: 640px 640px; opacity: 0.14; }
+  .nfm-page-bg { background-size: 640px 640px; opacity: 0.5; }
 }
 .nfm-vignette {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(26,26,26,0.32) 0%, rgba(0,0,0,0.48) 50%, rgba(0,0,0,0.65) 100%);
+  background: linear-gradient(180deg, rgba(26,26,26,0.12) 0%, rgba(0,0,0,0.22) 50%, rgba(0,0,0,0.35) 100%);
 }
 .nfm-shell { position: relative; z-index: 1; }
 .card-border { border: 2px solid #f2b90d; }
