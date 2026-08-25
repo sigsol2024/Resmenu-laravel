@@ -74,11 +74,11 @@ body.nfm-body {
   pointer-events: none;
   background-image: url('<?php echo htmlspecialchars($nfmTemplateBaseUrl); ?>/Nostalgia_MENU_BACKGROUND.jpg');
   background-repeat: repeat;
-  background-size: 260px 260px;
+  background-size: 720px 720px;
   opacity: 0.17;
 }
 @media (min-width: 768px) {
-  .nfm-page-bg { background-size: 240px 240px; opacity: 0.14; }
+  .nfm-page-bg { background-size: 640px 640px; opacity: 0.14; }
 }
 .nfm-vignette {
   position: fixed;
