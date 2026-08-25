@@ -199,7 +199,7 @@ class CategoryController extends Controller
             'slug' => $slug,
             'description' => $data['description'] ?? null,
             'display_order' => (int) $order,
-            'is_active' => $request->boolean('is_active', true),
+            'is_active' => $request->boolean('is_active'),
         ];
     }
 

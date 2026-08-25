@@ -8,7 +8,7 @@
     $isEditing = (bool) $editCategory;
     $showModal = $isEditing || $openCreateModal || $errors->any();
     $editLink = fn (int $id) => route('manager.categories.index', ['edit' => $id]);
-    $activeChecked = old('is_active') !== null ? (bool) old('is_active') : ($editCategory->is_active ?? true);
+    $activeChecked = filter_var(old('is_active', $editCategory->is_active ?? true), FILTER_VALIDATE_BOOLEAN);
     $primarySectionId = (int) old('section_id', $editCategory->section_id ?? 0);
     $selectedSecondary = array_map('intval', old('secondary_section_ids', $secondarySectionIds ?? []));
     $suggestedOrder = $nextDisplayOrderBySection[$primarySectionId] ?? $nextDisplayOrder;
@@ -129,6 +129,7 @@
 
                 <div class="form-group">
                     <div style="display: flex; align-items: center; gap: 10px;">
+                        <input type="hidden" name="is_active" value="0">
                         <input type="checkbox" id="is_active" name="is_active" value="1" style="width: 20px; height: 20px;" @checked($activeChecked)>
                         <label class="form-label" for="is_active" style="margin: 0;">Active</label>
                     </div>

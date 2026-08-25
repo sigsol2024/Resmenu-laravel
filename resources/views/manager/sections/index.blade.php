@@ -8,7 +8,7 @@
     $isEditing = (bool) $editSection;
     $showModal = $isEditing || $openCreateModal || $errors->any();
     $editLink = fn (int $id) => route('manager.sections.index', ['edit' => $id]);
-    $activeChecked = old('is_active') !== null ? (bool) old('is_active') : ($editSection?->is_active ?? true);
+    $activeChecked = filter_var(old('is_active', $editSection?->is_active ?? true), FILTER_VALIDATE_BOOLEAN);
 @endphp
 
 <div class="page-header">
@@ -73,6 +73,7 @@
 
                 <div class="form-group">
                     <label class="form-label" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="hidden" name="is_active" value="0">
                         <input type="checkbox" name="is_active" value="1" @checked($activeChecked)>
                         Active (visible on public menu)
                     </label>

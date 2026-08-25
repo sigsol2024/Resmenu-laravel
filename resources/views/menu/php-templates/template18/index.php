@@ -72,7 +72,7 @@ body.nfm-body {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-image: url('<?php echo htmlspecialchars($nfmTemplateBaseUrl); ?>/Nostalgia_MENU_BACKGROUND.jpg');
+  background-image: url('<?php echo htmlspecialchars($nfmTemplateBaseUrl); ?>/NostalgiaMENU_BACKGROUND.png');
   background-repeat: repeat;
   background-size: 720px 720px;
   opacity: 0.55;

@@ -136,7 +136,7 @@ class SectionController extends Controller
             'name' => $data['name'],
             'slug' => $slug,
             'display_order' => (int) $order,
-            'is_active' => $request->boolean('is_active', true),
+            'is_active' => $request->boolean('is_active'),
         ];
     }
 
