@@ -13,7 +13,6 @@ if ($baseUrl === '') {
 }
 $nfmTemplateDir = __DIR__;
 $nfmTemplateBaseUrl = isset($templateAssetBaseUrl) ? $templateAssetBaseUrl : (rtrim($baseUrl, '/') . '/templates/template18');
-$nfmPageBgFile = 'Nostalgia_MENU_BACKGROUND.jpg';
 $reservationUrl = $baseUrl . '/restaurant/' . ($restaurant['slug'] ?? '') . '/reservation';
 $currencySymbol = '₦';
 $primaryColor = isset($customization['primary_color']) ? $customization['primary_color'] : '#f2b90d';
@@ -67,20 +66,19 @@ body.nfm-body {
   min-height: 100vh;
   min-height: 100dvh;
 }
-/* Page background image (fixed layer — not background-attachment on body) */
+/* Subtle texture (fixed layer — not background-attachment on body) */
 .nfm-page-bg {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-image: url('<?php echo htmlspecialchars($nfmTemplateBaseUrl . '/' . $nfmPageBgFile); ?>');
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: cover;
-  opacity: 0.28;
+  background-image: url('<?php echo htmlspecialchars($nfmTemplateBaseUrl); ?>/Nostalgia_MENU_BACKGROUND.jpg');
+  background-repeat: repeat;
+  background-size: 260px 260px;
+  opacity: 0.17;
 }
 @media (min-width: 768px) {
-  .nfm-page-bg { opacity: 0.22; }
+  .nfm-page-bg { background-size: 240px 240px; opacity: 0.14; }
 }
 .nfm-vignette {
   position: fixed;
