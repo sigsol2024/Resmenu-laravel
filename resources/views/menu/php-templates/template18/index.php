@@ -14,17 +14,6 @@ if ($baseUrl === '') {
 $nfmTemplateDir = __DIR__;
 $nfmTemplateBaseUrl = isset($templateAssetBaseUrl) ? $templateAssetBaseUrl : (rtrim($baseUrl, '/') . '/templates/template18');
 $nfmPageBgFile = 'Nostalgia_MENU_BACKGROUND.jpg';
-$nfmBgPath = $nfmTemplateDir . DIRECTORY_SEPARATOR . $nfmPageBgFile;
-if (!is_file($nfmBgPath) && function_exists('public_path')) {
-    $nfmBgPath = public_path('templates/template18/' . $nfmPageBgFile);
-}
-if (!is_file($nfmBgPath)) {
-    if (is_file($nfmTemplateDir . '/bg_white.png') || (function_exists('public_path') && is_file(public_path('templates/template18/bg_white.png')))) {
-        $nfmPageBgFile = 'bg_white.png';
-    } elseif (is_file($nfmTemplateDir . '/bg_white.jpg') || (function_exists('public_path') && is_file(public_path('templates/template18/bg_white.jpg')))) {
-        $nfmPageBgFile = 'bg_white.jpg';
-    }
-}
 $reservationUrl = $baseUrl . '/restaurant/' . ($restaurant['slug'] ?? '') . '/reservation';
 $currencySymbol = '₦';
 $primaryColor = isset($customization['primary_color']) ? $customization['primary_color'] : '#f2b90d';
