@@ -20,6 +20,8 @@ class MenuController extends Controller
 {
     private const TEMPLATE_SIX_ID = 6;
 
+    private const TEMPLATE_SEVEN_ID = 7;
+
     public function __construct(
         private MenuService $menu,
         private SubscriptionService $subscriptions,
@@ -72,6 +74,10 @@ class MenuController extends Controller
             return $this->renderTemplateSix($request, $restaurant, $slug, $sectionSlug, $categorySlug, $templateId);
         }
 
+        if ($templateId === self::TEMPLATE_SEVEN_ID) {
+            return $this->renderTemplateSeven($request, $restaurant, $slug, $sectionSlug, $templateId);
+        }
+
         if ($hasCategorySlug) {
             abort(404);
         }
@@ -99,6 +105,59 @@ class MenuController extends Controller
         ]);
 
         return $this->renderMenu($templateId, $viewData);
+    }
+
+    private function renderTemplateSeven(
+        Request $request,
+        $restaurant,
+        string $slug,
+        ?string $sectionSlug,
+        int $templateId,
+    ): Response|RedirectResponse {
+        unset($request);
+        $baseUrl = url('/restaurant/'.$slug);
+        $sectionsForNav = $this->menu->sectionsForNav((int) $restaurant->id);
+
+        if ($sectionSlug !== null && $sectionSlug !== '') {
+            $sectionRow = $this->menu->sectionWithMenuBySlug($restaurant, $sectionSlug);
+            if ($sectionRow === null) {
+                abort(404, 'Section not found.');
+            }
+            $sections = LegacyMenuViewData::normalizeSections([$sectionRow]);
+            $categories = LegacyMenuViewData::flattenCategoriesFromSections($sections);
+            $activeSection = $sections[0] ?? null;
+            $sectionMenuUrl = ($activeSection && ! empty($activeSection['slug']))
+                ? $baseUrl.'/'.$activeSection['slug']
+                : null;
+
+            return $this->renderMenu($templateId, $this->baseViewData($restaurant, $slug, $templateId, $sections, $categories, $sectionsForNav, array_merge([
+                'singleSectionView' => true,
+                'menuViewLevel' => 'section',
+                'activeSection' => $activeSection,
+                'activeCategory' => null,
+                'sectionMenuUrl' => $sectionMenuUrl,
+                'categoryMenuUrl' => null,
+            ], $this->reservationFormPayload($restaurant, $slug))));
+        }
+
+        $sections = LegacyMenuViewData::normalizeSections($this->menu->sectionsForHome($restaurant));
+        if (count($sections) === 1) {
+            $onlySection = $sections[0];
+            $secSlug = $onlySection['slug'] ?? 'menu';
+
+            return redirect()->to($baseUrl.'/'.$secSlug);
+        }
+
+        $categories = LegacyMenuViewData::flattenCategoriesFromSections($sections);
+
+        return $this->renderMenu($templateId, $this->baseViewData($restaurant, $slug, $templateId, $sections, $categories, $sectionsForNav, array_merge([
+            'singleSectionView' => false,
+            'menuViewLevel' => 'home',
+            'activeSection' => null,
+            'activeCategory' => null,
+            'sectionMenuUrl' => null,
+            'categoryMenuUrl' => null,
+        ], $this->reservationFormPayload($restaurant, $slug))));
     }
 
     private function renderTemplateSix(

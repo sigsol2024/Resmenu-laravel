@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Digital Menu Directory | ALO ALO Restaurant · Victoria Crown Plaza Hotel</title>
+<!-- Google Fonts: Playfair Display + Plus Jakarta Sans -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            burgundy: {
+              950: '#26040A',
+              900: '#38060F',
+              850: '#460813',
+              800: '#500C19',
+              700: '#6A1324',
+              600: '#831C30',
+            },
+            onyx: {
+              DEFAULT: '#121214',
+              surface: '#17171A',
+              card: '#1D1C21',
+              muted: '#242228'
+            },
+            ivory: {
+              DEFAULT: '#F6F1E8',
+              warm: '#EEE6DA',
+              muted: '#DDD1BF'
+            },
+            champagne: {
+              DEFAULT: '#CBB288',
+              hairline: 'rgba(203, 178, 136, 0.28)',
+              glow: 'rgba(203, 178, 136, 0.45)',
+              light: '#EEDDC0'
+            }
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    ::selection {
+      background-color: #500C19;
+      color: #F6F1E8;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-[#0e0e10] text-ivory font-sans antialiased selection:bg-burgundy-800 selection:text-ivory min-h-screen flex flex-col">
+<!-- ================= COMPACT STICKY HEADER ================= -->
+<header class="sticky top-0 z-50 bg-[#121214]/95 backdrop-blur-md border-b border-champagne-hairline transition-all">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-4">
+<!-- Brand & Hotel Crest -->
+<div class="flex items-center gap-3 min-w-0">
+<a class="flex-shrink-0 flex items-center p-1.5 bg-burgundy-900/80 border border-champagne-hairline rounded hover:border-champagne transition-colors" href="https://vcphotels.com/" rel="noopener noreferrer" target="_blank">
+<img alt="Victoria Crown Plaza Hotel Crest" class="h-6 sm:h-7 w-auto object-contain brightness-150" src="https://lh3.googleusercontent.com/aida/AEtjO1WAh2UlITa77tZNiG_KXTBVHmosYAG0qmAj450I65OOhEUBQ4D1POj44uq04_05DemhvR5b2ThdlNzfo68kmC9ry0Cmp5yDqrMw5ZQxsGaK2JtJx_sUD9eysoVswHa0V2G2ctR1_iSBvhvwE4qil2XMkQ3kQ4dxO9rcOcLb1V8VHRCLShDNYpp-NyBJTpiq86xd5IHhNnrmsNE39E9NB1jmOxqJvAfIiouLC5V5BkU43nbh7GyVlJQR1w0"/>
+</a>
+<div class="truncate">
+<a class="font-serif text-base sm:text-lg tracking-[0.14em] uppercase font-medium text-white hover:text-champagne transition-colors block leading-tight truncate" href="#menu-index">
+            ALO ALO
+          </a>
+<span class="text-[10px] tracking-[0.20em] uppercase text-champagne/80 block truncate">Victoria Crown Plaza Hotel</span>
+</div>
+</div>
+<!-- Center Indicator -->
+<div class="hidden lg:flex items-center gap-2 px-3 py-1 rounded-full border border-champagne/20 bg-black/40">
+<span class="w-1.5 h-1.5 rounded-full bg-champagne animate-pulse"></span>
+<span class="text-[10px] uppercase tracking-[0.24em] font-semibold text-ivory/80">Restaurant Digital Menu</span>
+</div>
+<!-- Right Navigation Direct Actions -->
+<div class="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+<nav class="hidden md:flex items-center gap-4 text-[11px] uppercase tracking-[0.16em] text-ivory/70">
+<a class="hover:text-champagne transition-colors" href="#menu-index">Food Menu</a>
+<a class="hover:text-champagne transition-colors" href="/menu-list/#drinks">Drinks &amp; Cellar</a>
+<a class="hover:text-champagne transition-colors" href="https://vcphotels.com/" rel="noopener noreferrer" target="_blank">Hotel Website</a>
+</nav>
+<a class="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 text-[11px] uppercase tracking-[0.18em] font-semibold text-white bg-burgundy-800 hover:bg-burgundy-700 border border-champagne/40 rounded transition-all shadow-sm active:translate-y-0.5" href="/menu-list/#drinks">
+<span>Drinks Menu</span>
+<span class="text-champagne font-serif text-sm">→</span>
+</a>
+</div>
+</div>
+</header>
+<!-- ================= SHORT HERO (35-45vh MAX) ================= -->
+<section class="relative bg-gradient-to-b from-[#16141a] via-[#1a080e] to-[#0e0e10] border-b border-champagne-hairline py-8 sm:py-12 overflow-hidden">
+<div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-burgundy-800/25 via-transparent to-transparent pointer-events-none"></div>
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+<!-- Hotel Eyebrow -->
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-burgundy-900/60 border border-champagne-hairline mb-3 sm:mb-4">
+<span class="text-champagne text-[10px]">◆</span>
+<span class="text-[10px] sm:text-[11px] uppercase tracking-[0.26em] text-ivory font-medium">Victoria Crown Plaza · Victoria Island</span>
+</div>
+<!-- Title & Subtitle -->
+<h1 class="font-serif text-3xl sm:text-5xl md:text-6xl tracking-wide uppercase text-white font-normal leading-tight">
+        ALO ALO
+      </h1>
+<p class="font-serif italic text-base sm:text-xl md:text-2xl text-champagne-light/90 font-normal mt-1 mb-3">
+        Restaurant Digital Menu
+      </p>
+<!-- Purpose Statement -->
+<p class="max-w-2xl mx-auto text-xs sm:text-sm text-ivory/75 font-light leading-relaxed mb-5">
+        Explore our authentic Nigerian heritage dishes, coastal grills, international classics, sharing platters, and cellar selections.
+      </p>
+<!-- Quick Status Pill -->
+<div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-onyx-card/90 border border-champagne-hairline text-[10px] sm:text-[11px] text-ivory/80 tracking-wider">
+<span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
+<span class="font-medium text-champagne">Kitchen open daily 6:30 AM – 11:00 PM</span>
+<span class="hidden sm:inline text-white/30">|</span>
+<span class="hidden sm:inline text-ivory/60">In-Room &amp; Table Dining</span>
+</div>
+</div>
+</section>
+<!-- ================= QUICK HORIZONTAL CATEGORY NAVIGATION BAR (STICKY) ================= -->
+<div class="sticky top-16 sm:top-20 z-40 bg-onyx/95 backdrop-blur border-b border-champagne-hairline shadow-md">
+<div class="max-w-7xl mx-auto px-4 sm:px-6">
+<div class="flex items-center gap-2 overflow-x-auto py-3 no-scrollbar scroll-smooth">
+<span class="text-[10px] uppercase tracking-[0.20em] text-champagne/60 font-semibold pl-1 pr-2 whitespace-nowrap hidden md:inline">Jump To:</span>
+<a class="px-3 py-1.5 text-[11px] uppercase tracking-[0.14em] font-medium rounded bg-white/5 hover:bg-burgundy-800 text-ivory hover:text-white border border-white/10 hover:border-champagne/40 whitespace-nowrap transition-colors" href="/menu-list/#breakfast">Breakfast</a>
+<a class="px-3 py-1.5 text-[11px] uppercase tracking-[0.14em] font-medium rounded bg-white/5 hover:bg-burgundy-800 text-ivory hover:text-white border border-white/10 hover:border-champagne/40 whitespace-nowrap transition-colors" href="/menu-list/#starters">Starters &amp; Salads</a>
+<a class="px-3 py-1.5 text-[11px] uppercase tracking-[0.14em] font-medium rounded bg-white/5 hover:bg-burgundy-800 text-ivory hover:text-white border border-white/10 hover:border-champagne/40 whitespace-nowrap transition-colors" href="/menu-list/#soups">Soups &amp; Appetizers</a>
+<a class="px-3 py-1.5 text-[11px] uppercase tracking-[0.14em] font-semibold rounded bg-burgundy-900/80 hover:bg-burgundy-700 text-champagne-light hover:text-white border border-champagne/40 whitespace-nowrap transition-colors" href="/menu-list/#national-menu">National Menu</a>
+<a class="px-3 py-1.5 text-[11px] uppercase tracking-[0.14em] font-semibold rounded bg-burgundy-900/80 hover:bg-burgundy-700 text-champagne-light hover:text-white border border-champagne/40 whitespace-nowrap transition-colors" href="/menu-list/#grill">Grill &amp; Ocean Catch</a>
+<a class="px-3 py-1.5 text-[11px] uppercase tracking-[0.14em] font-medium rounded bg-white/5 hover:bg-burgundy-800 text-ivory hover:text-white border border-white/10 hover:border-champagne/40 whitespace-nowrap transition-colors" href="/menu-list/#burgers">Burgers &amp; Wraps</a>
+<a class="px-3 py-1.5 text-[11px] uppercase tracking-[0.14em] font-medium rounded bg-white/5 hover:bg-burgundy-800 text-ivory hover:text-white border border-white/10 hover:border-champagne/40 whitespace-nowrap transition-colors" href="/menu-list/#trip-around-the-world">World Tour</a>
+<a class="px-3 py-1.5 text-[11px] uppercase tracking-[0.14em] font-semibold rounded bg-burgundy-900/80 hover:bg-burgundy-700 text-champagne-light hover:text-white border border-champagne/40 whitespace-nowrap transition-colors" href="/menu-list/#vcp-specials">VCP Specials</a>
+<a class="px-3 py-1.5 text-[11px] uppercase tracking-[0.14em] font-medium rounded bg-white/5 hover:bg-burgundy-800 text-ivory hover:text-white border border-white/10 hover:border-champagne/40 whitespace-nowrap transition-colors" href="/menu-list/#desserts">Desserts</a>
+<a class="px-3 py-1.5 text-[11px] uppercase tracking-[0.14em] font-medium rounded bg-white/5 hover:bg-burgundy-800 text-ivory hover:text-white border border-white/10 hover:border-champagne/40 whitespace-nowrap transition-colors" href="/menu-list/#extras">Extras &amp; Sides</a>
+<a class="px-3 py-1.5 text-[11px] uppercase tracking-[0.14em] font-semibold rounded bg-champagne text-burgundy-950 hover:bg-white whitespace-nowrap transition-colors" href="/menu-list/#drinks">Drinks Menu</a>
+</div>
+</div>
+</div>
+<!-- ================= MAIN SECTION: EXPLORE OUR MENU ================= -->
+<main class="flex-grow py-10 sm:py-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full" id="menu-index">
+<!-- Section Introduction -->
+<div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-10 pb-4 border-b border-champagne-hairline gap-3">
+<div>
+<span class="text-[10px] uppercase tracking-[0.24em] font-semibold text-champagne block mb-1">Catalog &amp; Selections</span>
+<h2 class="font-serif text-2xl sm:text-4xl text-white font-normal">
+          Explore Our Menu
+        </h2>
+</div>
+<p class="text-xs sm:text-sm text-ivory/60 font-light max-w-md">
+        Choose a category to explore our dishes and selections. All items are prepared freshly to order.
+      </p>
+</div>
+<!-- RESPONSIVE EDITORIAL ASYMMETRIC CATEGORY TILES -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-5 sm:gap-6">
+<!-- TILE 1: BREAKFAST (Large Feature: 7 cols) -->
+<a class="group lg:col-span-7 bg-onyx-card border border-champagne-hairline hover:border-champagne/80 rounded overflow-hidden flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:shadow-burgundy-950/40 relative" href="/menu-list/#breakfast">
+<div class="relative h-52 sm:h-64 overflow-hidden bg-onyx-surface">
+<img alt="Breakfast at ALO ALO" class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlILzJWIloLfuvUDpnNu3coPNDj4EQAY_D7VxdiJcw81sFiIuFLknxL2KfCmsV4SwL1izXhVlV6Zew15k4ZyBhM-45Q8Zu9pSrJMIjpe_Vu4jm53MF7IN-x2c9tnQARZh9rRQn_HWqmLKEbu_FlwoeqroPY-DGEfNedn9l214l9puWSnlY4yp8CehVRaT7snmhuKX9ILlpattClHO8F9gAJftRvrffiY8OFnwAtojxxqPfh2yZrwtZ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-onyx-card via-onyx-card/40 to-transparent"></div>
+<span class="absolute top-3 left-3 bg-burgundy-900/90 text-champagne text-[10px] font-semibold uppercase tracking-[0.20em] px-2.5 py-1 rounded border border-champagne/30">
+            Served 6:30 AM – 11:30 AM
+          </span>
+</div>
+<div class="p-5 sm:p-6 flex-grow flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-2">
+<h3 class="font-serif text-xl sm:text-2xl text-white group-hover:text-champagne transition-colors">Breakfast</h3>
+<span class="text-xs text-champagne/80 font-mono">01</span>
+</div>
+<p class="text-xs sm:text-sm text-ivory/70 mb-4 leading-relaxed">
+              Start your day with VCP Full English, Nigerian Yam &amp; Egg Sauce, Eggs Benedict, and American pancake stacks.
+            </p>
+<div class="space-y-2 border-t border-white/10 pt-3 text-xs">
+<div class="flex justify-between items-center text-ivory/80">
+<span>VCP Full English Breakfast</span>
+<span class="font-mono text-champagne font-medium">₦22,000</span>
+</div>
+<div class="flex justify-between items-center text-ivory/80">
+<span>Nigerian Breakfast with Yam or Plantain</span>
+<span class="font-mono text-champagne font-medium">₦22,000</span>
+</div>
+<div class="flex justify-between items-center text-ivory/80">
+<span>Eggs Benedict with Hollandaise</span>
+<span class="font-mono text-champagne font-medium">₦15,000</span>
+</div>
+</div>
+</div>
+<div class="mt-5 pt-3 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.16em] text-champagne group-hover:text-white transition-colors">
+<span>Explore Breakfast</span>
+<span class="transform group-hover:translate-x-1.5 transition-transform">→</span>
+</div>
+</div>
+</a>
+<!-- TILE 2: STARTERS & SALADS (5 cols) -->
+<a class="group lg:col-span-5 bg-onyx-card border border-champagne-hairline hover:border-champagne/80 rounded overflow-hidden flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:shadow-burgundy-950/40" href="/menu-list/#starters">
+<div class="p-6 flex-grow flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="text-[10px] uppercase tracking-[0.22em] text-champagne font-semibold">Cold &amp; Crisp</span>
+<span class="text-xs text-champagne/80 font-mono">02</span>
+</div>
+<h3 class="font-serif text-xl sm:text-2xl text-white group-hover:text-champagne transition-colors mb-2">Starters &amp; Salads</h3>
+<p class="text-xs sm:text-sm text-ivory/70 mb-5 leading-relaxed">
+              Fresh Caprese with heirloom tomatoes, classic Waldorf salad, vibrant Italian greens, and light cold platters.
+            </p>
+<div class="space-y-2.5 border-t border-white/10 pt-3 text-xs">
+<div class="flex justify-between items-center text-ivory/80">
+<span>Caprese Salad with Basil Pesto</span>
+<span class="font-mono text-champagne font-medium">₦15,000</span>
+</div>
+<div class="flex justify-between items-center text-ivory/80">
+<span>Waldorf Salad with Walnuts &amp; Apple</span>
+<span class="font-mono text-champagne font-medium">₦15,000</span>
+</div>
+<div class="flex justify-between items-center text-ivory/80">
+<span>Garden Crisp Salad with Vinaigrette</span>
+<span class="font-mono text-champagne font-medium">₦12,500</span>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-3 border-t border-white/10 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.16em] text-champagne group-hover:text-white transition-colors">
+<span>Explore Starters &amp; Salads</span>
+<span class="transform group-hover:translate-x-1.5 transition-transform">→</span>
+</div>
+</div>
+</a>
+<!-- TILE 3: SOUPS & APPETIZERS (5 cols) -->
+<a class="group lg:col-span-5 bg-onyx-card border border-champagne-hairline hover:border-champagne/80 rounded overflow-hidden flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:shadow-burgundy-950/40" href="/menu-list/#soups">
+<div class="p-6 flex-grow flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="text-[10px] uppercase tracking-[0.22em] text-champagne font-semibold">Warm &amp; Savory</span>
+<span class="text-xs text-champagne/80 font-mono">03</span>
+</div>
+<h3 class="font-serif text-xl sm:text-2xl text-white group-hover:text-champagne transition-colors mb-2">Soups &amp; Appetizers</h3>
+<p class="text-xs sm:text-sm text-ivory/70 mb-5 leading-relaxed">
+              Aromatic Nigerian hot pepper soups, continental veloutés, crispy pastry appetisers, and spicy poultry bites.
+            </p>
+<div class="space-y-2.5 border-t border-white/10 pt-3 text-xs">
+<div class="flex justify-between items-center text-ivory/80">
+<span>Nigerian Pepper Soup (Catfish or Goat)</span>
+<span class="font-mono text-champagne font-medium">₦15,000</span>
+</div>
+<div class="flex justify-between items-center text-ivory/80">
+<span>Spicy Buffalo Wings with Dip</span>
+<span class="font-mono text-champagne font-medium">₦15,000</span>
+</div>
+<div class="flex justify-between items-center text-ivory/80">
+<span>Crispy Spiced Beef Samosas</span>
+<span class="font-mono text-champagne font-medium">₦8,500</span>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-3 border-t border-white/10 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.16em] text-champagne group-hover:text-white transition-colors">
+<span>Explore Soups &amp; Appetizers</span>
+<span class="transform group-hover:translate-x-1.5 transition-transform">→</span>
+</div>
+</div>
+</a>
+<!-- TILE 4: NATIONAL MENU (NIGERIAN HERITAGE) (Prominent Feature: 7 cols with IMAGE_5) -->
+<a class="group lg:col-span-7 bg-burgundy-950/60 border border-burgundy-700/60 hover:border-champagne rounded overflow-hidden flex flex-col justify-between transition-all duration-300 hover:shadow-2xl hover:shadow-burgundy-950/60" href="/menu-list/#national-menu">
+<div class="relative h-56 sm:h-64 overflow-hidden bg-onyx">
+<img alt="Smoky Nigerian Jollof Rice with Peppered Beef at ALO ALO" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida/AEtjO1WCpDYtK4JX4fAnqt6QafWdBx1WjJydB2Ty568LfDlH7xkaHjYyXfB0wbd04hQEQksIiwKGobUQOmAXVIy--RgDKN1NfBK0XMXTn0299GHbSxXMBM12VozSmEDK9Iso1h18JNwK2KgwsGeK5iAcq31YAg_6HX_67C6ezH0ZvDSJ6M3r3vn2NJJBWhTONiSitJamziG1TgkrVpBxK7vpAPl7qfh-1sdlX4bzSJzybI5VE14v9kNmGmay4VM"/>
+<div class="absolute inset-0 bg-gradient-to-t from-burgundy-950 via-burgundy-950/30 to-transparent"></div>
+<span class="absolute top-3 left-3 bg-burgundy-800 text-white text-[10px] font-semibold uppercase tracking-[0.20em] px-2.5 py-1 rounded border border-champagne/40">
+            Chef's Signature
+          </span>
+</div>
+<div class="p-5 sm:p-6 flex-grow flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-2">
+<h3 class="font-serif text-xl sm:text-2xl text-white group-hover:text-champagne transition-colors">National Menu (Nigerian Heritage)</h3>
+<span class="text-xs text-champagne/80 font-mono">04</span>
+</div>
+<p class="text-xs sm:text-sm text-ivory/80 mb-4 leading-relaxed">
+              Authentic slow-simmered soups (Afang, Egusi, Oha, Edikang Ikong) with choice of swallow, native rice, spicy asun, and peppered snail.
+            </p>
+<div class="space-y-2 border-t border-champagne-hairline pt-3 text-xs">
+<div class="flex justify-between items-center text-ivory/90">
+<span>Smokey Jollof Rice with Peppered Beef &amp; Dodo</span>
+<span class="font-mono text-champagne font-semibold">₦25,000</span>
+</div>
+<div class="flex justify-between items-center text-ivory/90">
+<span>Traditional Soups with Swallow (Poundo / Semo / Amala)</span>
+<span class="font-mono text-champagne font-semibold">₦25,000</span>
+</div>
+<div class="flex justify-between items-center text-ivory/90">
+<span>Spicy Asun Goat Meat / Peppered Snail</span>
+<span class="font-mono text-champagne font-semibold">₦25,000</span>
+</div>
+</div>
+</div>
+<div class="mt-5 pt-3 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.16em] text-champagne group-hover:text-white transition-colors">
+<span>Explore National Menu</span>
+<span class="transform group-hover:translate-x-1.5 transition-transform">→</span>
+</div>
+</div>
+</a>
+<!-- TILE 5: FROM THE GRILL & OCEAN CATCH (Prominent Feature: 7 cols with IMAGE_4) -->
+<a class="group lg:col-span-7 bg-onyx-card border border-champagne-hairline hover:border-champagne/80 rounded overflow-hidden flex flex-col justify-between transition-all duration-300 hover:shadow-2xl hover:shadow-burgundy-950/50" href="/menu-list/#grill">
+<div class="relative h-56 sm:h-64 overflow-hidden bg-onyx">
+<img alt="Grilled Jumbo Tiger Prawns and Prime Seafood at ALO ALO" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida/AEtjO1UpT9zU-WlkT1X3klrh7Q1Mg9YansZ8DoWuwJZ8NdVqP09goStWUCyjyTEIH0ZW5apRu7FDPHV9v-yMZ0HbaYmKvCg0NKVJc47oyUyqhKeUVhFRutSCAcxKW3JVJcyoQLlxtZRijsFlUX97YJvLroU32ul7DHFEB6so1W68rMnqqkU8aAYHMXOF0_bWW-tTKTOlgWGIN4Qyn-rg0TcAs-BDR0YHBmCgdDfzvnJKguNvnkTr1mwssKdmk2w"/>
+<div class="absolute inset-0 bg-gradient-to-t from-onyx-card via-onyx-card/30 to-transparent"></div>
+<span class="absolute top-3 left-3 bg-burgundy-900/90 text-champagne text-[10px] font-semibold uppercase tracking-[0.20em] px-2.5 py-1 rounded border border-champagne/30">
+            Charcoal &amp; Fire
+          </span>
+</div>
+<div class="p-5 sm:p-6 flex-grow flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-2">
+<h3 class="font-serif text-xl sm:text-2xl text-white group-hover:text-champagne transition-colors">From The Grill &amp; Ocean Catch</h3>
+<span class="text-xs text-champagne/80 font-mono">05</span>
+</div>
+<p class="text-xs sm:text-sm text-ivory/75 mb-4 leading-relaxed">
+              Prime seared steaks and Atlantic seafood prepared to order with clarifying herb butter and local pepper marinades.
+            </p>
+<div class="space-y-2 border-t border-white/10 pt-3 text-xs">
+<div class="flex justify-between items-center text-ivory/80">
+<span>Grilled Jumbo Prawns with Herb Glaze</span>
+<span class="font-mono text-champagne font-semibold">₦45,000</span>
+</div>
+<div class="flex justify-between items-center text-ivory/80">
+<span>Rib Eye Steak &amp; T-Bone Cut (Choice of Sauce)</span>
+<span class="font-mono text-champagne font-semibold">₦45,000</span>
+</div>
+<div class="flex justify-between items-center text-ivory/80">
+<span>Catfish in Local Pepper Marinade</span>
+<span class="font-mono text-champagne font-semibold">₦50,000</span>
+</div>
+</div>
+</div>
+<div class="mt-5 pt-3 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.16em] text-champagne group-hover:text-white transition-colors">
+<span>Explore Grill &amp; Seafood</span>
+<span class="transform group-hover:translate-x-1.5 transition-transform">→</span>
+</div>
+</div>
+</a>
+<!-- TILE 6: BURGERS, SANDWICHES & WRAPS (5 cols) -->
+<a class="group lg:col-span-5 bg-onyx-card border border-champagne-hairline hover:border-champagne/80 rounded overflow-hidden flex flex-col justify-between transition-all duration-300 hover:shadow-xl" href="/menu-list/#burgers">
+<div class="p-6 flex-grow flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="text-[10px] uppercase tracking-[0.22em] text-champagne font-semibold">Casual Gourmet</span>
+<span class="text-xs text-champagne/80 font-mono">06</span>
+</div>
+<h3 class="font-serif text-xl sm:text-2xl text-white group-hover:text-champagne transition-colors mb-2">Burgers, Sandwiches &amp; Wraps</h3>
+<p class="text-xs sm:text-sm text-ivory/70 mb-5 leading-relaxed">
+              Build-your-own artisan beef burgers, Nigerian-style beef or chicken shawarma, and classic multi-deck club sandwiches.
+            </p>
+<div class="space-y-2.5 border-t border-white/10 pt-3 text-xs">
+<div class="flex justify-between items-center text-ivory/80">
+<span>Build-Your-Own Gourmet Burger with Fries</span>
+<span class="font-mono text-champagne font-medium">₦18,000</span>
+</div>
+<div class="flex justify-between items-center text-ivory/80">
+<span>Nigerian Style Shawarma Wrap</span>
+<span class="font-mono text-champagne font-medium">₦18,000</span>
+</div>
+<div class="flex justify-between items-center text-ivory/80">
+<span>Triple-Decker VCP Club Sandwich</span>
+<span class="font-mono text-champagne font-medium">₦16,500</span>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-3 border-t border-white/10 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.16em] text-champagne group-hover:text-white transition-colors">
+<span>Explore Burgers &amp; Wraps</span>
+<span class="transform group-hover:translate-x-1.5 transition-transform">→</span>
+</div>
+</div>
+</a>
+<!-- TILE 7: TRIP AROUND THE WORLD (Wide Editorial Feature: 12 cols) -->
+<a class="group lg:col-span-12 bg-[#17141b] border border-champagne-hairline hover:border-champagne p-6 sm:p-8 rounded transition-all duration-300 hover:shadow-2xl" href="/menu-list/#trip-around-the-world">
+<div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-champagne-hairline gap-2 mb-6">
+<div>
+<div class="flex items-center gap-2">
+<span class="text-[10px] uppercase tracking-[0.24em] text-champagne font-semibold">Global Culinary Pantry</span>
+<span class="text-xs text-champagne/80 font-mono">07</span>
+</div>
+<h3 class="font-serif text-2xl sm:text-3xl text-white group-hover:text-champagne transition-colors mt-1">Trip Around The World</h3>
+</div>
+<div class="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-champagne font-medium">
+<span>Venice · Shanghai · Mumbai</span>
+<span class="text-white transform group-hover:translate-x-1 transition-transform">→</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+<!-- Venice -->
+<div class="bg-black/30 p-4 border border-white/5 rounded">
+<span class="text-[10px] uppercase tracking-[0.20em] text-champagne font-semibold block mb-1">Venice · Italian</span>
+<h4 class="font-serif text-base text-white mb-2">Artisanal Pastas &amp; Risotto</h4>
+<div class="space-y-1.5 text-ivory/70">
+<div class="flex justify-between">
+<span>Aubergine Parmigiana</span>
+<span class="font-mono text-champagne">₦30,000</span>
+</div>
+<div class="flex justify-between">
+<span>Creamy Mushroom Risotto</span>
+<span class="font-mono text-champagne">₦28,000</span>
+</div>
+</div>
+</div>
+<!-- Shanghai -->
+<div class="bg-black/30 p-4 border border-white/5 rounded">
+<span class="text-[10px] uppercase tracking-[0.20em] text-champagne font-semibold block mb-1">Shanghai · Asian</span>
+<h4 class="font-serif text-base text-white mb-2">Wok Specials &amp; Noodles</h4>
+<div class="space-y-1.5 text-ivory/70">
+<div class="flex justify-between">
+<span>Crispy Shredded Beef</span>
+<span class="font-mono text-champagne">₦28,000</span>
+</div>
+<div class="flex justify-between">
+<span>Singapore Fried Noodles</span>
+<span class="font-mono text-champagne">₦28,000</span>
+</div>
+</div>
+</div>
+<!-- Mumbai -->
+<div class="bg-black/30 p-4 border border-white/5 rounded">
+<span class="text-[10px] uppercase tracking-[0.20em] text-champagne font-semibold block mb-1">Mumbai · Indian</span>
+<h4 class="font-serif text-base text-white mb-2">Masalas &amp; Fragrant Biryanis</h4>
+<div class="space-y-1.5 text-ivory/70">
+<div class="flex justify-between">
+<span>Paneer Tikka Masala</span>
+<span class="font-mono text-champagne">₦25,000</span>
+</div>
+<div class="flex justify-between">
+<span>Dal Tadka &amp; Steamed Rice</span>
+<span class="font-mono text-champagne">₦24,000</span>
+</div>
+</div>
+</div>
+</div>
+</a>
+<!-- TILE 8: VCP SPECIALS & TABLE FEASTS (Prominent Highlight: 6 cols) -->
+<a class="group lg:col-span-6 bg-burgundy-900/40 border border-burgundy-700/70 hover:border-champagne p-6 sm:p-7 rounded flex flex-col justify-between transition-all duration-300 hover:shadow-2xl" href="/menu-list/#vcp-specials">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="text-[10px] uppercase tracking-[0.24em] text-champagne font-semibold">Grand Banquets &amp; Sharing</span>
+<span class="text-xs text-champagne/80 font-mono">08</span>
+</div>
+<h3 class="font-serif text-2xl text-white group-hover:text-champagne transition-colors mb-2">VCP Specials &amp; Table Feasts</h3>
+<p class="text-xs sm:text-sm text-ivory/75 mb-4 leading-relaxed">
+            Monumental coastal feasts and pit platters curated for executive lunches, group celebrations, and grand dining.
+          </p>
+<div class="space-y-2 border-t border-champagne-hairline pt-3 text-xs">
+<div class="flex justify-between items-center text-ivory/90">
+<span class="font-medium">The Seafood Boil (Lobster, Crab, Prawns)</span>
+<span class="font-mono text-champagne font-bold">₦300,000</span>
+</div>
+<div class="flex justify-between items-center text-ivory/90">
+<span>Fisherman Platter (Fish, Calamari, Snails)</span>
+<span class="font-mono text-champagne font-semibold">₦105,000</span>
+</div>
+<div class="flex justify-between items-center text-ivory/90">
+<span>Carnivore Sharing Platter (Beef, Chicken, Sausages)</span>
+<span class="font-mono text-champagne font-semibold">₦75,000</span>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-3 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.16em] text-champagne group-hover:text-white transition-colors">
+<span>Explore VCP Specials</span>
+<span class="transform group-hover:translate-x-1.5 transition-transform">→</span>
+</div>
+</a>
+<!-- TILE 9: DESSERTS & SWEET FINISHES (3 cols) -->
+<a class="group lg:col-span-3 bg-onyx-card border border-champagne-hairline hover:border-champagne/80 rounded p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-xl" href="/menu-list/#desserts">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="text-[10px] uppercase tracking-[0.20em] text-champagne font-semibold">Sweet Course</span>
+<span class="text-xs text-champagne/80 font-mono">09</span>
+</div>
+<h3 class="font-serif text-xl text-white group-hover:text-champagne transition-colors mb-2">Desserts</h3>
+<p class="text-xs text-ivory/70 mb-4 leading-relaxed">
+            Decadent cake slices, smooth cream caramel, and tropical parfaits.
+          </p>
+<div class="space-y-2 border-t border-white/10 pt-3 text-xs">
+<div class="flex justify-between text-ivory/80">
+<span>Cream Caramel</span>
+<span class="font-mono text-champagne">₦5,000</span>
+</div>
+<div class="flex justify-between text-ivory/80">
+<span>Layered Cake Slices</span>
+<span class="font-mono text-champagne">₦6,000</span>
+</div>
+<div class="flex justify-between text-ivory/80">
+<span>Fruit Parfait</span>
+<span class="font-mono text-champagne">₦8,000</span>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.16em] text-champagne group-hover:text-white transition-colors">
+<span>View Desserts</span>
+<span>→</span>
+</div>
+</a>
+<!-- TILE 10: EXTRAS & ACCOMPANIMENTS (3 cols) -->
+<a class="group lg:col-span-3 bg-onyx-card border border-champagne-hairline hover:border-champagne/80 rounded p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-xl" href="/menu-list/#extras">
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="text-[10px] uppercase tracking-[0.20em] text-champagne font-semibold">Sides &amp; Sauces</span>
+<span class="text-xs text-champagne/80 font-mono">10</span>
+</div>
+<h3 class="font-serif text-xl text-white group-hover:text-champagne transition-colors mb-2">Extras &amp; Sides</h3>
+<p class="text-xs text-ivory/70 mb-4 leading-relaxed">
+            Fried dodo plantain, spiced yam fries, extra swallow portions, and native stew toppings.
+          </p>
+<div class="space-y-2 border-t border-white/10 pt-3 text-xs">
+<div class="flex justify-between text-ivory/80">
+<span>Fried Sweet Dodo</span>
+<span class="font-mono text-champagne">₦4,000</span>
+</div>
+<div class="flex justify-between text-ivory/80">
+<span>Spiced Yam Fries</span>
+<span class="font-mono text-champagne">₦4,500</span>
+</div>
+<div class="flex justify-between text-ivory/80">
+<span>Extra Swallow / Soups</span>
+<span class="font-mono text-champagne">From ₦3,500</span>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.16em] text-champagne group-hover:text-white transition-colors">
+<span>View Extras</span>
+<span>→</span>
+</div>
+</a>
+<!-- TILE 11: THE CELLAR & DRINKS MENU (Full Width Atmospheric Card: 12 cols with IMAGE_3) -->
+<a class="group lg:col-span-12 bg-onyx border border-champagne-hairline hover:border-champagne rounded overflow-hidden grid grid-cols-1 lg:grid-cols-12 transition-all duration-300 hover:shadow-2xl" href="/menu-list/#drinks">
+<div class="lg:col-span-5 relative min-h-[220px] sm:min-h-[280px]">
+<img alt="Moody cocktail bar at ALO ALO Restaurant" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida/AEtjO1WGiEH2QjRN4sI3CQ68vZ4b4jFYEHQJoH2QRTWYvBSIwCRRdvRi8d8sHOeLyrt0-_E70SVq1-tv0wsJQlT8x2NNRRjARkSP_4tCCCCIm6eUebzobxw1SyS3KxbfW9xHDWWbLCslXhJ_FGLWgPvPRZ1KzWLp7Rb9TZ3ukor0oHw-VU6IMnHVD-vX0QSA7HSz7W6GT-71_66Mo3MdmLpnz2btlVwX-z6VU0XxRHdfsWRy_xkCQHJy2axO-Q"/>
+<div class="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-onyx via-onyx/40 to-transparent"></div>
+</div>
+<div class="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] uppercase tracking-[0.24em] text-champagne font-semibold">Cellar, Cocktails &amp; Spirits</span>
+<span class="text-xs text-champagne/80 font-mono">11</span>
+</div>
+<h3 class="font-serif text-2xl sm:text-3xl text-white group-hover:text-champagne transition-colors mb-2">The Cellar &amp; Drinks Menu</h3>
+<p class="text-xs sm:text-sm text-ivory/70 mb-5 leading-relaxed">
+              Crafted cocktails, artisanal mocktails, freshly brewed espresso, aged single malts, prestige cognacs, and chilled champagne.
+            </p>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-xs border-t border-white/10 pt-3">
+<div class="flex justify-between items-center text-ivory/85">
+<span>Signature Zobo Sangria</span>
+<span class="font-mono text-champagne font-medium">₦10,000</span>
+</div>
+<div class="flex justify-between items-center text-ivory/85">
+<span>Espresso Martini</span>
+<span class="font-mono text-champagne font-medium">₦14,000</span>
+</div>
+<div class="flex justify-between items-center text-ivory/85">
+<span>Classic Chapman Mocktail</span>
+<span class="font-mono text-champagne font-medium">₦6,000</span>
+</div>
+<div class="flex justify-between items-center text-ivory/85">
+<span>Champagnes &amp; Malts</span>
+<span class="font-mono text-champagne font-medium">By Bottle / Pour</span>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-3 border-t border-white/10 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.18em] text-champagne group-hover:text-white transition-colors">
+<span>Access Full Drinks &amp; Cellar Menu</span>
+<span class="transform group-hover:translate-x-1.5 transition-transform">→</span>
+</div>
+</div>
+</a>
+</div>
+</main>
+<!-- ================= MINIMAL REFINED FOOTER ================= -->
+<footer class="bg-[#0b0a0d] border-t border-champagne-hairline mt-12 py-10 text-ivory/60 text-xs">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-8 border-b border-white/10">
+<!-- Identity -->
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="font-serif text-lg text-white uppercase tracking-wider">ALO ALO</span>
+<span class="text-champagne">·</span>
+<span class="text-xs uppercase tracking-wider text-ivory/80">Victoria Crown Plaza Hotel</span>
+</div>
+<p class="text-[11px] text-ivory/50">292B Ajose Adeogun Street, Victoria Island, Lagos, Nigeria</p>
+</div>
+<!-- Quick Links -->
+<div class="flex flex-wrap items-center gap-5 text-[11px] uppercase tracking-wider">
+<a class="text-ivory/75 hover:text-champagne transition-colors" href="/menu-list/">Digital Menu</a>
+<a class="text-ivory/75 hover:text-champagne transition-colors" href="/menu-list/#drinks">Wine &amp; Drinks</a>
+<a class="text-ivory/75 hover:text-champagne transition-colors" href="https://vcphotels.com/" rel="noopener noreferrer" target="_blank">Hotel Accommodations</a>
+<a class="text-champagne hover:underline font-mono" href="tel:+23412719800">+234 (1) 271 9800</a>
+</div>
+</div>
+<!-- Bottom Credits -->
+<div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] text-ivory/40 tracking-wider">
+<p>© 2025 ALO ALO Restaurant at Victoria Crown Plaza Hotel. All rights reserved.</p>
+<p>Direct Inquiries &amp; Dining Reservations: +234 (1) 271 9800</p>
+</div>
+</div>
+</footer>
+</body></html>

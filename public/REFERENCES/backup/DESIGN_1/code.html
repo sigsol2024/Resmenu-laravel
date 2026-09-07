@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Alo Alo Restaurant | Victoria Crown Plaza Hotel (VCP Lagos)</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "burgundy-deep": "#4a0012",
+            "burgundy-wine": "#6a1324",
+            "burgundy-dark": "#36050e",
+            "burgundy-soft": "#8b1e32",
+            "onyx-surface": "#0c0c0e",
+            "onyx-card": "#141417",
+            "onyx-border": "#24242b",
+            "ivory-warm": "#FAF7F2",
+            "ivory-muted": "#F3EFE9",
+            "champagne-gold": "#C5A880",
+            "champagne-light": "#E8D8C3",
+            "gold-accent": "#D4AF37",
+          },
+          fontFamily: {
+            display: ['Playfair Display', 'serif'],
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overscroll-behavior-y: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .font-serif-luxury {
+      font-family: 'Playfair Display', serif;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .glass-dark {
+      background: rgba(12, 12, 14, 0.82);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .glass-burgundy {
+      background: rgba(74, 0, 18, 0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .glass-light {
+      background: rgba(250, 247, 242, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+  </style>
+</head>
+<body class="bg-onyx-surface text-stone-200 antialiased selection:bg-burgundy-wine selection:text-white pb-28">
+<!-- TOP STATUS & CONCIERGE BAR -->
+<header class="fixed top-0 left-0 right-0 z-50 glass-dark border-b border-onyx-border/70 transition-all duration-300">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+<a class="flex items-center gap-3" href="#hero">
+<!-- VCP Crest Logo Integration -->
+<div class="bg-white/95 px-2 py-1 rounded-sm flex items-center h-9">
+<img alt="Victoria Crown Plaza Hotel - Alo Alo Logo" class="h-7 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XUIZGGlt1SCcYmma6bFR7MHA-YfdNt0521jbUsUnWNkF5rzBwXlLuxGqoeh_lW9XNdQz1kWxYPtMFJ2qDOiT393N3qMe2uEYvKr5PTcfJwkaTTQPaTI95E0G1icLFeN5u9EY9lt8xfFa4_P7dJZADZM1bUjUr8uV4nFIn-L9-G_6bLT_Q3oRUazsOde8CrnV-ErzCxcGfj6O9SA0zcMRkFOipe5iqiiPVcEFaavAEmq8i8mG3Rb5Lc6F5n"/>
+</div>
+<div class="hidden sm:flex flex-col">
+<span class="font-serif-luxury text-sm tracking-widest text-champagne-light uppercase font-semibold">ALO ALO</span>
+<span class="text-[9px] uppercase tracking-[0.25em] text-white/60">VCP Hotel • Lagos</span>
+</div>
+</a>
+<!-- Quick Contact Pills -->
+<div class="flex items-center gap-2 sm:gap-3">
+<a class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-burgundy-wine/30 border border-burgundy-wine/60 text-champagne-light text-xs font-medium hover:bg-burgundy-wine transition-all" href="tel:+23412719800">
+<span class="material-symbols-outlined text-[15px] text-champagne-gold">call</span>
+<span class="hidden xs:inline">Ext 412 / Reservations</span>
+<span class="xs:hidden">Call</span>
+</a>
+<a class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 text-xs font-medium hover:bg-emerald-900/60 transition-all" href="https://wa.me/23412719800" target="_blank">
+<span class="material-symbols-outlined text-[15px]">chat</span>
+<span class="hidden sm:inline">WhatsApp</span>
+</a>
+<a class="hidden md:inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-burgundy-wine text-white text-xs font-semibold uppercase tracking-wider hover:bg-burgundy-soft transition-all shadow-md shadow-burgundy-deep/40" href="#table-booking">
+          Book Table
+        </a>
+</div>
+</div>
+</header>
+<!-- 1. CINEMATIC FULL-BLEED HERO -->
+<section class="relative min-h-[92vh] sm:min-h-screen flex items-end justify-center pt-24 pb-16 px-4 sm:px-6 overflow-hidden" id="hero">
+<!-- Hero Image & Multi-layer Vignette -->
+<div class="absolute inset-0 z-0">
+<img alt="Atmospheric candlelit dining at Alo Alo Restaurant, Victoria Crown Plaza Hotel" class="w-full h-full object-cover object-center transform scale-105 transition-transform duration-1000 ease-out" id="hero-img" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbpafPzIoH6CYIq7zqKNLw3CKP2O0KAdfibBpAWBYDog_rshX8MMc0LATRFr-Z4H9c2kZXVOKpYPD-LAuNAE2NbGNGuHsuRxU5zGbPmltDkP7wDObHU69O-SQ929vWuLRxshRjezr5AUThcEB5e3rdJu4f7vKFX3tBV0LRFMOlNN_pUZb0mtwNO8-fGgY22dQNBTbb6zO6xu2GydrHaBROJYdtIQ8hkPxpRx4XOOARtq1o-KK-JjZU8g"/>
+<div class="absolute inset-0 bg-gradient-to-t from-onyx-surface via-onyx-surface/80 to-burgundy-deep/40"></div>
+<div class="absolute inset-0 bg-radial-vignette opacity-70"></div>
+</div>
+<!-- Content Card Mobile-First -->
+<div class="relative z-10 w-full max-w-3xl mx-auto text-center space-y-5">
+<div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-black/60 border border-champagne-gold/30 backdrop-blur-md">
+<span class="w-1.5 h-1.5 rounded-full bg-champagne-gold animate-ping"></span>
+<span class="text-[10px] sm:text-xs tracking-[0.25em] uppercase text-champagne-light font-semibold">292B Ajose Adeogun • Victoria Island</span>
+</div>
+<h1 class="font-serif-luxury text-4xl sm:text-6xl md:text-7xl text-white font-normal tracking-tight leading-[1.1]">
+        Alo Alo <br/>
+<span class="italic font-light text-champagne-gold">Restaurant &amp; Lounge</span>
+</h1>
+<p class="text-sm sm:text-base text-stone-300 max-w-xl mx-auto leading-relaxed font-light">
+        An elevated sanctuary of Nigerian culinary heritage &amp; continental French gastronomy inside Victoria Crown Plaza Hotel.
+      </p>
+<!-- Digital Search Bar in Hero -->
+<div class="relative max-w-md mx-auto pt-2">
+<div class="relative flex items-center bg-black/70 backdrop-blur-xl border border-white/20 rounded-full shadow-2xl p-1.5 focus-within:border-champagne-gold transition-all">
+<span class="material-symbols-outlined text-champagne-gold pl-3 pr-2 text-xl">search</span>
+<input class="w-full bg-transparent border-none text-xs sm:text-sm text-white placeholder-stone-400 focus:outline-none focus:ring-0" id="menu-search-input" placeholder="Search dishes, wine, cuts, cocktails..." type="text"/>
+<button class="hidden text-stone-400 hover:text-white px-2 py-1 text-xs uppercase tracking-wider" id="clear-search-btn">Clear</button>
+</div>
+</div>
+<!-- Quick Operation Pills -->
+<div class="flex flex-wrap items-center justify-center gap-2 pt-2">
+<span class="px-3 py-1 rounded-md text-[11px] bg-white/10 text-stone-200 border border-white/10 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[13px] text-champagne-gold">wb_sunny</span> Breakfast 06:30 – 11:00
+        </span>
+<span class="px-3 py-1 rounded-md text-[11px] bg-white/10 text-stone-200 border border-white/10 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[13px] text-champagne-gold">restaurant</span> All-Day Carte 12:00 – 23:00
+        </span>
+<span class="px-3 py-1 rounded-md text-[11px] bg-white/10 text-stone-200 border border-white/10 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[13px] text-champagne-gold">room_service</span> In-Room Cloche 24 Hours
+        </span>
+</div>
+</div>
+</section>
+<!-- STICKY HORIZONTAL CATEGORY NAVIGATION -->
+<div class="sticky top-16 z-40 glass-dark border-b border-onyx-border">
+<div class="max-w-7xl mx-auto px-4 py-2.5">
+<div class="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth whitespace-nowrap" id="category-pills-nav">
+<a class="category-tab active px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wider bg-burgundy-wine text-white border border-burgundy-soft transition-all" href="#signatures">Signatures</a>
+<a class="category-tab px-3.5 py-1.5 rounded-full text-xs font-medium tracking-wider text-stone-300 hover:text-white hover:bg-white/10 transition-all" href="#grills">Grills &amp; Prime Cuts</a>
+<a class="category-tab px-3.5 py-1.5 rounded-full text-xs font-medium tracking-wider text-stone-300 hover:text-white hover:bg-white/10 transition-all" href="#nigerian-heritage">Nigerian Heritage</a>
+<a class="category-tab px-3.5 py-1.5 rounded-full text-xs font-medium tracking-wider text-stone-300 hover:text-white hover:bg-white/10 transition-all" href="#vcp-specials">Grand Platters</a>
+<a class="category-tab px-3.5 py-1.5 rounded-full text-xs font-medium tracking-wider text-stone-300 hover:text-white hover:bg-white/10 transition-all" href="#cellar-bar">Cellar &amp; Bar</a>
+<a class="category-tab px-3.5 py-1.5 rounded-full text-xs font-medium tracking-wider text-stone-300 hover:text-white hover:bg-white/10 transition-all" href="#breakfast">Breakfast</a>
+<a class="category-tab px-3.5 py-1.5 rounded-full text-xs font-medium tracking-wider text-stone-300 hover:text-white hover:bg-white/10 transition-all" href="#craft-bar">Craft Atelier</a>
+<a class="category-tab px-3.5 py-1.5 rounded-full text-xs font-medium tracking-wider text-stone-300 hover:text-white hover:bg-white/10 transition-all" href="#starters">Starters &amp; Soups</a>
+<a class="category-tab px-3.5 py-1.5 rounded-full text-xs font-medium tracking-wider text-stone-300 hover:text-white hover:bg-white/10 transition-all" href="#world-tour">World Tour</a>
+<a class="category-tab px-3.5 py-1.5 rounded-full text-xs font-medium tracking-wider text-stone-300 hover:text-white hover:bg-white/10 transition-all" href="#desserts">Desserts &amp; Sides</a>
+</div>
+</div>
+</div>
+<!-- SEARCH FEEDBACK BANNER (Hidden unless active) -->
+<div class="hidden max-w-7xl mx-auto px-4 pt-4" id="search-feedback">
+<div class="p-3 bg-burgundy-deep/60 border border-burgundy-wine rounded-xl flex items-center justify-between text-xs text-stone-300">
+<span>Filtering dishes by: <strong class="text-champagne-light" id="search-term-display"></strong></span>
+<button class="underline text-champagne-gold" onclick="resetSearch()">Show all dishes</button>
+</div>
+</div>
+<!-- 2. CHEF'S SIGNATURE SELECTION (DARK ONYX EDITORIAL) -->
+<section class="py-14 sm:py-20 px-4 sm:px-6 bg-onyx-surface scroll-mt-24 menu-section" id="signatures">
+<div class="max-w-7xl mx-auto">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-10 pb-4 border-b border-onyx-border">
+<div>
+<span class="text-xs uppercase tracking-[0.25em] text-champagne-gold font-semibold">Cuisine d'Auteur</span>
+<h2 class="font-serif-luxury text-3xl sm:text-4xl text-white mt-1">Chef’s Signature Selection</h2>
+</div>
+<p class="text-xs sm:text-sm text-stone-400 max-w-md mt-2 md:mt-0">Artfully composed centerpieces reflecting the premier gastronomic standard of Victoria Crown Plaza Hotel.</p>
+</div>
+<!-- Feature Spotlight Card with https://lh3.googleusercontent.com/aida/AEtjO1UIGWL_7KF8b0g44Dn548zUZJDG5o8J-W3HI8rrrFytpePQ3xhTsIP4mSVRSQGm5k-Rh9-PaiNXayrTjcGvwfD5OQWt_90suN5n3jChd_0b18wni0P3aroL_YhkgL2LQn-_exnHJ6-At_mqPFa-vCT3Z88eVnsbkxJ_QYX5q1lBkjuyfIUQM7cwQELr0gwg5-4p2OchJv9bKt6LKR1zx7aeTG9CjrJsXlJWMOF4SVHidanjRwyiFPeGwXL8 -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 bg-onyx-card rounded-2xl overflow-hidden border border-onyx-border/80 shadow-2xl mb-8 group menu-item-card">
+<div class="lg:col-span-7 relative h-72 sm:h-96 lg:h-auto overflow-hidden">
+<img alt="Seared Atlantic Salmon Fillet with Grilled Jumbo Prawns, asparagus, microgreens, and citrus emulsion at Alo Alo Restaurant" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" src="https://lh3.googleusercontent.com/aida/AEtjO1UIGWL_7KF8b0g44Dn548zUZJDG5o8J-W3HI8rrrFytpePQ3xhTsIP4mSVRSQGm5k-Rh9-PaiNXayrTjcGvwfD5OQWt_90suN5n3jChd_0b18wni0P3aroL_YhkgL2LQn-_exnHJ6-At_mqPFa-vCT3Z88eVnsbkxJ_QYX5q1lBkjuyfIUQM7cwQELr0gwg5-4p2OchJv9bKt6LKR1zx7aeTG9CjrJsXlJWMOF4SVHidanjRwyiFPeGwXL8"/>
+<div class="absolute inset-0 bg-gradient-to-t from-onyx-card via-transparent to-transparent lg:bg-gradient-to-r"></div>
+<span class="absolute top-4 left-4 px-3 py-1 rounded-full text-[10px] uppercase tracking-widest font-semibold bg-burgundy-wine text-white shadow-lg">Chef Masterpiece</span>
+</div>
+<div class="lg:col-span-5 p-6 sm:p-8 flex flex-col justify-between">
+<div class="space-y-3">
+<div class="flex items-baseline justify-between gap-4">
+<h3 class="font-serif-luxury text-2xl text-white font-medium dish-name">Seared Salmon &amp; Grilled Jumbo Prawns</h3>
+<span class="font-serif-luxury text-2xl text-champagne-gold font-bold whitespace-nowrap">₦45,000</span>
+</div>
+<p class="text-xs sm:text-sm text-stone-300 leading-relaxed font-light dish-desc">
+              Succulent ocean-caught prawns and Atlantic salmon seared to golden perfection, served with asparagus, fresh microgreens, and gourmet citrus saffron emulsion.
+            </p>
+<div class="pt-2 flex flex-wrap gap-2 text-[11px] text-stone-400">
+<span class="px-2 py-0.5 rounded bg-white/5 border border-white/10">Sommelier: Chablis Premier Cru</span>
+<span class="px-2 py-0.5 rounded bg-white/5 border border-white/10">Fresh Wild Herbs</span>
+</div>
+</div>
+<div class="pt-6 border-t border-onyx-border/80 flex items-center justify-between">
+<span class="text-xs text-stone-400">Tableside Cloche Service</span>
+<button class="add-dish-btn px-4 py-2 rounded-full bg-burgundy-wine text-white text-xs font-semibold hover:bg-burgundy-soft transition-all flex items-center gap-1.5" data-name="Seared Salmon &amp; Jumbo Prawns" data-price="45000">
+<span class="material-symbols-outlined text-[16px]">add</span> Add to Cloche
+            </button>
+</div>
+</div>
+</div>
+<!-- Secondary Signatures Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Dish 2 -->
+<div class="bg-onyx-card rounded-xl p-5 border border-onyx-border flex flex-col justify-between hover:border-burgundy-wine/60 transition-all menu-item-card">
+<div>
+<div class="flex justify-between items-start gap-4">
+<div>
+<span class="text-[10px] uppercase tracking-wider text-champagne-gold font-semibold">Nigerian Heritage Haute</span>
+<h4 class="font-serif-luxury text-xl text-white mt-0.5 dish-name">Smokey Jollof with Peppered Beef &amp; Dodo</h4>
+</div>
+<span class="font-serif-luxury text-lg text-champagne-gold font-bold whitespace-nowrap">₦25,000</span>
+</div>
+<p class="text-xs text-stone-300 mt-2 font-light leading-relaxed dish-desc">
+              Fire-roasted classic Nigerian jollof rice infused with smoked Scotch bonnet aromatics, paired with tender pepper-tossed beef sirloin and caramelized sweet plantains.
+            </p>
+</div>
+<div class="pt-4 mt-4 border-t border-onyx-border/60 flex items-center justify-between text-xs">
+<span class="text-stone-400">Pairing: Alo Alo Zobo Sangria</span>
+<button class="add-dish-btn text-champagne-light hover:text-white font-semibold flex items-center gap-1" data-name="Smokey Jollof &amp; Peppered Beef" data-price="25000">
+<span class="material-symbols-outlined text-[16px]">add_circle</span> Select
+            </button>
+</div>
+</div>
+<!-- Dish 3 -->
+<div class="bg-onyx-card rounded-xl p-5 border border-onyx-border flex flex-col justify-between hover:border-burgundy-wine/60 transition-all menu-item-card">
+<div>
+<div class="flex justify-between items-start gap-4">
+<div>
+<span class="text-[10px] uppercase tracking-wider text-champagne-gold font-semibold">Coastal Sovereign</span>
+<h4 class="font-serif-luxury text-xl text-white mt-0.5 dish-name">VCP Fisherman Signature Platter</h4>
+</div>
+<span class="font-serif-luxury text-lg text-champagne-gold font-bold whitespace-nowrap">from ₦105,000</span>
+</div>
+<p class="text-xs text-stone-300 mt-2 font-light leading-relaxed dish-desc">
+              Grand coastal celebration of grilled rock lobster, jumbo prawns, crispy calamari rings, and seasoned native snails accompanied by drawn herb garlic butter.
+            </p>
+</div>
+<div class="pt-4 mt-4 border-t border-onyx-border/60 flex items-center justify-between text-xs">
+<span class="text-stone-400">3 Guests: ₦105,000 • 5 Guests: ₦160,000</span>
+<button class="add-dish-btn text-champagne-light hover:text-white font-semibold flex items-center gap-1" data-name="VCP Fisherman Platter" data-price="105000">
+<span class="material-symbols-outlined text-[16px]">add_circle</span> Select
+            </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. CHARCOAL FLAME GRILLS & PRIME CUTS (DRAMATIC DARK WITH https://lh3.googleusercontent.com/aida-public/AB6AXuDZpNyV6uI89EMRE_6PDJYcJ7f62XQ8AOjDBBYM5-JBoTl4BJWaPVjxB1hzwu2faEZpeqfSv8D8-0F4bzAEUTyfxMZ5gtkIfyfNvKfMPFCY8f4S6sIHjeyyZxo0Ri9Gg_DisPvLXxo3JzL03shhWg7ibf8Bce8dCZSd9x4hhopbaynUdMHD1FTTlhduzSoRdlI093wfb29EPAk_dQkMDSzHZK13MsFgnTF7NHJH1H4w6W4IlK2764IAYg) -->
+<section class="relative py-16 sm:py-24 px-4 sm:px-6 bg-onyx-surface scroll-mt-24 menu-section overflow-hidden" id="grills">
+<!-- Atmospheric Ember Background -->
+<div class="absolute inset-0 z-0">
+<img alt="Prime ribeye and lamb chops sizzling over charcoal flames" class="w-full h-full object-cover object-center opacity-25 filter blur-[1px]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZpNyV6uI89EMRE_6PDJYcJ7f62XQ8AOjDBBYM5-JBoTl4BJWaPVjxB1hzwu2faEZpeqfSv8D8-0F4bzAEUTyfxMZ5gtkIfyfNvKfMPFCY8f4S6sIHjeyyZxo0Ri9Gg_DisPvLXxo3JzL03shhWg7ibf8Bce8dCZSd9x4hhopbaynUdMHD1FTTlhduzSoRdlI093wfb29EPAk_dQkMDSzHZK13MsFgnTF7NHJH1H4w6W4IlK2764IAYg"/>
+<div class="absolute inset-0 bg-gradient-to-b from-onyx-surface via-onyx-surface/90 to-onyx-surface"></div>
+</div>
+<div class="relative z-10 max-w-7xl mx-auto">
+<div class="text-center max-w-2xl mx-auto mb-12">
+<span class="text-xs uppercase tracking-[0.25em] text-champagne-gold font-semibold">Fire &amp; Rotisserie</span>
+<h2 class="font-serif-luxury text-3xl sm:text-5xl text-white mt-1">Grills &amp; Prime Cuts</h2>
+<p class="text-xs sm:text-sm text-stone-300 mt-2">Charcoal-fired premium butcher selections paired with choice of crispy hand-cut fries, roasted native tubers, or seasoned vegetables.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+<!-- Grill Items -->
+<div class="bg-black/60 backdrop-blur-md p-4 sm:p-5 rounded-xl border border-white/10 hover:border-burgundy-wine transition-all menu-item-card flex justify-between items-start gap-4">
+<div class="space-y-1">
+<h3 class="font-serif-luxury text-lg text-white dish-name">Catfish in Local Pepper Marinade</h3>
+<p class="text-xs text-stone-300 font-light dish-desc">Whole Lagos freshwater catfish grilled over wood char with native herb pepper paste.</p>
+<span class="text-[10px] text-champagne-gold uppercase tracking-wider">Chef Highly Recommended</span>
+</div>
+<div class="text-right whitespace-nowrap">
+<span class="font-serif-luxury text-lg text-champagne-gold font-bold">₦50,000</span>
+<button class="add-dish-btn mt-2 block ml-auto px-2.5 py-1 rounded bg-white/10 text-[11px] hover:bg-burgundy-wine text-white transition-all" data-name="Catfish Local Pepper" data-price="50000">+ Order</button>
+</div>
+</div>
+<div class="bg-black/60 backdrop-blur-md p-4 sm:p-5 rounded-xl border border-white/10 hover:border-burgundy-wine transition-all menu-item-card flex justify-between items-start gap-4">
+<div class="space-y-1">
+<h3 class="font-serif-luxury text-lg text-white dish-name">T-Bone Steak</h3>
+<p class="text-xs text-stone-300 font-light dish-desc">Prime dry-aged cut offering sirloin tenderness and robust bone-in charcoal flavor.</p>
+<span class="text-[10px] text-stone-400">Cooked to your preference</span>
+</div>
+<div class="text-right whitespace-nowrap">
+<span class="font-serif-luxury text-lg text-champagne-gold font-bold">₦45,000</span>
+<button class="add-dish-btn mt-2 block ml-auto px-2.5 py-1 rounded bg-white/10 text-[11px] hover:bg-burgundy-wine text-white transition-all" data-name="T-Bone Steak" data-price="45000">+ Order</button>
+</div>
+</div>
+<div class="bg-black/60 backdrop-blur-md p-4 sm:p-5 rounded-xl border border-white/10 hover:border-burgundy-wine transition-all menu-item-card flex justify-between items-start gap-4">
+<div class="space-y-1">
+<h3 class="font-serif-luxury text-lg text-white dish-name">Rib Eye Steak</h3>
+<p class="text-xs text-stone-300 font-light dish-desc">Richly marbled beef steak grilled medium-rare with rosemary and garlic butter.</p>
+<span class="text-[10px] text-stone-400">Served with house demi-glace</span>
+</div>
+<div class="text-right whitespace-nowrap">
+<span class="font-serif-luxury text-lg text-champagne-gold font-bold">₦45,000</span>
+<button class="add-dish-btn mt-2 block ml-auto px-2.5 py-1 rounded bg-white/10 text-[11px] hover:bg-burgundy-wine text-white transition-all" data-name="Rib Eye Steak" data-price="45000">+ Order</button>
+</div>
+</div>
+<div class="bg-black/60 backdrop-blur-md p-4 sm:p-5 rounded-xl border border-white/10 hover:border-burgundy-wine transition-all menu-item-card flex justify-between items-start gap-4">
+<div class="space-y-1">
+<h3 class="font-serif-luxury text-lg text-white dish-name">Grilled Lamb Chops</h3>
+<p class="text-xs text-stone-300 font-light dish-desc">Tender succulent chops marinated in wild thyme, crushed garlic, and aged olive oil.</p>
+<span class="text-[10px] text-stone-400">Mint reduction glaze</span>
+</div>
+<div class="text-right whitespace-nowrap">
+<span class="font-serif-luxury text-lg text-champagne-gold font-bold">₦45,000</span>
+<button class="add-dish-btn mt-2 block ml-auto px-2.5 py-1 rounded bg-white/10 text-[11px] hover:bg-burgundy-wine text-white transition-all" data-name="Grilled Lamb Chops" data-price="45000">+ Order</button>
+</div>
+</div>
+<div class="bg-black/60 backdrop-blur-md p-4 sm:p-5 rounded-xl border border-white/10 hover:border-burgundy-wine transition-all menu-item-card flex justify-between items-start gap-4">
+<div class="space-y-1">
+<h3 class="font-serif-luxury text-lg text-white dish-name">Pork Chops with Herb Rubs</h3>
+<p class="text-xs text-stone-300 font-light dish-desc">Char-grilled thick-cut loin chops crusted with wild herbs and stone mustard glaze.</p>
+</div>
+<div class="text-right whitespace-nowrap">
+<span class="font-serif-luxury text-lg text-champagne-gold font-bold">₦45,000</span>
+<button class="add-dish-btn mt-2 block ml-auto px-2.5 py-1 rounded bg-white/10 text-[11px] hover:bg-burgundy-wine text-white transition-all" data-name="Pork Chops" data-price="45000">+ Order</button>
+</div>
+</div>
+<div class="bg-black/60 backdrop-blur-md p-4 sm:p-5 rounded-xl border border-white/10 hover:border-burgundy-wine transition-all menu-item-card flex justify-between items-start gap-4">
+<div class="space-y-1">
+<h3 class="font-serif-luxury text-lg text-white dish-name">Grilled Jumbo Prawns</h3>
+<p class="text-xs text-stone-300 font-light dish-desc">Ocean tiger prawns basted in chili garlic butter and flame-kissed.</p>
+</div>
+<div class="text-right whitespace-nowrap">
+<span class="font-serif-luxury text-lg text-champagne-gold font-bold">₦45,000</span>
+<button class="add-dish-btn mt-2 block ml-auto px-2.5 py-1 rounded bg-white/10 text-[11px] hover:bg-burgundy-wine text-white transition-all" data-name="Grilled Jumbo Prawns" data-price="45000">+ Order</button>
+</div>
+</div>
+<div class="bg-black/60 backdrop-blur-md p-4 sm:p-5 rounded-xl border border-white/10 hover:border-burgundy-wine transition-all menu-item-card flex justify-between items-start gap-4">
+<div class="space-y-1">
+<h3 class="font-serif-luxury text-lg text-white dish-name">Seared Salmon Fillet</h3>
+<p class="text-xs text-stone-300 font-light dish-desc">Atlantic fillet with crispy skin, lemon caper reduction, and garden vegetables.</p>
+</div>
+<div class="text-right whitespace-nowrap">
+<span class="font-serif-luxury text-lg text-champagne-gold font-bold">₦45,000</span>
+<button class="add-dish-btn mt-2 block ml-auto px-2.5 py-1 rounded bg-white/10 text-[11px] hover:bg-burgundy-wine text-white transition-all" data-name="Seared Salmon Fillet" data-price="45000">+ Order</button>
+</div>
+</div>
+<div class="bg-black/60 backdrop-blur-md p-4 sm:p-5 rounded-xl border border-white/10 hover:border-burgundy-wine transition-all menu-item-card flex justify-between items-start gap-4">
+<div class="space-y-1">
+<h3 class="font-serif-luxury text-lg text-white dish-name">Fresh Catch of the Day</h3>
+<p class="text-xs text-stone-300 font-light dish-desc">Daily line-caught white fish from the Lagos coast, seasoned with lemon and sea salt.</p>
+</div>
+<div class="text-right whitespace-nowrap">
+<span class="font-serif-luxury text-lg text-champagne-gold font-bold">₦40,000</span>
+<button class="add-dish-btn mt-2 block ml-auto px-2.5 py-1 rounded bg-white/10 text-[11px] hover:bg-burgundy-wine text-white transition-all" data-name="Catch of the Day" data-price="40000">+ Order</button>
+</div>
+</div>
+<div class="bg-black/60 backdrop-blur-md p-4 sm:p-5 rounded-xl border border-white/10 hover:border-burgundy-wine transition-all menu-item-card flex justify-between items-start gap-4 md:col-span-2">
+<div class="space-y-1">
+<h3 class="font-serif-luxury text-lg text-white dish-name">Grilled Marinated Chicken Breast</h3>
+<p class="text-xs text-stone-300 font-light dish-desc">Juicy deboned chicken breast infused with fresh herbs and citrus pepper marinade.</p>
+</div>
+<div class="text-right whitespace-nowrap">
+<span class="font-serif-luxury text-lg text-champagne-gold font-bold">₦25,000</span>
+<button class="add-dish-btn mt-2 block ml-auto px-2.5 py-1 rounded bg-white/10 text-[11px] hover:bg-burgundy-wine text-white transition-all" data-name="Marinated Chicken Breast" data-price="25000">+ Order</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 4. NIGERIAN HERITAGE / NATIONAL MENU (FULL RICH DEEP BURGUNDY #6A1324 SHOWCASE WITH https://lh3.googleusercontent.com/aida/AEtjO1XynqtcPnR3_kO_9VbVyCWrkGTnCMTPltk5NDaSoVOoz91GqFKSR2S0dERADGlp8baSGb7lizSVjnIIXfG1Tj6M0Gm1GW4nbiRci6oV2LlweYGu5Kdm8sMf46ypkzELXd_OdX1vdAHzlQqgcMA2iaQh4FdFRmEjOl4rMusdwGXrL-eNYA8o4sFilZUJUOrq1tnUKubG7cxQSAMRcmpg8XcwR49mQRy8g43XW9CZ5Ph4EU3TiVFQO-13efU) -->
+<section class="py-16 sm:py-24 px-4 sm:px-6 bg-burgundy-deep text-white scroll-mt-24 menu-section relative" id="nigerian-heritage">
+<div class="max-w-7xl mx-auto">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-10">
+<div class="lg:col-span-5 space-y-3">
+<span class="text-xs uppercase tracking-[0.25em] text-champagne-gold font-semibold">Authentic Nigerian Cuisine</span>
+<h2 class="font-serif-luxury text-3xl sm:text-5xl text-white">National Menu</h2>
+<p class="font-serif-luxury text-2xl text-champagne-light font-medium">₦25,000 <span class="text-xs font-sans font-normal uppercase tracking-wider text-white/70">Complete Course Selection</span></p>
+<p class="text-xs sm:text-sm text-stone-200 font-light leading-relaxed">
+            The definitive culinary expression of West Africa. Select your preferred prepared protein, accompanied by classic Lagos artisanal rice, indigenous native soup with swallow, or hearty savanna porridge.
+          </p>
+</div>
+<div class="lg:col-span-7 rounded-2xl overflow-hidden shadow-2xl border border-white/20 relative group">
+<img alt="Smokey Jollof Rice with succulent peppered beef and sweet plantain at Victoria Crown Plaza Hotel Alo Alo Restaurant" class="w-full h-64 sm:h-80 object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida/AEtjO1XynqtcPnR3_kO_9VbVyCWrkGTnCMTPltk5NDaSoVOoz91GqFKSR2S0dERADGlp8baSGb7lizSVjnIIXfG1Tj6M0Gm1GW4nbiRci6oV2LlweYGu5Kdm8sMf46ypkzELXd_OdX1vdAHzlQqgcMA2iaQh4FdFRmEjOl4rMusdwGXrL-eNYA8o4sFilZUJUOrq1tnUKubG7cxQSAMRcmpg8XcwR49mQRy8g43XW9CZ5Ph4EU3TiVFQO-13efU"/>
+<div class="absolute bottom-3 left-3 bg-black/70 backdrop-blur-md px-3 py-1 rounded text-xs text-champagne-light font-medium">
+            Heritage Tasting: Smokey Jollof with Dodo &amp; Tender Sirloin
+          </div>
+</div>
+</div>
+<!-- Interactive Step Selector for National Menu -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 bg-black/40 backdrop-blur-md p-6 rounded-2xl border border-white/15">
+<!-- Step 1: Protein -->
+<div class="space-y-3">
+<div class="flex items-center gap-2 text-champagne-gold pb-2 border-b border-white/10">
+<span class="w-5 h-5 rounded-full bg-champagne-gold text-burgundy-deep text-xs font-bold flex items-center justify-center">1</span>
+<h4 class="font-serif-luxury text-base uppercase tracking-wider text-white">Choose Protein (Included)</h4>
+</div>
+<div class="space-y-1.5 text-xs text-stone-200">
+<label class="flex items-center justify-between p-2 rounded bg-white/5 hover:bg-white/10 cursor-pointer transition">
+<span>Spicy Tender Beef Sirloin</span>
+<input checked="" class="text-burgundy-wine focus:ring-champagne-gold" name="nat-protein" type="radio"/>
+</label>
+<label class="flex items-center justify-between p-2 rounded bg-white/5 hover:bg-white/10 cursor-pointer transition">
+<span>Peppered Native Snail (Delicacy)</span>
+<input class="text-burgundy-wine focus:ring-champagne-gold" name="nat-protein" type="radio"/>
+</label>
+<label class="flex items-center justify-between p-2 rounded bg-white/5 hover:bg-white/10 cursor-pointer transition">
+<span>Savory Lagos Goat Meat</span>
+<input class="text-burgundy-wine focus:ring-champagne-gold" name="nat-protein" type="radio"/>
+</label>
+<label class="flex items-center justify-between p-2 rounded bg-white/5 hover:bg-white/10 cursor-pointer transition">
+<span>Fiery Peppered Asun</span>
+<input class="text-burgundy-wine focus:ring-champagne-gold" name="nat-protein" type="radio"/>
+</label>
+<label class="flex items-center justify-between p-2 rounded bg-white/5 hover:bg-white/10 cursor-pointer transition">
+<span>Peppered Fried Croaker Fish</span>
+<input class="text-burgundy-wine focus:ring-champagne-gold" name="nat-protein" type="radio"/>
+</label>
+<label class="flex items-center justify-between p-2 rounded bg-white/5 hover:bg-white/10 cursor-pointer transition">
+<span>Spicy Chicken / Wings</span>
+<input class="text-burgundy-wine focus:ring-champagne-gold" name="nat-protein" type="radio"/>
+</label>
+</div>
+</div>
+<!-- Step 2: Accompaniment Type -->
+<div class="space-y-3">
+<div class="flex items-center gap-2 text-champagne-gold pb-2 border-b border-white/10">
+<span class="w-5 h-5 rounded-full bg-champagne-gold text-burgundy-deep text-xs font-bold flex items-center justify-center">2</span>
+<h4 class="font-serif-luxury text-base uppercase tracking-wider text-white">Select Pairing Style</h4>
+</div>
+<div class="space-y-2 text-xs">
+<div class="p-2.5 rounded-lg bg-white/5 border border-white/10">
+<span class="font-semibold text-champagne-light block">Artisanal Rice + Fried Dodo</span>
+<p class="text-stone-300 text-[11px] mt-0.5">Smokey Jollof Rice, Seasoned Fried Rice, Fragrant Coconut Rice, Traditional Ofada with Sauce, or Steamed Jasmine.</p>
+</div>
+<div class="p-2.5 rounded-lg bg-white/5 border border-white/10">
+<span class="font-semibold text-champagne-light block">Heritage Soups &amp; Swallow</span>
+<p class="text-stone-300 text-[11px] mt-0.5">Afang, Edikang Ikong, Egusi Royalty, Ogbono, Bitterleaf, Oha, Native White Soup, Efo Riro, or Fresh Okro.</p>
+<p class="text-stone-400 text-[10px] mt-1">Swallows: Poundo, Semo, Eba, Amala, Wheat, or Plantain.</p>
+</div>
+<div class="p-2.5 rounded-lg bg-white/5 border border-white/10">
+<span class="font-semibold text-champagne-light block">Slow-Simmered Staples</span>
+<p class="text-stone-300 text-[11px] mt-0.5">Savory Bean Porridge, Yam &amp; Plantain Porridge, Sweet Potato Porridge, or Lagos Stir-Fry Pasta.</p>
+</div>
+</div>
+</div>
+<!-- Step 3: Order Action -->
+<div class="space-y-4 flex flex-col justify-between">
+<div class="space-y-3">
+<div class="flex items-center gap-2 text-champagne-gold pb-2 border-b border-white/10">
+<span class="w-5 h-5 rounded-full bg-champagne-gold text-burgundy-deep text-xs font-bold flex items-center justify-center">3</span>
+<h4 class="font-serif-luxury text-base uppercase tracking-wider text-white">Tableside Preparation</h4>
+</div>
+<p class="text-xs text-stone-200 font-light leading-relaxed">
+              Every heritage plate is slow-simmered à la minute by Alo Alo native cuisine chefs with authentic aromatic uziza, scent leaves, and local cold-pressed oils.
+            </p>
+<div class="p-3 bg-burgundy-wine/60 rounded-xl border border-burgundy-soft text-xs">
+<span class="text-champagne-gold font-semibold">Total: ₦25,000</span>
+<p class="text-[11px] text-stone-300 mt-0.5">Includes protein of choice + large entrée course.</p>
+</div>
+</div>
+<button class="add-dish-btn w-full py-3 rounded-full bg-champagne-gold text-burgundy-deep font-bold text-xs uppercase tracking-wider hover:bg-champagne-light transition-all shadow-lg" data-name="National Menu Heritage Plate" data-price="25000">
+            Order Heritage Selection (₦25,000)
+          </button>
+</div>
+</div>
+</div>
+</section>
+<!-- 5. VCP SPECIALS & GRAND PLATTERS (DARK LUXURY WITH https://lh3.googleusercontent.com/aida/AEtjO1UGDQvyAMi8_uPRcP4Rkorf-61e6bJI7xdBPCUVrYd3iFSHuLs1eZT8LGkiRM0-8Uw1MoHQWWZdTHifR7TUD3yO849ZY6FiEGBEiU76Duh6iveM1HB3tlUxQIRJLJBqsXBx5WLemGtNd0qp2tPOvq8UUAjZzsRrEa3cKtBZJDtf8rnkWHaM9Py1b1XRQm12U3i7lXlVeqSnOit9F83fJJd-_fS8kbworNiDIUf8kIu_pW9v_a3b_STHo_wl) -->
+<section class="py-16 sm:py-24 px-4 sm:px-6 bg-onyx-surface text-stone-200 scroll-mt-24 menu-section" id="vcp-specials">
+<div class="max-w-7xl mx-auto">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-10 pb-4 border-b border-onyx-border">
+<div>
+<span class="text-xs uppercase tracking-[0.25em] text-champagne-gold font-semibold">Imperial Banquets &amp; Gatherings</span>
+<h2 class="font-serif-luxury text-3xl sm:text-4xl text-white mt-1">VCP Grand Platters</h2>
+</div>
+<p class="text-xs sm:text-sm text-stone-400 max-w-md mt-2 md:mt-0">Showpiece feasts designed for high-profile celebrations, corporate delegations, and generous sharing.</p>
+</div>
+<!-- Feature Platter Banner with https://lh3.googleusercontent.com/aida/AEtjO1UGDQvyAMi8_uPRcP4Rkorf-61e6bJI7xdBPCUVrYd3iFSHuLs1eZT8LGkiRM0-8Uw1MoHQWWZdTHifR7TUD3yO849ZY6FiEGBEiU76Duh6iveM1HB3tlUxQIRJLJBqsXBx5WLemGtNd0qp2tPOvq8UUAjZzsRrEa3cKtBZJDtf8rnkWHaM9Py1b1XRQm12U3i7lXlVeqSnOit9F83fJJd-_fS8kbworNiDIUf8kIu_pW9v_a3b_STHo_wl -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 bg-onyx-card rounded-2xl overflow-hidden border border-onyx-border mb-8 menu-item-card">
+<div class="lg:col-span-7 relative h-72 sm:h-96 lg:h-auto overflow-hidden">
+<img alt="Grand Fisherman Seafood Platter with grilled rock lobster, prawns, calamari, lemon, and white wine at Alo Alo Restaurant VCP" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1UGDQvyAMi8_uPRcP4Rkorf-61e6bJI7xdBPCUVrYd3iFSHuLs1eZT8LGkiRM0-8Uw1MoHQWWZdTHifR7TUD3yO849ZY6FiEGBEiU76Duh6iveM1HB3tlUxQIRJLJBqsXBx5WLemGtNd0qp2tPOvq8UUAjZzsRrEa3cKtBZJDtf8rnkWHaM9Py1b1XRQm12U3i7lXlVeqSnOit9F83fJJd-_fS8kbworNiDIUf8kIu_pW9v_a3b_STHo_wl"/>
+<span class="absolute top-4 left-4 px-3 py-1 rounded-full text-[10px] uppercase tracking-widest font-semibold bg-champagne-gold text-burgundy-deep">Table Showpiece</span>
+</div>
+<div class="lg:col-span-5 p-6 sm:p-8 flex flex-col justify-between space-y-4">
+<div class="space-y-3">
+<div class="flex justify-between items-start gap-4">
+<h3 class="font-serif-luxury text-2xl text-white dish-name">Alo Alo Imperial Seafood Boil</h3>
+<span class="font-serif-luxury text-2xl text-champagne-gold font-bold">₦300,000</span>
+</div>
+<p class="text-xs sm:text-sm text-stone-300 font-light leading-relaxed dish-desc">
+              A monumental coastal banquet laden with whole Atlantic lobster, mud crabs, jumbo tiger prawns, local sea snails, smoked country sausages, buttered sweet corn cobs, and baby potatoes steeped in aromatic spiced seafood broth.
+            </p>
+<div class="text-xs text-stone-400 space-y-1">
+<p>• Recommended for 4 to 6 guests</p>
+<p>• Advance tableside preparation: 30 minutes</p>
+</div>
+</div>
+<div class="pt-4 border-t border-onyx-border flex items-center justify-between">
+<span class="text-xs text-champagne-light">Includes Silver Cloche Service</span>
+<button class="add-dish-btn px-4 py-2 rounded-full bg-burgundy-wine text-white text-xs font-semibold hover:bg-burgundy-soft transition" data-name="Alo Alo Seafood Boil" data-price="300000">+ Reserve Platter</button>
+</div>
+</div>
+</div>
+<!-- Additional Grand Specials Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-onyx-card p-5 rounded-xl border border-onyx-border flex flex-col justify-between menu-item-card">
+<div class="space-y-2">
+<div class="flex justify-between items-start">
+<h4 class="font-serif-luxury text-lg text-white dish-name">The Carnivore Grand Platter</h4>
+<span class="font-serif-luxury text-champagne-gold font-semibold text-sm">from ₦75,000</span>
+</div>
+<p class="text-xs text-stone-300 font-light leading-relaxed dish-desc">Generous wood-grilled assortment of prime beef ribs, spiced barbecue chicken thighs, smoked beef sausages, and peppered chicken wings with potato wedges.</p>
+<p class="text-[11px] text-stone-400">3 Diners: ₦75,000 • 5 Diners: ₦120,000</p>
+</div>
+<div class="pt-4 mt-4 border-t border-onyx-border flex justify-end">
+<button class="add-dish-btn text-xs font-semibold text-champagne-light hover:text-white" data-name="Carnivore Platter" data-price="75000">+ Add to Cloche</button>
+</div>
+</div>
+<div class="bg-onyx-card p-5 rounded-xl border border-onyx-border flex flex-col justify-between menu-item-card">
+<div class="space-y-2">
+<div class="flex justify-between items-start">
+<h4 class="font-serif-luxury text-lg text-white dish-name">VCP Pineapple Fried Rice</h4>
+<span class="font-serif-luxury text-champagne-gold font-bold">₦35,000</span>
+</div>
+<p class="text-xs text-stone-300 font-light leading-relaxed dish-desc">Caramelized sweet pineapple hollowed and filled with fragrant seafood wok basmati rice, king tiger prawns, garden vegetables, and cashew crumble.</p>
+<p class="text-[11px] text-champagne-gold">VCP Signature Presentation</p>
+</div>
+<div class="pt-4 mt-4 border-t border-onyx-border flex justify-end">
+<button class="add-dish-btn text-xs font-semibold text-champagne-light hover:text-white" data-name="VCP Pineapple Fried Rice" data-price="35000">+ Add to Cloche</button>
+</div>
+</div>
+<div class="bg-onyx-card p-5 rounded-xl border border-onyx-border flex flex-col justify-between menu-item-card">
+<div class="space-y-2">
+<div class="flex justify-between items-start">
+<h4 class="font-serif-luxury text-lg text-white dish-name">VCP Special Seafood Okro</h4>
+<span class="font-serif-luxury text-champagne-gold font-bold">₦40,000</span>
+</div>
+<p class="text-xs text-stone-300 font-light leading-relaxed dish-desc">Ultra-fresh crunchy okro broth laden with ocean jumbo prawns, native snails, tender calamari ribbons, and fresh croaker fish steak with warm swallow.</p>
+<p class="text-[11px] text-stone-400">Includes Choice of Artisanal Swallow</p>
+</div>
+<div class="pt-4 mt-4 border-t border-onyx-border flex justify-end">
+<button class="add-dish-btn text-xs font-semibold text-champagne-light hover:text-white" data-name="VCP Special Seafood Okro" data-price="40000">+ Add to Cloche</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 6. THE ALO ALO CELLAR & LOUNGE BAR (ATMOSPHERIC NIGHTLIFE WITH https://lh3.googleusercontent.com/aida-public/AB6AXuAseW5lznVYLD3U4QcKKNGWEChac0u4n66M2cWz402pYZe471P9GaNnGw-BAzgzfCn0mTPQVhrdz_MDqVNvecwXGUmuSsKVAqhrDSO0NPY3K-pX6UuMLKatj9rahLKZwjv8iNn6gcce9oReXqTF4dFaRSflGyDQy4BnlnY55l9-vM4KW6ejvmmgoeQII1PZus7ulq7vRF0ugh-fCOEoqwIvBx15bBUGPIeK-ibsDXcoqeGJ_nyWlsAqdw & https://lh3.googleusercontent.com/aida-public/AB6AXuDLaFKsM1xgsxECRhdYWHOPvgdzmeAN73YK09FVSP_xlwFZ3K0CXjI2fC8QV1HGHdW-3dXkxharAsoAdQBAWXgIOSRHpePPycsSSkMz5CC5rYjH3dAZ5TL2VoxNAYVnFWkM7ehFlwUyVfkT5VboHGvLiJq0Ynr4ArByKdoaq5KtXk7NmpVya8gkV9JYu8PALqdJc6kIQEhBIxQj_nmKHm7bEmtIjex0F05zvO85X1CfohWPA26uURAYIw) -->
+<section class="relative py-16 sm:py-24 px-4 sm:px-6 bg-onyx-surface scroll-mt-24 menu-section overflow-hidden" id="cellar-bar">
+<!-- Atmospheric Cellar Background -->
+<div class="absolute inset-0 z-0">
+<img alt="Luxury back-lit hotel cellar and cocktail bar counter at Alo Alo Lounge Victoria Island" class="w-full h-full object-cover object-center opacity-30 filter brightness-75" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAseW5lznVYLD3U4QcKKNGWEChac0u4n66M2cWz402pYZe471P9GaNnGw-BAzgzfCn0mTPQVhrdz_MDqVNvecwXGUmuSsKVAqhrDSO0NPY3K-pX6UuMLKatj9rahLKZwjv8iNn6gcce9oReXqTF4dFaRSflGyDQy4BnlnY55l9-vM4KW6ejvmmgoeQII1PZus7ulq7vRF0ugh-fCOEoqwIvBx15bBUGPIeK-ibsDXcoqeGJ_nyWlsAqdw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-onyx-surface via-onyx-surface/90 to-onyx-surface"></div>
+</div>
+<div class="relative z-10 max-w-7xl mx-auto space-y-12">
+<!-- Section Header -->
+<div class="flex flex-col lg:flex-row items-center justify-between gap-6 pb-6 border-b border-onyx-border">
+<div class="space-y-2 text-center lg:text-left">
+<span class="text-xs uppercase tracking-[0.25em] text-champagne-gold font-semibold">Sommelier Reserve &amp; Lounge</span>
+<h2 class="font-serif-luxury text-3xl sm:text-5xl text-white">The Alo Alo Cellar &amp; Bar</h2>
+<p class="text-xs sm:text-sm text-stone-300 max-w-xl">Prestige Champagnes, single malts, and signature Victoria Island mixology served until late.</p>
+</div>
+<!-- Floating Cocktails Image Cutout https://lh3.googleusercontent.com/aida-public/AB6AXuDLaFKsM1xgsxECRhdYWHOPvgdzmeAN73YK09FVSP_xlwFZ3K0CXjI2fC8QV1HGHdW-3dXkxharAsoAdQBAWXgIOSRHpePPycsSSkMz5CC5rYjH3dAZ5TL2VoxNAYVnFWkM7ehFlwUyVfkT5VboHGvLiJq0Ynr4ArByKdoaq5KtXk7NmpVya8gkV9JYu8PALqdJc6kIQEhBIxQj_nmKHm7bEmtIjex0F05zvO85X1CfohWPA26uURAYIw -->
+<div class="w-48 sm:w-60 h-48 sm:h-60 rounded-2xl overflow-hidden border border-champagne-gold/30 shadow-2xl relative bg-black/50 backdrop-blur-md">
+<img alt="Ruby Zobo Sangria and Espresso Martini luxury cocktails at Alo Alo Bar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLaFKsM1xgsxECRhdYWHOPvgdzmeAN73YK09FVSP_xlwFZ3K0CXjI2fC8QV1HGHdW-3dXkxharAsoAdQBAWXgIOSRHpePPycsSSkMz5CC5rYjH3dAZ5TL2VoxNAYVnFWkM7ehFlwUyVfkT5VboHGvLiJq0Ynr4ArByKdoaq5KtXk7NmpVya8gkV9JYu8PALqdJc6kIQEhBIxQj_nmKHm7bEmtIjex0F05zvO85X1CfohWPA26uURAYIw"/>
+<div class="absolute bottom-2 left-2 right-2 text-center bg-black/70 backdrop-blur-sm py-1 rounded text-[10px] text-champagne-light uppercase tracking-widest font-semibold">
+            Signature Alo Alo Cocktails
+          </div>
+</div>
+</div>
+<!-- Cellar 4-Column Layout -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Column 1: Cocktails -->
+<div class="bg-black/60 backdrop-blur-md p-5 rounded-xl border border-white/10 space-y-3">
+<div class="flex items-center gap-2 text-champagne-gold pb-2 border-b border-white/10">
+<span class="material-symbols-outlined text-lg">local_bar</span>
+<h3 class="font-serif-luxury text-base uppercase tracking-wider text-white">Craft Cocktails</h3>
+</div>
+<ul class="space-y-2 text-xs divide-y divide-white/5">
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Espresso Martini</span> <span class="text-champagne-gold font-bold">₦14,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Long Island Iced Tea</span> <span class="text-champagne-gold font-bold">₦14,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Zobo Sangria (Alo Alo)</span> <span class="text-champagne-gold font-bold">₦10,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Negroni Classic</span> <span class="text-champagne-gold font-bold">₦10,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Piña Colada</span> <span class="text-champagne-gold font-bold">₦10,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Margarita Best</span> <span class="text-champagne-gold font-bold">₦9,500</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Classic Daiquiri</span> <span class="text-champagne-gold font-bold">₦9,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Whiskey Sour</span> <span class="text-champagne-gold font-bold">₦9,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Mojito</span> <span class="text-champagne-gold font-bold">₦9,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Sex On The Beach</span> <span class="text-champagne-gold font-bold">₦9,000</span></li>
+</ul>
+<div class="pt-2">
+<span class="text-[10px] uppercase tracking-wider text-stone-400 font-semibold block mb-1">Artisan Mocktails</span>
+<div class="text-[11px] text-stone-300 space-y-1">
+<div class="flex justify-between"><span>Virgin Strawberry Daiquiri</span><span>₦7,500</span></div>
+<div class="flex justify-between"><span>Virgin Colada</span><span>₦7,000</span></div>
+<div class="flex justify-between"><span>Virgin Mojito</span><span>₦7,000</span></div>
+<div class="flex justify-between"><span>Classic Lagos Chapman</span><span>₦6,000</span></div>
+</div>
+</div>
+</div>
+<!-- Column 2: Cognac & Whiskey -->
+<div class="bg-black/60 backdrop-blur-md p-5 rounded-xl border border-white/10 space-y-3">
+<div class="flex items-center gap-2 text-champagne-gold pb-2 border-b border-white/10">
+<span class="material-symbols-outlined text-lg">liquor</span>
+<h3 class="font-serif-luxury text-base uppercase tracking-wider text-white">Cognac &amp; Whiskey</h3>
+</div>
+<ul class="space-y-2 text-xs divide-y divide-white/5">
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Johnnie Walker Blue Label</span> <span class="text-champagne-gold font-bold">₦918,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">James Hennessy</span> <span class="text-champagne-gold font-bold">₦800,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Hennessy XO</span> <span class="text-champagne-gold font-bold">₦579,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Remy Martin XO</span> <span class="text-champagne-gold font-bold">₦579,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Hennessy VSOP</span> <span class="text-champagne-gold font-bold">₦320,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Martell Blue Swift</span> <span class="text-champagne-gold font-bold">₦320,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Remy Martin VSOP</span> <span class="text-stone-200">₦228,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Glenfiddich 15 Years</span> <span class="text-stone-200">₦228,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Hennessy VS</span> <span class="text-stone-200">₦210,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Glenmorangie 12 Years</span> <span class="text-stone-200">₦150,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Black Label</span> <span class="text-stone-200">₦120,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Jameson Black Barrel</span> <span class="text-stone-200">₦109,000</span></li>
+</ul>
+</div>
+<!-- Column 3: Champagne & Reserve Wine -->
+<div class="bg-black/60 backdrop-blur-md p-5 rounded-xl border border-white/10 space-y-3">
+<div class="flex items-center gap-2 text-champagne-gold pb-2 border-b border-white/10">
+<span class="material-symbols-outlined text-lg">wine_bar</span>
+<h3 class="font-serif-luxury text-base uppercase tracking-wider text-white">Champagne &amp; Wine</h3>
+</div>
+<ul class="space-y-2 text-xs divide-y divide-white/5">
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Dom Pérignon Brut</span> <span class="text-champagne-gold font-bold">₦1,100,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Veuve Clicquot Rosé</span> <span class="text-champagne-gold font-bold">₦345,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Moët &amp; Chandon Rosé</span> <span class="text-champagne-gold font-bold">₦222,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Moët Imperial Brut</span> <span class="text-champagne-gold font-bold">₦222,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Veuve Clicquot Brut</span> <span class="text-champagne-gold font-bold">₦210,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Nederburg Red Reserve</span> <span class="text-stone-200">₦84,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Escudo Rojo Red</span> <span class="text-stone-200">₦75,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Berol Garnacha / Syrah</span> <span class="text-stone-200">₦48,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Frontera Red / White</span> <span class="text-stone-200">₦31,500</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Declan Red / White</span> <span class="text-stone-200">₦21,000</span></li>
+<li class="flex justify-between items-center pt-1"><span class="dish-name">Glass of House Wine</span> <span class="text-champagne-gold font-semibold">₦6,000</span></li>
+</ul>
+</div>
+<!-- Column 4: Coffee, Smoothies & Beers -->
+<div class="bg-black/60 backdrop-blur-md p-5 rounded-xl border border-white/10 space-y-3">
+<div class="flex items-center gap-2 text-champagne-gold pb-2 border-b border-white/10">
+<span class="material-symbols-outlined text-lg">coffee</span>
+<h3 class="font-serif-luxury text-base uppercase tracking-wider text-white">Barista &amp; Refreshers</h3>
+</div>
+<ul class="space-y-2 text-xs divide-y divide-white/5">
+<li class="flex justify-between items-center pt-1"><span>Double Espresso</span> <span class="text-stone-200">₦7,000</span></li>
+<li class="flex justify-between items-center pt-1"><span>Hot Chocolate</span> <span class="text-stone-200">₦6,500</span></li>
+<li class="flex justify-between items-center pt-1"><span>Café Latte</span> <span class="text-stone-200">₦6,500</span></li>
+<li class="flex justify-between items-center pt-1"><span>Frappuccino</span> <span class="text-stone-200">₦6,500</span></li>
+<li class="flex justify-between items-center pt-1"><span>Cappuccino</span> <span class="text-stone-200">₦6,000</span></li>
+<li class="flex justify-between items-center pt-1"><span>Caffè Americano</span> <span class="text-stone-200">₦4,000</span></li>
+<li class="flex justify-between items-center pt-1"><span>Single Espresso</span> <span class="text-stone-200">₦3,500</span></li>
+<li class="flex justify-between items-center pt-1"><span>Green Tea / Lipton</span> <span class="text-stone-200">₦2,500</span></li>
+</ul>
+<div class="pt-2">
+<span class="text-[10px] uppercase tracking-wider text-stone-400 font-semibold block mb-1">Smoothies &amp; Beers</span>
+<div class="text-[11px] text-stone-300 space-y-1">
+<div class="flex justify-between"><span>Banana / Mixed Fruit Smoothie</span><span>₦8,000</span></div>
+<div class="flex justify-between"><span>Watermelon / Pineapple Smoothie</span><span>₦6,000</span></div>
+<div class="flex justify-between"><span>Heineken / Budweiser</span><span>₦5,000</span></div>
+<div class="flex justify-between"><span>Guinness Stout / Star / Gulder</span><span>₦4,000</span></div>
+<div class="flex justify-between"><span>Premium Mineral Water</span><span>₦1,500 - ₦3,000</span></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 7. BREAKFAST SERVICE (WARM IVORY / ALABASTER #FAF7F2 THEME) -->
+<section class="py-16 sm:py-20 px-4 sm:px-6 bg-ivory-warm text-stone-900 scroll-mt-24 menu-section" id="breakfast">
+<div class="max-w-7xl mx-auto">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-10 pb-4 border-b border-stone-300">
+<div>
+<span class="text-xs uppercase tracking-[0.25em] text-burgundy-deep font-bold">Morning Folio • 06:30 – 11:00</span>
+<h2 class="font-serif-luxury text-3xl sm:text-4xl text-stone-900 mt-1">The Breakfast Service</h2>
+</div>
+<p class="text-xs sm:text-sm text-stone-600 max-w-md mt-2 md:mt-0">Fresh juices, artisanal bakery baskets, and morning plates prepared à la minute by Alo Alo morning brigade.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-white p-5 rounded-xl shadow-sm border border-stone-200 flex justify-between items-start gap-4 menu-item-card">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<h3 class="font-serif-luxury text-lg text-stone-900 dish-name">VCP Full English Breakfast</h3>
+<span class="px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-burgundy-deep text-white">Signature</span>
+</div>
+<p class="text-xs text-stone-600 font-light dish-desc">Hearty plate of premium sausages, crispy bacon, baked beans, grilled plum tomato, egg in a nest, artisanal breakfast pastry, and farm eggs cooked to your style.</p>
+</div>
+<span class="font-serif-luxury text-lg text-burgundy-deep font-bold whitespace-nowrap">₦22,000</span>
+</div>
+<div class="bg-white p-5 rounded-xl shadow-sm border border-stone-200 flex justify-between items-start gap-4 menu-item-card">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<h3 class="font-serif-luxury text-lg text-stone-900 dish-name">Nigerian Breakfast Heritage</h3>
+<span class="px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-amber-800 text-white">Native</span>
+</div>
+<p class="text-xs text-stone-600 font-light dish-desc">Traditional morning spread featuring boiled yam or sweet plantain, aromatic egg sauce, spicy gizzard or beef stew, moi-moi or akara, and warm pap or tea.</p>
+</div>
+<span class="font-serif-luxury text-lg text-burgundy-deep font-bold whitespace-nowrap">₦22,000</span>
+</div>
+<div class="bg-white p-5 rounded-xl shadow-sm border border-stone-200 flex justify-between items-start gap-4 menu-item-card">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<h3 class="font-serif-luxury text-lg text-stone-900 dish-name">Vegetarian Breakfast</h3>
+<span class="px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-emerald-800 text-white">Veg</span>
+</div>
+<p class="text-xs text-stone-600 font-light dish-desc">Grilled garden vegetables &amp; plum tomatoes, baked beans, sautéed button mushrooms, and Irish potatoes served with warm artisan toast &amp; tomato relish.</p>
+</div>
+<span class="font-serif-luxury text-lg text-burgundy-deep font-bold whitespace-nowrap">₦22,000</span>
+</div>
+<div class="bg-white p-5 rounded-xl shadow-sm border border-stone-200 flex justify-between items-start gap-4 menu-item-card">
+<div class="space-y-1">
+<h3 class="font-serif-luxury text-lg text-stone-900 dish-name">American Breakfast</h3>
+<p class="text-xs text-stone-600 font-light dish-desc">Fluffy buttermilk pancakes, golden Belgian waffles or French toast with farm fresh eggs, breakfast sausages, crispy bacon, and savory baked beans.</p>
+</div>
+<span class="font-serif-luxury text-lg text-burgundy-deep font-bold whitespace-nowrap">₦18,500</span>
+</div>
+<div class="bg-white p-5 rounded-xl shadow-sm border border-stone-200 flex justify-between items-start gap-4 menu-item-card">
+<div class="space-y-1">
+<h3 class="font-serif-luxury text-lg text-stone-900 dish-name">Eggs Benedict</h3>
+<p class="text-xs text-stone-600 font-light dish-desc">Poached free-range eggs served atop a toasted English muffin with crispy bacon, finished with silky citrus hollandaise.</p>
+</div>
+<span class="font-serif-luxury text-lg text-burgundy-deep font-bold whitespace-nowrap">₦15,000</span>
+</div>
+<div class="bg-white p-5 rounded-xl shadow-sm border border-stone-200 flex justify-between items-start gap-4 menu-item-card">
+<div class="space-y-1">
+<h3 class="font-serif-luxury text-lg text-stone-900 dish-name">Omelette &amp; Creamy Oats</h3>
+<p class="text-xs text-stone-600 font-light dish-desc">Three-egg folded omelette with choice of garden vegetables and aged cheese, accompanied by comforting creamy oats.</p>
+</div>
+<span class="font-serif-luxury text-lg text-burgundy-deep font-bold whitespace-nowrap">₦15,000</span>
+</div>
+<div class="bg-white p-5 rounded-xl shadow-sm border border-stone-200 flex justify-between items-start gap-4 menu-item-card md:col-span-2">
+<div class="space-y-1">
+<h3 class="font-serif-luxury text-lg text-stone-900 dish-name">Pancake &amp; Cereals</h3>
+<p class="text-xs text-stone-600 font-light dish-desc">Fluffy pancakes topped with pure maple syrup and orchard fruits, served with your choice of cornflakes, toasted granola, or fruit &amp; fibres.</p>
+</div>
+<span class="font-serif-luxury text-lg text-burgundy-deep font-bold whitespace-nowrap">₦15,000</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 8. SELF-SERVICE CRAFT BARS (BURGER / SANDWICH / PIZZA CONFIGURATOR) -->
+<section class="py-16 sm:py-20 px-4 sm:px-6 bg-onyx-surface scroll-mt-24 menu-section" id="craft-bar">
+<div class="max-w-7xl mx-auto">
+<div class="text-center max-w-2xl mx-auto mb-10">
+<span class="text-xs uppercase tracking-[0.25em] text-champagne-gold font-semibold">Atelier Gastronomique</span>
+<h2 class="font-serif-luxury text-3xl sm:text-4xl text-white mt-1">Self-Service Craft Bar</h2>
+<p class="text-xs sm:text-sm text-stone-300 mt-2">Personalize your burger, hearth-baked artisanal pizza, or gourmet deli sandwich. Fixed price: <strong class="text-champagne-gold">₦18,000 each</strong> with hand-cut fries.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Burger Craft Card -->
+<div class="bg-onyx-card rounded-2xl p-6 border border-onyx-border flex flex-col justify-between space-y-4">
+<div class="space-y-3">
+<div class="flex items-center gap-2 text-champagne-gold">
+<span class="material-symbols-outlined text-2xl">lunch_dining</span>
+<h3 class="font-serif-luxury text-xl text-white">Custom Burger</h3>
+</div>
+<p class="text-xs text-stone-300 font-light">Toasted brioche bun, sesame crust, with fries.</p>
+<div class="text-xs space-y-2 pt-2 border-t border-onyx-border/60">
+<div>
+<span class="text-stone-400 font-semibold block mb-1">1. Choose 1 Patty:</span>
+<div class="flex flex-wrap gap-1 text-[11px]">
+<span class="px-2 py-0.5 rounded bg-white/10 text-stone-200">Prime Beef</span>
+<span class="px-2 py-0.5 rounded bg-white/10 text-stone-200">Chicken Breast</span>
+<span class="px-2 py-0.5 rounded bg-white/10 text-stone-200">Fish Fillet</span>
+</div>
+</div>
+<div>
+<span class="text-stone-400 font-semibold block mb-1">2. Choose Up to 4 Condiments:</span>
+<p class="text-stone-300 text-[11px]">Tomatoes, Crisp Lettuce, Caramelized Onion, Fresh Cucumber, Aged Cheese, Farm Fried Egg</p>
+</div>
+<div>
+<span class="text-stone-400 font-semibold block mb-1">3. Artisanal Sauce:</span>
+<p class="text-stone-300 text-[11px]">Cocktail Sauce • House Tartar • Garlic Aioli</p>
+</div>
+</div>
+</div>
+<div class="pt-4 border-t border-onyx-border flex items-center justify-between">
+<span class="font-serif-luxury text-lg text-champagne-gold font-bold">₦18,000</span>
+<button class="add-dish-btn px-3 py-1.5 rounded-full bg-burgundy-wine text-white text-xs font-semibold hover:bg-burgundy-soft transition" data-name="Custom Burger Atelier" data-price="18000">+ Order</button>
+</div>
+</div>
+<!-- Sandwich Craft Card -->
+<div class="bg-onyx-card rounded-2xl p-6 border border-onyx-border flex flex-col justify-between space-y-4">
+<div class="space-y-3">
+<div class="flex items-center gap-2 text-champagne-gold">
+<span class="material-symbols-outlined text-2xl">bakery_dining</span>
+<h3 class="font-serif-luxury text-xl text-white">Custom Sandwich</h3>
+</div>
+<p class="text-xs text-stone-300 font-light">Artisanal sourdough or ciabatta baked fresh daily.</p>
+<div class="text-xs space-y-2 pt-2 border-t border-onyx-border/60">
+<div>
+<span class="text-stone-400 font-semibold block mb-1">1. Choose Filling:</span>
+<div class="flex flex-wrap gap-1 text-[11px]">
+<span class="px-2 py-0.5 rounded bg-white/10 text-stone-200">Shredded Beef</span>
+<span class="px-2 py-0.5 rounded bg-white/10 text-stone-200">Chicken Breast</span>
+<span class="px-2 py-0.5 rounded bg-white/10 text-stone-200">Grilled Fish</span>
+</div>
+</div>
+<div>
+<span class="text-stone-400 font-semibold block mb-1">2. Choose 4 Toppings:</span>
+<p class="text-stone-300 text-[11px]">Vine Tomatoes, Romaine Lettuce, Sweet Onions, Cucumbers, Swiss Cheese</p>
+</div>
+<div>
+<span class="text-stone-400 font-semibold block mb-1">3. Emulsion:</span>
+<p class="text-stone-300 text-[11px]">Cocktail • House Tartar • Herb Mayo</p>
+</div>
+</div>
+</div>
+<div class="pt-4 border-t border-onyx-border flex items-center justify-between">
+<span class="font-serif-luxury text-lg text-champagne-gold font-bold">₦18,000</span>
+<button class="add-dish-btn px-3 py-1.5 rounded-full bg-burgundy-wine text-white text-xs font-semibold hover:bg-burgundy-soft transition" data-name="Custom Sandwich Atelier" data-price="18000">+ Order</button>
+</div>
+</div>
+<!-- Pizza Craft Card -->
+<div class="bg-onyx-card rounded-2xl p-6 border border-onyx-border flex flex-col justify-between space-y-4">
+<div class="space-y-3">
+<div class="flex items-center gap-2 text-champagne-gold">
+<span class="material-symbols-outlined text-2xl">local_pizza</span>
+<h3 class="font-serif-luxury text-xl text-white">Hearth-Baked Pizza</h3>
+</div>
+<p class="text-xs text-stone-300 font-light">Wood-kissed stone baked crust with fresh mozzarella.</p>
+<div class="text-xs space-y-2 pt-2 border-t border-onyx-border/60">
+<div>
+<span class="text-stone-400 font-semibold block mb-1">1. Choose 2 Proteins:</span>
+<div class="flex flex-wrap gap-1 text-[11px]">
+<span class="px-2 py-0.5 rounded bg-white/10 text-stone-200">Spiced Beef</span>
+<span class="px-2 py-0.5 rounded bg-white/10 text-stone-200">Chicken</span>
+<span class="px-2 py-0.5 rounded bg-white/10 text-stone-200">Pepperoni</span>
+<span class="px-2 py-0.5 rounded bg-white/10 text-stone-200">Bacon</span>
+</div>
+</div>
+<div>
+<span class="text-stone-400 font-semibold block mb-1">2. Choose 3 Hearth Toppings:</span>
+<p class="text-stone-300 text-[11px]">Oven Tomatoes, Pineapple, Sweet Corn, Chili Pepper, Mushrooms</p>
+</div>
+<div>
+<span class="text-stone-400 font-semibold block mb-1">3. Hearth Sauce:</span>
+<p class="text-stone-300 text-[11px]">Tomato Basil Marinara or Smoky Barbecue</p>
+</div>
+</div>
+</div>
+<div class="pt-4 border-t border-onyx-border flex items-center justify-between">
+<span class="font-serif-luxury text-lg text-champagne-gold font-bold">₦18,000</span>
+<button class="add-dish-btn px-3 py-1.5 rounded-full bg-burgundy-wine text-white text-xs font-semibold hover:bg-burgundy-soft transition" data-name="Custom Hearth Pizza" data-price="18000">+ Order</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 9. STARTERS, SOUPS, WRAPS & SNACKS (EDITORIAL WHITE/IVORY) -->
+<section class="py-16 sm:py-20 px-4 sm:px-6 bg-ivory-warm text-stone-900 scroll-mt-24 menu-section" id="starters">
+<div class="max-w-7xl mx-auto space-y-12">
+<!-- Section Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between pb-4 border-b border-stone-300">
+<div>
+<span class="text-xs uppercase tracking-[0.25em] text-burgundy-deep font-bold">Première Assiette &amp; Bar Bites</span>
+<h2 class="font-serif-luxury text-3xl sm:text-4xl text-stone-900 mt-1">Starters, Salads &amp; Lagos Bites</h2>
+</div>
+<p class="text-xs sm:text-sm text-stone-600 max-w-md mt-2 md:mt-0">All artisanal soups accompanied by freshly baked crust rolls and Normandy salted butter.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Salads Block -->
+<div class="bg-white p-5 rounded-xl shadow-sm border border-stone-200 space-y-3">
+<div class="flex items-center justify-between pb-2 border-b border-stone-200">
+<h3 class="font-serif-luxury text-lg text-stone-900">Garden Salads</h3>
+<span class="text-xs font-bold text-burgundy-deep">Each ₦15,000</span>
+</div>
+<div class="space-y-3 text-xs">
+<div class="menu-item-card">
+<div class="flex justify-between font-semibold"><span class="dish-name">Caprese Salad</span> <span>₦15,000</span></div>
+<p class="text-stone-500 font-light mt-0.5 dish-desc">Buffalo mozzarella, vine tomatoes, sweet basil, olive oil &amp; balsamic glaze.</p>
+</div>
+<div class="menu-item-card">
+<div class="flex justify-between font-semibold"><span class="dish-name">Italian Salad</span> <span>₦15,000</span></div>
+<p class="text-stone-500 font-light mt-0.5 dish-desc">Mediterranean lettuce, Kalamata olives, plum tomatoes, pickled red onions &amp; shaved parmesan.</p>
+</div>
+<div class="menu-item-card">
+<div class="flex justify-between font-semibold"><span class="dish-name">Mixed Veg Garden Salad</span> <span>₦15,000</span></div>
+<p class="text-stone-500 font-light mt-0.5 dish-desc">Seasonal farm vegetables tossed lightly with zesty lemon vinaigrette.</p>
+</div>
+<div class="menu-item-card">
+<div class="flex justify-between font-semibold"><span class="dish-name">Waldorf Salad</span> <span>₦15,000</span></div>
+<p class="text-stone-500 font-light mt-0.5 dish-desc">Crisp apples, seedless grapes, and crushed toasted nuts in light velvet cream.</p>
+</div>
+</div>
+</div>
+<!-- Slow Soups Block -->
+<div class="bg-white p-5 rounded-xl shadow-sm border border-stone-200 space-y-3">
+<div class="flex items-center justify-between pb-2 border-b border-stone-200">
+<h3 class="font-serif-luxury text-lg text-stone-900">Slow-Simmered Soups</h3>
+<span class="text-xs font-bold text-burgundy-deep">₦15k – ₦18k</span>
+</div>
+<div class="space-y-3 text-xs">
+<div class="menu-item-card">
+<div class="flex justify-between font-semibold"><span class="dish-name">Continental Soup Selection</span> <span>₦18,000</span></div>
+<p class="text-stone-500 font-light mt-0.5 dish-desc">Wild Mushroom, French Onion au Gratin, Vegetable, Cream of Chicken, Rich Prawn Bisque, or Minestrone.</p>
+</div>
+<div class="menu-item-card pt-2 border-t border-stone-100">
+<div class="flex justify-between font-semibold"><span class="dish-name">Nigerian Native Pepper Soup</span> <span>₦15,000</span></div>
+<p class="text-stone-500 font-light mt-0.5 dish-desc">Aromatic slow-simmered broth with Lagos spices &amp; uziza. Choice of Goat Meat, Cow Tail, Cow Leg (Bokoto), Croaker Fish, Assorted Offal, or Catfish.</p>
+</div>
+</div>
+</div>
+<!-- Appetizers & Wraps Block -->
+<div class="bg-white p-5 rounded-xl shadow-sm border border-stone-200 space-y-3">
+<div class="flex items-center justify-between pb-2 border-b border-stone-200">
+<h3 class="font-serif-luxury text-lg text-stone-900">Wraps &amp; Lounge Bites</h3>
+<span class="text-xs font-bold text-burgundy-deep">Lounge Favorites</span>
+</div>
+<div class="space-y-2.5 text-xs">
+<div class="flex justify-between items-start menu-item-card">
+<div>
+<span class="font-semibold dish-name">Alo Alo Signature Wraps</span>
+<p class="text-stone-500 text-[11px] dish-desc">Chicken Shawarma, Mexican Burrito, Nigerian Beef Shawarma, or Veg Hummus with fries.</p>
+</div>
+<span class="font-bold text-burgundy-deep whitespace-nowrap ml-2">₦18,000</span>
+</div>
+<div class="flex justify-between items-start menu-item-card">
+<div>
+<span class="font-semibold dish-name">Buffalo Wings in Spicy Sauce</span>
+<p class="text-stone-500 text-[11px] dish-desc">4 crispy chicken wings tossed in tangy chili buffalo butter.</p>
+</div>
+<span class="font-bold text-burgundy-deep whitespace-nowrap ml-2">₦15,000</span>
+</div>
+<div class="flex justify-between items-start menu-item-card">
+<div>
+<span class="font-semibold dish-name">Crispy Chicken Popcorn</span>
+<p class="text-stone-500 text-[11px] dish-desc">Bite-size chicken pieces seasoned with smoked paprika.</p>
+</div>
+<span class="font-bold text-burgundy-deep whitespace-nowrap ml-2">₦12,000</span>
+</div>
+<div class="flex justify-between items-start menu-item-card">
+<div>
+<span class="font-semibold dish-name">Mini Beef Samosas (6 pcs)</span>
+<p class="text-stone-500 text-[11px] dish-desc">Crispy pastries with Lagos seasoned minced beef.</p>
+</div>
+<span class="font-bold text-burgundy-deep whitespace-nowrap ml-2">₦8,500</span>
+</div>
+<div class="flex justify-between items-start menu-item-card">
+<div>
+<span class="font-semibold dish-name">Vegetable Spring Rolls (6 pcs)</span>
+<p class="text-stone-500 text-[11px] dish-desc">Wok-tossed julienned vegetables with sweet plum dip.</p>
+</div>
+<span class="font-bold text-burgundy-deep whitespace-nowrap ml-2">₦8,500</span>
+</div>
+<div class="flex justify-between items-start menu-item-card">
+<div>
+<span class="font-semibold dish-name">Freshly Baked Gourmet Cookies</span>
+<p class="text-stone-500 text-[11px] dish-desc">Belgian chocolate chunk warm oven cookies.</p>
+</div>
+<span class="font-bold text-burgundy-deep whitespace-nowrap ml-2">₦6,000</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 10. TRIP AROUND THE WORLD (EDITORIAL LIGHT / WHITE) -->
+<section class="py-16 sm:py-20 px-4 sm:px-6 bg-white text-stone-900 scroll-mt-24 menu-section" id="world-tour">
+<div class="max-w-7xl mx-auto space-y-10">
+<div class="text-center max-w-2xl mx-auto">
+<span class="text-xs uppercase tracking-[0.25em] text-burgundy-deep font-bold">Global Haute Cuisine</span>
+<h2 class="font-serif-luxury text-3xl sm:text-4xl text-stone-900 mt-1">Trip Around The World</h2>
+<p class="text-xs sm:text-sm text-stone-600 mt-1">Authentic recipes from Venice, Shanghai, and Mumbai curated for tableside indulgence.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Venice -->
+<div class="bg-ivory-warm p-5 rounded-xl border border-stone-200 space-y-3">
+<div class="flex items-center justify-between pb-2 border-b border-stone-300">
+<div>
+<span class="text-[10px] uppercase tracking-wider text-burgundy-deep font-bold">Italy</span>
+<h3 class="font-serif-luxury text-xl text-stone-900">Venice Selection</h3>
+</div>
+<span class="material-symbols-outlined text-amber-800">dinner_dining</span>
+</div>
+<div class="space-y-2.5 text-xs divide-y divide-stone-200">
+<div class="pt-1.5 flex justify-between menu-item-card"><span class="dish-name">Aubergine Parmigiana</span> <span class="font-semibold text-burgundy-deep">₦30,000</span></div>
+<div class="pt-1.5 flex justify-between menu-item-card"><span class="dish-name">Classic Carbonara</span> <span class="font-semibold text-burgundy-deep">₦30,000</span></div>
+<div class="pt-1.5 flex justify-between menu-item-card"><span class="dish-name">Chicken Alfredo Pasta</span> <span class="font-semibold text-burgundy-deep">₦28,000</span></div>
+<div class="pt-1.5 flex justify-between menu-item-card"><span class="dish-name">Wild Mushroom Risotto</span> <span class="font-semibold text-burgundy-deep">₦28,000</span></div>
+<div class="pt-1.5 flex justify-between menu-item-card"><span class="dish-name">Beef Bolognese Lasagna</span> <span class="font-semibold text-burgundy-deep">₦28,000</span></div>
+<div class="pt-1.5 flex justify-between menu-item-card"><span class="dish-name">Spaghetti Bolognese</span> <span class="font-semibold text-burgundy-deep">₦25,000</span></div>
+</div>
+</div>
+<!-- Shanghai -->
+<div class="bg-ivory-warm p-5 rounded-xl border border-stone-200 space-y-3">
+<div class="flex items-center justify-between pb-2 border-b border-stone-300">
+<div>
+<span class="text-[10px] uppercase tracking-wider text-burgundy-deep font-bold">Asia</span>
+<h3 class="font-serif-luxury text-xl text-stone-900">Shanghai Specials</h3>
+</div>
+<span class="material-symbols-outlined text-amber-800">ramen_dining</span>
+</div>
+<div class="space-y-2.5 text-xs divide-y divide-stone-200">
+<div class="pt-1.5 flex justify-between menu-item-card"><span class="dish-name">Chinese Dumplings</span> <span class="font-semibold text-burgundy-deep">₦32,000</span></div>
+<div class="pt-1.5 flex justify-between menu-item-card"><span class="dish-name">Shredded Crispy Beef</span> <span class="font-semibold text-burgundy-deep">₦28,000</span></div>
+<div class="pt-1.5 flex justify-between menu-item-card"><span class="dish-name">Singapore Rice Noodles</span> <span class="font-semibold text-burgundy-deep">₦28,000</span></div>
+<div class="pt-1.5 flex justify-between menu-item-card"><span class="dish-name">Special House Fried Rice</span> <span class="font-semibold text-burgundy-deep">₦28,000</span></div>
+<div class="pt-1.5 flex justify-between menu-item-card"><span class="dish-name">Sweet &amp; Sour Chicken</span> <span class="font-semibold text-burgundy-deep">₦28,000</span></div>
+<div class="pt-1.5 flex justify-between menu-item-card"><span class="dish-name">Thai Chili Beef Pasta</span> <span class="font-semibold text-burgundy-deep">₦28,000</span></div>
+</div>
+</div>
+<!-- Mumbai -->
+<div class="bg-ivory-warm p-5 rounded-xl border border-stone-200 space-y-3">
+<div class="flex items-center justify-between pb-2 border-b border-stone-300">
+<div>
+<span class="text-[10px] uppercase tracking-wider text-burgundy-deep font-bold">India</span>
+<h3 class="font-serif-luxury text-xl text-stone-900">Mumbai Flavors</h3>
+</div>
+<span class="material-symbols-outlined text-amber-800">set_meal</span>
+</div>
+<div class="space-y-2.5 text-xs divide-y divide-stone-200">
+<div class="pt-1.5 flex justify-between menu-item-card"><span class="dish-name">Aloo-Paratha with Yogurt</span> <span class="font-semibold text-burgundy-deep">₦15,000</span></div>
+<div class="pt-1.5 flex justify-between menu-item-card"><span class="dish-name">Chicken or Veg Biryani</span> <span class="font-semibold text-burgundy-deep">₦24,000</span></div>
+<div class="pt-1.5 flex justify-between menu-item-card"><span class="dish-name">Royal Chicken / Veg Curry</span> <span class="font-semibold text-burgundy-deep">₦24,000</span></div>
+<div class="pt-1.5 flex justify-between menu-item-card"><span class="dish-name">Yellow Dal Tadka</span> <span class="font-semibold text-burgundy-deep">₦20,000</span></div>
+<div class="pt-1.5 flex justify-between menu-item-card"><span class="dish-name">Rich Paneer Masala</span> <span class="font-semibold text-burgundy-deep">₦25,000</span></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 11. DESSERTS & EXTRA SIDES -->
+<section class="py-16 sm:py-20 px-4 sm:px-6 bg-ivory-muted text-stone-900 scroll-mt-24 menu-section" id="desserts">
+<div class="max-w-7xl mx-auto">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<!-- Desserts -->
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200 space-y-4">
+<div class="pb-2 border-b border-stone-200">
+<span class="text-[10px] uppercase tracking-wider text-burgundy-deep font-bold">Douceurs</span>
+<h3 class="font-serif-luxury text-2xl text-stone-900">Desserts &amp; Confections</h3>
+</div>
+<div class="space-y-3 text-xs divide-y divide-stone-100">
+<div class="pt-2 flex justify-between items-baseline menu-item-card">
+<div><span class="font-semibold dish-name">Layered Fruit Parfait</span><p class="text-stone-500 dish-desc">Greek yogurt, granola, honey &amp; fresh berries.</p></div>
+<span class="font-serif-luxury text-sm font-bold text-burgundy-deep">₦8,000</span>
+</div>
+<div class="pt-2 flex justify-between items-baseline menu-item-card">
+<div><span class="font-semibold dish-name">Royal Fruit Platter</span><p class="text-stone-500 dish-desc">Seasonal pawpaw, pineapple, watermelon, and grapes.</p></div>
+<span class="font-serif-luxury text-sm font-bold text-burgundy-deep">₦7,500</span>
+</div>
+<div class="pt-2 flex justify-between items-baseline menu-item-card">
+<div><span class="font-semibold dish-name">Fresh Fruit Salad</span><p class="text-stone-500 dish-desc">Diced market fruits with sweet citrus syrup.</p></div>
+<span class="font-serif-luxury text-sm font-bold text-burgundy-deep">₦7,500</span>
+</div>
+<div class="pt-2 flex justify-between items-baseline menu-item-card">
+<div><span class="font-semibold dish-name">Artisan Cake Slices</span><p class="text-stone-500 dish-desc">Chocolate Fudge, Strawberry, or Vanilla Bean.</p></div>
+<span class="font-serif-luxury text-sm font-bold text-burgundy-deep">₦6,000</span>
+</div>
+<div class="pt-2 flex justify-between items-baseline menu-item-card">
+<div><span class="font-semibold dish-name">Artisanal Ice Cream Trio</span><p class="text-stone-500 dish-desc">Chocolate, strawberry, and Madagascar vanilla.</p></div>
+<span class="font-serif-luxury text-sm font-bold text-burgundy-deep">₦6,000</span>
+</div>
+<div class="pt-2 flex justify-between items-baseline menu-item-card">
+<div><span class="font-semibold dish-name">Crème Caramel</span><p class="text-stone-500 dish-desc">Silky baked custard topped with liquid amber caramel.</p></div>
+<span class="font-serif-luxury text-sm font-bold text-burgundy-deep">₦5,000</span>
+</div>
+</div>
+</div>
+<!-- Extra Sides -->
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200 space-y-4">
+<div class="pb-2 border-b border-stone-200">
+<span class="text-[10px] uppercase tracking-wider text-burgundy-deep font-bold">Accompagnements</span>
+<h3 class="font-serif-luxury text-2xl text-stone-900">Extra Portions &amp; Sides</h3>
+</div>
+<div class="space-y-3 text-xs divide-y divide-stone-100">
+<div class="pt-2 flex justify-between items-baseline menu-item-card">
+<div><span class="font-semibold dish-name">Fries (Spiced Yam or Potato)</span><p class="text-stone-500 dish-desc">Crispy golden yam batons or French potato fries.</p></div>
+<span class="font-serif-luxury text-sm font-bold text-burgundy-deep">₦10,000</span>
+</div>
+<div class="pt-2 flex justify-between items-baseline menu-item-card">
+<div><span class="font-semibold dish-name">Extra Portion of Native Soup</span><p class="text-stone-500 dish-desc">Egusi, Ogbono, Afang, Efo Riro, or Okro.</p></div>
+<span class="font-serif-luxury text-sm font-bold text-burgundy-deep">₦10,000</span>
+</div>
+<div class="pt-2 flex justify-between items-baseline menu-item-card">
+<div><span class="font-semibold dish-name">Extra Rice Portion</span><p class="text-stone-500 dish-desc">Smokey Jollof, Fried Rice, Coconut, or Jasmine.</p></div>
+<span class="font-serif-luxury text-sm font-bold text-burgundy-deep">₦10,000</span>
+</div>
+<div class="pt-2 flex justify-between items-baseline menu-item-card">
+<div><span class="font-semibold dish-name">Sweet Plantain (Fried or Grilled Dodo)</span><p class="text-stone-500 dish-desc">Ripe caramelized plantain slices.</p></div>
+<span class="font-serif-luxury text-sm font-bold text-burgundy-deep">₦4,500</span>
+</div>
+<div class="pt-2 flex justify-between items-baseline menu-item-card">
+<div><span class="font-semibold dish-name">Swallow of Choice</span><p class="text-stone-500 dish-desc">Poundo Yam, Semo, Eba, Amala, Fufu, or Wheat.</p></div>
+<span class="font-serif-luxury text-sm font-bold text-burgundy-deep">₦4,000</span>
+</div>
+<div class="pt-2 flex justify-between items-baseline menu-item-card">
+<div><span class="font-semibold dish-name">Warm Chapati Bread</span><p class="text-stone-500 dish-desc">Fresh pan-toasted layered flatbread.</p></div>
+<span class="font-serif-luxury text-sm font-bold text-burgundy-deep">₦4,000</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 12. TABLESIDE & SUITE SERVICE BOOKING -->
+<section class="py-16 sm:py-20 px-4 sm:px-6 bg-onyx-surface text-stone-200 scroll-mt-24" id="table-booking">
+<div class="max-w-7xl mx-auto">
+<div class="bg-onyx-card rounded-2xl p-6 sm:p-10 border border-onyx-border">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+<div class="lg:col-span-6 space-y-4">
+<span class="text-xs uppercase tracking-[0.25em] text-champagne-gold font-semibold">Discreet Hospitality</span>
+<h2 class="font-serif-luxury text-3xl sm:text-4xl text-white">Tableside &amp; In-Room Dining Service</h2>
+<p class="text-xs sm:text-sm text-stone-300 leading-relaxed font-light">
+              Whether dining in the atmospheric Alo Alo candlelit salon or requesting silver-cloche service to your executive suite at Victoria Crown Plaza Hotel, our team is at your immediate command.
+            </p>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+<a class="p-3 rounded-xl bg-black/40 border border-white/10 hover:border-champagne-gold transition-all block" href="tel:+23412719800">
+<span class="material-symbols-outlined text-champagne-gold text-xl">call</span>
+<p class="text-xs font-semibold text-white mt-1">Direct Reservations</p>
+<p class="text-[11px] text-stone-400">+234 1 271 9800 • Ext 412</p>
+</a>
+<a class="p-3 rounded-xl bg-black/40 border border-white/10 hover:border-emerald-500 transition-all block" href="https://wa.me/23412719800">
+<span class="material-symbols-outlined text-emerald-400 text-xl">chat</span>
+<p class="text-xs font-semibold text-white mt-1">WhatsApp Concierge</p>
+<p class="text-[11px] text-stone-400">Instant Table &amp; Suite Orders</p>
+</a>
+</div>
+<p class="text-[11px] text-stone-400 italic">
+              Please inform your server of any dietary preferences, food allergies, or religious practices. Halal and vegetarian accommodations are proudly prepared upon request.
+            </p>
+</div>
+<!-- Direct Table Order Form Panel -->
+<div class="lg:col-span-6 bg-black/60 p-6 rounded-xl border border-white/10 space-y-4">
+<h3 class="font-serif-luxury text-xl text-white">Request Table or Suite Cloche</h3>
+<form class="space-y-3 text-xs" onsubmit="handleReservation(event)">
+<div>
+<label class="block text-stone-400 uppercase tracking-wider text-[10px] mb-1">Guest Name &amp; Suite Number</label>
+<input class="w-full bg-onyx-card border border-onyx-border rounded-lg px-3 py-2 text-white placeholder-stone-500 focus:border-champagne-gold focus:outline-none" placeholder="e.g., Chief Adeleke / Suite 402" required="" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="block text-stone-400 uppercase tracking-wider text-[10px] mb-1">Date &amp; Desired Time</label>
+<input class="w-full bg-onyx-card border border-onyx-border rounded-lg px-3 py-2 text-white placeholder-stone-500 focus:border-champagne-gold focus:outline-none" placeholder="Tonight at 19:30" required="" type="text"/>
+</div>
+<div>
+<label class="block text-stone-400 uppercase tracking-wider text-[10px] mb-1">Party Size</label>
+<select class="w-full bg-onyx-card border border-onyx-border rounded-lg px-3 py-2 text-white focus:border-champagne-gold focus:outline-none">
+<option>2 Diners (Romantic)</option>
+<option>4 Diners (Business)</option>
+<option>6+ Diners (Celebration)</option>
+<option>Suite In-Room Cloche</option>
+</select>
+</div>
+</div>
+<div>
+<label class="block text-stone-400 uppercase tracking-wider text-[10px] mb-1">Special Culinary Requests</label>
+<textarea class="w-full bg-onyx-card border border-onyx-border rounded-lg px-3 py-2 text-white placeholder-stone-500 focus:border-champagne-gold focus:outline-none" placeholder="Chilled champagne, table location, allergies, custom spices..." rows="2"></textarea>
+</div>
+<button class="w-full py-3 rounded-full bg-burgundy-wine text-white font-bold uppercase tracking-wider hover:bg-burgundy-soft transition shadow-lg" type="submit">
+                Transmit Request to Maitre D'
+              </button>
+</form>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- FLOATING BOTTOM CONCIERGE & SELECTION DRAWER -->
+<aside class="fixed bottom-3 left-3 right-3 sm:left-auto sm:right-6 sm:w-96 z-50 glass-dark border border-white/20 rounded-2xl p-3.5 shadow-2xl transition-all duration-300 translate-y-32" id="order-drawer">
+<div class="flex items-center justify-between gap-3">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-burgundy-wine text-white text-xs font-bold flex items-center justify-center shadow-md">
+<span id="cloche-count">0</span>
+</div>
+<div>
+<span class="text-[10px] uppercase tracking-wider text-champagne-gold block font-semibold">Your Cloche Order</span>
+<span class="font-serif-luxury text-base text-white font-bold" id="cloche-total">₦0</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-[11px] text-stone-400 hover:text-white px-2 py-1" onclick="clearCloche()">Clear</button>
+<a class="px-3.5 py-1.5 rounded-full bg-champagne-gold text-burgundy-deep text-xs font-bold uppercase tracking-wider hover:bg-champagne-light transition shadow" href="#table-booking">
+          Confirm
+        </a>
+</div>
+</div>
+</aside>
+<!-- FOOTER (DEEP ONYX & BURGUNDY HOTEL CONCIERGE) -->
+<footer class="w-full bg-black text-stone-400 pt-16 pb-20 border-t border-onyx-border">
+<div class="max-w-7xl mx-auto px-4 sm:px-6">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8 pb-12 border-b border-white/10">
+<!-- Hotel Identity -->
+<div class="space-y-3">
+<div class="bg-white/95 px-2 py-1 rounded inline-block">
+<img alt="Victoria Crown Plaza Hotel Lagos" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XUIZGGlt1SCcYmma6bFR7MHA-YfdNt0521jbUsUnWNkF5rzBwXlLuxGqoeh_lW9XNdQz1kWxYPtMFJ2qDOiT393N3qMe2uEYvKr5PTcfJwkaTTQPaTI95E0G1icLFeN5u9EY9lt8xfFa4_P7dJZADZM1bUjUr8uV4nFIn-L9-G_6bLT_Q3oRUazsOde8CrnV-ErzCxcGfj6O9SA0zcMRkFOipe5iqiiPVcEFaavAEmq8i8mG3Rb5Lc6F5n"/>
+</div>
+<p class="text-xs text-stone-400 font-light leading-relaxed">
+            The signature culinary destination of Victoria Crown Plaza Hotel. Blending authentic Nigerian heritage delicacies with grand continental gastronomy on Victoria Island.
+          </p>
+<p class="text-xs text-champagne-gold font-medium">292B Ajose Adeogun, Victoria Island, Lagos</p>
+</div>
+<!-- Hours -->
+<div class="space-y-2">
+<h4 class="font-serif-luxury text-white text-sm uppercase tracking-wider">Dining Hours</h4>
+<ul class="text-xs space-y-1.5 text-stone-400">
+<li><strong class="text-stone-300">Breakfast:</strong> 06:30 – 11:00</li>
+<li><strong class="text-stone-300">All-Day Carte:</strong> 12:00 – 23:00</li>
+<li><strong class="text-stone-300">Cellar &amp; Bar:</strong> Until Late</li>
+<li><strong class="text-stone-300">In-Room Dining:</strong> 24 Hours</li>
+</ul>
+</div>
+<!-- Concierge -->
+<div class="space-y-2">
+<h4 class="font-serif-luxury text-white text-sm uppercase tracking-wider">Direct Concierge</h4>
+<ul class="text-xs space-y-1.5 text-stone-400">
+<li>Direct Desk: +234 1 271 9800</li>
+<li>In-House Extension: 412</li>
+<li>Email: dining@vcphotel.com</li>
+<li>Dress Code: Smart Elegant</li>
+</ul>
+</div>
+<!-- Hotel Privileges -->
+<div class="space-y-2">
+<h4 class="font-serif-luxury text-white text-sm uppercase tracking-wider">Hotel Privileges</h4>
+<ul class="text-xs space-y-1.5 text-stone-400">
+<li>Sommelier Wine Cellar</li>
+<li>Executive Boardroom Banquets</li>
+<li>Complimentary Valet Parking</li>
+<li>High-Speed Resident Wi-Fi</li>
+</ul>
+</div>
+</div>
+<div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
+<p>© 2025 Alo Alo Restaurant • Victoria Crown Plaza Hotel (VCP Hotel), Lagos. All rights reserved.</p>
+<div class="flex items-center gap-4">
+<a class="hover:text-stone-300 transition" href="#">Dietary Policies</a>
+<a class="hover:text-stone-300 transition" href="#">Privacy Policy</a>
+<a class="hover:text-stone-300 transition" href="#">VCP Hotel Portal</a>
+</div>
+</div>
+</div>
+</footer>
+<!-- JAVASCRIPT: DIGITAL MENU INTERACTIONS -->
+<script>
+    // 1. Instant Digital Search Filter
+    const searchInput = document.getElementById('menu-search-input');
+    const searchFeedback = document.getElementById('search-feedback');
+    const searchTermDisplay = document.getElementById('search-term-display');
+    const clearSearchBtn = document.getElementById('clear-search-btn');
+
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        performSearch(query);
+      });
+    }
+
+    function performSearch(query) {
+      const cards = document.querySelectorAll('.menu-item-card');
+      if (clearSearchBtn) {
+        if (query.length > 0) {
+          clearSearchBtn.classList.remove('hidden');
+        } else {
+          clearSearchBtn.classList.add('hidden');
+        }
+      }
+
+      if (query.length < 2) {
+        cards.forEach(card => card.classList.remove('hidden', 'opacity-20'));
+        searchFeedback.classList.add('hidden');
+        return;
+      }
+
+      searchFeedback.classList.remove('hidden');
+      searchTermDisplay.textContent = `"${query}"`;
+
+      let matchCount = 0;
+      cards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        if (text.includes(query)) {
+          card.classList.remove('hidden');
+          card.classList.remove('opacity-20');
+          matchCount++;
+        } else {
+          card.classList.add('opacity-20');
+        }
+      });
+    }
+
+    function resetSearch() {
+      if (searchInput) searchInput.value = '';
+      performSearch('');
+    }
+
+    if (clearSearchBtn) {
+      clearSearchBtn.addEventListener('click', resetSearch);
+    }
+
+    // 2. Cloche Cart State
+    let clocheItems = 0;
+    let clocheSum = 0;
+    const clocheDrawer = document.getElementById('order-drawer');
+    const clocheCount = document.getElementById('cloche-count');
+    const clocheTotal = document.getElementById('cloche-total');
+
+    document.querySelectorAll('.add-dish-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const price = parseInt(btn.getAttribute('data-price') || '0', 10);
+        clocheItems += 1;
+        clocheSum += price;
+        updateCloche();
+        
+        // Haptic button feedback
+        btn.classList.add('scale-95');
+        setTimeout(() => btn.classList.remove('scale-95'), 150);
+      });
+    });
+
+    function updateCloche() {
+      if (!clocheDrawer) return;
+      clocheCount.textContent = clocheItems;
+      clocheTotal.textContent = '₦' + clocheSum.toLocaleString();
+      if (clocheItems > 0) {
+        clocheDrawer.classList.remove('translate-y-32');
+      } else {
+        clocheDrawer.classList.add('translate-y-32');
+      }
+    }
+
+    function clearCloche() {
+      clocheItems = 0;
+      clocheSum = 0;
+      updateCloche();
+    }
+
+    // 3. Category Tab Active State Highlighting on Click
+    const categoryTabs = document.querySelectorAll('.category-tab');
+    categoryTabs.forEach(tab => {
+      tab.addEventListener('click', function() {
+        categoryTabs.forEach(t => {
+          t.classList.remove('bg-burgundy-wine', 'text-white', 'border-burgundy-soft', 'active');
+          t.classList.add('text-stone-300');
+        });
+        this.classList.add('bg-burgundy-wine', 'text-white', 'border-burgundy-soft', 'active');
+        this.classList.remove('text-stone-300');
+      });
+    });
+
+    // 4. Handle Reservation Mock Submit
+    function handleReservation(e) {
+      e.preventDefault();
+      alert('Your dining request has been transmitted directly to Alo Alo Maitre D\' at Victoria Crown Plaza Hotel. Ext 412 is notified.');
+    }
+  </script>
+</body></html>

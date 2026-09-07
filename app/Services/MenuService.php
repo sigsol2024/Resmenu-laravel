@@ -155,6 +155,13 @@ class MenuService
             if ($categories === []) {
                 return null;
             }
+
+            // Count available items before stripping payload (sectionsWithMenu already filters is_available=1).
+            $itemCount = 0;
+            foreach ($categories as $cat) {
+                $itemCount += count($cat['menu_items'] ?? []);
+            }
+            $section['item_count'] = $itemCount;
             $section['categories'] = $this->stripMenuItemsFromCategories($categories);
 
             return $section;

@@ -28,4 +28,7 @@ yarn-error.log
 # Generated live-dump sync SQL (regenerate via resmenu:build:sync-sql)
 /database/seed-sql/production/sync_part_*.sql
 
+# Alo Alo migration runtime manifest
+/database/data/alo_alo/last_upload_manifest.json
+
 # vendor/ is intentionally tracked for first-deploy simplicity (see docs/STANDALONE_DEPLOYMENT.md)
