@@ -140,26 +140,36 @@ function t7_drink_cat_theme(string $categorySlug): string
 }
 
 /**
- * Parse option blocks from a DESIGN_1-style multi-line description.
- * Returns list of ['label'=>string,'choose'=>string,'items'=>string[]] or empty.
+ * Split DESIGN_1-style description into intro copy + option blocks.
  *
- * @return list<array{label:string,choose:string,items:list<string>}>
+ * @return array{intro:string,blocks:list<array{label:string,choose:string,items:list<string>}>}
  */
-function t7_parse_option_blocks(string $description): array
+function t7_parse_entree_description(string $description): array
 {
     $description = trim(str_replace(["\r\n", "\r"], "\n", $description));
     if ($description === '') {
-        return [];
+        return ['intro' => '', 'blocks' => []];
     }
 
-    $blocks = preg_split("/\n{2,}/", $description) ?: [];
-    $out = [];
-    foreach ($blocks as $block) {
-        $lines = array_values(array_filter(array_map('trim', explode("\n", $block)), static fn ($l) => $l !== ''));
+    $chunks = preg_split("/\n{2,}/", $description) ?: [];
+    $intro = '';
+    $blocks = [];
+
+    foreach ($chunks as $chunk) {
+        $lines = array_values(array_filter(array_map('trim', explode("\n", $chunk)), static fn ($l) => $l !== ''));
         if ($lines === []) {
             continue;
         }
-        $header = array_shift($lines);
+        $header = $lines[0];
+        $isOption = (bool) preg_match('/\(Choose\s+\d+\)/i', $header)
+            || (bool) preg_match('/^(Patty|Condiments|Sauces|Fillings|Toppings|Base)\b/i', $header);
+
+        if (! $isOption && $intro === '' && $blocks === []) {
+            $intro = implode(' ', $lines);
+            continue;
+        }
+
+        array_shift($lines);
         $label = $header;
         $choose = '';
         if (preg_match('/^(.+?)\s*\((Choose\s+\d+)\)\s*:\s*(.*)$/i', $header, $m)) {
@@ -174,6 +184,7 @@ function t7_parse_option_blocks(string $description): array
                 array_unshift($lines, $rest);
             }
         }
+
         $items = [];
         foreach ($lines as $line) {
             $line = ltrim($line, "•-\t ");
@@ -187,12 +198,19 @@ function t7_parse_option_blocks(string $description): array
                 $items[] = $line;
             }
         }
-        if ($items !== [] || $label !== '') {
-            $out[] = ['label' => $label, 'choose' => $choose, 'items' => $items];
-        }
+
+        $blocks[] = ['label' => $label, 'choose' => $choose, 'items' => $items];
     }
 
-    return $out;
+    return ['intro' => $intro, 'blocks' => $blocks];
+}
+
+/**
+ * @return list<array{label:string,choose:string,items:list<string>}>
+ */
+function t7_parse_option_blocks(string $description): array
+{
+    return t7_parse_entree_description($description)['blocks'];
 }
 
 /**
