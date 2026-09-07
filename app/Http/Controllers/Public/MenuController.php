@@ -157,6 +157,7 @@ class MenuController extends Controller
             'activeCategory' => null,
             'sectionMenuUrl' => null,
             'categoryMenuUrl' => null,
+            'menuSearchIndex' => $this->menu->menuSearchIndex($restaurant),
         ], $this->reservationFormPayload($restaurant, $slug))));
     }
 

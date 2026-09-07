@@ -49,6 +49,7 @@ $bodyClass = $menuViewLevel === 'home'
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <script>
     tailwind.config = {
@@ -66,11 +67,23 @@ $bodyClass = $menuViewLevel === 'home'
             "ivory-muted": "#EDE6DB",
             "champagne-gold": "#C5A880",
             "champagne-light": "#E8D8C3",
+            "surface": "#121214",
+            "surface-container": "#1a1a1f",
+            "surface-container-low": "#16161a",
+            "surface-container-high": "#222228",
+            "surface-container-highest": "#2a2a32",
+            "on-surface": "#F4EEE5",
+            "on-surface-variant": "#B8AFA3",
+            "outline-variant": "#3a3a44",
+            "primary": "#C5A880",
           },
           fontFamily: {
             display: ['Playfair Display', 'serif'],
             sans: ['Plus Jakarta Sans', 'sans-serif'],
             desc: ['DM Sans', 'sans-serif'],
+            headline: ['Playfair Display', 'serif'],
+            label: ['Plus Jakarta Sans', 'sans-serif'],
+            body: ['DM Sans', 'sans-serif'],
           }
         }
       }
@@ -204,8 +217,14 @@ $bodyClass = $menuViewLevel === 'home'
     }
     .entree-options-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.5rem 0.75rem;
+      grid-template-columns: 1fr;
+      gap: 0.75rem 0.75rem;
+    }
+    @media (min-width: 640px) {
+      .entree-options-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1.25rem;
+      }
     }
     .entree-options-grid p.label {
       font-size: 0.625rem; letter-spacing: 0.06em; text-transform: uppercase;
@@ -217,10 +236,10 @@ $bodyClass = $menuViewLevel === 'home'
     .entree-options-grid ul {
       margin-top: 0.5rem; font-size: 0.6875rem; line-height: 1.35; color: #44403c;
       list-style: none; padding: 0;
+      overflow-wrap: anywhere; word-break: break-word;
     }
     .entree-options-grid ul li { padding: 0.15rem 0; }
     @media (min-width: 640px) {
-      .entree-options-grid { gap: 1.25rem; }
       .entree-options-grid p.label { font-size: 0.75rem; }
       .entree-options-grid p.choose { font-size: 0.8125rem; }
       .entree-options-grid ul { font-size: 0.8125rem; line-height: 1.45; }
@@ -306,12 +325,30 @@ $bodyClass = $menuViewLevel === 'home'
       .reveal, .t7-reveal { opacity: 1; transform: none; transition: none; }
     }
 
-    /* Landing tile accents */
+    /* Landing tile accents + card skins */
     .tile-burgundy { background: linear-gradient(160deg, #500C19 0%, #36050e 100%); border-color: rgba(197,168,128,0.35) !important; }
     .tile-drinks { border-color: rgba(197,168,128,0.55) !important; }
     .tile-grill { border-color: rgba(106,19,36,0.6) !important; }
     .tile-entree { background: linear-gradient(160deg, #794A2A 0%, #5c351c 100%); border-color: rgba(255,255,246,0.2) !important; }
     .tile-world { border-color: rgba(80,12,25,0.25) !important; }
+    .t7-land-card { border-color: rgba(36,36,43,1); }
+    .t7-land-card--light { background: #F4EEE5; border-color: rgba(80,12,25,0.12) !important; }
+    .t7-land-card--dark { background: #141417; border-color: rgba(36,36,43,1); }
+    .t7-land-card--burgundy { background: linear-gradient(160deg, #500C19 0%, #36050e 100%); border-color: rgba(197,168,128,0.35) !important; }
+    .t7-land-card--entree { background: linear-gradient(160deg, #794A2A 0%, #5c351c 100%); border-color: rgba(255,255,246,0.18) !important; }
+    .t7-land-card--drinks { background: linear-gradient(180deg, #F8F4EC 0%, #EDE6DB 100%); border-color: rgba(197,168,128,0.45) !important; }
+
+    .menu-item-card.is-dimmed { opacity: 0.28; transition: opacity 0.35s ease; }
+    .menu-item-card.is-highlight {
+      outline: 2px solid rgba(197,168,128,0.85);
+      outline-offset: 3px;
+      box-shadow: 0 0 0 6px rgba(80,12,25,0.28);
+      transition: outline 0.3s ease, box-shadow 0.3s ease, opacity 0.35s ease;
+    }
+
+    body.t7-drawer-open { overflow: hidden; }
+    #t7-menu-drawer.is-open { display: block; }
+    #t7-menu-backdrop:not(.hidden) { display: block; }
 
     .t7-layout { display: grid; grid-template-columns: 1fr; }
     @media (min-width: 1024px) {
@@ -319,6 +356,43 @@ $bodyClass = $menuViewLevel === 'home'
     }
     .t7-sidebar-link.active {
       color: #E8D8C3 !important; border-left-color: #C5A880 !important; background: rgba(80,12,25,0.35);
+    }
+
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal;
+      font-size: 1.25rem; line-height: 1; letter-spacing: normal; text-transform: none;
+      display: inline-block; white-space: nowrap; word-wrap: normal; direction: ltr;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Reservation form — T6 markup, T7 burgundy / champagne skin */
+    .t7-reservation { --t6-primary: #C5A880; }
+    .t7-reservation .t6-res-form .t6-res-field,
+    .t7-reservation .t6-res-form .t6-res-input {
+      background: #16161a; border-color: rgba(197,168,128,0.25); color: #F4EEE5;
+    }
+    .t7-reservation .t6-res-form .t6-res-btn-primary,
+    .t7-reservation .t6-res-form .res-next-btn,
+    .t7-reservation .t6-res-form button[type="submit"] {
+      background: #500C19; color: #F4EEE5; border: 1px solid rgba(197,168,128,0.45);
+    }
+    .t7-reservation .t6-res-form .t6-res-btn-ghost {
+      border: 1px solid rgba(197,168,128,0.35); color: #E8D8C3; background: transparent;
+    }
+    .t7-reservation .t6-res-form .t6-time-slot.selected,
+    .t7-reservation .t6-res-form .t6-occasion-btn.selected,
+    .t7-reservation .t6-res-form .res-step-indicator.t6-step-active,
+    .t7-reservation .t6-res-form .res-step-indicator.t6-step-done {
+      background: #500C19 !important; color: #F4EEE5 !important; border-color: #C5A880 !important;
+    }
+    .t7-reservation .t6-res-form #reservation-calendar .t6-cal-selected {
+      box-shadow: 0 0 0 2px #C5A880; font-weight: 600;
+    }
+    .t7-reservation .t6-res-alert-success {
+      background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.35); color: #A7F3D0;
+    }
+    .t7-reservation .t6-res-alert-error {
+      background: rgba(80,12,25,0.35); border: 1px solid rgba(197,168,128,0.35); color: #F4EEE5;
     }
 
     #t7-back-top {
@@ -331,11 +405,11 @@ $bodyClass = $menuViewLevel === 'home'
     #t7-back-top.visible { opacity: 1; pointer-events: auto; transform: none; }
   </style>
 </head>
-<body class="<?php echo t7_esc($bodyClass); ?> antialiased min-h-screen flex flex-col selection:bg-burgundy-wine selection:text-white">
+<body class="<?php echo t7_esc($bodyClass); ?> antialiased min-h-screen flex flex-col selection:bg-burgundy-wine selection:text-white" data-t7-view="<?php echo t7_esc($menuViewLevel); ?>">
 
 <header class="sticky top-0 z-50 bg-onyx-surface/95 backdrop-blur-md border-b border-onyx-border transition-all" id="t7-header">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-[4.5rem] flex items-center justify-between gap-4">
-    <div class="flex items-center gap-3 min-w-0">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-[4.5rem] flex items-center justify-between gap-2 sm:gap-4">
+    <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
       <?php if ($t7BackUrl): ?>
       <a href="<?php echo t7_esc($t7BackUrl); ?>" class="flex-shrink-0 flex items-center justify-center w-9 h-9 rounded border border-onyx-border hover:border-champagne-gold text-champagne-gold hover:text-white transition-colors" aria-label="Back to menu">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
@@ -373,8 +447,17 @@ $bodyClass = $menuViewLevel === 'home'
         <?php endforeach; ?>
       </nav>
       <?php endif; ?>
-      <?php if (! empty($supportsReservations)): ?>
-      <a href="<?php echo t7_esc($reservationUrl); ?>" class="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 text-[11px] uppercase tracking-[0.18em] font-semibold text-white bg-burgundy-deep hover:bg-burgundy-wine border border-champagne-gold/40 rounded transition-all shadow-sm">
+      <?php if ($menuViewLevel === 'section'): ?>
+      <button type="button"
+              id="t7-menu-toggle"
+              class="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 min-h-[44px] text-[11px] uppercase tracking-[0.18em] font-semibold text-white bg-burgundy-deep hover:bg-burgundy-wine border border-champagne-gold/40 rounded transition-all shadow-sm"
+              aria-label="Open menu list"
+              aria-controls="t7-menu-drawer"
+              aria-expanded="false">
+        Menu
+      </button>
+      <?php elseif (! empty($supportsReservations)): ?>
+      <a href="#reservation" class="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 min-h-[44px] text-[11px] uppercase tracking-[0.18em] font-semibold text-white bg-burgundy-deep hover:bg-burgundy-wine border border-champagne-gold/40 rounded transition-all shadow-sm">
         Reserve
       </a>
       <?php endif; ?>
@@ -383,6 +466,7 @@ $bodyClass = $menuViewLevel === 'home'
 </header>
 
 <?php if ($menuViewLevel === 'section'): ?>
+  <?php include __DIR__ . '/partials/menu-drawer.php'; ?>
   <?php include __DIR__ . '/views/section.php'; ?>
 <?php else: ?>
   <?php include __DIR__ . '/views/home.php'; ?>
@@ -500,5 +584,6 @@ $bodyClass = $menuViewLevel === 'home'
   }
 })();
 </script>
+<?php include __DIR__ . '/partials/scripts.php'; ?>
 </body>
 </html>

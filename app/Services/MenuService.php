@@ -168,6 +168,44 @@ class MenuService
         }, $sections)));
     }
 
+    /**
+     * Slim searchable item list for Template 7 landing autocomplete.
+     * Does not attach full menu payloads to the home view.
+     *
+     * @return list<array{name:string,slug:string,section_slug:string,category_slug:string,price:float|int|string}>
+     */
+    public function menuSearchIndex(Restaurant $restaurant): array
+    {
+        $index = [];
+        foreach ($this->sectionsWithMenu($restaurant) as $section) {
+            $sectionSlug = (string) ($section['slug'] ?? '');
+            if ($sectionSlug === '') {
+                continue;
+            }
+            foreach ($section['categories'] ?? [] as $category) {
+                $categorySlug = (string) ($category['slug'] ?? '');
+                foreach ($category['menu_items'] ?? [] as $item) {
+                    if (empty($item['is_available'])) {
+                        continue;
+                    }
+                    $itemSlug = (string) ($item['slug'] ?? '');
+                    if ($itemSlug === '') {
+                        continue;
+                    }
+                    $index[] = [
+                        'name' => (string) ($item['name'] ?? ''),
+                        'slug' => $itemSlug,
+                        'section_slug' => $sectionSlug,
+                        'category_slug' => $categorySlug,
+                        'price' => $item['price'] ?? 0,
+                    ];
+                }
+            }
+        }
+
+        return $index;
+    }
+
     /** @param list<array<string, mixed>> $categories */
     public function stripMenuItemsFromCategories(array $categories): array
     {

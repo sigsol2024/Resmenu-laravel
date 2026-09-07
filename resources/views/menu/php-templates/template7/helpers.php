@@ -238,6 +238,15 @@ function t7_home_grid_slot(int $index, int $total): array
     };
 }
 
+function t7_item_anchor(array $item): string
+{
+    if (! empty($item['slug'])) {
+        return 'item-'.preg_replace('/[^a-z0-9\-]+/', '', strtolower((string) $item['slug']));
+    }
+
+    return 'item-'.(int) ($item['id'] ?? 0);
+}
+
 /** Landing tile accent by section slug (DESIGN_1 / landing.html cues). */
 function t7_landing_tile_accent(string $slug): string
 {
@@ -250,5 +259,50 @@ function t7_landing_tile_accent(string $slug): string
         'entree' => 'tile-entree',
         'world' => 'tile-world',
         default => 'tile-default',
+    };
+}
+
+/** Landing card surface classes from section slug (intentional DESIGN_1 rhythm). */
+function t7_landing_card_classes(string $slug): array
+{
+    $theme = t7_section_theme($slug);
+    $accent = t7_landing_tile_accent($slug);
+
+    return match ($theme['tone']) {
+        'light' => [
+            'card' => 't7-land-card t7-land-card--light '.$accent,
+            'title' => 'text-stone-900',
+            'meta' => 'text-burgundy-deep/70',
+            'body' => 'text-stone-600',
+            'cta' => 'text-burgundy-wine border-stone-200',
+        ],
+        'entree' => [
+            'card' => 't7-land-card t7-land-card--entree '.$accent,
+            'title' => 'text-white',
+            'meta' => 'text-champagne-light/80',
+            'body' => 'text-white/75',
+            'cta' => 'text-champagne-light border-white/20',
+        ],
+        'national' => [
+            'card' => 't7-land-card t7-land-card--burgundy '.$accent,
+            'title' => 'text-white',
+            'meta' => 'text-champagne-light/80',
+            'body' => 'text-white/75',
+            'cta' => 'text-champagne-gold border-white/15',
+        ],
+        'drinks' => [
+            'card' => 't7-land-card t7-land-card--drinks '.$accent,
+            'title' => 'text-stone-900',
+            'meta' => 'text-burgundy-deep/70',
+            'body' => 'text-stone-600',
+            'cta' => 'text-burgundy-wine border-champagne-gold/40',
+        ],
+        default => [
+            'card' => 't7-land-card t7-land-card--dark '.$accent,
+            'title' => 'text-white',
+            'meta' => 'text-champagne-gold/70',
+            'body' => 'text-white/70',
+            'cta' => 'text-champagne-light border-white/10',
+        ],
     };
 }

@@ -163,14 +163,14 @@ $subColor   = ($isLight || $isDrinks) ? 'text-burgundy-deep' : 'text-champagne-g
                   ? (($itemIndex % 4 === 1) ? 'card-burgundy' : 'card-dark')
                   : (($itemIndex % 4 === 1) ? 'card-ivory' : 'card-white');
               ?>
-              <article class="menu-item-card <?php echo t7_esc($cardClass); ?> rounded-xl border p-4 sm:p-5 flex gap-3 reveal">
+              <article id="<?php echo t7_esc(t7_item_anchor($item)); ?>" class="menu-item-card scroll-mt-28 <?php echo t7_esc($cardClass); ?> rounded-xl border p-4 sm:p-5 flex gap-3 reveal" data-name="<?php echo t7_esc($itemName); ?>" data-price="<?php echo t7_esc((string) $itemPrice); ?>">
                 <?php if ($itemImg): ?>
                 <img src="<?php echo t7_esc($itemImg); ?>" alt="<?php echo t7_esc($itemName); ?>" class="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg flex-shrink-0" loading="lazy">
                 <?php endif; ?>
                 <div class="min-w-0 flex-1 flex flex-col">
                   <div class="flex items-start justify-between gap-2">
-                    <h3 class="dish-name font-serif-luxury text-base sm:text-lg leading-snug"><?php echo t7_esc($itemName); ?></h3>
-                    <span class="font-serif-luxury text-sm flex-shrink-0 text-champagne-gold"><?php echo t7_price($itemPrice); ?></span>
+                    <h3 class="dish-name font-serif-luxury text-base sm:text-lg leading-snug break-words"><?php echo t7_esc($itemName); ?></h3>
+                    <span class="font-serif-luxury text-sm flex-shrink-0 text-champagne-gold tabular-nums"><?php echo t7_price($itemPrice); ?></span>
                   </div>
                   <?php if ($itemDesc !== ''): ?>
                   <p class="type-desc text-xs mt-1 opacity-80"><?php echo t7_esc($itemDesc); ?></p>
@@ -216,14 +216,14 @@ $subColor   = ($isLight || $isDrinks) ? 'text-burgundy-deep' : 'text-champagne-g
             $heroTitle = $catName !== '' ? $catName : $itemName;
           ?>
           <?php if ($item): ?>
-          <div class="mb-14 sm:mb-16 relative">
+          <div id="<?php echo t7_esc(t7_item_anchor($item)); ?>" class="menu-item-card mb-14 sm:mb-16 relative scroll-mt-28" data-name="<?php echo t7_esc($itemName); ?>" data-price="<?php echo t7_esc((string) $itemPrice); ?>">
             <div class="entree-panel entree-hero-card rounded-2xl p-4 sm:p-7 md:w-[72%] reveal <?php echo t7_esc($revealDir); ?><?php echo $alignRight ? ' md:ml-auto' : ''; ?>">
               <div class="flex items-start gap-3 sm:gap-5">
                 <?php if ($alignRight && $itemImg): ?>
                 <img alt="<?php echo t7_esc($heroTitle); ?>" class="entree-food <?php echo t7_esc($foodSide); ?> order-2 md:order-none" src="<?php echo t7_esc($itemImg); ?>" loading="lazy">
                 <?php endif; ?>
                 <div class="flex-1 min-w-0 <?php echo $alignRight ? 'pl-1 md:pl-28 md:text-right order-1 md:order-none' : 'pr-1 md:pr-28'; ?>">
-                  <h3 class="font-serif-luxury text-2xl sm:text-4xl entree-title dish-name"><?php echo t7_esc($heroTitle); ?></h3>
+                  <h3 class="font-serif-luxury text-2xl sm:text-4xl entree-title dish-name break-words"><?php echo t7_esc($heroTitle); ?></h3>
                   <?php if ($intro !== ''): ?>
                   <p class="type-desc text-stone-600 mt-1.5 text-xs sm:text-sm max-w-md<?php echo $alignRight ? ' md:ml-auto' : ''; ?>"><?php echo t7_esc($intro); ?></p>
                   <?php endif; ?>
@@ -235,7 +235,7 @@ $subColor   = ($isLight || $isDrinks) ? 'text-burgundy-deep' : 'text-champagne-g
               </div>
             </div>
 
-            <div class="menu-item-card entree-panel rounded-2xl p-3.5 sm:p-6 border border-black/5 mt-4 sm:mt-5 relative reveal reveal-up">
+            <div class="entree-panel rounded-2xl p-3.5 sm:p-6 border border-black/5 mt-4 sm:mt-5 relative reveal reveal-up">
               <?php if ($optionBlocks !== []): ?>
               <div class="entree-options-grid relative">
                 <?php foreach ($optionBlocks as $block): ?>
@@ -276,10 +276,10 @@ $subColor   = ($isLight || $isDrinks) ? 'text-burgundy-deep' : 'text-champagne-g
               $itemPrice = $item['price'] ?? 0;
               $optionBlocks = t7_parse_option_blocks($itemDesc);
             ?>
-            <article class="rounded-2xl border border-white/10 bg-black/30 p-5 sm:p-8 reveal reveal-up">
+            <article id="<?php echo t7_esc(t7_item_anchor($item)); ?>" class="menu-item-card scroll-mt-28 rounded-2xl border border-white/10 bg-black/30 p-5 sm:p-8 reveal reveal-up" data-name="<?php echo t7_esc($itemName); ?>" data-price="<?php echo t7_esc((string) $itemPrice); ?>">
               <div class="flex items-start justify-between gap-3 mb-6">
-                <h3 class="font-serif-luxury text-xl sm:text-2xl text-white"><?php echo t7_esc($itemName); ?></h3>
-                <span class="font-serif-luxury text-champagne-gold text-lg"><?php echo t7_price($itemPrice); ?></span>
+                <h3 class="font-serif-luxury text-xl sm:text-2xl text-white dish-name break-words min-w-0"><?php echo t7_esc($itemName); ?></h3>
+                <span class="font-serif-luxury text-champagne-gold text-lg shrink-0 tabular-nums"><?php echo t7_price($itemPrice); ?></span>
               </div>
               <?php if ($optionBlocks !== []): ?>
               <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -331,7 +331,7 @@ $subColor   = ($isLight || $isDrinks) ? 'text-burgundy-deep' : 'text-champagne-g
               $delayClass = 'reveal-delay-'.(($itemIndex % 3) + 1);
               $hasMedia = (bool) $itemImg;
             ?>
-            <article class="menu-item-card <?php echo t7_esc($cardVariant); ?> <?php echo t7_esc($span); ?> rounded-xl border overflow-hidden flex <?php echo $hasMedia ? 'flex-col sm:flex-row' : 'flex-col'; ?> reveal <?php echo t7_esc($revealClass.' '.$delayClass); ?> hover:border-burgundy-wine/60 transition-all">
+            <article id="<?php echo t7_esc(t7_item_anchor($item)); ?>" class="menu-item-card scroll-mt-28 <?php echo t7_esc($cardVariant); ?> <?php echo t7_esc($span); ?> rounded-xl border overflow-hidden flex <?php echo $hasMedia ? 'flex-col sm:flex-row' : 'flex-col'; ?> reveal <?php echo t7_esc($revealClass.' '.$delayClass); ?> hover:border-burgundy-wine/60 transition-all" data-name="<?php echo t7_esc($itemName); ?>" data-price="<?php echo t7_esc((string) $itemPrice); ?>">
               <?php if ($hasMedia): ?>
               <div class="dish-media">
                 <img src="<?php echo t7_esc($itemImg); ?>" alt="<?php echo t7_esc($itemName); ?>" loading="lazy">
@@ -340,12 +340,12 @@ $subColor   = ($isLight || $isDrinks) ? 'text-burgundy-deep' : 'text-champagne-g
               <div class="p-5 flex-1 flex flex-col justify-between min-w-0">
                 <div class="flex justify-between items-start gap-3">
                   <div class="min-w-0">
-                    <h3 class="dish-name font-serif-luxury text-lg leading-snug"><?php echo t7_esc($itemName); ?></h3>
+            <h3 class="dish-name font-serif-luxury text-lg leading-snug break-words"><?php echo t7_esc($itemName); ?></h3>
                     <?php if ($itemDesc !== ''): ?>
                     <p class="type-desc mt-2 leading-relaxed text-xs sm:text-sm opacity-80"><?php echo t7_esc($itemDesc); ?></p>
                     <?php endif; ?>
                   </div>
-                  <span class="font-serif-luxury text-lg font-bold whitespace-nowrap shrink-0 <?php echo t7_esc($theme['price']); ?>"><?php echo t7_price($itemPrice); ?></span>
+                  <span class="font-serif-luxury text-lg font-bold whitespace-nowrap shrink-0 tabular-nums <?php echo t7_esc($theme['price']); ?>"><?php echo t7_price($itemPrice); ?></span>
                 </div>
                 <?php if (! empty($supportsOrdering)): ?>
                 <div class="pt-3 mt-auto border-t <?php echo $isLight ? 'border-stone-100' : 'border-white/10'; ?> flex justify-end">
