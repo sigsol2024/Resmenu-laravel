@@ -1,123 +1,74 @@
 <?php
 /**
- * Template 7 — Ember Noir | Section View
- *
- * Renders: sidebar nav + main content (categories → items)
- * Special visual shells driven by SECTION SLUG only (not restaurant name):
- *   entree        → self-service cream panels; description lines → option lists
- *   national-menu → heritage-style dark panel with burgundy accent
- *   grill         → vertical "GRILLS" belt animation on left edge
- *   drinks        → category-image photo shell on dark ambient background
+ * Template 7 section view — DESIGN_1 per-slug shells.
+ * Data: $activeSection → categories → menu_items (dynamic).
  */
 
 $t7ActiveSection = $activeSection ?? ($sections[0] ?? null);
-$t7SectionSlug   = strtolower(trim((string)($t7ActiveSection['slug'] ?? '')));
+$t7SectionSlug   = strtolower(trim((string) ($t7ActiveSection['slug'] ?? '')));
 $t7SectionName   = $t7ActiveSection['name'] ?? '';
 $t7Categories    = $t7ActiveSection['categories'] ?? [];
+$theme           = t7_section_theme($t7SectionSlug);
+$t7SectionHero   = t7_section_image($uploadBaseUrl, $t7ActiveSection ?? []);
 
-// Filter to visible categories with items
-$t7VisibleCats = array_values(array_filter($t7Categories, function($cat) {
+$t7VisibleCats = array_values(array_filter($t7Categories, static function ($cat) {
     return ! empty($cat['is_active']) && ! empty($cat['menu_items']);
 }));
 
-// Section-slug special modes
-$t7IsEntree     = ($t7SectionSlug === 'entree');
-$t7IsNational   = ($t7SectionSlug === 'national-menu');
-$t7IsGrill      = ($t7SectionSlug === 'grill');
-$t7IsDrinks     = ($t7SectionSlug === 'drinks');
+$isLight   = $theme['tone'] === 'light';
+$isDark    = in_array($theme['tone'], ['dark', 'national'], true);
+$isEntree  = $theme['tone'] === 'entree';
+$isDrinks  = $theme['tone'] === 'drinks';
+$isGrill   = $t7SectionSlug === 'grill';
+$isNational = $t7SectionSlug === 'national-menu';
 
-// Section hero image
-$t7SectionHero  = t7_section_image($uploadBaseUrl, $t7ActiveSection ?? []);
-
-// Body bg for special sections
-$t7SectionBodyBg = '#0e0e10';
-$t7SectionBodyClass = '';
-if ($t7IsEntree) {
-    $t7SectionBodyBg   = '#2D1A0D'; // warm terra cotta dark
-    $t7SectionBodyClass = 'bg-[#2D1A0D]';
-} elseif ($t7IsNational) {
-    $t7SectionBodyBg   = '#0e0e10';
-    $t7SectionBodyClass = '';
-} elseif ($t7IsGrill) {
-    $t7SectionBodyBg   = '#0c0c0e';
-    $t7SectionBodyClass = 'bg-[#0c0c0e]';
+$shellClasses = $theme['shell'];
+if ($theme['photo'] && $t7SectionHero) {
+    $shellClasses .= ' section-photo-bg';
 }
+
+$navMuted = $isLight || $isDrinks ? 'text-stone-500' : 'text-white/50';
+$navLink  = $isLight || $isDrinks
+    ? 'text-stone-700 hover:text-burgundy-deep border-transparent hover:border-burgundy-deep hover:bg-burgundy-deep/5'
+    : 'text-stone-300 hover:text-champagne-light border-transparent hover:border-champagne-gold hover:bg-white/10';
+$titleColor = ($isLight || $isDrinks) ? 'text-stone-900' : 'text-white';
+$subColor   = ($isLight || $isDrinks) ? 'text-burgundy-deep' : 'text-champagne-gold';
 ?>
 
-<!-- ══════════════════════ SECTION HERO / TITLE BAR ═══════════════════════════ -->
-<?php if ($t7SectionHero): ?>
-<div class="relative w-full h-[30vh] sm:h-[36vh] min-h-[180px] max-h-[360px] overflow-hidden border-b border-[rgba(203,178,136,0.28)]">
-  <img src="<?php echo t7_esc($t7SectionHero); ?>"
-       alt="<?php echo t7_esc($t7SectionName); ?>"
-       class="absolute inset-0 w-full h-full object-cover object-center"
-       loading="eager">
-  <div class="absolute inset-0 bg-gradient-to-t from-[#0e0e10] via-[#0e0e10]/50 to-transparent"></div>
-  <?php if ($t7IsGrill): ?>
-  <div class="absolute inset-0 bg-gradient-to-r from-[#0c0c0e]/80 via-transparent to-transparent"></div>
+<section
+  class="py-10 sm:py-16 <?php echo t7_esc($shellClasses); ?> relative overflow-hidden min-h-[60vh]"
+  <?php if ($theme['photo'] && $t7SectionHero): ?>style="--photo:url('<?php echo t7_esc($t7SectionHero); ?>')"<?php endif; ?>
+>
+  <?php if ($theme['photo'] && $t7SectionHero): ?>
+  <div class="section-photo-layer" aria-hidden="true"></div>
+  <div class="section-photo-veil" aria-hidden="true"></div>
   <?php endif; ?>
-  <div class="absolute bottom-0 left-0 right-0 px-4 sm:px-6 pb-6 sm:pb-8 max-w-7xl mx-auto">
-    <p class="text-[10px] uppercase tracking-[0.26em] text-[#CBB288] font-semibold mb-1"><?php echo t7_esc($restaurant['name'] ?? ''); ?></p>
-    <h1 class="t7-serif text-2xl sm:text-4xl text-white font-normal"><?php echo t7_esc($t7SectionName); ?></h1>
-  </div>
-</div>
 
-<?php else: ?>
-<!-- Title bar (no hero image) -->
-<div class="border-b border-[rgba(203,178,136,0.28)] py-6 sm:py-8 bg-gradient-to-b from-[#16141a] to-[#0e0e10] t7-pattern-shell">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
-    <p class="text-[10px] uppercase tracking-[0.26em] text-[#CBB288] font-semibold mb-1"><?php echo t7_esc($restaurant['name'] ?? ''); ?></p>
-    <h1 class="t7-serif text-2xl sm:text-4xl text-white font-normal"><?php echo t7_esc($t7SectionName); ?></h1>
-  </div>
-</div>
-<?php endif; ?>
-
-<?php if ($t7IsGrill): ?>
-<!-- ── Grill: global belt styles injected here ──────────────────────────────── -->
-<style>
-  .t7-grill-section { position: relative; }
-  .t7-grill-section > .t7-grill-inner { padding-left: 3rem; }
-  @media (min-width: 640px) { .t7-grill-section > .t7-grill-inner { padding-left: 3.5rem; } }
-</style>
-<?php endif; ?>
-
-<!-- ══════════════════════ TWO-COLUMN LAYOUT ════════════════════════════════ -->
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 t7-layout py-8 sm:py-10 gap-0 lg:gap-10 <?php echo $t7SectionBodyClass; ?>">
-
-  <!-- ── LEFT SIDEBAR (desktop) ──────────────────────────────────────────── -->
-  <aside class="hidden lg:block">
-    <nav class="sticky top-28 flex flex-col gap-1" aria-label="Categories in <?php echo t7_esc($t7SectionName); ?>">
-      <p class="text-[10px] uppercase tracking-[0.22em] text-[#CBB288]/60 font-semibold px-3 mb-2">In This Section</p>
-      <?php foreach ($t7VisibleCats as $sidecat):
-        $sideCatSlug = $sidecat['slug'] ?? ('cat-' . ($sidecat['id'] ?? 0));
-      ?>
-      <a href="#cat-<?php echo t7_esc($sideCatSlug); ?>"
-         class="t7-sidebar-link block py-2.5 px-3 text-[11px] uppercase tracking-[0.14em] font-medium text-[#F6F1E8]/70 hover:text-[#CBB288] border-l-2 border-transparent hover:border-[#CBB288] hover:bg-[#500C19]/20 rounded-r transition-all">
-        <?php echo t7_esc($sidecat['name'] ?? ''); ?>
-      </a>
-      <?php endforeach; ?>
-
-      <?php if (! empty($fullMenuUrl)): ?>
-      <div class="mt-4 pt-4 border-t border-white/10">
-        <a href="<?php echo t7_esc($fullMenuUrl); ?>" class="block py-2.5 px-3 text-[11px] uppercase tracking-[0.14em] font-medium text-[#F6F1E8]/50 hover:text-[#CBB288] transition-colors">
-          ← All Sections
-        </a>
-      </div>
+  <div class="t7-section-inner max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Section title -->
+    <div class="mb-8 sm:mb-12 <?php echo $isGrill ? 'pl-10 sm:pl-14 lg:pl-16' : ''; ?>">
+      <p class="text-[10px] uppercase tracking-[0.26em] font-semibold mb-2 <?php echo t7_esc($subColor); ?>">
+        <?php echo t7_esc($restaurant['name'] ?? ''); ?>
+      </p>
+      <h1 class="font-serif-luxury text-3xl sm:text-5xl font-normal tracking-wide <?php echo t7_esc($titleColor); ?>">
+        <?php echo t7_esc($t7SectionName); ?>
+      </h1>
+      <?php if ($isEntree): ?>
+      <p class="mt-2 text-sm text-white/80 font-light max-w-xl">Build your plate — choose proteins, toppings, and sauces.</p>
+      <?php elseif ($isNational): ?>
+      <p class="mt-2 text-sm text-champagne-light/80 font-light max-w-xl">Protein + accompaniment, prepared à la minute.</p>
       <?php endif; ?>
-    </nav>
-  </aside>
+    </div>
 
-  <!-- ── MAIN CONTENT ──────────────────────────────────────────────────────── -->
-  <main class="min-w-0">
-
-    <!-- Mobile category tabs -->
+    <!-- Mobile category jump -->
     <?php if (count($t7VisibleCats) > 1): ?>
-    <div class="lg:hidden overflow-x-auto t7-noscroll mb-8">
+    <div class="lg:hidden overflow-x-auto t7-noscroll mb-8 -mx-4 px-4">
       <div class="flex gap-2 pb-1">
         <?php foreach ($t7VisibleCats as $mcat):
-          $mcatSlug = $mcat['slug'] ?? ('cat-' . ($mcat['id'] ?? 0));
+          $mcatSlug = $mcat['slug'] ?? ('cat-'.($mcat['id'] ?? 0));
         ?>
         <a href="#cat-<?php echo t7_esc($mcatSlug); ?>"
-           class="flex-shrink-0 px-3 py-1.5 text-[11px] uppercase tracking-[0.14em] font-medium rounded bg-white/5 hover:bg-[#500C19] text-[#F6F1E8] hover:text-white border border-white/10 hover:border-[rgba(203,178,136,0.40)] transition-colors whitespace-nowrap">
+           class="flex-shrink-0 px-3 py-1.5 text-[11px] uppercase tracking-[0.14em] font-medium rounded border whitespace-nowrap transition-colors <?php echo $isLight || $isDrinks ? 'bg-white border-stone-200 text-stone-700 hover:border-burgundy-deep' : 'bg-white/5 border-white/10 text-stone-200 hover:border-champagne-gold'; ?>">
           <?php echo t7_esc($mcat['name'] ?? ''); ?>
         </a>
         <?php endforeach; ?>
@@ -125,291 +76,268 @@ if ($t7IsEntree) {
     </div>
     <?php endif; ?>
 
-    <?php if (empty($t7VisibleCats)): ?>
-    <p class="text-[#F6F1E8]/50 py-12 text-center font-light">No items available in this section yet.</p>
-    <?php endif; ?>
+    <div class="t7-layout gap-0 lg:gap-10">
+      <!-- Sidebar -->
+      <aside class="hidden lg:block">
+        <nav class="sticky top-28 flex flex-col gap-1" aria-label="Categories">
+          <p class="text-[10px] uppercase tracking-[0.22em] font-semibold px-3 mb-2 <?php echo t7_esc($navMuted); ?>">In This Section</p>
+          <?php foreach ($t7VisibleCats as $sidecat):
+            $sideCatSlug = $sidecat['slug'] ?? ('cat-'.($sidecat['id'] ?? 0));
+          ?>
+          <a href="#cat-<?php echo t7_esc($sideCatSlug); ?>"
+             class="t7-sidebar-link block py-2.5 px-3 text-[11px] uppercase tracking-[0.14em] font-medium border-l-2 rounded-r transition-all <?php echo t7_esc($navLink); ?>">
+            <?php echo t7_esc($sidecat['name'] ?? ''); ?>
+          </a>
+          <?php endforeach; ?>
+          <?php if (! empty($fullMenuUrl)): ?>
+          <div class="mt-4 pt-4 border-t <?php echo $isLight || $isDrinks ? 'border-stone-200' : 'border-white/10'; ?>">
+            <a href="<?php echo t7_esc($fullMenuUrl); ?>" class="block py-2.5 px-3 text-[11px] uppercase tracking-[0.14em] font-medium <?php echo t7_esc($navMuted); ?> hover:opacity-80">
+              ← All Sections
+            </a>
+          </div>
+          <?php endif; ?>
+        </nav>
+      </aside>
 
-    <?php foreach ($t7VisibleCats as $catIdx => $cat):
-      $catSlug  = $cat['slug'] ?? ('cat-' . ($cat['id'] ?? $catIdx));
-      $catName  = $cat['name'] ?? '';
-      $catDesc  = $cat['description'] ?? '';
-      $catItems = $cat['menu_items'] ?? [];
-      $catImg   = t7_category_image($uploadBaseUrl, $cat);
-
-      // ── CATEGORY LEVEL: determine rendering mode ─────────────────────────
-      // drinks: if has image → photo shell
-      $isDrinksCatWithPhoto = $t7IsDrinks && ! empty($catImg);
-    ?>
-
-    <!-- ── CATEGORY SECTION ─────────────────────────────────────────────── -->
-    <section id="cat-<?php echo t7_esc($catSlug); ?>"
-             class="t7-cat-section mb-12 sm:mb-16 scroll-mt-32 <?php if ($t7IsGrill) echo 't7-grill-section'; ?>">
-
-      <?php if ($t7IsGrill): ?>
-      <!-- Grill belt on left -->
-      <div class="t7-grill-belt" aria-hidden="true">
-        <div class="t7-grill-belt-track">
-          <?php for ($gi = 0; $gi < 18; $gi++): ?>
-          <span class="t7-grill-belt-word">GRILLS</span>
-          <?php endfor; ?>
-          <?php for ($gi = 0; $gi < 18; $gi++): ?>
-          <span class="t7-grill-belt-word">GRILLS</span>
-          <?php endfor; ?>
-        </div>
-      </div>
-      <?php endif; ?>
-
-      <!-- ── Category header ──────────────────────────────────────────────── -->
-      <?php if ($isDrinksCatWithPhoto): ?>
-      <!-- Drinks: atmospheric photo header for category -->
-      <div class="relative mb-6 rounded overflow-hidden h-32 sm:h-40 border border-[rgba(203,178,136,0.28)]">
-        <img src="<?php echo t7_esc($catImg); ?>"
-             alt="<?php echo t7_esc($catName); ?>"
-             class="absolute inset-0 w-full h-full object-cover object-center opacity-50"
-             loading="lazy">
-        <div class="absolute inset-0 bg-gradient-to-r from-[#0e0e10]/95 via-[#0e0e10]/70 to-transparent"></div>
-        <div class="absolute inset-0 flex items-center px-5 sm:px-6">
-          <div>
-            <?php if ($catIdx > 0 || ! empty($catDesc)): ?>
-            <p class="text-[10px] uppercase tracking-[0.22em] text-[#CBB288] font-semibold mb-1">Drinks</p>
-            <?php endif; ?>
-            <h2 class="t7-serif text-xl sm:text-2xl text-white font-normal"><?php echo t7_esc($catName); ?></h2>
-            <?php if ($catDesc): ?><p class="text-xs text-[#F6F1E8]/60 mt-1 line-clamp-1"><?php echo t7_esc($catDesc); ?></p><?php endif; ?>
+      <!-- Categories + items -->
+      <div class="<?php echo $isGrill ? 'grill-section' : ''; ?>">
+        <?php if ($isGrill): ?>
+        <div class="grill-belt" aria-hidden="true">
+          <div class="grill-belt-track">
+            <?php for ($g = 0; $g < 8; $g++): ?><span>GRILLS</span><?php endfor; ?>
+            <?php for ($g = 0; $g < 8; $g++): ?><span>GRILLS</span><?php endfor; ?>
           </div>
         </div>
-      </div>
+        <?php endif; ?>
 
-      <?php elseif ($t7IsNational): ?>
-      <!-- National menu: heritage-style heading bar -->
-      <div class="mb-6 p-4 sm:p-5 bg-[#38060F]/60 border border-[#6A1324]/50 rounded relative overflow-hidden">
-        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_right,_rgba(80,12,25,0.3)_0%,_transparent_70%)] pointer-events-none"></div>
-        <div class="relative z-10">
-          <span class="text-[10px] uppercase tracking-[0.26em] text-[#CBB288]/70 font-semibold">Heritage Recipe</span>
-          <h2 class="t7-serif text-xl sm:text-2xl text-white font-normal mt-0.5"><?php echo t7_esc($catName); ?></h2>
-          <?php if ($catDesc): ?><p class="text-xs text-[#F6F1E8]/60 mt-1"><?php echo t7_esc($catDesc); ?></p><?php endif; ?>
-        </div>
-      </div>
+        <div class="<?php echo $isGrill ? 'grill-inner' : ''; ?>">
+        <?php if (empty($t7VisibleCats)): ?>
+        <p class="<?php echo t7_esc($navMuted); ?> py-16 text-center font-light">No items in this section yet.</p>
+        <?php endif; ?>
 
-      <?php elseif ($t7IsEntree): ?>
-      <!-- Entree: warm section heading -->
-      <div class="mb-6 border-b border-[rgba(80,12,25,0.25)] pb-4">
-        <h2 class="t7-serif text-xl sm:text-2xl text-[#FFFFF6] font-normal"><?php echo t7_esc($catName); ?></h2>
-        <?php if ($catDesc): ?><p class="text-xs text-[#FFFFF6]/60 mt-1"><?php echo t7_esc($catDesc); ?></p><?php endif; ?>
-      </div>
-
-      <?php else: ?>
-      <!-- Default category heading -->
-      <div class="mb-6 pb-4 border-b border-[rgba(203,178,136,0.28)] flex items-end justify-between gap-4">
-        <div>
-          <h2 class="t7-serif text-xl sm:text-2xl text-white font-normal"><?php echo t7_esc($catName); ?></h2>
-          <?php if ($catDesc): ?><p class="text-xs text-[#F6F1E8]/60 mt-1"><?php echo t7_esc($catDesc); ?></p><?php endif; ?>
-        </div>
-        <span class="text-[10px] uppercase tracking-[0.20em] text-[#CBB288]/50 font-medium whitespace-nowrap"><?php echo count($catItems); ?> item<?php echo count($catItems) !== 1 ? 's' : ''; ?></span>
-      </div>
-      <?php endif; ?>
-
-      <!-- ── Items grid ────────────────────────────────────────────────────── -->
-      <?php if ($t7IsEntree): ?>
-      <!-- ENTREE: cream self-service panels -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <?php foreach ($catItems as $item):
-          $itemAvailable = ! isset($item['is_available']) || $item['is_available'];
-          $itemImg  = t7_item_image($uploadBaseUrl, $item);
-          $itemName = $item['name'] ?? '';
-          $itemPrice= $item['price'] ?? '';
-          $itemDesc = trim((string)($item['description'] ?? ''));
-          // Split description into option lines (each non-empty line is an option)
-          $descLines = array_values(array_filter(array_map('trim', explode("\n", $itemDesc))));
-          $hasOptions = count($descLines) > 1;
+        <?php foreach ($t7VisibleCats as $catIndex => $cat):
+          $catSlug  = $cat['slug'] ?? ('cat-'.($cat['id'] ?? 0));
+          $catName  = $cat['name'] ?? '';
+          $catDesc  = $cat['description'] ?? '';
+          $catImg   = t7_category_image($uploadBaseUrl, $cat);
+          $catItems = array_values(array_filter($cat['menu_items'] ?? [], static function ($it) {
+              return ! empty($it['is_available']);
+          }));
+          $drinkTheme = $isDrinks ? t7_drink_cat_theme($catSlug) : '';
+          $useBurgundyAccent = (! $isEntree && ! $isDrinks && ($catIndex % 5 === 2));
         ?>
-        <div class="t7-entree-panel p-4 sm:p-5 t7-reveal <?php echo $itemAvailable ? '' : 'opacity-50'; ?>">
-          <div class="flex items-start gap-3">
-            <?php if ($itemImg): ?>
-            <img src="<?php echo t7_esc($itemImg); ?>"
-                 alt="<?php echo t7_esc($itemName); ?>"
-                 class="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 object-cover rounded"
-                 loading="lazy">
-            <?php endif; ?>
-            <div class="flex-1 min-w-0">
-              <div class="flex items-baseline justify-between gap-2 mb-1">
-                <h3 class="text-sm sm:text-base font-semibold text-[#1c1917] leading-snug"><?php echo t7_esc($itemName); ?></h3>
-                <span class="t7-serif text-sm font-medium text-[#500C19] flex-shrink-0"><?php echo t7_price($itemPrice); ?></span>
+
+        <section id="cat-<?php echo t7_esc($catSlug); ?>" class="t7-cat-section mb-12 sm:mb-16 scroll-mt-28">
+          <?php if ($isDrinks): ?>
+          <div class="drink-cat <?php echo t7_esc($drinkTheme); ?> relative overflow-hidden rounded-2xl mb-4 p-5 sm:p-8">
+            <div class="relative z-10 mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+              <div>
+                <p class="text-[10px] uppercase tracking-[0.22em] font-semibold mb-1 opacity-70">Drinks</p>
+                <h2 class="font-serif-luxury text-2xl sm:text-3xl"><?php echo t7_esc($catName); ?></h2>
+                <?php if ($catDesc): ?><p class="type-desc text-sm mt-1 opacity-80"><?php echo t7_esc($catDesc); ?></p><?php endif; ?>
               </div>
-              <?php if ($hasOptions): ?>
-              <!-- Render description lines as option list -->
-              <p class="text-[10px] uppercase tracking-[0.18em] font-semibold text-[#78716c] mb-1">Options:</p>
-              <ul class="text-xs text-[#44403c] space-y-0.5 list-disc list-inside">
-                <?php foreach ($descLines as $dl): ?>
-                <li><?php echo t7_esc($dl); ?></li>
-                <?php endforeach; ?>
-              </ul>
-              <?php elseif ($itemDesc): ?>
-              <p class="text-xs text-[#57534e] leading-relaxed"><?php echo t7_esc($itemDesc); ?></p>
+              <?php if ($catImg): ?>
+              <div class="drink-hero-panel <?php echo str_contains($drinkTheme, 'dark') || str_contains($drinkTheme, 'fresh') || str_contains($drinkTheme, 'soft') ? 'drink-hero-panel--dark' : ''; ?> rounded-xl p-2 self-start">
+                <img src="<?php echo t7_esc($catImg); ?>" alt="" class="w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-lg" loading="lazy">
+              </div>
               <?php endif; ?>
             </div>
-          </div>
-          <?php if (! empty($supportsOrdering) && $itemAvailable): ?>
-          <div class="mt-3 flex justify-end">
-            <button type="button"
-                    class="add-to-bag-btn text-[11px] uppercase tracking-[0.14em] font-semibold text-[#500C19] border border-[#500C19] px-3 py-1.5 rounded hover:bg-[#500C19] hover:text-white transition-colors"
-                    data-item-id="<?php echo (int)($item['id'] ?? 0); ?>"
-                    data-item-name="<?php echo t7_esc($itemName); ?>"
-                    data-item-price="<?php echo t7_esc((string)$itemPrice); ?>"
-                    data-item-image="<?php echo t7_esc($item['image'] ?? ''); ?>">
-              Add to bag
-            </button>
-          </div>
-          <?php endif; ?>
-        </div>
-        <?php endforeach; ?>
-      </div>
-
-      <?php elseif ($t7IsNational): ?>
-      <!-- NATIONAL MENU: heritage card grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-        <?php foreach ($catItems as $item):
-          $itemAvailable = ! isset($item['is_available']) || $item['is_available'];
-          $itemImg  = t7_item_image($uploadBaseUrl, $item);
-          $itemName = $item['name'] ?? '';
-          $itemPrice= $item['price'] ?? '';
-          $itemDesc = trim((string)($item['description'] ?? ''));
-        ?>
-        <div class="group bg-[#1D1C21] border border-[rgba(203,178,136,0.28)] hover:border-[rgba(203,178,136,0.60)] rounded p-4 sm:p-5 transition-colors t7-reveal <?php echo $itemAvailable ? '' : 'opacity-40'; ?>">
-          <?php if ($itemImg): ?>
-          <div class="relative h-32 mb-3 overflow-hidden rounded">
-            <img src="<?php echo t7_esc($itemImg); ?>"
-                 alt="<?php echo t7_esc($itemName); ?>"
-                 class="w-full h-full object-cover group-hover:scale-103 transition-transform duration-500"
-                 loading="lazy">
-            <div class="absolute inset-0 bg-gradient-to-t from-[#1D1C21]/80 to-transparent"></div>
-          </div>
-          <?php endif; ?>
-          <div class="flex items-baseline justify-between gap-2 mb-1.5">
-            <h3 class="t7-serif text-base sm:text-lg text-white font-normal leading-snug"><?php echo t7_esc($itemName); ?></h3>
-            <span class="t7-serif text-sm font-medium text-[#CBB288] flex-shrink-0"><?php echo t7_price($itemPrice); ?></span>
-          </div>
-          <?php if ($itemDesc): ?>
-          <p class="text-xs text-[#F6F1E8]/60 leading-relaxed"><?php echo t7_esc($itemDesc); ?></p>
-          <?php endif; ?>
-          <?php if (! empty($supportsOrdering) && $itemAvailable): ?>
-          <div class="mt-3">
-            <button type="button"
-                    class="add-to-bag-btn text-[11px] uppercase tracking-[0.14em] font-semibold text-[#CBB288] border border-[rgba(203,178,136,0.40)] px-3 py-1.5 rounded hover:bg-[#500C19] hover:text-white hover:border-[#500C19] transition-colors"
-                    data-item-id="<?php echo (int)($item['id'] ?? 0); ?>"
-                    data-item-name="<?php echo t7_esc($itemName); ?>"
-                    data-item-price="<?php echo t7_esc((string)$itemPrice); ?>"
-                    data-item-image="<?php echo t7_esc($item['image'] ?? ''); ?>">
-              Add to bag
-            </button>
-          </div>
-          <?php endif; ?>
-        </div>
-        <?php endforeach; ?>
-      </div>
-
-      <?php elseif ($t7IsDrinks): ?>
-      <!-- DRINKS: ambient dark item list -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-        <?php foreach ($catItems as $item):
-          $itemAvailable = ! isset($item['is_available']) || $item['is_available'];
-          $itemImg  = t7_item_image($uploadBaseUrl, $item);
-          $itemName = $item['name'] ?? '';
-          $itemPrice= $item['price'] ?? '';
-          $itemDesc = trim((string)($item['description'] ?? ''));
-        ?>
-        <div class="flex gap-3 border-b border-white/10 pb-3 items-start t7-reveal <?php echo $itemAvailable ? '' : 'opacity-40'; ?>">
-          <?php if ($itemImg): ?>
-          <img src="<?php echo t7_esc($itemImg); ?>"
-               alt="<?php echo t7_esc($itemName); ?>"
-               class="w-12 h-12 flex-shrink-0 object-cover rounded"
-               loading="lazy">
-          <?php endif; ?>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-baseline justify-between gap-2 mb-0.5">
-              <h3 class="text-sm font-medium text-[#F6F1E8] leading-snug"><?php echo t7_esc($itemName); ?></h3>
-              <span class="t7-serif text-sm text-[#CBB288] flex-shrink-0"><?php echo t7_price($itemPrice); ?></span>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-10">
+              <?php foreach ($catItems as $itemIndex => $item):
+                $itemName = $item['name'] ?? '';
+                $itemDesc = trim((string) ($item['description'] ?? ''));
+                $itemPrice = $item['price'] ?? 0;
+                $itemImg = t7_item_image($uploadBaseUrl, $item);
+                $cardClass = (str_contains($drinkTheme, 'dark') || str_contains($drinkTheme, 'fresh') || str_contains($drinkTheme, 'soft') || str_contains($drinkTheme, 'smoothie'))
+                  ? (($itemIndex % 4 === 1) ? 'card-burgundy' : 'card-dark')
+                  : (($itemIndex % 4 === 1) ? 'card-ivory' : 'card-white');
+              ?>
+              <article class="menu-item-card <?php echo t7_esc($cardClass); ?> rounded-xl border p-4 sm:p-5 flex gap-3 reveal">
+                <?php if ($itemImg): ?>
+                <img src="<?php echo t7_esc($itemImg); ?>" alt="<?php echo t7_esc($itemName); ?>" class="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg flex-shrink-0" loading="lazy">
+                <?php endif; ?>
+                <div class="min-w-0 flex-1 flex flex-col">
+                  <div class="flex items-start justify-between gap-2">
+                    <h3 class="dish-name font-serif-luxury text-base sm:text-lg leading-snug"><?php echo t7_esc($itemName); ?></h3>
+                    <span class="font-serif-luxury text-sm flex-shrink-0 text-champagne-gold"><?php echo t7_price($itemPrice); ?></span>
+                  </div>
+                  <?php if ($itemDesc !== ''): ?>
+                  <p class="type-desc text-xs mt-1 opacity-80"><?php echo t7_esc($itemDesc); ?></p>
+                  <?php endif; ?>
+                  <?php if (! empty($supportsOrdering)): ?>
+                  <button type="button" class="add-to-bag-btn add-dish-btn mt-auto pt-3 self-end text-xs font-semibold"
+                          data-item-id="<?php echo t7_esc((string) ($item['id'] ?? '')); ?>"
+                          data-item-name="<?php echo t7_esc($itemName); ?>"
+                          data-item-price="<?php echo t7_esc((string) $itemPrice); ?>"
+                          data-item-image="<?php echo t7_esc($item['image'] ?? ''); ?>">+ Order</button>
+                  <?php endif; ?>
+                </div>
+              </article>
+              <?php endforeach; ?>
             </div>
-            <?php if ($itemDesc): ?>
-            <p class="text-xs text-[#F6F1E8]/50 leading-relaxed"><?php echo t7_esc($itemDesc); ?></p>
-            <?php endif; ?>
           </div>
-          <?php if (! empty($supportsOrdering) && $itemAvailable): ?>
-          <button type="button"
-                  class="add-to-bag-btn flex-shrink-0 text-[10px] uppercase tracking-wider font-semibold text-[#CBB288] border border-[rgba(203,178,136,0.40)] px-2 py-1 rounded hover:bg-[#500C19] hover:text-white hover:border-[#500C19] transition-colors"
-                  data-item-id="<?php echo (int)($item['id'] ?? 0); ?>"
-                  data-item-name="<?php echo t7_esc($itemName); ?>"
-                  data-item-price="<?php echo t7_esc((string)$itemPrice); ?>"
-                  data-item-image="<?php echo t7_esc($item['image'] ?? ''); ?>">
-            Add
-          </button>
+
+          <?php else: ?>
+          <!-- Category header -->
+          <div class="flex items-end justify-between gap-3 mb-5 pb-3 border-b <?php echo $isLight ? 'border-stone-300' : ($isEntree ? 'border-white/20' : 'border-white/15'); ?>">
+            <div>
+              <h2 class="font-serif-luxury text-xl sm:text-2xl <?php echo $isEntree ? 'text-white' : t7_esc($titleColor); ?>"><?php echo t7_esc($catName); ?></h2>
+              <?php if ($catDesc): ?><p class="type-desc text-xs mt-1 opacity-70"><?php echo t7_esc($catDesc); ?></p><?php endif; ?>
+            </div>
+            <span class="text-[10px] uppercase tracking-[0.18em] <?php echo t7_esc($navMuted); ?>"><?php echo count($catItems); ?> items</span>
+          </div>
+
+          <?php if ($isEntree): ?>
+          <div class="grid grid-cols-1 gap-6">
+            <?php foreach ($catItems as $item):
+              $itemName = $item['name'] ?? '';
+              $itemDesc = (string) ($item['description'] ?? '');
+              $itemPrice = $item['price'] ?? 0;
+              $itemImg = t7_item_image($uploadBaseUrl, $item);
+              $optionBlocks = t7_parse_option_blocks($itemDesc);
+            ?>
+            <article class="entree-panel rounded-2xl p-5 sm:p-7 reveal relative overflow-hidden">
+              <div class="flex flex-col sm:flex-row gap-5 sm:gap-8">
+                <?php if ($itemImg): ?>
+                <div class="sm:w-40 flex-shrink-0">
+                  <img src="<?php echo t7_esc($itemImg); ?>" alt="<?php echo t7_esc($itemName); ?>" class="w-full h-36 sm:h-40 object-cover rounded-xl" loading="lazy">
+                </div>
+                <?php endif; ?>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-start justify-between gap-3 mb-4">
+                    <h3 class="entree-title font-serif-luxury text-xl sm:text-2xl"><?php echo t7_esc($itemName); ?></h3>
+                    <span class="entree-title font-serif-luxury text-lg flex-shrink-0"><?php echo t7_price($itemPrice); ?></span>
+                  </div>
+                  <?php if ($optionBlocks !== []): ?>
+                  <div class="entree-options-grid">
+                    <?php foreach ($optionBlocks as $block): ?>
+                    <div>
+                      <p class="label"><?php echo t7_esc($block['label']); ?></p>
+                      <?php if ($block['choose'] !== ''): ?><p class="choose"><?php echo t7_esc($block['choose']); ?></p><?php endif; ?>
+                      <?php if (! empty($block['items'])): ?>
+                      <ul>
+                        <?php foreach ($block['items'] as $opt): ?>
+                        <li><?php echo t7_esc($opt); ?></li>
+                        <?php endforeach; ?>
+                      </ul>
+                      <?php endif; ?>
+                    </div>
+                    <?php endforeach; ?>
+                  </div>
+                  <?php elseif (trim($itemDesc) !== ''): ?>
+                  <p class="type-desc text-sm text-stone-600"><?php echo nl2br(t7_esc($itemDesc)); ?></p>
+                  <?php endif; ?>
+                  <?php if (! empty($supportsOrdering)): ?>
+                  <button type="button" class="add-to-bag-btn mt-5 inline-flex items-center gap-1 px-3 py-1.5 rounded bg-burgundy-deep text-white text-xs font-semibold hover:bg-burgundy-wine"
+                          data-item-id="<?php echo t7_esc((string) ($item['id'] ?? '')); ?>"
+                          data-item-name="<?php echo t7_esc($itemName); ?>"
+                          data-item-price="<?php echo t7_esc((string) $itemPrice); ?>"
+                          data-item-image="<?php echo t7_esc($item['image'] ?? ''); ?>">+ Order</button>
+                  <?php endif; ?>
+                </div>
+              </div>
+            </article>
+            <?php endforeach; ?>
+          </div>
+
+          <?php elseif ($isNational): ?>
+          <div class="space-y-5">
+            <?php foreach ($catItems as $item):
+              $itemName = $item['name'] ?? '';
+              $itemDesc = (string) ($item['description'] ?? '');
+              $itemPrice = $item['price'] ?? 0;
+              $optionBlocks = t7_parse_option_blocks($itemDesc);
+            ?>
+            <article class="rounded-2xl border border-white/10 bg-black/30 p-5 sm:p-8 reveal">
+              <div class="flex items-start justify-between gap-3 mb-6">
+                <h3 class="font-serif-luxury text-xl sm:text-2xl text-white"><?php echo t7_esc($itemName); ?></h3>
+                <span class="font-serif-luxury text-champagne-gold text-lg"><?php echo t7_price($itemPrice); ?></span>
+              </div>
+              <?php if ($optionBlocks !== []): ?>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <?php foreach ($optionBlocks as $step => $block): ?>
+                <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+                  <div class="flex items-center gap-2 mb-3">
+                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-champagne-gold text-burgundy-deep text-xs font-bold"><?php echo (int) $step + 1; ?></span>
+                    <p class="text-[11px] uppercase tracking-[0.16em] text-champagne-light font-semibold"><?php echo t7_esc($block['label']); ?></p>
+                  </div>
+                  <?php if ($block['choose'] !== ''): ?><p class="text-xs text-white/50 mb-2"><?php echo t7_esc($block['choose']); ?></p><?php endif; ?>
+                  <ul class="space-y-1.5 text-sm text-stone-200">
+                    <?php foreach ($block['items'] as $opt): ?>
+                    <li class="border-b border-white/5 pb-1"><?php echo t7_esc($opt); ?></li>
+                    <?php endforeach; ?>
+                  </ul>
+                </div>
+                <?php endforeach; ?>
+              </div>
+              <?php elseif (trim($itemDesc) !== ''): ?>
+              <p class="type-desc text-sm text-stone-300 whitespace-pre-line"><?php echo t7_esc($itemDesc); ?></p>
+              <?php endif; ?>
+              <?php if (! empty($supportsOrdering)): ?>
+              <button type="button" class="add-to-bag-btn mt-6 inline-flex items-center gap-1 px-4 py-2 rounded bg-champagne-gold text-burgundy-deep text-xs font-semibold"
+                      data-item-id="<?php echo t7_esc((string) ($item['id'] ?? '')); ?>"
+                      data-item-name="<?php echo t7_esc($itemName); ?>"
+                      data-item-price="<?php echo t7_esc((string) $itemPrice); ?>"
+                      data-item-image="<?php echo t7_esc($item['image'] ?? ''); ?>">+ Order</button>
+              <?php endif; ?>
+            </article>
+            <?php endforeach; ?>
+          </div>
+
+          <?php else: ?>
+          <!-- Default grids: light white cards / dark onyx cards -->
+          <div class="grid grid-cols-1 <?php echo $isLight ? 'md:grid-cols-2' : 'sm:grid-cols-2'; ?> gap-4 sm:gap-5">
+            <?php foreach ($catItems as $itemIndex => $item):
+              $itemName = $item['name'] ?? '';
+              $itemDesc = trim((string) ($item['description'] ?? ''));
+              $itemPrice = $item['price'] ?? 0;
+              $itemImg = t7_item_image($uploadBaseUrl, $item);
+              $cardVariant = $theme['card'];
+              if ($useBurgundyAccent && $itemIndex === 0) {
+                  $cardVariant = 'card-burgundy';
+              } elseif ($isLight && $itemIndex % 7 === 3) {
+                  $cardVariant = 'card-ivory';
+              }
+              $span = ($isLight && $itemIndex % 5 === 0) ? 'md:col-span-2' : '';
+            ?>
+            <article class="menu-item-card <?php echo t7_esc($cardVariant); ?> <?php echo t7_esc($span); ?> rounded-xl border p-4 sm:p-5 flex flex-col sm:flex-row gap-4 reveal hover:border-burgundy-wine/60 transition-all">
+              <?php if ($itemImg): ?>
+              <img src="<?php echo t7_esc($itemImg); ?>" alt="<?php echo t7_esc($itemName); ?>" class="w-full sm:w-28 h-36 sm:h-28 object-cover rounded-lg flex-shrink-0" loading="lazy">
+              <?php endif; ?>
+              <div class="min-w-0 flex-1 flex flex-col">
+                <div class="flex items-start justify-between gap-3">
+                  <h3 class="dish-name font-serif-luxury text-lg leading-snug"><?php echo t7_esc($itemName); ?></h3>
+                  <span class="font-serif-luxury text-sm flex-shrink-0 <?php echo t7_esc($theme['price']); ?>"><?php echo t7_price($itemPrice); ?></span>
+                </div>
+                <?php if ($itemDesc !== ''): ?>
+                <p class="type-desc text-xs mt-2 opacity-80 line-clamp-3"><?php echo t7_esc($itemDesc); ?></p>
+                <?php endif; ?>
+                <?php if (! empty($supportsOrdering)): ?>
+                <button type="button" class="add-to-bag-btn add-dish-btn mt-auto pt-4 self-end text-xs font-semibold <?php echo $isLight ? 'text-burgundy-wine' : 'text-white/90'; ?>"
+                        data-item-id="<?php echo t7_esc((string) ($item['id'] ?? '')); ?>"
+                        data-item-name="<?php echo t7_esc($itemName); ?>"
+                        data-item-price="<?php echo t7_esc((string) $itemPrice); ?>"
+                        data-item-image="<?php echo t7_esc($item['image'] ?? ''); ?>">+ Order</button>
+                <?php endif; ?>
+              </div>
+            </article>
+            <?php endforeach; ?>
+          </div>
+          <?php endif; ?>
+          <?php endif; ?>
+        </section>
+        <?php endforeach; ?>
+
+        <?php if (! empty($fullMenuUrl)): ?>
+        <div class="pt-6 border-t <?php echo $isLight || $isDrinks ? 'border-stone-200' : 'border-white/10'; ?> flex flex-wrap gap-4">
+          <a href="<?php echo t7_esc($fullMenuUrl); ?>" class="text-xs uppercase tracking-[0.16em] font-medium <?php echo t7_esc($navMuted); ?> hover:opacity-80">← Back to menu directory</a>
+          <?php if (! empty($supportsReservations)): ?>
+          <a href="<?php echo t7_esc($reservationUrl); ?>" class="text-xs uppercase tracking-[0.16em] font-semibold text-white bg-burgundy-deep hover:bg-burgundy-wine px-4 py-2 rounded border border-champagne-gold/40">Reserve a Table</a>
           <?php endif; ?>
         </div>
-        <?php endforeach; ?>
-      </div>
-
-      <?php else: ?>
-      <!-- DEFAULT: 2-column item card grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 <?php echo $t7IsGrill ? 't7-grill-inner' : ''; ?>">
-        <?php foreach ($catItems as $item):
-          $itemAvailable = ! isset($item['is_available']) || $item['is_available'];
-          $itemImg  = t7_item_image($uploadBaseUrl, $item);
-          $itemName = $item['name'] ?? '';
-          $itemPrice= $item['price'] ?? '';
-          $itemDesc = trim((string)($item['description'] ?? ''));
-        ?>
-        <div class="group bg-[#1D1C21] border border-[rgba(203,178,136,0.18)] hover:border-[rgba(203,178,136,0.50)] rounded p-4 sm:p-5 transition-all t7-reveal <?php echo $itemAvailable ? '' : 'opacity-40'; ?> <?php echo $t7IsGrill ? 'border-l-2 border-l-[#500C19]/40 hover:border-l-[#CBB288]/60' : ''; ?>">
-          <?php if ($itemImg): ?>
-          <div class="relative h-36 sm:h-40 mb-3 overflow-hidden rounded -mx-0.5">
-            <img src="<?php echo t7_esc($itemImg); ?>"
-                 alt="<?php echo t7_esc($itemName); ?>"
-                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                 loading="lazy">
-            <div class="absolute inset-0 bg-gradient-to-t from-[#1D1C21]/90 to-transparent"></div>
-          </div>
-          <?php endif; ?>
-          <div class="flex items-baseline justify-between gap-2 mb-1.5">
-            <h3 class="t7-serif text-base sm:text-lg text-white font-normal leading-snug group-hover:text-[#EEDDC0] transition-colors"><?php echo t7_esc($itemName); ?></h3>
-            <span class="t7-serif text-sm font-medium text-[#CBB288] flex-shrink-0 whitespace-nowrap"><?php echo t7_price($itemPrice); ?></span>
-          </div>
-          <?php if ($itemDesc): ?>
-          <p class="text-xs text-[#F6F1E8]/60 leading-relaxed mb-2"><?php echo t7_esc($itemDesc); ?></p>
-          <?php endif; ?>
-          <?php if (! empty($supportsOrdering) && $itemAvailable): ?>
-          <div class="mt-2 pt-2 border-t border-white/10">
-            <button type="button"
-                    class="add-to-bag-btn text-[11px] uppercase tracking-[0.14em] font-semibold text-[#CBB288] border border-[rgba(203,178,136,0.40)] px-3 py-1.5 rounded hover:bg-[#500C19] hover:text-white hover:border-[#500C19] transition-colors"
-                    data-item-id="<?php echo (int)($item['id'] ?? 0); ?>"
-                    data-item-name="<?php echo t7_esc($itemName); ?>"
-                    data-item-price="<?php echo t7_esc((string)$itemPrice); ?>"
-                    data-item-image="<?php echo t7_esc($item['image'] ?? ''); ?>">
-              Add to bag
-            </button>
-          </div>
-          <?php elseif (! $itemAvailable): ?>
-          <p class="mt-2 text-[10px] uppercase tracking-wider text-[#F6F1E8]/30">Currently unavailable</p>
-          <?php endif; ?>
+        <?php endif; ?>
         </div>
-        <?php endforeach; ?>
       </div>
-      <?php endif; // end item render modes ?>
-
-    </section><!-- /t7-cat-section -->
-    <?php endforeach; // end categories loop ?>
-
-    <!-- Back to sections link (mobile bottom) -->
-    <?php if (! empty($fullMenuUrl)): ?>
-    <div class="mt-10 pt-8 border-t border-[rgba(203,178,136,0.28)] flex items-center justify-between">
-      <a href="<?php echo t7_esc($fullMenuUrl); ?>" class="inline-flex items-center gap-2 text-xs uppercase tracking-[0.16em] font-medium text-[#F6F1E8]/60 hover:text-[#CBB288] transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        All Sections
-      </a>
-      <?php if (! empty($supportsReservations)): ?>
-      <a href="<?php echo t7_esc($reservationUrl); ?>" class="inline-flex items-center gap-1.5 px-4 py-2 text-[11px] uppercase tracking-[0.16em] font-semibold text-white bg-[#500C19] hover:bg-[#6A1324] border border-[rgba(203,178,136,0.40)] rounded transition-all">
-        Reserve a Table
-      </a>
-      <?php endif; ?>
     </div>
-    <?php endif; ?>
-
-  </main><!-- /main -->
-</div><!-- /t7-layout -->
+  </div>
+</section>
