@@ -217,8 +217,9 @@ class MenuService
     }
 
     /**
-     * Keep a section on the landing when the section page would show categories/items,
-     * or when it has active primary/secondary mappings (so secondary-linked sections surface).
+     * Keep a section on the landing only when it has browseable categories with items
+     * (primary or secondary). Avoids empty "mapping-only" cards that open to
+     * "No items in this section".
      *
      * @param  array<string, mixed>  $section
      * @return array<string, mixed>|null
@@ -242,11 +243,7 @@ class MenuService
             return is_array($items) && $items !== [];
         }));
 
-        $sectionId = (int) ($section['id'] ?? 0);
-        $restaurantId = (int) ($section['restaurant_id'] ?? 0);
-
-        // No visible items: still show the card if this section has primary/secondary mappings.
-        if ($withItems === [] && ! $this->sectionHasCategoryMappings($restaurantId, $sectionId)) {
+        if ($withItems === []) {
             return null;
         }
 
@@ -257,40 +254,9 @@ class MenuService
         }
 
         $section['item_count'] = $itemCount;
-        $section['categories'] = $this->stripMenuItemsFromCategories(
-            $withItems !== [] ? $withItems : $allCategories
-        );
+        $section['categories'] = $this->stripMenuItemsFromCategories($withItems);
 
         return $section;
-    }
-
-    private function sectionHasCategoryMappings(int $restaurantId, int $sectionId): bool
-    {
-        if ($sectionId < 1 || $restaurantId < 1) {
-            return false;
-        }
-
-        $hasPrimary = Category::query()
-            ->where('restaurant_id', $restaurantId)
-            ->where('section_id', $sectionId)
-            ->where('is_active', 1)
-            ->exists();
-
-        if ($hasPrimary) {
-            return true;
-        }
-
-        try {
-            return DB::table('category_secondary_sections as css')
-                ->join('categories as c', 'c.id', '=', 'css.category_id')
-                ->where('c.restaurant_id', $restaurantId)
-                ->where('css.section_id', $sectionId)
-                ->where('css.is_active', 1)
-                ->where('c.is_active', 1)
-                ->exists();
-        } catch (\Throwable) {
-            return false;
-        }
     }
 
     /**
@@ -407,44 +373,71 @@ class MenuService
             ->all();
     }
 
-    /** Primary + secondary mapped categories (single-section views). */
+    /** Primary + secondary mapped categories (single-section views / T6–T7 section pages). */
     private function categoriesForSectionPage(int $restaurantId, int $sectionId): array
     {
+        $primaryIds = Category::query()
+            ->where('restaurant_id', $restaurantId)
+            ->where('section_id', $sectionId)
+            ->where('is_active', 1)
+            ->orderByRaw('COALESCE(display_order, 999999) ASC')
+            ->orderBy('id')
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->all();
+
+        $secondaryIds = [];
         try {
-            $rows = DB::select('
-                SELECT c.*, x.is_secondary
-                FROM (
-                    SELECT c.id, 0 AS is_secondary
-                    FROM categories c
-                    WHERE c.restaurant_id = ? AND c.section_id = ? AND c.is_active = 1
-                    UNION ALL
-                    SELECT c.id, 1 AS is_secondary
-                    FROM categories c
-                    INNER JOIN category_secondary_sections css ON css.category_id = c.id
-                    WHERE c.restaurant_id = ? AND css.section_id = ? AND c.is_active = 1
-                      AND css.is_active = 1 AND c.section_id <> ?
-                ) x
-                INNER JOIN categories c ON c.id = x.id
-                ORDER BY x.is_secondary ASC, COALESCE(c.display_order, 999999) ASC, c.id ASC
-            ', [$restaurantId, $sectionId, $restaurantId, $sectionId, $sectionId]);
-
-            return collect($rows)->map(function ($row) {
-                $cat = Category::query()->find($row->id);
-                if (! $cat) {
-                    return null;
-                }
-
-                return $this->mapCategory($cat, $restaurantId);
-            })->filter()->values()->all();
+            $secondaryIds = DB::table('category_secondary_sections as css')
+                ->join('categories as c', 'c.id', '=', 'css.category_id')
+                ->where('c.restaurant_id', $restaurantId)
+                ->where('css.section_id', $sectionId)
+                ->where('css.is_active', 1)
+                ->where('c.is_active', 1)
+                ->where('c.section_id', '<>', $sectionId)
+                ->orderByRaw('COALESCE(c.display_order, 999999) ASC')
+                ->orderBy('c.id')
+                ->pluck('c.id')
+                ->map(fn ($id) => (int) $id)
+                ->all();
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::warning('Secondary category load failed; using primary only', [
+            \Illuminate\Support\Facades\Log::warning('Secondary category lookup failed; using primary only', [
                 'restaurant_id' => $restaurantId,
                 'section_id' => $sectionId,
                 'error' => $e->getMessage(),
             ]);
-
-            return $this->primaryCategoriesForSection($restaurantId, $sectionId);
         }
+
+        $orderedIds = [];
+        foreach (array_merge($primaryIds, $secondaryIds) as $id) {
+            if ($id > 0 && ! in_array($id, $orderedIds, true)) {
+                $orderedIds[] = $id;
+            }
+        }
+
+        if ($orderedIds === []) {
+            return [];
+        }
+
+        $categories = Category::query()
+            ->where('restaurant_id', $restaurantId)
+            ->whereIn('id', $orderedIds)
+            ->get()
+            ->keyBy('id');
+
+        $mapped = [];
+        foreach ($orderedIds as $id) {
+            $cat = $categories->get($id);
+            if (! $cat) {
+                continue;
+            }
+            $row = $this->mapCategory($cat, $restaurantId);
+            if (is_array($row)) {
+                $mapped[] = $row;
+            }
+        }
+
+        return $mapped;
     }
 
     private function fallbackVirtualSection(Restaurant $restaurant): array
@@ -498,9 +491,17 @@ class MenuService
             return null;
         }
 
-        $category->loadMissing(['menuItems' => fn ($q) => $q->where('is_available', 1)->orderByRaw('COALESCE(display_order, 999999) ASC')->orderBy('id')]);
+        // Fresh query — avoid loadMissing leaving a stale/empty relation from earlier loads.
+        $itemModels = MenuItem::query()
+            ->where('restaurant_id', $restaurantId)
+            ->where('category_id', $categoryId)
+            ->where('is_available', 1)
+            ->orderByRaw('COALESCE(display_order, 999999) ASC')
+            ->orderBy('id')
+            ->get();
+
         $items = [];
-        foreach ($category->menuItems as $item) {
+        foreach ($itemModels as $item) {
             $itemId = (int) $item->id;
             $visibility = $this->visibilityForMenuItem($restaurantId, $itemId);
             if (! $visibility->isMenuItemVisibleOnPublicMenu($itemId)) {

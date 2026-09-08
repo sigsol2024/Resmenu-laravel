@@ -12,7 +12,18 @@ if ($isHomeDrawer) {
     $drawerCategories = [];
     if (! empty($activeSection['categories']) && is_array($activeSection['categories'])) {
         $drawerCategories = array_values(array_filter($activeSection['categories'], static function ($cat) {
-            return ! empty($cat['is_active']) && ! empty($cat['menu_items']);
+            if (! is_array($cat)) {
+                return false;
+            }
+            if (array_key_exists('is_active', $cat) && empty($cat['is_active'])) {
+                return false;
+            }
+            $items = $cat['menu_items'] ?? null;
+            if ($items instanceof \Countable) {
+                return count($items) > 0;
+            }
+
+            return is_array($items) && $items !== [];
         }));
     }
     if ($drawerCategories === []) {

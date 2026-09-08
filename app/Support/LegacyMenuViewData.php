@@ -87,6 +87,11 @@ class LegacyMenuViewData
             $viewData['sections'] = self::normalizeSections($viewData['sections']);
         }
 
+        if (isset($viewData['activeSection']) && is_array($viewData['activeSection'])) {
+            $normalized = self::normalizeSections([$viewData['activeSection']]);
+            $viewData['activeSection'] = $normalized[0] ?? $viewData['activeSection'];
+        }
+
         return $viewData;
     }
 
@@ -161,6 +166,8 @@ class LegacyMenuViewData
             $category['name'] = self::sanitizePlainText($category['name']);
             if (isset($category['menu_items']) && is_array($category['menu_items'])) {
                 $category['menu_items'] = self::normalizeMenuItems($category['menu_items']);
+            } elseif (($category['menu_items'] ?? null) instanceof \Illuminate\Support\Collection) {
+                $category['menu_items'] = self::normalizeMenuItems($category['menu_items']->all());
             } else {
                 $category['menu_items'] = [];
             }

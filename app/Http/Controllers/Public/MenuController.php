@@ -190,32 +190,31 @@ class MenuController extends Controller
 
             $full = $this->menu->sectionWithMenuBySlug($restaurant, $slug);
             if ($full === null) {
-                // Still surface the nav entry as a directory card so sidebar and home stay aligned.
-                $bySlug[$slug] = [
-                    'id' => (int) ($nav['id'] ?? 0),
-                    'name' => (string) ($nav['name'] ?? $slug),
-                    'slug' => $slug,
-                    'display_order' => 9999,
-                    'is_active' => 1,
-                    'image' => null,
-                    'item_count' => 0,
-                    'categories' => [],
-                ];
-
                 continue;
             }
 
             $itemCount = 0;
+            $withItems = [];
             foreach ($full['categories'] ?? [] as $cat) {
-                if (! is_array($cat)) {
+                if (! is_array($cat) || empty($cat['is_active'])) {
                     continue;
                 }
                 $items = $cat['menu_items'] ?? [];
-                $itemCount += is_countable($items) ? count($items) : 0;
+                $count = is_countable($items) ? count($items) : 0;
+                if ($count < 1) {
+                    continue;
+                }
+                $itemCount += $count;
+                $withItems[] = $cat;
+            }
+
+            // Only add directory cards that would show content on the section page.
+            if ($withItems === []) {
+                continue;
             }
 
             $full['item_count'] = $itemCount;
-            $full['categories'] = $this->menu->stripMenuItemsFromCategories($full['categories'] ?? []);
+            $full['categories'] = $this->menu->stripMenuItemsFromCategories($withItems);
             $bySlug[$slug] = $full;
         }
 

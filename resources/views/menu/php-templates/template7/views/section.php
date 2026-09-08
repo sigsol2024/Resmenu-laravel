@@ -12,7 +12,19 @@ $theme           = t7_section_theme($t7SectionSlug);
 $t7SectionHero   = t7_section_image($uploadBaseUrl, $t7ActiveSection ?? []);
 
 $t7VisibleCats = array_values(array_filter($t7Categories, static function ($cat) {
-    return ! empty($cat['is_active']) && ! empty($cat['menu_items']);
+    if (! is_array($cat)) {
+        return false;
+    }
+    // Treat missing is_active as active (normalized defaults); require real items.
+    if (array_key_exists('is_active', $cat) && empty($cat['is_active'])) {
+        return false;
+    }
+    $items = $cat['menu_items'] ?? null;
+    if ($items instanceof \Countable) {
+        return count($items) > 0;
+    }
+
+    return is_array($items) && $items !== [];
 }));
 
 $isLight   = $theme['tone'] === 'light';
