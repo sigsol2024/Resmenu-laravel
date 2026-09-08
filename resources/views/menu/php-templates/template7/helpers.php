@@ -140,7 +140,8 @@ function t7_drink_cat_theme(string $categorySlug): string
 }
 
 /**
- * Split DESIGN_1-style description into intro copy + option blocks.
+ * Split DESIGN_1-style description into intro copy + option columns.
+ * Blank-line paragraphs become columns (Patty / Condiments / Sauces, etc.).
  *
  * @return array{intro:string,blocks:list<array{label:string,choose:string,items:list<string>}>}
  */
@@ -151,7 +152,36 @@ function t7_parse_entree_description(string $description): array
         return ['intro' => '', 'blocks' => []];
     }
 
-    $chunks = preg_split("/\n{2,}/", $description) ?: [];
+    $headerPattern = '/^(Patty|Condiments?|Sauces?|Fillings?|Toppings?|Base|Protein|Accompaniment|Sides?|Extras?)\b/i';
+
+    // Prefer blank-line paragraphs; also split when a new option header starts mid-block.
+    $rawChunks = preg_split("/\n{2,}/", $description) ?: [];
+    $chunks = [];
+    foreach ($rawChunks as $raw) {
+        $raw = trim($raw);
+        if ($raw === '') {
+            continue;
+        }
+        $lines = preg_split("/\n/", $raw) ?: [];
+        $buf = [];
+        foreach ($lines as $line) {
+            $trim = trim($line);
+            $startsHeader = $trim !== '' && (
+                preg_match('/\(Choose\s+\d+\)/i', $trim)
+                || preg_match($headerPattern, $trim)
+            );
+            if ($startsHeader && $buf !== []) {
+                $chunks[] = implode("\n", $buf);
+                $buf = [$trim];
+            } else {
+                $buf[] = $trim === '' ? '' : $line;
+            }
+        }
+        if ($buf !== []) {
+            $chunks[] = implode("\n", $buf);
+        }
+    }
+
     $intro = '';
     $blocks = [];
 
@@ -162,13 +192,16 @@ function t7_parse_entree_description(string $description): array
         }
         $header = $lines[0];
         $isOption = (bool) preg_match('/\(Choose\s+\d+\)/i', $header)
-            || (bool) preg_match('/^(Patty|Condiments|Sauces|Fillings|Toppings|Base)\b/i', $header);
+            || (bool) preg_match($headerPattern, $header)
+            || (bool) preg_match('/^.+:\s*$/', $header)
+            || (bool) preg_match('/^.+:\s+.+/', $header);
 
         if (! $isOption && $intro === '' && $blocks === []) {
             $intro = implode(' ', $lines);
             continue;
         }
 
+        // Any later paragraph becomes its own column (manager blank-line → column).
         array_shift($lines);
         $label = $header;
         $choose = '';
@@ -178,6 +211,9 @@ function t7_parse_entree_description(string $description): array
             if ($m[3] !== '') {
                 array_unshift($lines, trim($m[3]));
             }
+        } elseif (preg_match('/^(.+?)\s*\((Choose\s+\d+)\)\s*$/i', $header, $m)) {
+            $label = trim($m[1]);
+            $choose = trim($m[2]);
         } elseif (str_contains($header, ':')) {
             [$label, $rest] = array_map('trim', explode(':', $header, 2));
             if ($rest !== '') {
@@ -292,10 +328,10 @@ function t7_landing_card_classes(string $slug): array
         ],
         'drinks' => [
             'card' => 't7-land-card t7-land-card--drinks '.$accent,
-            'title' => 'text-stone-900',
-            'meta' => 'text-burgundy-deep/70',
-            'body' => 'text-stone-600',
-            'cta' => 'text-burgundy-wine border-champagne-gold/40',
+            'title' => 'text-white',
+            'meta' => 'text-champagne-gold/70',
+            'body' => 'text-white/70',
+            'cta' => 'text-champagne-light border-white/15',
         ],
         default => [
             'card' => 't7-land-card t7-land-card--dark '.$accent,

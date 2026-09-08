@@ -282,17 +282,17 @@ $subColor   = ($isLight || $isDrinks) ? 'text-burgundy-deep' : 'text-champagne-g
                 <span class="font-serif-luxury text-champagne-gold text-lg shrink-0 tabular-nums"><?php echo t7_price($itemPrice); ?></span>
               </div>
               <?php if ($optionBlocks !== []): ?>
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+              <div class="grid grid-cols-3 gap-2 sm:gap-5">
                 <?php foreach ($optionBlocks as $step => $block): ?>
-                <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-                  <div class="flex items-center gap-2 mb-3">
-                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-champagne-gold text-burgundy-deep text-xs font-bold"><?php echo (int) $step + 1; ?></span>
-                    <p class="text-[11px] uppercase tracking-[0.16em] text-champagne-light font-semibold"><?php echo t7_esc($block['label']); ?></p>
+                <div class="rounded-xl border border-white/10 bg-white/5 p-2.5 sm:p-4 min-w-0">
+                  <div class="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+                    <span class="inline-flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-champagne-gold text-burgundy-deep text-[10px] sm:text-xs font-bold shrink-0"><?php echo (int) $step + 1; ?></span>
+                    <p class="text-[9px] sm:text-[11px] uppercase tracking-[0.12em] text-champagne-light font-semibold leading-snug break-words"><?php echo t7_esc($block['label']); ?></p>
                   </div>
-                  <?php if ($block['choose'] !== ''): ?><p class="text-xs text-white/50 mb-2"><?php echo t7_esc($block['choose']); ?></p><?php endif; ?>
-                  <ul class="space-y-1.5 text-sm text-stone-200">
+                  <?php if ($block['choose'] !== ''): ?><p class="text-[10px] sm:text-xs text-white/50 mb-2"><?php echo t7_esc($block['choose']); ?></p><?php endif; ?>
+                  <ul class="space-y-1 sm:space-y-1.5 text-[11px] sm:text-sm text-stone-200">
                     <?php foreach ($block['items'] as $opt): ?>
-                    <li class="border-b border-white/5 pb-1"><?php echo t7_esc($opt); ?></li>
+                    <li class="border-b border-white/5 pb-1 break-words"><?php echo t7_esc($opt); ?></li>
                     <?php endforeach; ?>
                   </ul>
                 </div>

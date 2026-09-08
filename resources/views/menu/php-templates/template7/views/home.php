@@ -21,11 +21,6 @@ if (empty($t7HeroImg) && ! empty($sections[0])) {
   <?php endif; ?>
 
   <div class="relative z-10 w-full max-w-3xl mx-auto text-center space-y-5">
-    <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-black/60 border border-champagne-gold/30 backdrop-blur-md">
-      <span class="w-1.5 h-1.5 rounded-full bg-champagne-gold"></span>
-      <span class="text-[10px] sm:text-xs tracking-[0.25em] uppercase text-champagne-light font-semibold">Digital Menu</span>
-    </div>
-
     <h1 class="font-serif-luxury text-4xl sm:text-6xl md:text-7xl text-white font-normal tracking-tight leading-[1.1] break-words px-1">
       <?php echo t7_esc($restaurant['name'] ?? ''); ?>
     </h1>
@@ -57,14 +52,20 @@ if (empty($t7HeroImg) && ! empty($sections[0])) {
       <div class="absolute left-0 right-0 top-full mt-2 hidden z-50 rounded-xl border border-onyx-border bg-onyx-card shadow-2xl max-h-72 overflow-y-auto text-left" id="search-suggestions" role="listbox"></div>
     </div>
 
-    <?php if (! empty($restaurant['opening_hours'])): ?>
     <div class="flex flex-wrap items-center justify-center gap-2 pt-2">
-      <span class="px-3 py-1.5 rounded-md text-[11px] bg-white/10 text-stone-200 border border-white/10 inline-flex items-center gap-2">
-        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-        <?php echo t7_esc($restaurant['opening_hours']); ?>
+      <span class="px-3 py-1.5 rounded-md text-[11px] bg-white/10 text-stone-200 border border-white/10 inline-flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-[13px] text-champagne-gold" aria-hidden="true">wb_sunny</span>
+        Breakfast 06:30 – 11:00
+      </span>
+      <span class="px-3 py-1.5 rounded-md text-[11px] bg-white/10 text-stone-200 border border-white/10 inline-flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-[13px] text-champagne-gold" aria-hidden="true">restaurant</span>
+        All-Day Carte 12:00 – 23:00
+      </span>
+      <span class="px-3 py-1.5 rounded-md text-[11px] bg-white/10 text-stone-200 border border-white/10 inline-flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-[13px] text-champagne-gold" aria-hidden="true">room_service</span>
+        In-Room Cloche 24 Hours
       </span>
     </div>
-    <?php endif; ?>
 
     <div class="flex flex-wrap items-center justify-center gap-3 pt-1">
       <a href="#t7-menu-index" class="inline-flex items-center gap-1.5 px-5 py-2.5 min-h-[44px] text-[11px] uppercase tracking-[0.18em] font-semibold text-white bg-burgundy-deep hover:bg-burgundy-wine border border-champagne-gold/40 rounded transition-all">
@@ -78,30 +79,6 @@ if (empty($t7HeroImg) && ! empty($sections[0])) {
     </div>
   </div>
 </section>
-
-<?php if (! empty($sectionsForNav) && count($sectionsForNav) > 1): ?>
-<div class="sticky top-[4rem] sm:top-[4.5rem] z-40 bg-onyx-surface/95 backdrop-blur border-b border-onyx-border shadow-md">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6">
-    <div class="flex items-center gap-2 overflow-x-auto py-3 t7-noscroll scroll-smooth">
-      <span class="text-[10px] uppercase tracking-[0.20em] text-champagne-gold/60 font-semibold pl-1 pr-2 whitespace-nowrap hidden md:inline">Jump To:</span>
-      <?php foreach ($sectionsForNav as $navSec):
-        $navSlug = strtolower(trim((string) ($navSec['slug'] ?? '')));
-        $navName = $navSec['name'] ?? '';
-        $chip = match ($navSlug) {
-            'drinks' => 'bg-champagne-gold/15 border-champagne-gold/50 text-champagne-light',
-            'national-menu', 'grill', 'vcp-specials' => 'bg-burgundy-deep/80 border-burgundy-wine text-white',
-            default => 'bg-white/5 border-white/10 text-white/90 hover:bg-burgundy-deep',
-        };
-      ?>
-      <a href="<?php echo t7_esc(t7_section_url($fullMenuUrl, $navSlug)); ?>"
-         class="px-3 py-2 min-h-[44px] inline-flex items-center text-[11px] uppercase tracking-[0.14em] font-medium rounded border whitespace-nowrap transition-colors <?php echo t7_esc($chip); ?>">
-        <?php echo t7_esc($navName); ?>
-      </a>
-      <?php endforeach; ?>
-    </div>
-  </div>
-</div>
-<?php endif; ?>
 
 <main class="flex-grow py-10 sm:py-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full" id="t7-menu-index">
   <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-10 pb-4 border-b border-onyx-border gap-3">

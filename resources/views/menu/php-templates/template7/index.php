@@ -217,14 +217,8 @@ $bodyClass = $menuViewLevel === 'home'
     }
     .entree-options-grid {
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 0.75rem 0.75rem;
-    }
-    @media (min-width: 640px) {
-      .entree-options-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 1.25rem;
-      }
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.5rem 0.75rem;
     }
     .entree-options-grid p.label {
       font-size: 0.625rem; letter-spacing: 0.06em; text-transform: uppercase;
@@ -240,6 +234,7 @@ $bodyClass = $menuViewLevel === 'home'
     }
     .entree-options-grid ul li { padding: 0.15rem 0; }
     @media (min-width: 640px) {
+      .entree-options-grid { gap: 1.25rem; }
       .entree-options-grid p.label { font-size: 0.75rem; }
       .entree-options-grid p.choose { font-size: 0.8125rem; }
       .entree-options-grid ul { font-size: 0.8125rem; line-height: 1.45; }
@@ -336,7 +331,7 @@ $bodyClass = $menuViewLevel === 'home'
     .t7-land-card--dark { background: #141417; border-color: rgba(36,36,43,1); }
     .t7-land-card--burgundy { background: linear-gradient(160deg, #500C19 0%, #36050e 100%); border-color: rgba(197,168,128,0.35) !important; }
     .t7-land-card--entree { background: linear-gradient(160deg, #794A2A 0%, #5c351c 100%); border-color: rgba(255,255,246,0.18) !important; }
-    .t7-land-card--drinks { background: linear-gradient(180deg, #F8F4EC 0%, #EDE6DB 100%); border-color: rgba(197,168,128,0.45) !important; }
+    .t7-land-card--drinks { background: linear-gradient(160deg, #1a1a1f 0%, #121214 100%); border-color: rgba(197,168,128,0.45) !important; }
 
     .menu-item-card.is-dimmed { opacity: 0.28; transition: opacity 0.35s ease; }
     .menu-item-card.is-highlight {
@@ -438,35 +433,33 @@ $bodyClass = $menuViewLevel === 'home'
     </div>
 
     <div class="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-      <?php if (! empty($sectionsForNav) && $menuViewLevel === 'home'): ?>
-      <nav class="hidden md:flex items-center gap-4 text-[11px] uppercase tracking-[0.16em] text-white/70">
-        <?php foreach (array_slice($sectionsForNav, 0, 4) as $navSec): ?>
-        <a href="<?php echo t7_esc(t7_section_url($fullMenuUrl, $navSec['slug'] ?? '')); ?>" class="hover:text-champagne-gold transition-colors whitespace-nowrap">
-          <?php echo t7_esc($navSec['name'] ?? ''); ?>
-        </a>
-        <?php endforeach; ?>
-      </nav>
-      <?php endif; ?>
-      <?php if ($menuViewLevel === 'section'): ?>
+      <?php
+        $t7ShowDrawerToggle = false;
+        if (($menuViewLevel ?? '') === 'home') {
+            $t7ShowDrawerToggle = ! empty($sectionsForNav);
+        } elseif (($menuViewLevel ?? '') === 'section') {
+            $t7ShowDrawerToggle = ! empty($activeSection['categories']);
+        }
+      ?>
+      <?php if ($t7ShowDrawerToggle): ?>
       <button type="button"
               id="t7-menu-toggle"
-              class="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 min-h-[44px] text-[11px] uppercase tracking-[0.18em] font-semibold text-white bg-burgundy-deep hover:bg-burgundy-wine border border-champagne-gold/40 rounded transition-all shadow-sm"
-              aria-label="Open menu list"
+              class="inline-flex items-center justify-center w-11 h-11 min-h-[44px] min-w-[44px] rounded border border-champagne-gold/40 text-champagne-light bg-burgundy-deep/80 hover:bg-burgundy-wine hover:text-white transition-all shadow-sm"
+              aria-label="Open page menu"
               aria-controls="t7-menu-drawer"
               aria-expanded="false">
-        Menu
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16"/>
+        </svg>
       </button>
-      <?php elseif (! empty($supportsReservations)): ?>
-      <a href="#reservation" class="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 min-h-[44px] text-[11px] uppercase tracking-[0.18em] font-semibold text-white bg-burgundy-deep hover:bg-burgundy-wine border border-champagne-gold/40 rounded transition-all shadow-sm">
-        Reserve
-      </a>
       <?php endif; ?>
     </div>
   </div>
 </header>
 
+<?php include __DIR__ . '/partials/menu-drawer.php'; ?>
+
 <?php if ($menuViewLevel === 'section'): ?>
-  <?php include __DIR__ . '/partials/menu-drawer.php'; ?>
   <?php include __DIR__ . '/views/section.php'; ?>
 <?php else: ?>
   <?php include __DIR__ . '/views/home.php'; ?>
