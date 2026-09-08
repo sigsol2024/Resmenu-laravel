@@ -8,6 +8,7 @@ use App\Models\Section;
 use App\Services\DisplayOrderService;
 use App\Services\UploadService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class SectionController extends Controller
@@ -27,6 +28,23 @@ class SectionController extends Controller
             ->orderBy('display_order')
             ->orderBy('name')
             ->get();
+
+        // Include secondary-linked categories in the mapped count shown in the UI.
+        if ($sections->isNotEmpty()) {
+            $secondaryCounts = DB::table('category_secondary_sections as css')
+                ->join('categories as c', 'c.id', '=', 'css.category_id')
+                ->where('c.restaurant_id', $restaurantId)
+                ->where('css.is_active', 1)
+                ->whereIn('css.section_id', $sections->pluck('id'))
+                ->groupBy('css.section_id')
+                ->selectRaw('css.section_id, COUNT(DISTINCT css.category_id) as cnt')
+                ->pluck('cnt', 'section_id');
+
+            foreach ($sections as $section) {
+                $section->categories_count = (int) $section->categories_count
+                    + (int) ($secondaryCounts[$section->id] ?? 0);
+            }
+        }
 
         $editSection = null;
         if ($request->filled('edit')) {

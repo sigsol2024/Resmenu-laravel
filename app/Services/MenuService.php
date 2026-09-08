@@ -146,7 +146,22 @@ class MenuService
     /** @return list<array<string, mixed>> */
     public function sectionsForHome(Restaurant $restaurant): array
     {
-        $sections = $this->sectionsWithMenu($restaurant);
+        $sections = Section::query()
+            ->where('restaurant_id', $restaurant->id)
+            ->where('is_active', 1)
+            ->orderBy('display_order')
+            ->get();
+
+        $source = $sections->isEmpty()
+            ? $this->fallbackVirtualSection($restaurant)
+            : $sections->map(function (Section $section) use ($restaurant): array {
+                $mapped = $section->toArray();
+                // Include secondary-linked categories so landing cards appear for sections
+                // that only receive categories via secondary mapping.
+                $mapped['categories'] = $this->categoriesForSectionPage((int) $restaurant->id, (int) $section->id);
+
+                return $mapped;
+            })->all();
 
         return array_values(array_filter(array_map(function (array $section): ?array {
             $categories = array_values(array_filter($section['categories'] ?? [], static function (array $cat): bool {
@@ -156,7 +171,6 @@ class MenuService
                 return null;
             }
 
-            // Count available items before stripping payload (sectionsWithMenu already filters is_available=1).
             $itemCount = 0;
             foreach ($categories as $cat) {
                 $itemCount += count($cat['menu_items'] ?? []);
@@ -165,7 +179,7 @@ class MenuService
             $section['categories'] = $this->stripMenuItemsFromCategories($categories);
 
             return $section;
-        }, $sections)));
+        }, $source)));
     }
 
     /**
@@ -177,7 +191,22 @@ class MenuService
     public function menuSearchIndex(Restaurant $restaurant): array
     {
         $index = [];
-        foreach ($this->sectionsWithMenu($restaurant) as $section) {
+        $sections = Section::query()
+            ->where('restaurant_id', $restaurant->id)
+            ->where('is_active', 1)
+            ->orderBy('display_order')
+            ->get();
+
+        $source = $sections->isEmpty()
+            ? $this->fallbackVirtualSection($restaurant)
+            : $sections->map(function (Section $section) use ($restaurant): array {
+                $mapped = $section->toArray();
+                $mapped['categories'] = $this->categoriesForSectionPage((int) $restaurant->id, (int) $section->id);
+
+                return $mapped;
+            })->all();
+
+        foreach ($source as $section) {
             $sectionSlug = (string) ($section['slug'] ?? '');
             if ($sectionSlug === '') {
                 continue;

@@ -31,6 +31,10 @@ class AppServiceProvider extends ServiceProvider
         $this->validateProductionConfig();
         $this->guardDebugRoutesInProduction();
 
+        \Illuminate\Support\Facades\View::composer(
+            ['layouts.manager', 'layouts.admin', 'layouts.marketing', 'layouts.auth-marketing'],
+            \App\View\Composers\SiteBrandingComposer::class
+        );
         \Illuminate\Support\Facades\View::composer('layouts.manager', \App\View\Composers\ManagerLayoutComposer::class);
         \Illuminate\Support\Facades\View::composer('layouts.admin', \App\View\Composers\AdminLayoutComposer::class);
 

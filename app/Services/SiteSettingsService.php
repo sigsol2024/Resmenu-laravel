@@ -75,6 +75,26 @@ class SiteSettingsService
     return $base.'/site/'.rawurlencode($favicon);
   }
 
+  public function faviconMimeType(): ?string
+  {
+    $favicon = $this->get('favicon');
+    if ($favicon === null || $favicon === '') {
+      return null;
+    }
+
+    $ext = strtolower((string) pathinfo($favicon, PATHINFO_EXTENSION));
+
+    return match ($ext) {
+      'ico' => 'image/x-icon',
+      'png' => 'image/png',
+      'svg' => 'image/svg+xml',
+      'gif' => 'image/gif',
+      'webp' => 'image/webp',
+      'jpg', 'jpeg' => 'image/jpeg',
+      default => 'image/png',
+    };
+  }
+
   /** @param array<string, mixed> $data */
   public function update(array $data): bool
   {

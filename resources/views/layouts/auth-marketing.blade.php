@@ -10,6 +10,8 @@
 
     <title>@yield('title', 'Sign in') | {{ $siteName ?? config('app.name', 'Resmenu') }}</title>
 
+    @include('partials.favicon')
+
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
