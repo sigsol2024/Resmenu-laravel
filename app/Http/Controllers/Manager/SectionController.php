@@ -101,6 +101,18 @@ class SectionController extends Controller
     public function destroy(Request $request, Section $section)
     {
         $this->authorizeRestaurant($request, $section);
+
+        $primaryCount = $section->categories()->count();
+        if ($primaryCount > 0) {
+            return redirect()
+                ->route('manager.sections.index')
+                ->withErrors([
+                    'delete' => "Cannot delete \"{$section->name}\": {$primaryCount} "
+                        .($primaryCount === 1 ? 'category still uses' : 'categories still use')
+                        .' it as the primary section. Reassign those categories first.',
+                ]);
+        }
+
         $this->uploads->delete('sections', $section->image);
         $section->delete();
 

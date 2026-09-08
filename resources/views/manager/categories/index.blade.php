@@ -86,16 +86,22 @@
                 @if($sections->count() > 0)
                     <div class="form-group">
                         <label class="form-label">Secondary Sections (optional)</label>
-                        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                        <div id="secondary-sections-list" style="display: flex; flex-wrap: wrap; gap: 10px;">
                             @foreach($sections as $sec)
                                 @php
                                     $sid = (int) $sec->id;
                                     $isPrimary = $sid === $primarySectionId && $primarySectionId > 0;
                                     $isSecondary = in_array($sid, $selectedSecondary, true);
                                 @endphp
-                                <label style="display: {{ $isPrimary ? 'none' : 'flex' }}; align-items: center; gap: 8px; font-size: 13px; color: #6b7280;">
-                                    <input type="checkbox" name="secondary_section_ids[]" value="{{ $sid }}" @checked($isSecondary && ! $isPrimary)>
-                                    {{ $sec->name }}
+                                <label data-section-id="{{ $sid }}"
+                                       class="secondary-section-option"
+                                       style="display: {{ $isPrimary ? 'none' : 'flex' }}; align-items: center; gap: 8px; font-size: 13px; color: #6b7280;">
+                                    <input type="checkbox"
+                                           name="secondary_section_ids[]"
+                                           value="{{ $sid }}"
+                                           @checked($isSecondary && ! $isPrimary)
+                                           @disabled($isPrimary)>
+                                    {{ $sec->name }}@unless($sec->is_active) <span style="color:#b91c1c;">(inactive)</span>@endunless
                                 </label>
                             @endforeach
                         </div>
@@ -250,7 +256,7 @@
                                 <a href="{{ $editLink($cat->id) }}" class="actions-dropdown-item">Edit</a>
                                 <a href="{{ route('manager.menu-items.index', ['category_id' => $cat->id]) }}" class="actions-dropdown-item">View Items</a>
                                 <div class="actions-dropdown-divider"></div>
-                                <button type="button" class="actions-dropdown-item danger" onclick="openDeleteModal({{ $cat->id }}, @json($cat->name), @json(route('manager.categories.destroy', $cat)))">Delete</button>
+                                <button type="button" class="actions-dropdown-item danger" onclick='openDeleteModal({{ $cat->id }}, @json($cat->name), @json(route('manager.categories.destroy', $cat)))'>Delete</button>
                             </div>
                         </td>
                     </tr>
@@ -303,7 +309,7 @@
                     <div class="cat-actions">
                         <a class="btn btn-secondary" href="{{ $editLink($cat->id) }}">Edit</a>
                         <a class="btn btn-secondary" href="{{ route('manager.menu-items.index', ['category_id' => $cat->id]) }}">View Items</a>
-                        <button type="button" class="btn btn-danger" onclick="openDeleteModal({{ $cat->id }}, @json($cat->name), @json(route('manager.categories.destroy', $cat)))">Delete</button>
+                        <button type="button" class="btn btn-danger" onclick='openDeleteModal({{ $cat->id }}, @json($cat->name), @json(route('manager.categories.destroy', $cat)))'>Delete</button>
                     </div>
                 </div>
             </details>
@@ -350,22 +356,45 @@
         const orderInput = document.getElementById('display_order');
         const sectionSelect = document.getElementById('section_id');
         if (!orderInput || !sectionSelect || !orderInput.hasAttribute('data-auto-order')) {
-            return;
+            // still wire secondary visibility below
+        } else {
+            const nextOrders = @json((object) $nextDisplayOrderBySection);
+            const fallbackOrder = @json($nextDisplayOrder);
+
+            orderInput.addEventListener('input', function () {
+                orderInput.removeAttribute('data-auto-order');
+            });
+
+            sectionSelect.addEventListener('change', function () {
+                if (!orderInput.hasAttribute('data-auto-order')) {
+                    return;
+                }
+                orderInput.value = nextOrders[sectionSelect.value] ?? fallbackOrder;
+            });
         }
 
-        const nextOrders = @json((object) $nextDisplayOrderBySection);
-        const fallbackOrder = @json($nextDisplayOrder);
+        function syncSecondaryOptions() {
+            if (!sectionSelect) return;
+            const primaryId = String(sectionSelect.value || '');
+            document.querySelectorAll('.secondary-section-option').forEach(function (label) {
+                const sid = String(label.getAttribute('data-section-id') || '');
+                const input = label.querySelector('input[type="checkbox"]');
+                const isPrimary = primaryId !== '' && sid === primaryId;
+                label.style.display = isPrimary ? 'none' : 'flex';
+                if (!input) return;
+                if (isPrimary) {
+                    input.checked = false;
+                    input.disabled = true;
+                } else {
+                    input.disabled = false;
+                }
+            });
+        }
 
-        orderInput.addEventListener('input', function () {
-            orderInput.removeAttribute('data-auto-order');
-        });
-
-        sectionSelect.addEventListener('change', function () {
-            if (!orderInput.hasAttribute('data-auto-order')) {
-                return;
-            }
-            orderInput.value = nextOrders[sectionSelect.value] ?? fallbackOrder;
-        });
+        if (sectionSelect) {
+            sectionSelect.addEventListener('change', syncSecondaryOptions);
+            syncSecondaryOptions();
+        }
     })();
 
     @if($showModal)

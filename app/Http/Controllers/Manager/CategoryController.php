@@ -48,9 +48,9 @@ class CategoryController extends Controller
             }
         }
 
+        // Include inactive sections so newly created / temporarily inactive sections can still be linked.
         $sections = Section::query()
             ->where('restaurant_id', $restaurantId)
-            ->where('is_active', 1)
             ->orderBy('display_order')
             ->orderBy('name')
             ->get();
@@ -130,7 +130,9 @@ class CategoryController extends Controller
 
         $this->planVisibility->forgetCache($restaurantId);
 
-        return redirect()->route('manager.categories.index')->with('success', 'Category updated.');
+        return redirect()
+            ->route('manager.categories.index', ['edit' => $category->id])
+            ->with('success', 'Category updated.');
     }
 
     public function destroy(Request $request, Category $category)
@@ -151,7 +153,7 @@ class CategoryController extends Controller
         $this->secondarySections->sync(
             $categoryId,
             $primarySectionId,
-            array_map('intval', $request->input('secondary_section_ids', [])),
+            $this->secondarySections->normalizeIds($request->input('secondary_section_ids', [])),
             (int) $request->attributes->get('restaurant_id'),
         );
     }
@@ -160,6 +162,10 @@ class CategoryController extends Controller
     {
         $ignoreId = $existing?->id;
 
+        $request->merge([
+            'secondary_section_ids' => $this->secondarySections->normalizeIds($request->input('secondary_section_ids', [])),
+        ]);
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'section_id' => ['required', 'integer'],
@@ -167,6 +173,8 @@ class CategoryController extends Controller
             'display_order' => ['nullable', 'integer'],
             'is_active' => ['nullable', 'boolean'],
             'image' => ['nullable', 'image', 'max:5120'],
+            'secondary_section_ids' => ['nullable', 'array'],
+            'secondary_section_ids.*' => ['integer'],
         ]);
 
         $slug = Str::slug($data['name']);
@@ -181,7 +189,7 @@ class CategoryController extends Controller
 
         TenantScope::assertSectionBelongsToRestaurant((int) $data['section_id'], $restaurantId);
         TenantScope::assertSectionsBelongToRestaurant(
-            array_map('intval', $request->input('secondary_section_ids', [])),
+            $this->secondarySections->normalizeIds($request->input('secondary_section_ids', [])),
             $restaurantId,
         );
 

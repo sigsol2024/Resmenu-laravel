@@ -124,7 +124,8 @@ class RestaurantTransactionalMailService
 
     private function managerEmail(int $restaurantId): ?string
     {
-        $manager = Manager::where('restaurant_id', $restaurantId)->where('is_active', 1)->first();
+        // managers table has no is_active column
+        $manager = Manager::where('restaurant_id', $restaurantId)->first();
 
         return $manager?->email;
     }

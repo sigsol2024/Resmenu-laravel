@@ -18,26 +18,55 @@ class CategorySecondarySectionService
             ->all();
     }
 
-    /** @param  list<int>  $sectionIds */
-    public function sync(int $categoryId, int $primarySectionId, array $sectionIds, int $restaurantId): void
+    /** @param  list<int|string>|int|string|null  $sectionIds */
+    public function sync(int $categoryId, int $primarySectionId, array|int|string|null $sectionIds, int $restaurantId): void
     {
+        $ids = $this->normalizeIds($sectionIds);
+
         TenantScope::assertSectionBelongsToRestaurant($primarySectionId, $restaurantId);
-        TenantScope::assertSectionsBelongToRestaurant($sectionIds, $restaurantId);
+        TenantScope::assertSectionsBelongToRestaurant($ids, $restaurantId);
 
-        DB::table('category_secondary_sections')->where('category_id', $categoryId)->delete();
+        DB::transaction(function () use ($categoryId, $primarySectionId, $ids) {
+            DB::table('category_secondary_sections')->where('category_id', $categoryId)->delete();
 
-        foreach ($sectionIds as $sectionId) {
-            $sectionId = (int) $sectionId;
-            if ($sectionId < 1 || $sectionId === $primarySectionId) {
-                continue;
+            $now = now();
+            foreach ($ids as $sectionId) {
+                if ($sectionId < 1 || $sectionId === $primarySectionId) {
+                    continue;
+                }
+
+                DB::table('category_secondary_sections')->insert([
+                    'category_id' => $categoryId,
+                    'section_id' => $sectionId,
+                    'is_active' => 1,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ]);
             }
-            DB::table('category_secondary_sections')->insert([
-                'category_id' => $categoryId,
-                'section_id' => $sectionId,
-                'is_active' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+        });
+    }
+
+    /** @param  list<int|string>|int|string|null  $sectionIds
+     *  @return list<int>
+     */
+    public function normalizeIds(array|int|string|null $sectionIds): array
+    {
+        if ($sectionIds === null || $sectionIds === '') {
+            return [];
         }
+
+        if (! is_array($sectionIds)) {
+            $sectionIds = [$sectionIds];
+        }
+
+        $out = [];
+        foreach ($sectionIds as $id) {
+            $id = (int) $id;
+            if ($id > 0 && ! in_array($id, $out, true)) {
+                $out[] = $id;
+            }
+        }
+
+        return $out;
     }
 }

@@ -261,7 +261,7 @@
                             <div class="actions-dropdown">
                                 <a href="{{ $editLink($item->id) }}" class="actions-dropdown-item">Edit</a>
                                 <div class="actions-dropdown-divider"></div>
-                                <button type="button" class="actions-dropdown-item danger" onclick="openDeleteModal({{ $item->id }}, @json($item->name), @json(route('manager.menu-items.destroy', $item)))">Delete</button>
+                                <button type="button" class="actions-dropdown-item danger" onclick='openDeleteModal({{ $item->id }}, @json($item->name), @json(route('manager.menu-items.destroy', $item)))'>Delete</button>
                             </div>
                         </td>
                     </tr>
@@ -309,7 +309,7 @@
                     </div>
                     <div class="mi-actions">
                         <a class="btn btn-secondary" href="{{ $editLink($item->id) }}">Edit</a>
-                        <button type="button" class="btn btn-danger" onclick="openDeleteModal({{ $item->id }}, @json($item->name), @json(route('manager.menu-items.destroy', $item)))">Delete</button>
+                        <button type="button" class="btn btn-danger" onclick='openDeleteModal({{ $item->id }}, @json($item->name), @json(route('manager.menu-items.destroy', $item)))'>Delete</button>
                     </div>
                 </div>
             </details>

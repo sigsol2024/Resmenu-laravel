@@ -137,7 +137,14 @@ class BankTransferService
             'customer_claimed_at' => now(),
         ]);
 
-        $this->notifyManagerOfClaim($draft);
+        try {
+            $this->notifyManagerOfClaim($draft);
+        } catch (\Throwable $e) {
+            Log::warning('Bank transfer claim recorded but manager notify failed', [
+                'draft_id' => $draft->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         Log::info('Bank transfer claimed by customer', [
             'draft_id' => $draft->id,
@@ -294,7 +301,8 @@ class BankTransferService
 
     private function notifyManagerOfClaim(object $draft): void
     {
-        $manager = Manager::where('restaurant_id', (int) $draft->restaurant_id)->where('is_active', 1)->first();
+        // managers table has no is_active column — look up by restaurant only
+        $manager = Manager::where('restaurant_id', (int) $draft->restaurant_id)->first();
         if (! $manager || ! filter_var($manager->email, FILTER_VALIDATE_EMAIL)) {
             return;
         }

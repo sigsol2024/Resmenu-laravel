@@ -16,6 +16,13 @@
     <p class="page-subtitle">Sections group categories on your menu. Reorder sections to change how they appear.</p>
 </div>
 
+@if(session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+@endif
+@if($errors->has('delete'))
+    <div class="alert alert-error">{{ $errors->first('delete') }}</div>
+@endif
+
 <div class="modal" id="sectionModal" style="display: {{ $showModal ? 'flex' : 'none' }};">
     <div class="modal-overlay" onclick="closeSectionModal()"></div>
     <div class="modal-content">
@@ -168,7 +175,7 @@
                                 <a href="{{ $editLink($section->id) }}" class="actions-dropdown-item">Edit</a>
                                 <a href="{{ route('manager.categories.index') }}" class="actions-dropdown-item">Manage Categories</a>
                                 <div class="actions-dropdown-divider"></div>
-                                <button type="button" class="actions-dropdown-item danger" onclick="openDeleteModal({{ $section->id }}, @json($section->name), @json(route('manager.sections.destroy', $section)))">Delete</button>
+                                <button type="button" class="actions-dropdown-item danger" onclick='openDeleteModal({{ $section->id }}, @json($section->name), @json(route('manager.sections.destroy', $section)))'>Delete</button>
                             </div>
                         </td>
                     </tr>
@@ -216,7 +223,7 @@
                     <div class="sec-kv"><span class="sec-k">Slug</span><span class="sec-v">{{ $section->slug }}</span></div>
                     <div class="sec-actions">
                         <a class="btn btn-secondary" href="{{ $editLink($section->id) }}">Edit</a>
-                        <button type="button" class="btn btn-danger" onclick="openDeleteModal({{ $section->id }}, @json($section->name), @json(route('manager.sections.destroy', $section)))">Delete</button>
+                        <button type="button" class="btn btn-danger" onclick='openDeleteModal({{ $section->id }}, @json($section->name), @json(route('manager.sections.destroy', $section)))'>Delete</button>
                     </div>
                 </div>
             </details>

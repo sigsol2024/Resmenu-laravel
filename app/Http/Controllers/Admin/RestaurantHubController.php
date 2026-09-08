@@ -176,7 +176,8 @@ class RestaurantHubController extends Controller
         $this->secondarySections->sync(
             $category->id,
             (int) $data['section_id'],
-            array_map('intval', $request->input('secondary_section_ids', [])),
+            $this->secondarySections->normalizeIds($request->input('secondary_section_ids', [])),
+            (int) $restaurant->id,
         );
 
         $this->planVisibility->forgetCache((int) $restaurant->id);

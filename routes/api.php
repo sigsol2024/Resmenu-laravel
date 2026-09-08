@@ -27,26 +27,28 @@ Route::middleware('throttle:30,1')->prefix('bank-transfer')->group(function () {
 Route::middleware('throttle:60,1')->prefix('orders')->group(function () {
     Route::post('/', [OrderApiController::class, 'store']);
     Route::post('/{order}/cancel', [OrderApiController::class, 'cancel']);
-    Route::get('/{order}', [OrderApiController::class, 'show'])->middleware('auth:manager');
-    Route::patch('/{order}/status', [OrderApiController::class, 'updateStatus'])->middleware(['auth:manager', 'manager.tenant']);
+    Route::get('/{order}', [OrderApiController::class, 'show'])->middleware(['web', 'auth:manager']);
+    Route::patch('/{order}/status', [OrderApiController::class, 'updateStatus'])->middleware(['web', 'auth:manager', 'manager.tenant']);
 });
 
 Route::middleware('throttle:60,1')->prefix('reservations')->group(function () {
     Route::get('/slots', [ReservationApiController::class, 'slots']);
     Route::get('/availability', [ReservationApiController::class, 'availability']);
     Route::post('/', [ReservationApiController::class, 'store']);
-    Route::get('/{reservation}', [ReservationApiController::class, 'show'])->middleware('auth:manager');
-    Route::patch('/{reservation}/status', [ReservationApiController::class, 'updateStatus'])->middleware(['auth:manager', 'manager.tenant']);
+    Route::get('/{reservation}', [ReservationApiController::class, 'show'])->middleware(['web', 'auth:manager']);
+    Route::patch('/{reservation}/status', [ReservationApiController::class, 'updateStatus'])->middleware(['web', 'auth:manager', 'manager.tenant']);
 });
 
-Route::middleware(['auth:manager', 'manager.tenant', 'session.idle:manager'])->group(function () {
+// Manager session auth needs the web stack (cookies + session). API routes alone do not start a session,
+// which caused 401 Unauthorized from the table-inventory UI and similar manager JSON endpoints.
+Route::middleware(['web', 'auth:manager', 'manager.tenant', 'session.idle:manager'])->group(function () {
     Route::get('/orders/analytics', [OrderApiController::class, 'analytics']);
     Route::get('/reservations/analytics', [ReservationApiController::class, 'analytics']);
     Route::post('/reservations/deposit', [ReservationApiController::class, 'updateDeposit']);
     Route::match(['get', 'post'], '/table-inventory', [ReservationApiController::class, 'tableInventory']);
 });
 
-Route::prefix('qr')->middleware('throttle:60,1')->group(function () {
+Route::prefix('qr')->middleware(['web', 'throttle:60,1'])->group(function () {
     Route::post('/generate', [QrApiController::class, 'generate'])->middleware(['auth:manager', 'manager.tenant']);
     Route::get('/export', [QrApiController::class, 'export'])->middleware(['auth:manager', 'manager.tenant']);
 });
