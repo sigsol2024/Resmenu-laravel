@@ -138,9 +138,9 @@ $subColor   = ($isLight || $isDrinks) ? 'text-burgundy-deep' : 'text-champagne-g
           $useBurgundyAccent = (! $isEntree && ! $isDrinks && ($catIndex % 5 === 2));
         ?>
 
-        <section id="cat-<?php echo t7_esc($catSlug); ?>" class="t7-cat-section mb-12 sm:mb-16 scroll-mt-28">
+        <section id="cat-<?php echo t7_esc($catSlug); ?>" class="t7-cat-section <?php echo $isDrinks ? 'mb-10 sm:mb-14' : 'mb-12 sm:mb-16'; ?> scroll-mt-28">
           <?php if ($isDrinks): ?>
-          <div class="drink-cat <?php echo t7_esc($drinkTheme); ?> relative overflow-visible rounded-2xl mb-4 p-5 sm:p-8 pb-6 sm:pb-10">
+          <div class="drink-cat <?php echo t7_esc($drinkTheme); ?> relative overflow-hidden rounded-2xl p-5 sm:p-8 pb-8 sm:pb-12">
             <div class="relative z-10 mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
               <div>
                 <p class="text-[10px] uppercase tracking-[0.22em] font-semibold mb-1 opacity-70">Drinks</p>
@@ -153,7 +153,7 @@ $subColor   = ($isLight || $isDrinks) ? 'text-burgundy-deep' : 'text-champagne-g
               </div>
               <?php endif; ?>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-10 pb-1">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 relative z-10">
               <?php foreach ($catItems as $itemIndex => $item):
                 $itemName = $item['name'] ?? '';
                 $itemDesc = trim((string) ($item['description'] ?? ''));
@@ -163,7 +163,7 @@ $subColor   = ($isLight || $isDrinks) ? 'text-burgundy-deep' : 'text-champagne-g
                   ? (($itemIndex % 4 === 1) ? 'card-burgundy' : 'card-dark')
                   : (($itemIndex % 4 === 1) ? 'card-ivory' : 'card-white');
               ?>
-              <article id="<?php echo t7_esc(t7_item_anchor($item)); ?>" class="menu-item-card scroll-mt-28 <?php echo t7_esc($cardClass); ?> rounded-xl border p-4 sm:p-5 flex gap-3 reveal" data-name="<?php echo t7_esc($itemName); ?>" data-price="<?php echo t7_esc((string) $itemPrice); ?>">
+              <article id="<?php echo t7_esc(t7_item_anchor($item)); ?>" class="menu-item-card scroll-mt-28 <?php echo t7_esc($cardClass); ?> rounded-xl border p-4 sm:p-5 flex gap-3 reveal reveal-fade" data-name="<?php echo t7_esc($itemName); ?>" data-price="<?php echo t7_esc((string) $itemPrice); ?>">
                 <?php if ($itemImg): ?>
                 <img src="<?php echo t7_esc($itemImg); ?>" alt="<?php echo t7_esc($itemName); ?>" class="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg flex-shrink-0" loading="lazy">
                 <?php endif; ?>

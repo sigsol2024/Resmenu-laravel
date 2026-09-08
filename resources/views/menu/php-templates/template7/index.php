@@ -294,10 +294,19 @@ $bodyClass = $menuViewLevel === 'home'
     .drink-cat--smoothie { background: linear-gradient(145deg, #794A2A 0%, #5c351c 100%); color: #fff; }
     .drink-cat--juice { background: linear-gradient(160deg, #FFFFF6 0%, #f3ebe0 100%); border: 1px solid rgba(80,12,25,0.08); }
     .drink-cat--dark { background-color: #121214; color: #f5f5f4; }
-    .drink-cat { overflow: visible; }
+    .drink-cat {
+      overflow: hidden;
+      isolation: isolate;
+    }
+    /* Opacity-only reveal inside drink shells — no translate that spills into the next category */
+    .drink-cat .menu-item-card.reveal {
+      transform: none !important;
+    }
     .drink-cat .menu-item-card.reveal:not(.is-in) {
-      /* Keep pre-reveal cards inside the category shell so the last row is not clipped */
-      transform: translateY(12px);
+      opacity: 0;
+    }
+    .drink-cat .menu-item-card.reveal.is-in {
+      opacity: 1;
     }
     .drink-hero-panel {
       background: #FFFFF6; color: #1c1917; position: relative; overflow: hidden;
