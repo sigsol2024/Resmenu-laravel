@@ -184,6 +184,19 @@
                     @if($editManager)
                         <hr style="margin: 30px 0; border: none; border-top: 2px solid #e5e7eb;">
                         <h3 style="margin-bottom: 20px; font-weight: 600;">Manager Account</h3>
+
+                        <input type="hidden" name="manager_username" value="{{ old('manager_username', $editManager->username) }}">
+                        <input type="hidden" name="manager_email" value="{{ old('manager_email', $editManager->email) }}">
+
+                        @if ($errors->any())
+                            <div style="margin-bottom: 16px; padding: 12px 14px; border-radius: 8px; background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; font-size: 0.875rem;">
+                                <ul style="margin: 0; padding-left: 1.1rem;">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                         
                         <div class="form-group">
                             <label class="form-label">Manager Email</label>

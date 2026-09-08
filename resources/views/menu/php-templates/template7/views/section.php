@@ -36,7 +36,7 @@ $subColor   = ($isLight || $isDrinks) ? 'text-burgundy-deep' : 'text-champagne-g
 ?>
 
 <section
-  class="py-10 sm:py-16 <?php echo t7_esc($shellClasses); ?> relative <?php echo $isEntree ? 'overflow-x-clip overflow-y-visible' : 'overflow-hidden'; ?> min-h-[60vh]"
+  class="py-10 sm:py-16 <?php echo t7_esc($shellClasses); ?> relative <?php echo ($isEntree || $isDrinks) ? 'overflow-x-clip overflow-y-visible' : 'overflow-hidden'; ?> min-h-[60vh]"
   <?php if ($theme['photo'] && $t7SectionHero): ?>style="--photo:url('<?php echo t7_esc($t7SectionHero); ?>')"<?php endif; ?>
 >
   <?php if ($theme['photo'] && $t7SectionHero): ?>
@@ -140,7 +140,7 @@ $subColor   = ($isLight || $isDrinks) ? 'text-burgundy-deep' : 'text-champagne-g
 
         <section id="cat-<?php echo t7_esc($catSlug); ?>" class="t7-cat-section mb-12 sm:mb-16 scroll-mt-28">
           <?php if ($isDrinks): ?>
-          <div class="drink-cat <?php echo t7_esc($drinkTheme); ?> relative overflow-hidden rounded-2xl mb-4 p-5 sm:p-8">
+          <div class="drink-cat <?php echo t7_esc($drinkTheme); ?> relative overflow-visible rounded-2xl mb-4 p-5 sm:p-8 pb-6 sm:pb-10">
             <div class="relative z-10 mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
               <div>
                 <p class="text-[10px] uppercase tracking-[0.22em] font-semibold mb-1 opacity-70">Drinks</p>
@@ -153,7 +153,7 @@ $subColor   = ($isLight || $isDrinks) ? 'text-burgundy-deep' : 'text-champagne-g
               </div>
               <?php endif; ?>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-10">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-10 pb-1">
               <?php foreach ($catItems as $itemIndex => $item):
                 $itemName = $item['name'] ?? '';
                 $itemDesc = trim((string) ($item['description'] ?? ''));

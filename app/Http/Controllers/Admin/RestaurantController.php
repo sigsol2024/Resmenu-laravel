@@ -147,6 +147,16 @@ class RestaurantController extends Controller
 
   public function update(Request $request, Restaurant $restaurant, UploadService $uploads, ActivityLogService $activityLog)
   {
+    $existingManager = Manager::where('restaurant_id', $restaurant->id)->first();
+    if ($existingManager) {
+      if (! $request->filled('manager_username')) {
+        $request->merge(['manager_username' => (string) $existingManager->username]);
+      }
+      if (! $request->filled('manager_email')) {
+        $request->merge(['manager_email' => (string) $existingManager->email]);
+      }
+    }
+
     $data = $this->validated($request, $restaurant->id);
     $slug = $this->uniqueSlug($data['slug'] ?: Str::slug($data['name']), $restaurant->id);
     $adminId = (int) $request->user('admin')?->id;
