@@ -141,6 +141,10 @@ class MenuController extends Controller
         }
 
         $sections = LegacyMenuViewData::normalizeSections($this->menu->sectionsForHome($restaurant));
+
+        // Template 7 directory must match the sidebar: every nav section gets a landing card.
+        $sections = $this->mergeMissingNavSectionsOntoHome($restaurant, $sections, $sectionsForNav);
+
         if (count($sections) === 1) {
             $onlySection = $sections[0];
             $secSlug = $onlySection['slug'] ?? 'menu';
@@ -159,6 +163,68 @@ class MenuController extends Controller
             'categoryMenuUrl' => null,
             'menuSearchIndex' => $this->menu->menuSearchIndex($restaurant),
         ], $this->reservationFormPayload($restaurant, $slug))));
+    }
+
+    /**
+     * Ensure every sidebar section also has a landing card (primary or secondary content).
+     *
+     * @param  list<array<string, mixed>>  $homeSections
+     * @param  list<array{id?:int,name?:string,slug?:string}>  $sectionsForNav
+     * @return list<array<string, mixed>>
+     */
+    private function mergeMissingNavSectionsOntoHome($restaurant, array $homeSections, array $sectionsForNav): array
+    {
+        $bySlug = [];
+        foreach ($homeSections as $section) {
+            $slug = strtolower(trim((string) ($section['slug'] ?? '')));
+            if ($slug !== '') {
+                $bySlug[$slug] = $section;
+            }
+        }
+
+        foreach ($sectionsForNav as $nav) {
+            $slug = strtolower(trim((string) ($nav['slug'] ?? '')));
+            if ($slug === '' || isset($bySlug[$slug])) {
+                continue;
+            }
+
+            $full = $this->menu->sectionWithMenuBySlug($restaurant, $slug);
+            if ($full === null) {
+                // Still surface the nav entry as a directory card so sidebar and home stay aligned.
+                $bySlug[$slug] = [
+                    'id' => (int) ($nav['id'] ?? 0),
+                    'name' => (string) ($nav['name'] ?? $slug),
+                    'slug' => $slug,
+                    'display_order' => 9999,
+                    'is_active' => 1,
+                    'image' => null,
+                    'item_count' => 0,
+                    'categories' => [],
+                ];
+
+                continue;
+            }
+
+            $itemCount = 0;
+            foreach ($full['categories'] ?? [] as $cat) {
+                if (! is_array($cat)) {
+                    continue;
+                }
+                $items = $cat['menu_items'] ?? [];
+                $itemCount += is_countable($items) ? count($items) : 0;
+            }
+
+            $full['item_count'] = $itemCount;
+            $full['categories'] = $this->menu->stripMenuItemsFromCategories($full['categories'] ?? []);
+            $bySlug[$slug] = $full;
+        }
+
+        $merged = array_values($bySlug);
+        usort($merged, static function (array $a, array $b): int {
+            return ((int) ($a['display_order'] ?? 0)) <=> ((int) ($b['display_order'] ?? 0));
+        });
+
+        return LegacyMenuViewData::normalizeSections($merged);
     }
 
     private function renderTemplateSix(

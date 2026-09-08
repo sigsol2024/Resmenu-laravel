@@ -225,7 +225,94 @@ class PlanVisibilityServiceTest extends TestCase
         $this->assertTrue($result->getCategoryMeta($nullOrder)['is_plan_hidden']);
     }
 
-    public function test_forget_cache_causes_rebuild(): void
+    public function test_inactive_categories_do_not_consume_plan_slots(): void
+    {
+        if (! $this->dbAvailable()) {
+            $this->markTestSkipped('Database schema not available.');
+        }
+
+        $ctx = $this->seedRestaurantWithLimits(1, 100);
+        $restaurantId = $ctx['restaurant_id'];
+
+        DB::table('categories')->insert([
+            'restaurant_id' => $restaurantId,
+            'section_id' => null,
+            'name' => 'Inactive First',
+            'slug' => 'inactive-'.uniqid(),
+            'display_order' => 0,
+            'is_active' => 0,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $activeId = DB::table('categories')->insertGetId([
+            'restaurant_id' => $restaurantId,
+            'section_id' => null,
+            'name' => 'Active Second',
+            'slug' => 'active-'.uniqid(),
+            'display_order' => 1,
+            'is_active' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $result = $this->service()->resolve($restaurantId);
+
+        $this->assertFalse($result->getCategoryMeta($activeId)['is_plan_hidden']);
+        $this->assertTrue($result->isCategoryVisibleOnPublicMenu($activeId));
+        $this->assertSame(0, $result->summary['categories']['hidden_count']);
+    }
+
+    public function test_unavailable_items_do_not_consume_plan_slots(): void
+    {
+        if (! $this->dbAvailable()) {
+            $this->markTestSkipped('Database schema not available.');
+        }
+
+        $ctx = $this->seedRestaurantWithLimits(10, 1);
+        $restaurantId = $ctx['restaurant_id'];
+
+        $catId = DB::table('categories')->insertGetId([
+            'restaurant_id' => $restaurantId,
+            'section_id' => null,
+            'name' => 'Main',
+            'slug' => 'main-'.uniqid(),
+            'display_order' => 0,
+            'is_active' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('menu_items')->insert([
+            'restaurant_id' => $restaurantId,
+            'category_id' => $catId,
+            'name' => 'Unavailable',
+            'slug' => 'unavail-'.uniqid(),
+            'price' => 10,
+            'display_order' => 0,
+            'is_available' => 0,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $availableId = DB::table('menu_items')->insertGetId([
+            'restaurant_id' => $restaurantId,
+            'category_id' => $catId,
+            'name' => 'Available',
+            'slug' => 'avail-'.uniqid(),
+            'price' => 10,
+            'display_order' => 1,
+            'is_available' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $result = $this->service()->resolve($restaurantId);
+
+        $this->assertFalse($result->getMenuItemMeta($availableId)['is_plan_hidden']);
+        $this->assertTrue($result->isMenuItemVisibleOnPublicMenu($availableId));
+        $this->assertSame(0, $result->summary['menu_items']['hidden_count']);
+    }
     {
         if (! $this->dbAvailable()) {
             $this->markTestSkipped('Database schema not available.');

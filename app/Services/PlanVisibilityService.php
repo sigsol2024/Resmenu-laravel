@@ -134,6 +134,19 @@ class PlanVisibilityService
         foreach ($categories as $cat) {
             $id = (int) $cat->id;
             $active = (bool) ($cat->is_active ?? 1);
+
+            // Inactive categories never appear publicly and must not consume plan slots,
+            // otherwise new active categories get hidden behind dead rows.
+            if (! $active) {
+                $categoryMeta[$id] = [
+                    'is_plan_hidden' => false,
+                    'hidden_reason' => null,
+                    'is_visible_on_public_menu' => false,
+                ];
+
+                continue;
+            }
+
             $overCategoryCap = $maxCategories !== -1 && $categoryIndex >= $maxCategories;
 
             if ($overCategoryCap) {
@@ -147,11 +160,9 @@ class PlanVisibilityService
                 $categoryMeta[$id] = [
                     'is_plan_hidden' => false,
                     'hidden_reason' => null,
-                    'is_visible_on_public_menu' => $active,
+                    'is_visible_on_public_menu' => true,
                 ];
-                if ($active) {
-                    $visibleCategoryIds[$id] = true;
-                }
+                $visibleCategoryIds[$id] = true;
                 $categoryIndex++;
             }
         }
@@ -175,6 +186,17 @@ class PlanVisibilityService
                 continue;
             }
 
+            // Unavailable items stay off the public menu without consuming plan slots.
+            if (! $available || ! ($catMeta['is_visible_on_public_menu'] ?? false)) {
+                $itemMeta[$id] = [
+                    'is_plan_hidden' => false,
+                    'hidden_reason' => null,
+                    'is_visible_on_public_menu' => false,
+                ];
+
+                continue;
+            }
+
             $overItemCap = $maxMenuItems !== -1 && $itemSlotIndex >= $maxMenuItems;
 
             if ($overItemCap) {
@@ -187,7 +209,7 @@ class PlanVisibilityService
                 $itemMeta[$id] = [
                     'is_plan_hidden' => false,
                     'hidden_reason' => null,
-                    'is_visible_on_public_menu' => $available && ($categoryMeta[$catId]['is_visible_on_public_menu'] ?? false),
+                    'is_visible_on_public_menu' => true,
                 ];
                 $itemSlotIndex++;
             }
