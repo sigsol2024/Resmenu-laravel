@@ -25,6 +25,7 @@ class RestaurantQrService
 
             DB::table('restaurant_qr_codes')->insert([
                 'restaurant_id' => $restaurantId,
+                'qr_template_id' => null,
                 'background_color' => '#FFFFFF',
                 'qr_color' => '#000000',
                 'text_content' => 'Scan to view menu',
@@ -65,16 +66,37 @@ class RestaurantQrService
                 return false;
             }
 
-            $this->settings($restaurantId);
-            $config = $template->config_json;
+            $configJson = $this->normalizeConfigJson($template->config_json ?? null);
 
-            return DB::table('restaurant_qr_codes')
-                ->where('restaurant_id', $restaurantId)
-                ->update([
-                    'qr_template_id' => $templateId,
-                    'final_config_json' => is_string($config) ? $config : json_encode($config),
-                    'updated_at' => now(),
-                ]) >= 0;
+            $existing = DB::table('restaurant_qr_codes')->where('restaurant_id', $restaurantId)->first();
+            $payload = [
+                'qr_template_id' => $templateId,
+                'final_config_json' => $configJson,
+                'updated_at' => now(),
+            ];
+
+            if ($existing) {
+                DB::table('restaurant_qr_codes')
+                    ->where('restaurant_id', $restaurantId)
+                    ->update($payload);
+            } else {
+                DB::table('restaurant_qr_codes')->insert(array_merge([
+                    'restaurant_id' => $restaurantId,
+                    'background_color' => '#FFFFFF',
+                    'qr_color' => '#000000',
+                    'text_content' => 'Scan to view menu',
+                    'text_color' => '#000000',
+                    'text_size' => 16,
+                    'qr_size' => 300,
+                    'margin' => 20,
+                    'is_active' => 1,
+                    'created_at' => now(),
+                ], $payload));
+            }
+
+            $saved = DB::table('restaurant_qr_codes')->where('restaurant_id', $restaurantId)->first();
+
+            return $saved !== null && (int) ($saved->qr_template_id ?? 0) === $templateId;
         } catch (Throwable $e) {
             report($e);
 
@@ -100,5 +122,25 @@ class RestaurantQrService
 
             return [];
         }
+    }
+
+    private function normalizeConfigJson(mixed $config): string
+    {
+        if (is_array($config) || is_object($config)) {
+            $encoded = json_encode($config);
+
+            return ($encoded !== false && $encoded !== '') ? $encoded : '{}';
+        }
+
+        if (is_string($config) && trim($config) !== '') {
+            $decoded = json_decode($config, true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $encoded = json_encode($decoded);
+
+                return ($encoded !== false && $encoded !== '') ? $encoded : '{}';
+            }
+        }
+
+        return '{}';
     }
 }

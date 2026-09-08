@@ -38,7 +38,7 @@ class QrGeneratorService
             return null;
         }
 
-        $config = $this->resolveConfig($settings);
+        $config = $this->resolveConfig($settings) ?? [];
         $fg = $config['colors']['foreground'] ?? $settings->qr_color ?? '#000000';
         $bg = $config['colors']['background'] ?? $settings->background_color ?? '#FFFFFF';
         $qrSize = $size ?? (int) ($settings->qr_size ?? 300);

@@ -42,7 +42,7 @@
                         <strong>No Template Selected</strong>
                     </p>
                     <p style="color: var(--muted); font-size: 0.875rem;">
-                        Please select a template from the list to generate your QR code.
+                        Click a template on the right, then press <strong>Save Template Selection</strong> to generate your QR code.
                     </p>
                 </div>
             @else
@@ -239,7 +239,11 @@
 <script src="{{ resmenu_public_asset('js/qr-preview.js') }}"></script>
 <script>
 function selectTemplate(templateId) {
-    document.getElementById('selected-template-id').value = templateId;
+    var input = document.getElementById('selected-template-id');
+    var form = document.getElementById('template-form');
+    if (!input || !form) return;
+
+    input.value = String(templateId);
 
     document.querySelectorAll('.template-card').forEach(function(card) {
         var cardId = parseInt(card.getAttribute('data-template-id'), 10);
@@ -253,7 +257,18 @@ function selectTemplate(templateId) {
             card.style.background = 'white';
         }
     });
+
+    // Save immediately on click so selection cannot be lost before submit.
+    form.submit();
 }
+
+document.getElementById('template-form')?.addEventListener('submit', function(e) {
+    var input = document.getElementById('selected-template-id');
+    if (!input || !input.value) {
+        e.preventDefault();
+        alert('Please click a template first, then save.');
+    }
+});
 
 (function initQRPreviews() {
     function fallbackToImage(container) {

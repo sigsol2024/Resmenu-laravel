@@ -25,11 +25,24 @@ class QrController extends Controller
 
         if ($request->isMethod('post')) {
             $data = $request->validate(['qr_template_id' => 'required|integer|exists:qr_templates,id']);
-            if ($this->restaurantQr->selectTemplate($restaurantId, (int) $data['qr_template_id'])) {
-                return back()->with('success', 'Template selected successfully! You can now download your QR code.');
+            $templateId = (int) $data['qr_template_id'];
+
+            $active = DB::table('qr_templates')
+                ->where('id', $templateId)
+                ->where('is_active', 1)
+                ->exists();
+
+            if (! $active) {
+                return back()->withErrors(['qr_template_id' => 'That template is not available. Please choose another.']);
             }
 
-            return back()->withErrors(['qr_template_id' => 'Could not save template.']);
+            if ($this->restaurantQr->selectTemplate($restaurantId, $templateId)) {
+                return redirect()
+                    ->route('manager.qr.code')
+                    ->with('success', 'Template selected successfully! You can now download your QR code.');
+            }
+
+            return back()->withErrors(['qr_template_id' => 'Could not save template. Please try again or contact support.']);
         }
 
         $settings = $this->restaurantQr->settings($restaurantId);
@@ -47,12 +60,24 @@ class QrController extends Controller
         }
 
         $templates = $this->restaurantQr->activeTemplates();
-        $selectedTemplate = null;
-        if (! empty($settings->qr_template_id ?? null)) {
-            $selectedTemplate = collect($templates)->firstWhere('id', (int) $settings->qr_template_id);
+        $selectedTemplateId = (int) ($settings->qr_template_id ?? 0);
+        $selectedTemplate = $selectedTemplateId > 0
+            ? collect($templates)->first(fn ($t) => (int) $t->id === $selectedTemplateId)
+            : null;
+
+        // Stale pointer (deleted/inactive template) — clear so the UI asks for a real selection.
+        if ($selectedTemplateId > 0 && $selectedTemplate === null) {
+            try {
+                DB::table('restaurant_qr_codes')
+                    ->where('restaurant_id', $restaurantId)
+                    ->update(['qr_template_id' => null, 'updated_at' => now()]);
+            } catch (Throwable $e) {
+                report($e);
+            }
+            $selectedTemplateId = 0;
         }
 
-        $hasTemplate = ! empty($settings->qr_template_id ?? null);
+        $hasTemplate = $selectedTemplate !== null;
         $imageUrl = $hasTemplate ? route('manager.qr.image', ['format' => 'png', 'size' => 250]) : null;
         $analytics = $this->qr->summary($restaurantId);
 
