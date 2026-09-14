@@ -71,7 +71,8 @@ try {
   }
 }
 const context = await browser.newContext({
-  viewport: { width: 1440, height: 900 },
+  // Match gallery card aspect-[4/3] so object-cover does not over-crop.
+  viewport: { width: 1440, height: 1080 },
   deviceScaleFactor: 1,
 });
 
@@ -105,6 +106,9 @@ for (const id of ids) {
       throw new Error('missing [data-template-preview-hero] marker');
     }
 
+    // Marker is used for readiness only — capture the full above-the-fold viewport.
+    // Element screenshots of small <header> blocks produce ultra-wide strips that
+    // gallery object-cover then crops badly (T4/T7 look fine because their heroes are tall).
     await locator.scrollIntoViewIfNeeded();
     await page.waitForFunction(() => {
       const root = document.querySelector('[data-template-preview-hero]');
@@ -113,8 +117,13 @@ for (const id of ids) {
       if (imgs.length === 0) return true;
       return imgs.every((img) => img.complete);
     }, { timeout: 20000 }).catch(() => {});
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(200);
 
-    const pngBuf = await locator.screenshot({ type: 'png' });
+    const pngBuf = await page.screenshot({
+      type: 'png',
+      clip: { x: 0, y: 0, width: 1440, height: 1080 },
+    });
 
     if (dryRun) {
       results.push({ id, ok: true, note: 'dry-run (not written)' });
