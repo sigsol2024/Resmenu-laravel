@@ -122,6 +122,36 @@ class RestaurantTransactionalMailService
         ]);
     }
 
+    public function sendAccountSuspended(Restaurant $restaurant, string $reason): void
+    {
+        $email = $this->managerEmail((int) $restaurant->id)
+            ?: (is_string($restaurant->email) ? $restaurant->email : null)
+            ?: (is_string($restaurant->manager_email) ? $restaurant->manager_email : null);
+        if (! $email) {
+            return;
+        }
+
+        $purgeDays = (int) config('restaurant_lifecycle.purge_days_after_suspend', 7);
+        if ($reason === 'inactivity') {
+            $title = 'Account suspended due to inactivity';
+            $body = '<h2 style="margin:0 0 8px;font-size:22px;color:#111827;">Account suspended</h2>'
+                .'<p>Your restaurant <strong>'.e($restaurant->name).'</strong> has been suspended because there has been no account activity for 30 days.</p>'
+                .'<p>Unless the account is restored, it will be permanently deleted in approximately '.$purgeDays.' days.</p>'
+                .'<p>Contact support if you need this account restored.</p>';
+        } else {
+            $title = 'Account suspended by administrator';
+            $body = '<h2 style="margin:0 0 8px;font-size:22px;color:#111827;">Account suspended</h2>'
+                .'<p>Your restaurant <strong>'.e($restaurant->name).'</strong> has been suspended by an administrator.</p>'
+                .'<p>Unless restored, the account may be permanently deleted after '.$purgeDays.' days.</p>'
+                .'<p>Contact support for assistance.</p>';
+        }
+
+        $html = $this->wrap($restaurant, $title, $body);
+        $this->mail->send($email, '', $title.' - '.$restaurant->name, $html, [
+            'from_name' => config('app.name', 'Resmenu'),
+        ]);
+    }
+
     private function managerEmail(int $restaurantId): ?string
     {
         // managers table has no is_active column

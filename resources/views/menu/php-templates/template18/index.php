@@ -13,7 +13,11 @@ if ($baseUrl === '') {
 }
 $nfmTemplateDir = __DIR__;
 $nfmTemplateBaseUrl = isset($templateAssetBaseUrl) ? $templateAssetBaseUrl : (rtrim($baseUrl, '/') . '/templates/template18');
-$reservationUrl = $baseUrl . '/restaurant/' . ($restaurant['slug'] ?? '') . '/reservation';
+if (empty($isTemplatePreview)) {
+    $reservationUrl = $baseUrl . '/restaurant/' . ($restaurant['slug'] ?? '') . '/reservation';
+} else {
+    $reservationUrl = $reservationUrl ?? (($fullMenuUrl ?? '') . '#reservation');
+}
 $currencySymbol = '₦';
 $primaryColor = isset($customization['primary_color']) ? $customization['primary_color'] : '#f2b90d';
 function nfm_price($p, $s = '₦') {
@@ -30,7 +34,7 @@ if (!empty($sections) && is_array($sections)) {
 }
 /* Cover / hero: section-specific page uses section banner; else restaurant cover URL or file or logo */
 $nfmHeroBgUrl = '';
-if (!empty($singleSectionView) && !empty($sections) && is_array($sections) && !empty($sections[0]['image']) && empty($isTemplatePreview)) {
+if (!empty($singleSectionView) && !empty($sections) && is_array($sections) && !empty($sections[0]['image'])) {
     $nfmHeroBgUrl = $uploadBaseUrl . '/sections/' . htmlspecialchars($sections[0]['image']);
 } elseif (!empty($restaurant['hero_image_url'])) {
     $nfmHeroBgUrl = $restaurant['hero_image_url'];
@@ -209,7 +213,7 @@ body.nfm-body {
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
 </button>
 
-<section class="nfm-hero relative z-10 w-full overflow-hidden border-b border-brandGold/20" aria-label="Restaurant cover">
+<section class="nfm-hero relative z-10 w-full overflow-hidden border-b border-brandGold/20" aria-label="Restaurant cover" data-template-preview-hero>
   <?php if (!empty($nfmHeroBgUrl)): ?>
   <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image:url('<?php echo htmlspecialchars($nfmHeroBgUrl, ENT_QUOTES, 'UTF-8'); ?>')"></div>
   <?php else: ?>
@@ -244,7 +248,7 @@ body.nfm-body {
 ?>
 <div id="section-<?php echo htmlspecialchars($section['slug']); ?>" class="mb-12 md:mb-16">
 <h2 class="nfm-section-title mb-4 text-center <?php echo !empty($singleSectionView) ? 'text-3xl text-gray-400 sm:text-4xl md:mb-4 md:text-4xl lg:text-5xl' : 'text-4xl text-brandGold sm:text-5xl md:mb-4 md:text-5xl lg:text-6xl xl:text-7xl'; ?>"><?php if (!empty($fullMenuUrl) && empty($singleSectionView)): ?><a href="<?php echo htmlspecialchars($fullMenuUrl . '/' . $section['slug']); ?>" class="text-brandGold hover:underline"><?php echo htmlspecialchars($section['name']); ?></a><?php else: ?><?php echo htmlspecialchars($section['name']); ?><?php endif; ?></h2>
-<?php if (empty($singleSectionView) && !empty($section['image']) && empty($isTemplatePreview)): ?>
+<?php if (empty($singleSectionView) && !empty($section['image'])): ?>
 <div class="mx-auto mb-4 max-w-[11.5rem] px-1 sm:mb-5 sm:max-w-xs md:mb-6 md:max-w-md">
   <img src="<?php echo $uploadBaseUrl . '/sections/' . htmlspecialchars($section['image']); ?>" alt="" class="mx-auto max-h-[4.25rem] w-full rounded-md object-contain shadow-md sm:max-h-28 md:max-h-36" loading="lazy" decoding="async"/>
 </div>
@@ -257,7 +261,7 @@ body.nfm-body {
 ?>
 <section class="card-border flex h-full min-w-0 flex-col rounded-sm border-brandGold/30 bg-transparent p-4 sm:p-5 md:p-5 lg:p-6" id="<?php echo htmlspecialchars($slug); ?>">
 <h3 class="nfm-category-title mb-4 flex flex-wrap items-center justify-center gap-3 border-b border-brandGold/25 pb-3 text-center text-5xl leading-tight text-white sm:text-5xl md:mb-5 md:justify-start md:text-left md:text-4xl lg:text-5xl xl:text-6xl">
-  <?php if (!empty($category['image']) && empty($isTemplatePreview)): ?>
+  <?php if (!empty($category['image'])): ?>
     <img src="<?php echo $uploadBaseUrl . '/categories/' . htmlspecialchars($category['image']); ?>" alt="" class="h-11 w-11 shrink-0 rounded-full object-cover ring-2 ring-brandGold/45 md:h-10 md:w-10" width="44" height="44" loading="lazy" decoding="async"/>
   <?php endif; ?>
   <span class="min-w-0"><?php echo htmlspecialchars($category['name']); ?></span>

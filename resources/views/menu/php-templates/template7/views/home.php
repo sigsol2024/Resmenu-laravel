@@ -10,7 +10,7 @@ if (empty($t7HeroImg) && ! empty($sections[0])) {
 }
 ?>
 
-<section class="relative min-h-[78vh] sm:min-h-[88vh] flex items-end justify-center pt-24 pb-14 px-4 sm:px-6 overflow-hidden section-pattern section-pattern--dark" id="hero">
+<section class="relative min-h-[78vh] sm:min-h-[88vh] flex items-end justify-center pt-24 pb-14 px-4 sm:px-6 overflow-hidden section-pattern section-pattern--dark" id="hero" data-template-preview-hero>
   <?php if ($t7HeroImg): ?>
   <div class="absolute inset-0 z-0">
     <img alt="" class="w-full h-full object-cover object-center opacity-55" src="<?php echo t7_esc($t7HeroImg); ?>" loading="eager">

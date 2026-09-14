@@ -21,7 +21,11 @@ if (defined('UPLOAD_URL')) {
     $uploadBaseUrl = $protocol . $host . $baseDir . '/uploads';
     $baseUrl = defined('SITE_URL') ? rtrim(SITE_URL, '/') : ($protocol . $host . $baseDir);
 }
-$reservationUrl = $baseUrl . '/restaurant/' . ($restaurant['slug'] ?? '') . '/reservation';
+if (empty($isTemplatePreview)) {
+    $reservationUrl = $baseUrl . '/restaurant/' . ($restaurant['slug'] ?? '') . '/reservation';
+} else {
+    $reservationUrl = $reservationUrl ?? (($fullMenuUrl ?? '') . '#reservation');
+}
 $primaryColor = isset($customization['primary_color']) ? $customization['primary_color'] : '#D4AF37';
 $siteAssetsBase = (defined('SITE_URL') ? rtrim(SITE_URL, '/') : $baseUrl) . '/uploads/site';
 function the_prime_cut_price($price, $symbol = '₦') {
@@ -181,7 +185,7 @@ foreach ($sections as $section):
     $categoryIcon = resmenu_get_category_icon($category);
     $primeCutCatIndex++;
 ?>
-<section class="mb-16" data-purpose="menu-section" id="<?php echo htmlspecialchars($slug); ?>">
+<section class="mb-16" data-purpose="menu-section" id="<?php echo htmlspecialchars($slug); ? data-template-preview-hero>">
 <?php if ($primeCutCatIndex > 1): ?>
 <div class="ornate-divider">
 <span class="ornate-symbol"><?php echo $categoryIcon; ?></span>

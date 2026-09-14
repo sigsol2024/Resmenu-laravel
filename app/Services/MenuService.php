@@ -24,6 +24,7 @@ class MenuService
         return Restaurant::query()
             ->where('slug', $slug)
             ->where('is_active', 1)
+            ->whereNull('suspended_at')
             ->first();
     }
 
@@ -545,8 +546,8 @@ class MenuService
         return $this->visibilityFor($restaurantId);
     }
 
-    public function samplePreviewPayload(int $templateId): array
+    public function samplePreviewPayload(int $templateId, bool $fullCatalogue = false): array
     {
-        return app(TemplatePreviewDemoService::class)->buildPayload($templateId);
+        return app(TemplatePreviewDemoService::class)->buildPayload($templateId, $fullCatalogue);
     }
 }

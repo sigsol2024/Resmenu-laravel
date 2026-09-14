@@ -11,7 +11,11 @@ if ($baseUrl === '') {
     $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
     $baseUrl = $protocol . ($_SERVER['HTTP_HOST'] ?? 'localhost') . (dirname(dirname(dirname($_SERVER['SCRIPT_NAME'] ?? '/index.php'))));
 }
-$reservationUrl = $baseUrl . '/restaurant/' . ($restaurant['slug'] ?? '') . '/reservation';
+if (empty($isTemplatePreview)) {
+    $reservationUrl = $baseUrl . '/restaurant/' . ($restaurant['slug'] ?? '') . '/reservation';
+} else {
+    $reservationUrl = $reservationUrl ?? (($fullMenuUrl ?? '') . '#reservation');
+}
 $currencySymbol = '₦';
 $primaryColor = isset($customization['primary_color']) ? $customization['primary_color'] : '#FF85A2';
 function sd_price($p, $s = '₦') {
@@ -92,7 +96,7 @@ h1, h2, h3 { font-family: 'Fredoka One', cursive; }
 </nav>
 </div>
 </aside>
-<header class="py-12 text-center relative z-10" data-purpose="header-container" id="sd-hero-header">
+<header class="py-12 text-center relative z-10" data-purpose="header-container" id="sd-hero-header" data-template-preview-hero>
 <?php if (!empty($restaurant['logo']) && empty($isTemplatePreview)): ?>
 <div class="inline-block p-4 bg-white rounded-full shadow-lg mb-4"><img src="<?php echo $uploadBaseUrl . '/logos/' . htmlspecialchars($restaurant['logo']); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" style="max-height: 48px; width: auto;"/></div>
 <p class="text-lg text-gray-600 font-semibold italic mb-4"><?php echo htmlspecialchars($restaurant['description'] ?? 'Where every scoop is a dream!'); ?></p>

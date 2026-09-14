@@ -44,7 +44,11 @@ if (defined('UPLOAD_URL')) {
 }
 
 $template4BaseUrl = (defined('SITE_URL') ? rtrim(SITE_URL, '/') : ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https://' : 'http://') . ($_SERVER['HTTP_HOST'] ?? 'localhost'))) . '/templates/template4';
-$reservationUrl = (defined('SITE_URL') ? rtrim(SITE_URL, '/') : '') . '/restaurant/' . ($restaurant['slug'] ?? '') . '/reservation';
+if (empty($isTemplatePreview)) {
+    $reservationUrl = (defined('SITE_URL') ? rtrim(SITE_URL, '/') : '') . '/restaurant/' . ($restaurant['slug'] ?? '') . '/reservation';
+} else {
+    $reservationUrl = $reservationUrl ?? (($fullMenuUrl ?? '') . '#reservation');
+}
 
 // Hero image (section image for section pages if set; else restaurant hero, fallback)
 $heroBgImage = '';
@@ -302,7 +306,7 @@ if ($heroNameLen > 28) {
 }
 ?>
 <!-- Hero Section -->
-<section class="relative min-h-[85vh] flex items-end sm:items-center justify-center bg-charcoal overflow-hidden pt-28 pb-24 sm:pb-20">
+<section class="relative min-h-[85vh] flex items-end sm:items-center justify-center bg-charcoal overflow-hidden pt-28 pb-24 sm:pb-20" data-template-preview-hero>
     <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('<?php echo htmlspecialchars($heroBgImage); ?>');"></div>
     <div class="absolute inset-0 herb-pattern pointer-events-none"></div>
     <div class="absolute inset-0 bg-gradient-to-t from-charcoal via-black/70 to-transparent opacity-90"></div>
@@ -360,7 +364,7 @@ if ($heroNameLen > 28) {
                     </h2>
                     <div class="h-px flex-1 max-w-[160px] bg-charcoal/15"></div>
                 </div>
-                <?php if (empty($singleSectionView) && !empty($section['image']) && empty($isTemplatePreview)): ?>
+                <?php if (empty($singleSectionView) && !empty($section['image'])): ?>
                 <div class="flex justify-center mb-10 px-4">
                     <img src="<?php echo $uploadBaseUrl . '/sections/' . htmlspecialchars($section['image']); ?>" alt="" class="max-h-32 md:max-h-40 w-auto max-w-full rounded-xl object-contain shadow-md" loading="lazy" decoding="async"/>
                 </div>
@@ -371,7 +375,7 @@ if ($heroNameLen > 28) {
             <?php $categoryIndex++; ?>
                 <div class="mb-24" id="<?php echo htmlspecialchars($category['slug']); ?>-section">
                     <div class="flex items-center gap-4 md:gap-6 mb-8 category-title-animate">
-                        <?php if (!empty($category['image']) && empty($isTemplatePreview)): ?>
+                        <?php if (!empty($category['image'])): ?>
                         <div class="h-20 w-20 md:h-24 md:w-24 lg:h-28 lg:w-28 shrink-0 rounded-xl border-2 border-charcoal/15 bg-white shadow-sm flex items-center justify-center overflow-hidden p-2 md:p-2.5 box-border" aria-hidden="true">
                             <img src="<?php echo $uploadBaseUrl . '/categories/' . htmlspecialchars($category['image']); ?>" alt="" class="max-h-full max-w-full w-auto h-auto object-contain object-center" loading="lazy" decoding="async"/>
                         </div>

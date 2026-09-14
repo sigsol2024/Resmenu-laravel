@@ -92,6 +92,7 @@ class RestaurantHubController extends Controller
     private function saveTemplate(Request $request, Restaurant $restaurant)
     {
         $restaurant->update(['template_id' => (int) $request->input('template_id', 1)]);
+        $this->touchRestaurantActivity($restaurant);
 
         return redirect()->route('admin.restaurants.hub', [$restaurant, 'tab' => 'customization'])->with('success', 'Template updated.');
     }
@@ -106,6 +107,7 @@ class RestaurantHubController extends Controller
             'background_color', 'header_background_color', 'primary_color', 'secondary_color',
         ]);
         $this->customization->saveForRestaurant($restaurant->id, $data);
+        $this->touchRestaurantActivity($restaurant);
 
         return redirect()->route('admin.restaurants.hub', [$restaurant, 'tab' => 'customization'])->with('success', 'Customization saved.');
     }
@@ -126,6 +128,7 @@ class RestaurantHubController extends Controller
             'map_latitude' => $request->input('map_latitude'),
             'map_longitude' => $request->input('map_longitude'),
         ]);
+        $this->touchRestaurantActivity($restaurant);
 
         return redirect()->route('admin.restaurants.hub', [$restaurant, 'tab' => 'header'])->with('success', 'Header & footer saved.');
     }
@@ -255,5 +258,14 @@ class RestaurantHubController extends Controller
         $this->planVisibility->forgetCache((int) $restaurant->id);
 
         return redirect()->route('admin.restaurants.hub', [$restaurant, 'tab' => 'menu'])->with('success', 'Menu item deleted.');
+    }
+
+    private function touchRestaurantActivity(Restaurant $restaurant): void
+    {
+        try {
+            app(\App\Services\RestaurantLifecycleService::class)->touchActivity($restaurant);
+        } catch (\Throwable) {
+            // Non-fatal.
+        }
     }
 }

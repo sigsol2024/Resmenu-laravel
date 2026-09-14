@@ -22,7 +22,11 @@ class ReservationController extends Controller
 
     public function show(Request $request, string $slug)
     {
-        $restaurant = Restaurant::where('slug', $slug)->where('is_active', true)->firstOrFail();
+        $restaurant = Restaurant::query()
+            ->where('slug', $slug)
+            ->where('is_active', true)
+            ->whereNull('suspended_at')
+            ->firstOrFail();
         $access = $this->subscriptions->checkAccess($restaurant->id);
         if (! $access['valid']) {
             return view('public.subscription-blocked', [

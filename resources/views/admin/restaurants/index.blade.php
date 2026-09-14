@@ -231,37 +231,52 @@
             </div>
         </div>
         
-        <!-- Delete Confirmation Modal -->
+        <!-- Suspend Confirmation Modal -->
+        <div class="modal" id="suspendModal" style="display: none;">
+            <div class="modal-overlay" onclick="closeSuspendModal()"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Suspend Restaurant</h2>
+                    <button class="modal-close" onclick="closeSuspendModal()" aria-label="Close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p style="margin-bottom: 20px; font-size: 16px;" id="suspendModalText">Suspend this restaurant?</p>
+                    <p style="margin-bottom: 12px; color: var(--muted);">The public menu and manager login will be blocked. You can restore later from the Suspended tab. Permanent deletion is only available after suspension.</p>
+                    <form method="POST" action="" id="suspendForm">
+                        @csrf
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" onclick="closeSuspendModal()">Cancel</button>
+                            <button type="submit" class="btn btn-danger">Yes, Suspend</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Permanent Delete Confirmation Modal -->
         <div class="modal" id="deleteModal" style="display: none;">
             <div class="modal-overlay" onclick="closeDeleteModal()"></div>
             <div class="modal-content">
                 <div class="modal-header">
-                    <h2 class="modal-title">
-                        Delete Restaurant
-                    </h2>
+                    <h2 class="modal-title">Permanently Delete Restaurant</h2>
                     <button class="modal-close" onclick="closeDeleteModal()" aria-label="Close">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <p style="margin-bottom: 20px; font-size: 16px;">Are you sure you want to delete this restaurant?</p>
+                    <p style="margin-bottom: 20px; font-size: 16px;">Are you sure you want to permanently delete this restaurant?</p>
                     <p style="margin-bottom: 20px; color: var(--danger); font-weight: 600;">This action cannot be undone. This will delete:</p>
                     <ul style="margin-left: 20px; margin-bottom: 20px; color: var(--muted);">
                         <li>The restaurant and all its information</li>
-                        <li>All categories</li>
-                        <li>All menu items</li>
+                        <li>All categories and menu items</li>
                         <li>The manager account</li>
-                        <li>All uploaded images (logo, hero image, category images, menu item images)</li>
+                        <li>Orders, reservations, payments, and related records</li>
+                        <li>Uploaded images owned by this restaurant</li>
                     </ul>
                     <form method="POST" action="" id="deleteForm">
                         @csrf
                         @method('DELETE')
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
-                            <button type="submit" class="btn btn-danger">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                                Yes, Delete Restaurant
-                            </button>
+                            <button type="submit" class="btn btn-danger">Yes, Permanently Delete</button>
                         </div>
                     </form>
                 </div>
@@ -269,9 +284,15 @@
         </div>
         
         <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">All Restaurants</h2>
-                @if(!$editRestaurant || !$editRestaurant->exists)
+            <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
+                <div>
+                    <h2 class="card-title">Restaurants</h2>
+                    <div style="display:flex; gap:8px; margin-top:8px;">
+                        <a href="{{ route('admin.restaurants.index', array_filter(['q' => $q ?: null, 'tab' => 'active'])) }}" class="btn {{ ($tab ?? 'active') === 'active' ? 'btn-primary' : 'btn-secondary' }}" style="padding:6px 12px;">Active</a>
+                        <a href="{{ route('admin.restaurants.index', array_filter(['q' => $q ?: null, 'tab' => 'suspended'])) }}" class="btn {{ ($tab ?? '') === 'suspended' ? 'btn-primary' : 'btn-secondary' }}" style="padding:6px 12px;">Suspended</a>
+                    </div>
+                </div>
+                @if(($tab ?? 'active') === 'active' && (!$editRestaurant || !$editRestaurant->exists))
                     <button class="btn btn-primary" onclick="openRestaurantModal()">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -285,25 +306,48 @@
                     <tr>
                         <th>ID</th>
                         <th>Name</th>
-                        <th>Slug</th>
-                        <th>Status</th>
+                        <th>Manager</th>
+                        @if(($tab ?? 'active') === 'suspended')
+                            <th>Suspended</th>
+                            <th>Reason</th>
+                            <th>Last activity</th>
+                            <th>Purge date</th>
+                        @else
+                            <th>Slug</th>
+                            <th>Status</th>
+                        @endif
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @if($restaurants->isEmpty())
                         <tr>
-                            <td colspan="5" style="text-align: center; padding: 40px; color: var(--muted);">
+                            <td colspan="8" style="text-align: center; padding: 40px; color: var(--muted);">
                                 No restaurants found.
                             </td>
                         </tr>
                     @else
                         @foreach($restaurants as $restaurant)
+                            @php
+                                $mgr = ($managersByRestaurant ?? collect())->get($restaurant->id);
+                                $purgeAt = $restaurant->suspended_at
+                                    ? \Carbon\Carbon::parse($restaurant->suspended_at)->addDays((int) ($purgeDays ?? 7))
+                                    : null;
+                                $daysLeft = $purgeAt ? max(0, now()->diffInDays($purgeAt, false)) : null;
+                            @endphp
                             <tr>
                                 <td>{{ $restaurant->id }}</td>
                                 <td>{{ $restaurant->name }}</td>
-                                <td><code style="background: #f9fafb; padding: 4px 8px; border-radius: 4px; font-size: 12px;">{{ $restaurant->slug }}</code></td>
-                                <td><span class="status-badge {{ $restaurant->is_active ? 'active' : 'inactive' }}">{{ $restaurant->is_active ? 'Active' : 'Inactive' }}</span></td>
+                                <td>{{ $mgr->email ?? $mgr->username ?? '—' }}</td>
+                                @if(($tab ?? 'active') === 'suspended')
+                                    <td>{{ $restaurant->suspended_at?->format('Y-m-d H:i') ?? '—' }}</td>
+                                    <td>{{ $restaurant->suspension_reason === 'inactivity' ? 'Inactivity' : 'Administrator' }}</td>
+                                    <td>{{ $restaurant->last_activity_at?->format('Y-m-d H:i') ?? '—' }}</td>
+                                    <td>{{ $purgeAt ? $purgeAt->format('Y-m-d').' ('.$daysLeft.'d left)' : '—' }}</td>
+                                @else
+                                    <td><code style="background: #f9fafb; padding: 4px 8px; border-radius: 4px; font-size: 12px;">{{ $restaurant->slug }}</code></td>
+                                    <td><span class="status-badge {{ $restaurant->is_active ? 'active' : 'inactive' }}">{{ $restaurant->is_active ? 'Active' : 'Inactive' }}</span></td>
+                                @endif
                                 <td class="actions-cell">
                                     <button class="actions-btn" type="button" title="Actions">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
@@ -311,11 +355,20 @@
                                         </svg>
                                     </button>
                                     <div class="actions-dropdown">
-                                        <a href="{{ route('admin.restaurants.hub', $restaurant) }}" class="actions-dropdown-item">Manage</a>
-                                        <a href="{{ route('admin.restaurants.index', ['edit' => $restaurant->id]) }}" class="actions-dropdown-item">Edit</a>
-                                        <a href="{{ route('public.menu', $restaurant->slug) }}" target="_blank" class="actions-dropdown-item">View Menu</a>
-                                        <div class="actions-dropdown-divider"></div>
-                                        <button type="button" onclick="openDeleteModal({{ $restaurant->id }}, '{{ addslashes($restaurant->name) }}')" class="actions-dropdown-item danger">Delete</button>
+                                        @if(($tab ?? 'active') === 'suspended')
+                                            <form method="POST" action="{{ route('admin.restaurants.restore', $restaurant) }}" style="margin:0;">
+                                                @csrf
+                                                <button type="submit" class="actions-dropdown-item">Restore</button>
+                                            </form>
+                                            <div class="actions-dropdown-divider"></div>
+                                            <button type="button" onclick="openDeleteModal({{ $restaurant->id }}, '{{ addslashes($restaurant->name) }}')" class="actions-dropdown-item danger">Permanent Delete</button>
+                                        @else
+                                            <a href="{{ route('admin.restaurants.hub', $restaurant) }}" class="actions-dropdown-item">Manage</a>
+                                            <a href="{{ route('admin.restaurants.index', ['edit' => $restaurant->id]) }}" class="actions-dropdown-item">Edit</a>
+                                            <a href="{{ route('public.menu', $restaurant->slug) }}" target="_blank" class="actions-dropdown-item">View Menu</a>
+                                            <div class="actions-dropdown-divider"></div>
+                                            <button type="button" onclick="openSuspendModal({{ $restaurant->id }}, '{{ addslashes($restaurant->name) }}')" class="actions-dropdown-item danger">Suspend</button>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
@@ -350,6 +403,20 @@
                 window.location.href = @json(route('admin.restaurants.index'));
             }
         }
+
+        function openSuspendModal(restaurantId, restaurantName) {
+            document.getElementById('suspendForm').action = @json(url('/admin/restaurants')) + '/' + restaurantId + '/suspend';
+            var esc = document.createElement('div');
+            esc.textContent = restaurantName;
+            document.getElementById('suspendModalText').innerHTML = 'Suspend <strong>"' + esc.innerHTML + '"</strong>?';
+            document.getElementById('suspendModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSuspendModal() {
+            document.getElementById('suspendModal').style.display = 'none';
+            document.body.style.overflow = '';
+        }
         
         function openDeleteModal(restaurantId, restaurantName) {
             document.getElementById('deleteForm').action = @json(url('/admin/restaurants')) + '/' + restaurantId;
@@ -358,7 +425,7 @@
             if (nameParagraph) {
                 var esc = document.createElement('div');
                 esc.textContent = restaurantName;
-                nameParagraph.innerHTML = 'Are you sure you want to delete <strong>"' + esc.innerHTML + '"</strong>?';
+                nameParagraph.innerHTML = 'Permanently delete <strong>"' + esc.innerHTML + '"</strong>? This cannot be undone.';
             }
             document.getElementById('deleteModal').style.display = 'flex';
             document.body.style.overflow = 'hidden';

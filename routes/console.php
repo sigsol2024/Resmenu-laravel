@@ -32,3 +32,8 @@ Schedule::command('payments:fail-stale-subscription')
     ->hourly()
     ->withoutOverlapping(30)
     ->onOneServer();
+
+Schedule::command('restaurants:lifecycle')
+    ->dailyAt('01:00')
+    ->withoutOverlapping(30)
+    ->onOneServer();

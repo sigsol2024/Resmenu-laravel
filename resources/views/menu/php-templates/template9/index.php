@@ -12,7 +12,11 @@ if ($baseUrl === '') {
     $baseUrl = $protocol . ($_SERVER['HTTP_HOST'] ?? 'localhost') . (dirname(dirname(dirname($_SERVER['SCRIPT_NAME'] ?? '/index.php'))));
 }
 $siteAssetsBase = rtrim($baseUrl, '/') . '/uploads/site';
-$reservationUrl = $baseUrl . '/restaurant/' . ($restaurant['slug'] ?? '') . '/reservation';
+if (empty($isTemplatePreview)) {
+    $reservationUrl = $baseUrl . '/restaurant/' . ($restaurant['slug'] ?? '') . '/reservation';
+} else {
+    $reservationUrl = $reservationUrl ?? (($fullMenuUrl ?? '') . '#reservation');
+}
 $currencySymbol = '₦';
 $primaryColor = isset($customization['primary_color']) ? $customization['primary_color'] : '#FFD700';
 function sfh_price($p, $s = '₦') {
@@ -142,7 +146,7 @@ body.sfh-body .sfh-bg { position: absolute; inset: 0; pointer-events: none; back
     $items = isset($category['menu_items']) ? $category['menu_items'] : [];
     if (empty($items)) continue;
 ?>
-<section class="mb-16" id="<?php echo htmlspecialchars($slug); ?>">
+<section class="mb-16" id="<?php echo htmlspecialchars($slug); ? data-template-preview-hero>">
 <h3 class="font-chunky text-3xl md:text-4xl uppercase mb-6 comic-border inline-block bg-brandYellow text-brandBlack px-6 py-3 shadow-brutal-sm -rotate-1"><?php echo htmlspecialchars($category['name']); ?></h3>
 <div class="masonry-grid">
 <?php foreach ($items as $itemIndex => $item): 

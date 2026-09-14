@@ -7,7 +7,11 @@ if (defined('UPLOAD_URL')) { $uploadBaseUrl = rtrim(UPLOAD_URL, '/'); } else {
     $uploadBaseUrl = $protocol . ($_SERVER['HTTP_HOST'] ?? 'localhost') . (dirname(dirname(dirname($_SERVER['SCRIPT_NAME'] ?? ''))) ?: '') . '/uploads';
 }
 $baseUrl = defined('SITE_URL') ? rtrim(SITE_URL, '/') : '';
-$reservationUrl = $baseUrl . '/restaurant/' . ($restaurant['slug'] ?? '') . '/reservation';
+if (empty($isTemplatePreview)) {
+    $reservationUrl = $baseUrl . '/restaurant/' . ($restaurant['slug'] ?? '') . '/reservation';
+} else {
+    $reservationUrl = $reservationUrl ?? (($fullMenuUrl ?? '') . '#reservation');
+}
 $currencySymbol = '₦';
 $primaryColor = isset($customization['primary_color']) ? $customization['primary_color'] : '#ffbf00';
 function fis_price($p, $s = '₦') {
@@ -56,7 +60,7 @@ foreach ($sections as $section):
     if (empty($items)) continue;
     $fisCatIndex++;
 ?>
-<section class="mb-16" id="<?php echo htmlspecialchars($slug); ?>">
+<section class="mb-16" id="<?php echo htmlspecialchars($slug); ? data-template-preview-hero>">
 <?php if ($fisCatIndex > 1): ?><div class="divider"></div><?php endif; ?>
 <h3 class="text-2xl font-art-deco text-copper-light uppercase tracking-widest mb-8"><?php echo htmlspecialchars($category['name']); ?></h3>
 <div class="space-y-6">

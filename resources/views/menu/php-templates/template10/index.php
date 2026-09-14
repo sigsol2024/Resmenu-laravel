@@ -11,7 +11,11 @@ if ($baseUrl === '') {
     $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
     $baseUrl = $protocol . ($_SERVER['HTTP_HOST'] ?? 'localhost') . (dirname(dirname(dirname($_SERVER['SCRIPT_NAME'] ?? '/index.php'))));
 }
-$reservationUrl = $baseUrl . '/restaurant/' . ($restaurant['slug'] ?? '') . '/reservation';
+if (empty($isTemplatePreview)) {
+    $reservationUrl = $baseUrl . '/restaurant/' . ($restaurant['slug'] ?? '') . '/reservation';
+} else {
+    $reservationUrl = $reservationUrl ?? (($fullMenuUrl ?? '') . '#reservation');
+}
 $snswTemplateBaseUrl = isset($templateAssetBaseUrl) ? $templateAssetBaseUrl : (rtrim($baseUrl, '/') . '/templates/template10');
 $snswTemplateDir = __DIR__;
 $snswPageBgFile = (file_exists($snswTemplateDir . '/Salt-Social-2-copy-1.png')) ? 'Salt-Social-2-copy-1.png' : 'Salt-Social-2-copy-1.jpg';
@@ -45,7 +49,7 @@ if (!empty($singleSectionView) && !empty($sections) && is_array($sections) && !e
     if (!empty($sections[0]['name'])) {
         $snswHeaderTitle = $sections[0]['name'];
     }
-    if (!empty($sections[0]['image']) && empty($isTemplatePreview)) {
+    if (!empty($sections[0]['image'])) {
         $snswSectionHeroUrl = $uploadBaseUrl . '/sections/' . rawurlencode((string) $sections[0]['image']);
     }
 }
@@ -560,7 +564,7 @@ body.snsw-body #scrollToTop {
         : '#section-' . htmlspecialchars($snswWelSlug, ENT_QUOTES, 'UTF-8');
 ?>
 <a href="<?php echo $snswWelHref; ?>" class="snsw-welcome-section-link snsw-welcome-sep block py-1 text-center">
-<?php if (!empty($snswWelSec['image']) && empty($isTemplatePreview)): ?>
+<?php if (!empty($snswWelSec['image'])): ?>
 <div class="mx-auto mb-1.5 flex justify-center"><img src="<?php echo $uploadBaseUrl . '/sections/' . htmlspecialchars($snswWelSec['image']); ?>" alt="" class="snsw-welcome-section-img w-auto rounded shadow-sm" loading="eager" decoding="async"/></div>
 <?php endif; ?>
 <span class="snsw-welcome-section-label"><?php echo $snswWelName; ?></span>
@@ -643,7 +647,7 @@ body.snsw-body #scrollToTop {
     $snswDividerClass = ($snswCatDividerIndex % 4 === 3) ? 'section-header--rail' : 'section-header--red';
     $snswCatDividerIndex++;
   ?>
-  <section class="mb-10 min-w-0 md:mb-16" id="<?php echo htmlspecialchars($slug); ?>">
+  <section class="mb-10 min-w-0 md:mb-16" id="<?php echo htmlspecialchars($slug); ? data-template-preview-hero>">
     <h3 class="section-header <?php echo $snswDividerClass; ?>"><?php echo htmlspecialchars($category['name']); ?></h3>
     <?php if ($useBox): ?><div class="min-w-0 border border-divider-dark bg-white bg-opacity-40 p-4 md:p-6"><?php endif; ?>
     <div class="snsw-menu-items">

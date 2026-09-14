@@ -15,7 +15,7 @@ if ($t6SectionCount === 1) {
 }
 ?>
 <main class="pb-8">
-<section class="relative min-h-[85vh] md:min-h-[95vh] w-full flex flex-col justify-end overflow-hidden">
+<section class="relative min-h-[85vh] md:min-h-[95vh] w-full flex flex-col justify-end overflow-hidden" data-template-preview-hero>
 <div class="absolute inset-0 z-0">
 <?php if ($heroUrl): ?>
 <div class="w-full h-full bg-cover bg-center" style="background-image: url('<?php echo t6_esc($heroUrl); ?>')"></div>

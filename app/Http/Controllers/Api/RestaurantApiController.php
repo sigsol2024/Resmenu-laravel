@@ -14,7 +14,7 @@ class RestaurantApiController extends Controller
     public function index()
     {
         $rows = Restaurant::query()
-            ->where('is_active', 1)
+            ->activeListing()
             ->orderBy('name')
             ->get()
             ->map(fn (Restaurant $r) => [

@@ -30,9 +30,6 @@ if (empty($heroUrl) && ! empty($sections[0])) {
           </div>
         </div>
         <div class="p-4 sm:p-6 lg:p-8 bg-onyx-card">
-          <?php if (! empty($isTemplatePreview)): ?>
-          <p class="text-center text-white/50 py-16 text-sm uppercase tracking-[0.18em]">Reservation form (Demo Preview)</p>
-          <?php else: ?>
           <?php
             $t6Helpers = dirname(__DIR__, 2).DIRECTORY_SEPARATOR.'template6'.DIRECTORY_SEPARATOR.'helpers.php';
             $t6Form = dirname(__DIR__, 2).DIRECTORY_SEPARATOR.'template6'.DIRECTORY_SEPARATOR.'partials'.DIRECTORY_SEPARATOR.'reservation-form.php';
@@ -53,7 +50,6 @@ if (empty($heroUrl) && ! empty($sections[0])) {
                 echo '</p>';
             }
           ?>
-          <?php endif; ?>
         </div>
       </div>
     </div>

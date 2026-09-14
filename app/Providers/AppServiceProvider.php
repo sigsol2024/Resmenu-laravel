@@ -30,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
         $this->guardStagingDatabase();
         $this->validateProductionConfig();
         $this->guardDebugRoutesInProduction();
+        $this->registerRestaurantActivityTouches();
 
         \Illuminate\Support\Facades\View::composer(
             ['layouts.manager', 'layouts.admin', 'layouts.marketing', 'layouts.auth-marketing'],
@@ -53,6 +54,33 @@ class AppServiceProvider extends ServiceProvider
 
         \Illuminate\Pagination\Paginator::defaultView('vendor.pagination.legacy');
         \Illuminate\Pagination\Paginator::defaultSimpleView('vendor.pagination.legacy-simple');
+    }
+
+    /**
+     * Keep restaurants.last_activity_at fresh for the 30-day inactivity rule.
+     */
+    private function registerRestaurantActivityTouches(): void
+    {
+        $touch = static function ($model): void {
+            $restaurantId = (int) ($model->restaurant_id ?? 0);
+            if ($restaurantId <= 0) {
+                return;
+            }
+            try {
+                app(\App\Services\RestaurantLifecycleService::class)->touchActivity($restaurantId);
+            } catch (\Throwable) {
+                // Avoid breaking writes if lifecycle service/DB is unavailable mid-boot.
+            }
+        };
+
+        \App\Models\MenuItem::saved($touch);
+        \App\Models\MenuItem::deleted($touch);
+        \App\Models\Category::saved($touch);
+        \App\Models\Category::deleted($touch);
+        \App\Models\Section::saved($touch);
+        \App\Models\Section::deleted($touch);
+        \App\Models\Order::created($touch);
+        \App\Models\TableReservation::created($touch);
     }
 
     private function guardStagingDatabase(): void

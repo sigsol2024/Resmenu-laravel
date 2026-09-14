@@ -3,6 +3,10 @@
 /**
  * Maps template preview demo menu items/categories to filenames in public/assets/images/.
  * Templates request /assets/images/menu-items/{file} — .htaccess serves public/assets/images/{file}.
+ *
+ * Gallery hero screenshots (Pass 2): each php-templates/template{N}/index.php must include
+ * one <section data-template-preview-hero> around the above-the-fold hero so
+ * `php artisan templates:generate-previews --all` can capture new templates automatically.
  */
 return [
     'exclude' => [
@@ -28,10 +32,19 @@ return [
         '8KNT0Cmwadj1pOqUf8eYtJvgUWw60b7.png',
     ],
 
+    /** Section slug => cover image (landing cards for T6/T7). */
+    'sections' => [
+        'food' => '5qRm87VW5lLs5bHzJRlcNQHJTg95ef.png',
+        'desserts' => 'fC0z2CX335ZNJUU4Xyw2OOEdr1cfcb2.png',
+        'drinks' => 'fIL7dvfGFqFWNmraqhqORlF3mCU6fe9.png',
+    ],
+
     /** Category slug => cover image filename. */
     'categories' => [
+        'breakfast' => 'Gce3Rrhr6Fu2ulj19xPmIrv3b5g6fe9.jpg',
         'starters' => 'Gce3Rrhr6Fu2ulj19xPmIrv3b5g6fe9.jpg',
         'salads' => 'Q4NLIWJFP2p1o0D77zfQC8cbesM9adb.png',
+        'wraps' => 'VmGagXikz2YMKcEmsvHw5tGlk6fe9.png',
         'mains' => '5qRm87VW5lLs5bHzJRlcNQHJTg95ef.png',
         'pasta-rice' => 'MM8tb8UFdtdejnJ1CUUDFE5xgEbb74.png',
         'grill' => 'TSx2MrnudIy3hZawlNIf0XkE6b0c215.jpg',
@@ -48,6 +61,10 @@ return [
      * Menu item slug (from item name) => image filename in public/assets/images/.
      */
     'items' => [
+        'sunrise-scramble' => 'Gce3Rrhr6Fu2ulj19xPmIrv3b5g6fe9.jpg',
+        'pancake-stack' => 'yBFIDpAeU4h5XemVids71JhD44788.png',
+        'nigerian-breakfast-plate' => '5qRm87VW5lLs5bHzJRlcNQHJTg95ef.png',
+
         'bruschetta-trio' => 'mQIrPVbm53DrgvAZw6upKF0RAw6c73.png',
         'chicken-wings' => '9X7XaUT5RWMUxM47WyN9iYKnY6fe9.jpg',
         'prawn-cocktail' => '5zm3C5SMKk7sgdYHRUP5eAlb86fe9.jpg',
@@ -58,6 +75,10 @@ return [
         'greek-salad' => 'rcrYUjSmISVYGy7EOHdtNBFtcgA9adb.png',
         'avocado-quinoa' => 'OevATMoe3hwy6lgCtWIuHJhvqV04788.png',
         'grilled-chicken-salad' => 'OevATMoe3hwy6lgCtWIuHJhvqV04788.png',
+
+        'chicken-wrap' => 'IgXdrkh7KSpIYghk1pxRbOlznPQ6fe9.png',
+        'veggie-wrap' => 'zIGIHQmAQbihSYYmQRW7XPFECvE95ef.png',
+        'club-sandwich' => 'VmGagXikz2YMKcEmsvHw5tGlk6fe9.png',
 
         'grilled-salmon' => 'i1M2A7kIuLgGSd2ZjgCUSy1yCus6a7c.png',
         'ribeye-steak' => 'HOIsucbufEFhwCtRr1P9wANmC3Ua5eb.png',

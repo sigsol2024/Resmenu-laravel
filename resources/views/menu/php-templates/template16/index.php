@@ -51,7 +51,11 @@ $nmcBgCssUrl = '';
 if ($nmcBgFile !== '') {
     $nmcBgCssUrl = htmlspecialchars($nmcTemplateBaseUrl . '/' . rawurlencode($nmcBgFile), ENT_QUOTES, 'UTF-8');
 }
-$reservationUrl = $baseUrl . '/restaurant/' . ($restaurant['slug'] ?? '') . '/reservation';
+if (empty($isTemplatePreview)) {
+    $reservationUrl = $baseUrl . '/restaurant/' . ($restaurant['slug'] ?? '') . '/reservation';
+} else {
+    $reservationUrl = $reservationUrl ?? (($fullMenuUrl ?? '') . '#reservation');
+}
 $currencySymbol = '₦';
 $primaryColor = isset($customization['primary_color']) ? $customization['primary_color'] : '#f97316';
 function nmc_price($p, $s = '₦') {
@@ -188,7 +192,7 @@ if (!empty($singleSectionView) && !empty($sections) && is_array($sections) && !e
     if (!empty($nmcSec0['name'])) {
         $nmcHeaderTitle = $nmcSec0['name'];
     }
-    if (!empty($nmcSec0['image']) && empty($isTemplatePreview)) {
+    if (!empty($nmcSec0['image'])) {
         $nmcHeroImageFile = (string) $nmcSec0['image'];
         $nmcHeroImageSubdir = 'sections';
         $nmcHeroImageUrl = $uploadBaseUrl . '/sections/' . htmlspecialchars($nmcHeroImageFile, ENT_QUOTES, 'UTF-8');
@@ -603,7 +607,7 @@ body.nmc-body #scrollToTop {
         : '#section-' . htmlspecialchars($nmcWelSlugRaw, ENT_QUOTES, 'UTF-8');
 ?>
 <a href="<?php echo $nmcWelHref; ?>" class="nmc-welcome-section-link nmc-welcome-sep block py-1 text-center">
-<?php if (!empty($nmcWelSec['image']) && empty($isTemplatePreview)): ?>
+<?php if (!empty($nmcWelSec['image'])): ?>
 <div class="mx-auto mb-1.5 flex justify-center"><img src="<?php echo $uploadBaseUrl . '/sections/' . htmlspecialchars($nmcWelSec['image']); ?>" alt="" class="<?php echo htmlspecialchars(nmc_img_class('nmc-welcome-section-img w-auto', $nmcWelSec['image'], 'sections', 'rounded-md shadow-sm'), ENT_QUOTES, 'UTF-8'); ?>" loading="eager" decoding="async"/></div>
 <?php endif; ?>
 <span class="text-xs font-bold uppercase tracking-[0.18em] text-red-500 sm:text-sm"><?php echo $nmcWelName; ?></span>
@@ -701,10 +705,10 @@ if (empty($singleSectionView) && !empty($sectionsForNav) && is_array($sectionsFo
     $items = isset($category['menu_items']) ? $category['menu_items'] : [];
     if (empty($items)) continue;
 ?>
-<section class="nmc-reveal mb-20 min-w-0 overflow-visible rounded-2xl glass-card p-6 sm:p-8" id="<?php echo htmlspecialchars($slug); ?>">
+<section class="nmc-reveal mb-20 min-w-0 overflow-visible rounded-2xl glass-card p-6 sm:p-8" id="<?php echo htmlspecialchars($slug); ? data-template-preview-hero>">
 <div class="nmc-cat-head mb-8 min-w-0">
 <h3 class="nmc-cat-title block w-full border-b-2 border-orange-500 pb-2 font-bold text-white"><?php echo htmlspecialchars($category['name']); ?></h3>
-<?php if (!empty($category['image']) && empty($isTemplatePreview)): ?>
+<?php if (!empty($category['image'])): ?>
 <div class="mt-3 w-full max-w-md overflow-visible">
 <img src="<?php echo $uploadBaseUrl . '/categories/' . htmlspecialchars($category['image']); ?>" alt="" class="<?php echo htmlspecialchars(nmc_img_class('h-auto max-h-48 w-full sm:max-h-52', $category['image'], 'categories', 'rounded-lg ring-1 ring-white/15'), ENT_QUOTES, 'UTF-8'); ?>" loading="lazy" decoding="async"/>
 </div>

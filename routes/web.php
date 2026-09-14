@@ -58,6 +58,15 @@ Route::get('/api/qr-template-preview-image', QrTemplatePreviewController::class)
 Route::get('/templates/{template}/preview', [TemplatePreviewController::class, 'show'])
     ->where('template', '[0-9]+')
     ->name('public.template.preview');
+Route::get('/templates/{template}/preview/{section}/{category}', [TemplatePreviewController::class, 'show'])
+    ->where(['template' => '[0-9]+', 'section' => '[a-z0-9-]+', 'category' => '[a-z0-9-]+'])
+    ->name('public.template.preview.category');
+Route::get('/templates/{template}/preview/{section}', [TemplatePreviewController::class, 'show'])
+    ->where(['template' => '[0-9]+', 'section' => '[a-z0-9-]+'])
+    ->name('public.template.preview.section');
+Route::post('/templates/preview/reservation', [TemplatePreviewController::class, 'reservationDemo'])
+    ->middleware('throttle:30,1')
+    ->name('public.template.preview.reservation');
 
 Route::get('/faq', [\App\Http\Controllers\Public\MarketingController::class, 'faq'])->name('public.faq');
 Route::get('/contact', [\App\Http\Controllers\Public\MarketingController::class, 'contact'])->name('public.contact');

@@ -15,9 +15,13 @@ class Manager extends Authenticatable
 
     const UPDATED_AT = 'updated_at';
 
-    protected $fillable = ['username', 'email', 'password_hash', 'restaurant_id'];
+    protected $fillable = ['username', 'email', 'password_hash', 'restaurant_id', 'last_login_at'];
 
     protected $hidden = ['password_hash'];
+
+    protected $casts = [
+        'last_login_at' => 'datetime',
+    ];
 
     public function getAuthPassword(): string
     {

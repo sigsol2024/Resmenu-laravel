@@ -17,7 +17,8 @@ class Restaurant extends Model
 
     protected $fillable = [
         'name', 'slug', 'email', 'phone', 'address', 'description', 'logo', 'hero_image',
-        'template_id', 'is_active', 'enable_food_ordering', 'enable_table_reservations', 'header_menu_items',
+        'template_id', 'is_active', 'suspended_at', 'suspension_reason', 'last_activity_at',
+        'enable_food_ordering', 'enable_table_reservations', 'header_menu_items',
         'manager_email', 'whatsapp_link', 'instagram_url', 'facebook_url', 'twitter_url', 'footer_content',
     ];
 
@@ -26,7 +27,24 @@ class Restaurant extends Model
         'enable_food_ordering' => 'boolean',
         'enable_table_reservations' => 'boolean',
         'header_menu_items' => 'array',
+        'suspended_at' => 'datetime',
+        'last_activity_at' => 'datetime',
     ];
+
+    public function isSuspended(): bool
+    {
+        return $this->suspended_at !== null;
+    }
+
+    public function scopeActiveListing($query)
+    {
+        return $query->where('is_active', 1)->whereNull('suspended_at');
+    }
+
+    public function scopeSuspended($query)
+    {
+        return $query->whereNotNull('suspended_at');
+    }
 
     public function sections(): HasMany
     {

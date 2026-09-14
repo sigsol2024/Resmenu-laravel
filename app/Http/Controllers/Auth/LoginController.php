@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\Manager;
+use App\Models\Restaurant;
 use App\Services\SiteSettingsService;
 use App\Support\SafeRedirect;
 use Illuminate\Http\Request;
@@ -73,6 +74,13 @@ class LoginController extends Controller
             })
             ->first();
         if ($manager && Hash::check($password, $manager->password_hash)) {
+            $restaurant = Restaurant::find($manager->restaurant_id);
+            if ($restaurant && $restaurant->isSuspended()) {
+                return back()->withErrors([
+                    'username' => 'This restaurant account is suspended. Contact support for help.',
+                ])->onlyInput('username');
+            }
+
             Auth::guard('manager')->login($manager);
             $request->session()->regenerate();
             session([
@@ -80,6 +88,12 @@ class LoginController extends Controller
                 'user_role' => 'manager',
                 'restaurant_id' => $manager->restaurant_id,
             ]);
+
+            try {
+                app(\App\Services\RestaurantLifecycleService::class)->recordManagerLogin($manager);
+            } catch (\Throwable) {
+                // Non-fatal — login should still succeed.
+            }
 
             return redirect()->to($next ?: route('manager.dashboard'));
         }

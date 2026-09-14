@@ -12,9 +12,20 @@ $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $currentDir = dirname($_SERVER['SCRIPT_NAME'] ?? '/');
 $currentDir = ($currentDir === '/' || $currentDir === '\\') ? '' : rtrim($currentDir, '/');
 $baseUrl = $protocol . $host . $currentDir;
-$uploadBaseUrl = $baseUrl . '/uploads';
+// Prefer payload / UPLOAD_URL (demo + live restaurant) over inventing /uploads from SCRIPT_NAME.
+if (! empty($uploadBaseUrl)) {
+    $uploadBaseUrl = rtrim((string) $uploadBaseUrl, '/');
+} elseif (defined('UPLOAD_URL')) {
+    $uploadBaseUrl = rtrim(UPLOAD_URL, '/');
+} else {
+    $uploadBaseUrl = $baseUrl . '/uploads';
+}
 $template1BaseUrl = isset($templateAssetBaseUrl) ? $templateAssetBaseUrl : ((defined('SITE_URL') ? rtrim(SITE_URL, '/') : $baseUrl) . '/templates/template1');
-$reservationUrl = (defined('SITE_URL') ? rtrim(SITE_URL, '/') : $baseUrl) . '/restaurant/' . ($restaurant['slug'] ?? '') . '/reservation';
+if (empty($isTemplatePreview)) {
+    $reservationUrl = (defined('SITE_URL') ? rtrim(SITE_URL, '/') : $baseUrl) . '/restaurant/' . ($restaurant['slug'] ?? '') . '/reservation';
+} else {
+    $reservationUrl = $reservationUrl ?? (($fullMenuUrl ?? '') . '#reservation');
+}
 $currencySymbol = '₦';
 $primaryColor = isset($customization['primary_color']) ? $customization['primary_color'] : '#f20d0d';
 
@@ -233,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <!-- Hero Section -->
-<section class="hero">
+<section class="hero" data-template-preview-hero>
   <div class="container">
     <div class="hero-content">
       <div class="hero-left">

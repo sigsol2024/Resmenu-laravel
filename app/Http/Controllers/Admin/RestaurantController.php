@@ -20,9 +20,13 @@ class RestaurantController extends Controller
   public function index(Request $request)
   {
     $q = trim((string) $request->query('q', ''));
+    $tab = $request->query('tab') === 'suspended' ? 'suspended' : 'active';
 
     $restaurants = Restaurant::query()
-      ->when($q !== '', fn ($query) => $query->where('name', 'like', "%{$q}%")->orWhere('slug', 'like', "%{$q}%"))
+      ->when($tab === 'suspended', fn ($query) => $query->suspended(), fn ($query) => $query->whereNull('suspended_at'))
+      ->when($q !== '', fn ($query) => $query->where(function ($inner) use ($q) {
+          $inner->where('name', 'like', "%{$q}%")->orWhere('slug', 'like', "%{$q}%");
+      }))
       ->orderByDesc('id')
       ->paginate(25)
       ->withQueryString();
@@ -38,13 +42,21 @@ class RestaurantController extends Controller
       $editRestaurant = new Restaurant(['is_active' => true, 'template_id' => 4]);
     }
 
+    $managersByRestaurant = Manager::query()
+      ->whereIn('restaurant_id', $restaurants->getCollection()->pluck('id')->all())
+      ->get()
+      ->keyBy('restaurant_id');
+
     return view('admin.restaurants.index', [
       'restaurants' => $restaurants,
       'q' => $q,
+      'tab' => $tab,
       'editRestaurant' => $editRestaurant,
       'editManager' => $editManager,
+      'managersByRestaurant' => $managersByRestaurant,
       'plans' => SubscriptionPlan::orderBy('display_order')->get(),
       'showCreateModal' => $request->has('new'),
+      'purgeDays' => (int) config('restaurant_lifecycle.purge_days_after_suspend', 7),
     ]);
   }
 
@@ -79,6 +91,7 @@ class RestaurantController extends Controller
         'hero_image' => $hero,
         'template_id' => $data['template_id'] ?? 4,
         'is_active' => $request->boolean('is_active', true),
+        'last_activity_at' => now(),
       ]);
       $restaurantId = (int) $restaurant->id;
 
@@ -195,6 +208,12 @@ class RestaurantController extends Controller
 
     $restaurant->update($payload);
 
+    try {
+      app(\App\Services\RestaurantLifecycleService::class)->touchActivity($restaurant);
+    } catch (\Throwable) {
+      // Non-fatal.
+    }
+
     if (! empty($data['manager_email'])) {
       Manager::where('restaurant_id', $restaurant->id)->update([
         'email' => $data['manager_email'],
@@ -218,19 +237,43 @@ class RestaurantController extends Controller
     return redirect()->route('admin.restaurants.index')->with('success', 'Restaurant updated.');
   }
 
-  public function destroy(Restaurant $restaurant, UploadService $uploads, ActivityLogService $activityLog, Request $request)
+  public function suspend(Restaurant $restaurant, ActivityLogService $activityLog, Request $request, \App\Services\RestaurantLifecycleService $lifecycle)
   {
+    abort_if($restaurant->isSuspended(), 422, 'Restaurant is already suspended.');
+
+    $adminId = (int) $request->user('admin')?->id;
+    $lifecycle->suspend($restaurant, \App\Services\RestaurantLifecycleService::REASON_ADMIN, true);
+    $activityLog->record('admin', $adminId, 'restaurant.suspended', (int) $restaurant->id, 'restaurant', (int) $restaurant->id, null, [
+      'reason' => 'admin',
+    ], $request->ip(), $request->userAgent());
+
+    return redirect()->route('admin.restaurants.index', ['tab' => 'suspended'])->with('success', 'Restaurant suspended.');
+  }
+
+  public function restore(Restaurant $restaurant, ActivityLogService $activityLog, Request $request, \App\Services\RestaurantLifecycleService $lifecycle)
+  {
+    abort_unless($restaurant->isSuspended(), 422, 'Restaurant is not suspended.');
+
+    $adminId = (int) $request->user('admin')?->id;
+    $lifecycle->restore($restaurant);
+    $activityLog->record('admin', $adminId, 'restaurant.restored', (int) $restaurant->id, 'restaurant', (int) $restaurant->id, null, null, $request->ip(), $request->userAgent());
+
+    return redirect()->route('admin.restaurants.index')->with('success', 'Restaurant restored.');
+  }
+
+  public function destroy(Restaurant $restaurant, \App\Services\RestaurantDeletionService $deletion, ActivityLogService $activityLog, Request $request)
+  {
+    abort_unless($restaurant->isSuspended(), 422, 'Permanent delete is only available for suspended restaurants.');
+
     $adminId = (int) $request->user('admin')?->id;
     $restaurantId = (int) $restaurant->id;
     $oldValues = ['name' => $restaurant->name, 'slug' => $restaurant->slug];
 
-    $uploads->delete('logos', $restaurant->logo);
-    $uploads->delete('heroes', $restaurant->hero_image);
-    $restaurant->delete();
+    $deletion->permanentlyDelete($restaurant);
 
     $activityLog->record('admin', $adminId, 'restaurant.deleted', $restaurantId, 'restaurant', $restaurantId, $oldValues, null, $request->ip(), $request->userAgent());
 
-    return redirect()->route('admin.restaurants.index')->with('success', 'Restaurant deleted.');
+    return redirect()->route('admin.restaurants.index', ['tab' => 'suspended'])->with('success', 'Restaurant permanently deleted.');
   }
 
   private function validated(Request $request, ?int $ignoreId = null): array

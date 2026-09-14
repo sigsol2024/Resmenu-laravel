@@ -28,8 +28,10 @@ if (empty($heroUrl)) {
 </div>
 </div>
 <div class="p-4 md:p-6 lg:p-8 lg:pt-8">
-<?php if (! empty($isTemplatePreview)): ?>
-<p class="font-label-md text-label-md uppercase text-on-surface-variant text-center py-12">Reservation form (Demo Preview)</p>
+<?php if (! empty($reservationFormData) && is_array($reservationFormData)): ?>
+<?php include __DIR__.'/reservation-form.php'; ?>
+<?php elseif (! empty($isTemplatePreview)): ?>
+<p class="font-label-md text-label-md uppercase text-on-surface-variant text-center py-12">Reservation form unavailable in this preview.</p>
 <?php else: ?>
 <?php include __DIR__.'/reservation-form.php'; ?>
 <?php endif; ?>

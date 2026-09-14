@@ -5,10 +5,17 @@
 
     RewriteEngine On
 
-    # Template preview demo photos are stored in assets/images/ (flat).
-    # Menu templates build URLs as assets/images/menu-items/{file} and assets/images/categories/{file}.
+    # Demo photos may live in flat assets/images/ or in menu-items|categories|sections subfolders.
+    # Only rewrite to the flat file when the nested path is missing and the flat file exists.
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{DOCUMENT_ROOT}/assets/images/$1 -f
     RewriteRule ^assets/images/menu-items/(.+)$ assets/images/$1 [L]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{DOCUMENT_ROOT}/assets/images/$1 -f
     RewriteRule ^assets/images/categories/(.+)$ assets/images/$1 [L]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{DOCUMENT_ROOT}/assets/images/$1 -f
+    RewriteRule ^assets/images/sections/(.+)$ assets/images/$1 [L]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .

@@ -7,7 +7,11 @@ if (defined('UPLOAD_URL')) { $uploadBaseUrl = rtrim(UPLOAD_URL, '/'); } else {
     $uploadBaseUrl = $protocol . ($_SERVER['HTTP_HOST'] ?? 'localhost') . (dirname(dirname(dirname($_SERVER['SCRIPT_NAME'] ?? ''))) ?: '') . '/uploads';
 }
 $baseUrl = defined('SITE_URL') ? rtrim(SITE_URL, '/') : '';
-$reservationUrl = $baseUrl . '/restaurant/' . ($restaurant['slug'] ?? '') . '/reservation';
+if (empty($isTemplatePreview)) {
+    $reservationUrl = $baseUrl . '/restaurant/' . ($restaurant['slug'] ?? '') . '/reservation';
+} else {
+    $reservationUrl = $reservationUrl ?? (($fullMenuUrl ?? '') . '#reservation');
+}
 $currencySymbol = '₦';
 $primaryColor = isset($customization['primary_color']) ? $customization['primary_color'] : '#ff007f';
 function bf_price($p, $s = '₦') {
@@ -79,7 +83,7 @@ if (!empty($sections) && is_array($sections)) {
     $items = isset($category['menu_items']) ? $category['menu_items'] : [];
     if (empty($items)) continue;
 ?>
-<section class="mb-24" id="<?php echo htmlspecialchars($slug); ?>">
+<section class="mb-24" id="<?php echo htmlspecialchars($slug); ? data-template-preview-hero>">
 <h3 class="text-2xl font-bold text-neonPink mb-8 border-b border-white/20 pb-4"><?php echo htmlspecialchars($category['name']); ?></h3>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
 <?php foreach ($items as $item): ?>

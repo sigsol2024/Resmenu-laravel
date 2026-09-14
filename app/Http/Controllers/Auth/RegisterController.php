@@ -102,6 +102,7 @@ class RegisterController extends Controller
                 'email' => $data['email'],
                 'is_active' => 1,
                 'template_id' => 4,
+                'last_activity_at' => now(),
             ]);
 
             $manager = Manager::create([
@@ -120,6 +121,12 @@ class RegisterController extends Controller
                 'user_role' => 'manager',
                 'restaurant_id' => $restaurant->id,
             ]);
+
+            try {
+                app(\App\Services\RestaurantLifecycleService::class)->recordManagerLogin($manager);
+            } catch (\Throwable) {
+                // Non-fatal — registration should still succeed.
+            }
         });
 
         return redirect()->route('manager.billing.index', ['welcome' => 1]);

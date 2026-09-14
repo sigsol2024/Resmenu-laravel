@@ -12,18 +12,22 @@ use Illuminate\Support\Str;
  */
 class TemplatePreviewDemoService
 {
-    private const PREVIEW_MENU_ITEMS_BASE = '/assets/images/menu-items';
+    /** Parent upload root — templates append /menu-items|, /categories|, /sections|. */
+    private const PREVIEW_ASSETS_BASE = '/assets/images';
 
     public function __construct(
         private UploadService $uploads,
         private CustomizationService $customization,
     ) {}
 
-    public function buildPayload(int $templateId): array
+    /**
+     * @param  bool  $fullCatalogue  When true, skip T6 home stripping (needed for section preview URLs).
+     */
+    public function buildPayload(int $templateId, bool $fullCatalogue = false): array
     {
         $templateId = max(1, $templateId);
         $imageMap = config('template_preview_images', []);
-        $uploadBaseUrl = rtrim((string) config('app.url'), '/').self::PREVIEW_MENU_ITEMS_BASE;
+        $uploadBaseUrl = rtrim((string) config('app.url'), '/').self::PREVIEW_ASSETS_BASE;
 
         $sections = $this->buildSections($imageMap);
         $sectionsForNav = array_map(static fn (array $s) => [
@@ -61,11 +65,13 @@ class TemplatePreviewDemoService
             'whatsapp_link' => 'https://wa.me/2348000000000',
             'enable_food_ordering' => true,
             'enable_table_reservations' => true,
-        ], rtrim(config('resmenu.upload_url'), '/'));
+        ], $uploadBaseUrl);
 
         $customization = $this->customization->templateDefaultsForPreview($templateId);
 
         $sections = LegacyMenuViewData::normalizeSections($sections);
+
+        $previewBase = url('/templates/'.$templateId.'/preview');
 
         $payload = LegacyMenuViewData::normalize([
             'restaurant' => $restaurant,
@@ -74,14 +80,14 @@ class TemplatePreviewDemoService
             'customization' => $customization,
             'headerMenuItems' => [],
             'singleSectionView' => false,
-            'fullMenuUrl' => url('/templates/'.$templateId.'/preview'),
+            'fullMenuUrl' => $previewBase,
             'sectionsForNav' => $sectionsForNav,
             'uploadBaseUrl' => $uploadBaseUrl,
             'templateAssetBaseUrl' => url('/templates/template'.$templateId),
             'template4BaseUrl' => url('/templates/template4'),
-            'supportsOrdering' => true,
+            'supportsOrdering' => false,
             'supportsReservations' => true,
-            'reservationUrl' => '#',
+            'reservationUrl' => $previewBase.'#reservation',
             'isTemplatePreview' => true,
             'menuViewLevel' => 'home',
             'activeSection' => null,
@@ -89,9 +95,10 @@ class TemplatePreviewDemoService
             'sectionMenuUrl' => null,
             'categoryMenuUrl' => null,
             'popularItems' => [],
+            'reservationFormData' => $this->demoReservationFormData($previewBase),
         ]);
 
-        if ($templateId === 6) {
+        if ($templateId === 6 && ! $fullCatalogue) {
             $popular = [];
             foreach ($sections as $section) {
                 foreach ($section['categories'] ?? [] as $category) {
@@ -125,6 +132,29 @@ class TemplatePreviewDemoService
         return $payload;
     }
 
+    /** @return array<string, mixed> */
+    private function demoReservationFormData(string $previewBase): array
+    {
+        $selectedDate = date('Y-m-d');
+        $slots = [];
+        foreach (['17:00', '17:30', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00'] as $t) {
+            $slots[] = ['time' => $t, 'label' => $t, 'available' => true];
+        }
+
+        return [
+            'csrfToken' => csrf_token(),
+            'actionUrl' => route('public.template.preview.reservation'),
+            'slug' => 'template-preview',
+            'depositAmount' => 0,
+            'selectedDate' => $selectedDate,
+            'minDate' => $selectedDate,
+            'timeSlots' => $slots,
+            'primaryColor' => '#f0be78',
+            'siteBase' => rtrim(url('/'), '/'),
+            'isDemo' => true,
+        ];
+    }
+
     /**
      * @param  array<string, mixed>  $imageMap
      * @return list<array<string, mixed>>
@@ -134,6 +164,7 @@ class TemplatePreviewDemoService
         $catalog = $this->menuCatalog();
         $itemImages = $imageMap['items'] ?? [];
         $categoryImages = $imageMap['categories'] ?? [];
+        $sectionImages = $imageMap['sections'] ?? [];
         $itemId = 1;
         $catId = 1;
         $sectionId = 1;
@@ -141,6 +172,7 @@ class TemplatePreviewDemoService
 
         foreach ($catalog as $sectionDef) {
             $categories = [];
+            $itemCount = 0;
             foreach ($sectionDef['categories'] as $catDef) {
                 $menuItems = [];
                 $order = 1;
@@ -156,6 +188,7 @@ class TemplatePreviewDemoService
                         'is_available' => 1,
                     ];
                 }
+                $itemCount += count($menuItems);
 
                 $categories[] = [
                     'id' => $catId++,
@@ -168,13 +201,16 @@ class TemplatePreviewDemoService
                 ];
             }
 
+            $secSlug = $sectionDef['slug'];
             $sections[] = [
                 'id' => $sectionId++,
                 'name' => $sectionDef['name'],
-                'slug' => $sectionDef['slug'],
+                'slug' => $secSlug,
+                'description' => $sectionDef['description'] ?? '',
                 'display_order' => count($sections) + 1,
                 'is_active' => 1,
-                'image' => null,
+                'image' => $this->sectionImageRef($secSlug, $sectionImages, $categoryImages, $categories),
+                'item_count' => $itemCount,
                 'categories' => $categories,
             ];
         }
@@ -207,6 +243,30 @@ class TemplatePreviewDemoService
         return $filename;
     }
 
+    /**
+     * @param  array<string, string>  $sectionImages
+     * @param  array<string, string>  $categoryImages
+     * @param  list<array<string, mixed>>  $categories
+     */
+    private function sectionImageRef(string $sectionSlug, array $sectionImages, array $categoryImages, array $categories): ?string
+    {
+        if (! empty($sectionImages[$sectionSlug])) {
+            return $sectionImages[$sectionSlug];
+        }
+        foreach ($categories as $cat) {
+            $img = $cat['image'] ?? null;
+            if (is_string($img) && $img !== '') {
+                return $img;
+            }
+            $slug = (string) ($cat['slug'] ?? '');
+            if ($slug !== '' && ! empty($categoryImages[$slug])) {
+                return $categoryImages[$slug];
+            }
+        }
+
+        return $categoryImages['mains'] ?? null;
+    }
+
     /** @param  array<string, mixed>  $imageMap */
     private function previewCoverUrl(int $templateId, array $imageMap): string
     {
@@ -218,13 +278,14 @@ class TemplatePreviewDemoService
 
         $filename = $covers[($templateId - 1) % count($covers)];
 
-        return asset('assets/images/'.$filename);
+        return asset('assets/images/menu-items/'.$filename);
     }
 
     /**
-     * Shared demo menu (~52 items) used for every template preview.
+     * Shared demo menu — existing Food/Desserts/Drinks preserved and enriched with
+     * DESIGN_1-style coverage (Breakfast, Wraps) without wiping working items.
      *
-     * @return list<array{name: string, slug: string, categories: list<array<string, mixed>>}>
+     * @return list<array{name: string, slug: string, description?: string, categories: list<array<string, mixed>>}>
      */
     private function menuCatalog(): array
     {
@@ -232,7 +293,13 @@ class TemplatePreviewDemoService
             [
                 'name' => 'Food',
                 'slug' => 'food',
+                'description' => 'From breakfast plates to grilled favourites.',
                 'categories' => [
+                    $this->cat('Breakfast', 'breakfast', $this->items([
+                        ['Sunrise Scramble', 'Eggs, toast, roasted tomato, house relish', 6200],
+                        ['Pancake Stack', 'Maple butter, seasonal berries', 5800],
+                        ['Nigerian Breakfast Plate', 'Yam, eggs, pepper sauce, plantain', 7500],
+                    ])),
                     $this->cat('Starters & Small Plates', 'starters', $this->items([
                         ['Bruschetta Trio', 'Toasted ciabatta, tomato basil relish, balsamic glaze', 4500],
                         ['Chicken Wings', 'Crispy wings, house spice rub, blue cheese dip', 6500],
@@ -245,6 +312,11 @@ class TemplatePreviewDemoService
                         ['Greek Salad', 'Feta, olives, cucumber, oregano vinaigrette', 5200],
                         ['Avocado & Quinoa', 'Mixed leaves, cherry tomato, citrus dressing', 6800],
                         ['Grilled Chicken Salad', 'Herb chicken, avocado, honey mustard', 7500],
+                    ])),
+                    $this->cat('Wraps & Snacks', 'wraps', $this->items([
+                        ['Chicken Wrap', 'Grilled chicken, greens, yogurt dressing', 6900],
+                        ['Veggie Wrap', 'Roasted peppers, hummus, crisp lettuce', 6100],
+                        ['Club Sandwich', 'Triple-stack turkey, bacon, tomato', 8200],
                     ])),
                     $this->cat('Mains', 'mains', $this->items([
                         ['Grilled Salmon', 'Pan-seared fillet, seasonal vegetables, dill butter', 18500],
@@ -278,6 +350,7 @@ class TemplatePreviewDemoService
             [
                 'name' => 'Desserts',
                 'slug' => 'desserts',
+                'description' => 'Sweet finishes and pastries.',
                 'categories' => [
                     $this->cat('Desserts', 'desserts', $this->items([
                         ['Chocolate Lava Cake', 'Warm fondant, vanilla ice cream', 5500],
@@ -297,6 +370,7 @@ class TemplatePreviewDemoService
             [
                 'name' => 'Drinks',
                 'slug' => 'drinks',
+                'description' => 'Cocktails, wine, soft drinks, and coffee.',
                 'categories' => [
                     $this->cat('Cocktails', 'cocktails', $this->items([
                         ['Old Fashioned', 'Bourbon, bitters, orange twist', 7500],

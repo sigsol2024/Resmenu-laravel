@@ -32,6 +32,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/qr-image', QrImageController::class)->name('qr.image');
         Route::get('/restaurants/{restaurant}/edit', [RestaurantController::class, 'edit'])->name('restaurants.edit');
         Route::put('/restaurants/{restaurant}', [RestaurantController::class, 'update'])->name('restaurants.update');
+        Route::post('/restaurants/{restaurant}/suspend', [RestaurantController::class, 'suspend'])->name('restaurants.suspend');
+        Route::post('/restaurants/{restaurant}/restore', [RestaurantController::class, 'restore'])->name('restaurants.restore');
         Route::delete('/restaurants/{restaurant}', [RestaurantController::class, 'destroy'])->name('restaurants.destroy');
 
         Route::get('/subscription-plans', [SubscriptionPlanController::class, 'index'])->name('subscription-plans.index');
