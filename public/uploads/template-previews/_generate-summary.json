@@ -1,0 +1,11 @@
+{
+  "baseUrl": "https://our-menu.online",
+  "dryRun": false,
+  "results": [
+    {
+      "id": 1,
+      "ok": true,
+      "note": "template-1.webp"
+    }
+  ]
+}

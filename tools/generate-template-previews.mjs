@@ -52,7 +52,24 @@ if (idsArg) {
 fs.mkdirSync(outDir, { recursive: true });
 
 const results = [];
-const browser = await chromium.launch({ headless: true });
+const channel = argValue('channel') || process.env.PLAYWRIGHT_CHROME_CHANNEL || 'chrome';
+let browser;
+try {
+  // Prefer installed Chrome/Edge so hosts that cannot download Playwright browsers still work.
+  browser = await chromium.launch({
+    headless: true,
+    channel,
+  });
+} catch (channelErr) {
+  try {
+    browser = await chromium.launch({ headless: true });
+  } catch (bundledErr) {
+    console.error(`Failed to launch browser (channel=${channel}): ${channelErr.message || channelErr}`);
+    console.error(`Bundled Chromium also unavailable: ${bundledErr.message || bundledErr}`);
+    console.error('Install Google Chrome, or run: npx playwright install chromium');
+    process.exit(1);
+  }
+}
 const context = await browser.newContext({
   viewport: { width: 1440, height: 900 },
   deviceScaleFactor: 1,
@@ -69,10 +86,11 @@ for (const id of ids) {
   const url = `${baseUrl}/templates/${id}/preview?capture=1`;
   const page = await context.newPage();
   try {
-    const res = await page.goto(url, { waitUntil: 'networkidle', timeout: 60000 });
+    const res = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 90000 });
     if (!res || !res.ok()) {
       throw new Error(`HTTP ${res ? res.status() : 'no-response'}`);
     }
+    await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
 
     await page.addStyleTag({
       content: `

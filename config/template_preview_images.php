@@ -7,6 +7,9 @@
  * Gallery hero screenshots (Pass 2): each php-templates/template{N} must include
  * one element with data-template-preview-hero on the above-the-fold hero (section,
  * header, or div) so `php artisan templates:generate-previews --all` can capture them.
+ *
+ * cPanel / no Node: capture on a local machine with Node, upload the WebPs, then:
+ *   php artisan templates:generate-previews --all --db-only
  */
 return [
     'exclude' => [
