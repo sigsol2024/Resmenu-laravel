@@ -10,8 +10,9 @@ use Illuminate\Support\Facades\Process;
 /**
  * Generate WebP gallery heroes from live template previews (Pass 2).
  *
- * New templates: add <section data-template-preview-hero> around the above-the-fold
- * hero in resources/views/menu/php-templates/template{N}/index.php so --all includes them.
+ * New templates: add data-template-preview-hero on the above-the-fold hero
+ * (section, header, or div) in resources/views/menu/php-templates/template{N}
+ * so --all includes them.
  */
 class GenerateTemplatePreviewsCommand extends Command
 {

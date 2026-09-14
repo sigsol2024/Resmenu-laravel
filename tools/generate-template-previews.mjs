@@ -3,8 +3,9 @@
  * Capture template preview heroes as WebP for gallery cards.
  * Invoked by: php artisan templates:generate-previews
  *
- * New templates MUST wrap the above-the-fold hero:
+ * New templates MUST mark the above-the-fold hero:
  *   <section data-template-preview-hero>...</section>
+ *   (header/div with the same attribute also works)
  */
 import { chromium } from 'playwright';
 import fs from 'fs';

@@ -610,7 +610,7 @@ body.snsw-body #scrollToTop {
 <div class="snsw-page-bg" aria-hidden="true"></div>
 <div class="snsw-main-wrap">
 <main class="snsw-main mx-auto min-w-0 max-w-4xl flex-grow overflow-x-hidden px-4 py-6 sm:px-6 md:px-12 md:py-8">
-  <header class="mb-10 pb-2 text-center md:mb-16">
+  <header class="mb-10 pb-2 text-center md:mb-16" data-template-preview-hero>
     <?php if (empty($singleSectionView)): ?>
     <div class="mb-2 flex justify-center text-accent-gold">
       <svg class="h-3 w-3 sm:h-4 sm:w-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12l-6-6h12l-6 6z"></path></svg>
@@ -647,7 +647,7 @@ body.snsw-body #scrollToTop {
     $snswDividerClass = ($snswCatDividerIndex % 4 === 3) ? 'section-header--rail' : 'section-header--red';
     $snswCatDividerIndex++;
   ?>
-  <section class="mb-10 min-w-0 md:mb-16" id="<?php echo htmlspecialchars($slug); ? data-template-preview-hero>">
+  <section class="mb-10 min-w-0 md:mb-16" id="<?php echo htmlspecialchars($slug); ?>">
     <h3 class="section-header <?php echo $snswDividerClass; ?>"><?php echo htmlspecialchars($category['name']); ?></h3>
     <?php if ($useBox): ?><div class="min-w-0 border border-divider-dark bg-white bg-opacity-40 p-4 md:p-6"><?php endif; ?>
     <div class="snsw-menu-items">

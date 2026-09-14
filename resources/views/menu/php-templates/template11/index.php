@@ -41,7 +41,7 @@ if (!empty($sections) && is_array($sections)) {
 </head>
 <body class="min-h-screen p-6 md:p-12 text-gray-800">
 <main class="max-w-4xl mx-auto bg-white/90 backdrop-blur shadow-xl p-8 md:p-16 rounded-lg border border-gold/30">
-<header class="text-center mb-16">
+<header class="text-center mb-16" data-template-preview-hero>
 <?php if (!empty($restaurant['logo']) && empty($isTemplatePreview)): ?><div class="mb-4"><img src="<?php echo $uploadBaseUrl . '/logos/' . htmlspecialchars($restaurant['logo']); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="h-20 w-auto object-contain mx-auto"/></div><?php endif; ?>
 <h1 class="text-4xl md:text-6xl font-raleway font-semibold text-accent mb-2"><?php echo htmlspecialchars($restaurant['name']); ?></h1>
 <p class="text-sm uppercase tracking-widest text-gold"><?php echo htmlspecialchars($restaurant['description'] ?? 'Menu'); ?></p>
@@ -58,7 +58,7 @@ if (!empty($sections) && is_array($sections)) {
     $items = isset($category['menu_items']) ? $category['menu_items'] : [];
     if (empty($items)) continue;
 ?>
-<section class="mb-12" id="<?php echo htmlspecialchars($slug); ? data-template-preview-hero>">
+<section class="mb-12" id="<?php echo htmlspecialchars($slug); ?>">
 <h3 class="text-2xl font-raleway border-b-4 border-accent pb-2 mb-6 inline-block"><?php echo htmlspecialchars($category['name']); ?></h3>
 <div class="space-y-2">
 <?php foreach ($items as $item): ?>

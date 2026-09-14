@@ -680,7 +680,7 @@ if (empty($singleSectionView) && !empty($sectionsForNav) && is_array($sectionsFo
 </div>
 </nav>
 <main class="ml-24 box-border min-w-0 max-w-full flex-1 overflow-x-hidden p-5 sm:ml-24 sm:p-8 md:ml-28 lg:ml-32 lg:p-16" id="menu">
-<header class="mb-10 text-center md:mb-16">
+<header class="mb-10 text-center md:mb-16" data-template-preview-hero>
 <h1 class="w-full text-4xl font-black leading-tight text-white sm:text-5xl md:text-6xl"><?php echo htmlspecialchars($nmcHeaderTitle); ?></h1>
 <?php if (!empty($restaurant['description'])): ?>
 <p class="mx-auto mt-4 max-w-2xl text-slate-300"><?php echo htmlspecialchars($restaurant['description']); ?></p>
@@ -705,7 +705,7 @@ if (empty($singleSectionView) && !empty($sectionsForNav) && is_array($sectionsFo
     $items = isset($category['menu_items']) ? $category['menu_items'] : [];
     if (empty($items)) continue;
 ?>
-<section class="nmc-reveal mb-20 min-w-0 overflow-visible rounded-2xl glass-card p-6 sm:p-8" id="<?php echo htmlspecialchars($slug); ? data-template-preview-hero>">
+<section class="nmc-reveal mb-20 min-w-0 overflow-visible rounded-2xl glass-card p-6 sm:p-8" id="<?php echo htmlspecialchars($slug); ?>">
 <div class="nmc-cat-head mb-8 min-w-0">
 <h3 class="nmc-cat-title block w-full border-b-2 border-orange-500 pb-2 font-bold text-white"><?php echo htmlspecialchars($category['name']); ?></h3>
 <?php if (!empty($category['image'])): ?>

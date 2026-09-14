@@ -124,7 +124,7 @@ body.sfh-body .sfh-bg { position: absolute; inset: 0; pointer-events: none; back
 <?php if (!empty($supportsReservations)): ?><a href="<?php echo htmlspecialchars($reservationUrl); ?>" class="sfh-nav-link block text-center comic-border px-4 py-3 font-chunky bg-brandBlack text-white hover:bg-white hover:text-brandBlack transition-colors shadow-brutal-sm">Reserve Table</a><?php endif; ?>
 </nav>
 </aside>
-<header class="max-w-7xl mx-auto mb-12 text-center relative z-10" data-purpose="page-header">
+<header class="max-w-7xl mx-auto mb-12 text-center relative z-10" data-purpose="page-header" data-template-preview-hero>
 <div class="inline-block bg-brandBlack text-white p-6 comic-border shadow-brutal -rotate-2 mb-6">
 <?php if (!empty($restaurant['logo']) && empty($isTemplatePreview)): ?>
 <img src="<?php echo $uploadBaseUrl . '/logos/' . htmlspecialchars($restaurant['logo']); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="h-20 w-auto object-contain mx-auto"/>
@@ -146,7 +146,7 @@ body.sfh-body .sfh-bg { position: absolute; inset: 0; pointer-events: none; back
     $items = isset($category['menu_items']) ? $category['menu_items'] : [];
     if (empty($items)) continue;
 ?>
-<section class="mb-16" id="<?php echo htmlspecialchars($slug); ? data-template-preview-hero>">
+<section class="mb-16" id="<?php echo htmlspecialchars($slug); ?>">
 <h3 class="font-chunky text-3xl md:text-4xl uppercase mb-6 comic-border inline-block bg-brandYellow text-brandBlack px-6 py-3 shadow-brutal-sm -rotate-1"><?php echo htmlspecialchars($category['name']); ?></h3>
 <div class="masonry-grid">
 <?php foreach ($items as $itemIndex => $item): 

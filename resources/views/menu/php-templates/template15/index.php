@@ -69,7 +69,7 @@ if (!empty($sections) && is_array($sections)) {
 <div class="text-xs text-gray-500 uppercase tracking-widest"><?php echo htmlspecialchars(!empty($restaurant['footer_content']) ? $restaurant['footer_content'] : ($restaurant['address'] ?? '')); ?></div>
 </aside>
 <main class="flex-1 p-8 lg:p-16 overflow-y-auto" id="menu">
-<header class="mb-24">
+<header class="mb-24" data-template-preview-hero>
 <span class="text-neonPink font-mono text-sm tracking-widest uppercase mb-4 block"><?php echo htmlspecialchars($restaurant['description'] ?? 'Urban'); ?></span>
 <h2 class="text-7xl lg:text-8xl font-black italic uppercase leading-none tracking-tighter"><?php echo htmlspecialchars($restaurant['name']); ?></h2>
 </header>
@@ -83,7 +83,7 @@ if (!empty($sections) && is_array($sections)) {
     $items = isset($category['menu_items']) ? $category['menu_items'] : [];
     if (empty($items)) continue;
 ?>
-<section class="mb-24" id="<?php echo htmlspecialchars($slug); ? data-template-preview-hero>">
+<section class="mb-24" id="<?php echo htmlspecialchars($slug); ?>">
 <h3 class="text-2xl font-bold text-neonPink mb-8 border-b border-white/20 pb-4"><?php echo htmlspecialchars($category['name']); ?></h3>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
 <?php foreach ($items as $item): ?>

@@ -40,7 +40,7 @@ if (!empty($sections) && is_array($sections)) {
 </head>
 <body class="min-h-screen p-6 md:p-12">
 <main class="max-w-4xl mx-auto">
-<header class="text-center mb-16 deco-border">
+<header class="text-center mb-16 deco-border" data-template-preview-hero>
 <?php if (!empty($restaurant['logo']) && empty($isTemplatePreview)): ?><div class="mb-4"><img src="<?php echo $uploadBaseUrl . '/logos/' . htmlspecialchars($restaurant['logo']); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="h-20 w-auto object-contain mx-auto"/></div><?php endif; ?>
 <h1 class="text-4xl md:text-6xl font-art-deco text-amber-glow mb-2"><?php echo htmlspecialchars($restaurant['name']); ?></h1>
 <p class="uppercase tracking-widest text-sm text-copper-light"><?php echo htmlspecialchars($restaurant['description'] ?? 'Industrial Cocktail Bar &amp; Lounge'); ?></p>
@@ -60,7 +60,7 @@ foreach ($sections as $section):
     if (empty($items)) continue;
     $fisCatIndex++;
 ?>
-<section class="mb-16" id="<?php echo htmlspecialchars($slug); ? data-template-preview-hero>">
+<section class="mb-16" id="<?php echo htmlspecialchars($slug); ?>">
 <?php if ($fisCatIndex > 1): ?><div class="divider"></div><?php endif; ?>
 <h3 class="text-2xl font-art-deco text-copper-light uppercase tracking-widest mb-8"><?php echo htmlspecialchars($category['name']); ?></h3>
 <div class="space-y-6">

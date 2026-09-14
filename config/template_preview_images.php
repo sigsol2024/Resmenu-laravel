@@ -4,9 +4,9 @@
  * Maps template preview demo menu items/categories to filenames in public/assets/images/.
  * Templates request /assets/images/menu-items/{file} — .htaccess serves public/assets/images/{file}.
  *
- * Gallery hero screenshots (Pass 2): each php-templates/template{N}/index.php must include
- * one <section data-template-preview-hero> around the above-the-fold hero so
- * `php artisan templates:generate-previews --all` can capture new templates automatically.
+ * Gallery hero screenshots (Pass 2): each php-templates/template{N} must include
+ * one element with data-template-preview-hero on the above-the-fold hero (section,
+ * header, or div) so `php artisan templates:generate-previews --all` can capture them.
  */
 return [
     'exclude' => [

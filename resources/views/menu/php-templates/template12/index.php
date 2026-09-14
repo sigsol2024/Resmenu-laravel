@@ -39,7 +39,7 @@ if (!empty($sections) && is_array($sections)) {
 <style>@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;1,400&display=swap'); body { font-family: 'Montserrat', sans-serif; background-color: #ffffff; } h1, h2, h3 { font-family: 'Playfair Display', serif; } .tile-pattern { background-color: #ffffff; background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l30 30-30 30L0 30 30 0z' fill='%23005696' fill-opacity='0.03' fill-rule='evenodd'/%3E%3C/svg%3E"); } .vertical-text { writing-mode: vertical-rl; text-transform: uppercase; letter-spacing: 0.2em; }</style>
 </head>
 <body class="tile-pattern text-slate-800 min-h-screen">
-<header class="w-full py-12 px-6 text-center bg-white/80 backdrop-blur-sm border-b-4 border-medBlue">
+<header class="w-full py-12 px-6 text-center bg-white/80 backdrop-blur-sm border-b-4 border-medBlue" data-template-preview-hero>
 <div class="max-w-4xl mx-auto">
 <?php if (!empty($restaurant['logo']) && empty($isTemplatePreview)): ?><div class="mb-4"><img src="<?php echo $uploadBaseUrl . '/logos/' . htmlspecialchars($restaurant['logo']); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="h-20 w-auto object-contain mx-auto"/></div><?php endif; ?>
 <span class="text-lemonYellow text-4xl">☀</span>
@@ -60,7 +60,7 @@ if (!empty($sections) && is_array($sections)) {
     $items = isset($category['menu_items']) ? $category['menu_items'] : [];
     if (empty($items)) continue;
 ?>
-<section class="flex gap-6 items-start mb-12" id="<?php echo htmlspecialchars($slug); ? data-template-preview-hero>">
+<section class="flex gap-6 items-start mb-12" id="<?php echo htmlspecialchars($slug); ?>">
 <div class="hidden md:block"><h3 class="vertical-text text-medBlue font-bold text-3xl border-l-2 border-lemonYellow pl-4 py-4"><?php echo htmlspecialchars($category['name']); ?></h3></div>
 <div class="flex-1">
 <h3 class="md:hidden text-3xl text-medBlue font-bold mb-6 border-b-2 border-lemonYellow inline-block"><?php echo htmlspecialchars($category['name']); ?></h3>

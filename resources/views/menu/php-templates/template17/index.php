@@ -38,7 +38,7 @@ $cardImages = ['https://lh3.googleusercontent.com/aida-public/AB6AXuD-NUGPkPCxpJ
 <style>body { background: linear-gradient(180deg, #1a1a1a 0%, #000000 100%); background-attachment: fixed; } .card-border { border: 2px solid #f2b90d; transition: all 0.3s ease-in-out; } .card-border:hover { box-shadow: 0 0 20px rgba(242, 185, 13, 0.4); transform: translatey(-5px); border-color: #fff; } .divider-line { height: 1px; background: linear-gradient(90deg, transparent 0%, #fff 50%, transparent 100%); width: 100%; max-width: 400px; }</style>
 </head>
 <body class="text-white min-h-screen flex flex-col justify-between overflow-x-hidden">
-<header class="pt-12 pb-8 flex flex-col items-center px-4">
+<header class="pt-12 pb-8 flex flex-col items-center px-4" data-template-preview-hero>
 <div class="mb-8">
 <?php if (!empty($restaurant['logo']) && empty($isTemplatePreview)): ?>
 <img alt="Logo" class="h-24 w-auto object-contain" src="<?php echo $uploadBaseUrl . '/logos/' . htmlspecialchars($restaurant['logo']); ?>"/>
@@ -85,7 +85,7 @@ foreach ($sections as $section):
     $items = isset($category['menu_items']) ? $category['menu_items'] : [];
     if (empty($items)) continue;
 ?>
-<section class="card-border p-8 bg-black/40" id="<?php echo htmlspecialchars($slug); ? data-template-preview-hero>">
+<section class="card-border p-8 bg-black/40" id="<?php echo htmlspecialchars($slug); ?>">
 <h3 class="text-2xl font-serif text-brandGold uppercase tracking-widest mb-6"><?php echo htmlspecialchars($category['name']); ?></h3>
 <div class="space-y-4">
 <?php foreach ($items as $item): ?>
