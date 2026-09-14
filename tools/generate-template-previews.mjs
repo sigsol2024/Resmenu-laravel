@@ -71,8 +71,10 @@ try {
   }
 }
 const context = await browser.newContext({
-  // Match gallery card aspect-[4/3] so object-cover does not over-crop.
-  viewport: { width: 1440, height: 1080 },
+  // Capture larger than the final asset, then downscale to 1440x1080 (4:3).
+  // That keeps gallery cards equal while avoiding "too close / cropped" framing
+  // on dense desktop layouts (sidebars, large type).
+  viewport: { width: 1920, height: 1440 },
   deviceScaleFactor: 1,
 });
 
@@ -96,8 +98,18 @@ for (const id of ids) {
     await page.addStyleTag({
       content: `
         *, *::before, *::after { animation: none !important; transition: none !important; }
-        [data-menu-drawer], .menu-drawer, .drawer, .modal, .cookie, #cookie-banner { display: none !important; }
+        [data-menu-drawer], .menu-drawer, .drawer, .modal, .cookie, #cookie-banner,
+        [role="dialog"], [aria-modal="true"] { display: none !important; visibility: hidden !important; }
       `,
+    });
+
+    // Close overlays that block the hero (e.g. T10 section chooser).
+    await page.evaluate(() => {
+      document.querySelectorAll('[aria-modal="true"], .modal, [role="dialog"]').forEach((el) => {
+        el.style.setProperty('display', 'none', 'important');
+      });
+      document.body.classList.remove('overflow-hidden', 'modal-open');
+      window.scrollTo(0, 0);
     });
 
     await page.waitForTimeout(600);
@@ -106,9 +118,6 @@ for (const id of ids) {
       throw new Error('missing [data-template-preview-hero] marker');
     }
 
-    // Marker is used for readiness only — capture the full above-the-fold viewport.
-    // Element screenshots of small <header> blocks produce ultra-wide strips that
-    // gallery object-cover then crops badly (T4/T7 look fine because their heroes are tall).
     await locator.scrollIntoViewIfNeeded();
     await page.waitForFunction(() => {
       const root = document.querySelector('[data-template-preview-hero]');
@@ -122,7 +131,7 @@ for (const id of ids) {
 
     const pngBuf = await page.screenshot({
       type: 'png',
-      clip: { x: 0, y: 0, width: 1440, height: 1080 },
+      clip: { x: 0, y: 0, width: 1920, height: 1440 },
     });
 
     if (dryRun) {
@@ -130,7 +139,10 @@ for (const id of ids) {
       console.log(`Template ${id}  ✓ screenshot generated (dry-run)`);
     } else if (sharp) {
       const outFile = path.join(outDir, `template-${id}.webp`);
-      await sharp(pngBuf).webp({ quality: 82 }).toFile(outFile);
+      await sharp(pngBuf)
+        .resize(1440, 1080, { fit: 'fill' })
+        .webp({ quality: 82 })
+        .toFile(outFile);
       results.push({ id, ok: true, note: path.basename(outFile) });
       console.log(`Template ${id}  ✓ screenshot generated`);
     } else {
