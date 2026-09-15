@@ -66,7 +66,7 @@ foreach ($sections as $section):
 <div class="space-y-6">
 <?php foreach ($items as $item): ?>
 <div class="flex gap-4 items-start border-b border-copper/30 pb-4">
-<?php if (!empty($item['image'])): ?><img src="<?php echo $uploadBaseUrl . '/menu-items/' . htmlspecialchars($item['image']); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="w-20 h-20 flex-shrink-0 object-cover rounded"/><?php endif; ?>
+<?php if (!empty($item['image'])): ?><img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="w-20 h-20 flex-shrink-0 object-cover rounded"/><?php endif; ?>
 <div class="flex-1 min-w-0">
 <h3 class="text-xl font-semibold text-white"><?php echo htmlspecialchars($item['name']); ?></h3>
 <p class="text-sm text-gray-400 italic"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p>

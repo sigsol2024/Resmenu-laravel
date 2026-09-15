@@ -177,7 +177,7 @@ if (!empty($restaurant['hero_image_url'])) {
 } elseif (!empty($restaurant['hero_image']) && empty($isTemplatePreview)) {
     $nmcHeroImageFile = (string) $restaurant['hero_image'];
     $nmcHeroImageSubdir = 'heroes';
-    $nmcCoverUrl = $uploadBaseUrl . '/heroes/' . htmlspecialchars($nmcHeroImageFile, ENT_QUOTES, 'UTF-8');
+    $nmcCoverUrl = htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'heroes', $nmcHeroImageFile), ENT_QUOTES, 'UTF-8');
     $nmcHeroSurfaceKind = nmc_image_surface_kind($nmcHeroImageFile, $nmcHeroImageSubdir);
 } elseif (!empty($restaurant['logo']) && empty($isTemplatePreview)) {
     $nmcHeroImageFile = (string) $restaurant['logo'];
@@ -195,7 +195,7 @@ if (!empty($singleSectionView) && !empty($sections) && is_array($sections) && !e
     if (!empty($nmcSec0['image'])) {
         $nmcHeroImageFile = (string) $nmcSec0['image'];
         $nmcHeroImageSubdir = 'sections';
-        $nmcHeroImageUrl = $uploadBaseUrl . '/sections/' . htmlspecialchars($nmcHeroImageFile, ENT_QUOTES, 'UTF-8');
+        $nmcHeroImageUrl = htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'sections', $nmcHeroImageFile), ENT_QUOTES, 'UTF-8');
         $nmcHeroSurfaceKind = nmc_image_surface_kind($nmcHeroImageFile, $nmcHeroImageSubdir);
     } else {
         $nmcHeroImageUrl = '';
@@ -608,7 +608,7 @@ body.nmc-body #scrollToTop {
 ?>
 <a href="<?php echo $nmcWelHref; ?>" class="nmc-welcome-section-link nmc-welcome-sep block py-1 text-center">
 <?php if (!empty($nmcWelSec['image'])): ?>
-<div class="mx-auto mb-1.5 flex justify-center"><img src="<?php echo $uploadBaseUrl . '/sections/' . htmlspecialchars($nmcWelSec['image']); ?>" alt="" class="<?php echo htmlspecialchars(nmc_img_class('nmc-welcome-section-img w-auto', $nmcWelSec['image'], 'sections', 'rounded-md shadow-sm'), ENT_QUOTES, 'UTF-8'); ?>" loading="eager" decoding="async"/></div>
+<div class="mx-auto mb-1.5 flex justify-center"><img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'sections', $nmcWelSec['image'])); ?>" alt="" class="<?php echo htmlspecialchars(nmc_img_class('nmc-welcome-section-img w-auto', $nmcWelSec['image'], 'sections', 'rounded-md shadow-sm'), ENT_QUOTES, 'UTF-8'); ?>" loading="eager" decoding="async"/></div>
 <?php endif; ?>
 <span class="text-xs font-bold uppercase tracking-[0.18em] text-red-500 sm:text-sm"><?php echo $nmcWelName; ?></span>
 </a>
@@ -710,7 +710,7 @@ if (empty($singleSectionView) && !empty($sectionsForNav) && is_array($sectionsFo
 <h3 class="nmc-cat-title block w-full border-b-2 border-orange-500 pb-2 font-bold text-white"><?php echo htmlspecialchars($category['name']); ?></h3>
 <?php if (!empty($category['image'])): ?>
 <div class="mt-3 w-full max-w-md overflow-visible">
-<img src="<?php echo $uploadBaseUrl . '/categories/' . htmlspecialchars($category['image']); ?>" alt="" class="<?php echo htmlspecialchars(nmc_img_class('h-auto max-h-48 w-full sm:max-h-52', $category['image'], 'categories', 'rounded-lg ring-1 ring-white/15'), ENT_QUOTES, 'UTF-8'); ?>" loading="lazy" decoding="async"/>
+<img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'categories', $category['image'])); ?>" alt="" class="<?php echo htmlspecialchars(nmc_img_class('h-auto max-h-48 w-full sm:max-h-52', $category['image'], 'categories', 'rounded-lg ring-1 ring-white/15'), ENT_QUOTES, 'UTF-8'); ?>" loading="lazy" decoding="async"/>
 </div>
 <?php endif; ?>
 </div>
@@ -722,7 +722,7 @@ if (empty($singleSectionView) && !empty($sectionsForNav) && is_array($sectionsFo
 <div class="nmc-menu-item flex min-w-0 gap-3 border-b border-white/10 pb-4 sm:gap-4<?php echo $nmcItemHasImage ? ' nmc-menu-item--has-image' : ''; ?>">
 <?php if ($nmcItemHasImage): ?>
 <div class="nmc-menu-item__media">
-<img src="<?php echo $uploadBaseUrl . '/menu-items/' . htmlspecialchars($item['image']); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="<?php echo htmlspecialchars(nmc_img_class('nmc-menu-item__img', $item['image'], 'menu-items', ''), ENT_QUOTES, 'UTF-8'); ?>"/>
+<img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="<?php echo htmlspecialchars(nmc_img_class('nmc-menu-item__img', $item['image'], 'menu-items', ''), ENT_QUOTES, 'UTF-8'); ?>"/>
 </div>
 <?php endif; ?>
 <div class="nmc-menu-item__text min-w-0<?php echo $nmcItemHasImage ? ' w-full' : ' flex-1'; ?>">

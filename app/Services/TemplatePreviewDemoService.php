@@ -8,15 +8,13 @@ use Illuminate\Support\Str;
 
 /**
  * Rich sample menu for /templates/{id}/preview (marketing demos).
- * Images are mapped explicitly to files in public/assets/images/ (see config/template_preview_images.php).
+ * Images live under public/templates/preview_images/ (see config/template_preview_images.php).
  */
 class TemplatePreviewDemoService
 {
-    /** Parent upload root — templates append /menu-items|, /categories|, /sections|. */
-    private const PREVIEW_ASSETS_BASE = '/assets/images';
+    private const PREVIEW_ASSETS_BASE = '/templates/preview_images';
 
     public function __construct(
-        private UploadService $uploads,
         private CustomizationService $customization,
     ) {}
 
@@ -38,9 +36,10 @@ class TemplatePreviewDemoService
 
         $templateRow = DB::table('templates')->where('id', $templateId)->where('is_active', 1)->first();
         $templateName = $templateRow->name ?? ('Template '.$templateId);
-        $heroUrl = ! empty($templateRow->preview_image)
-            ? $this->uploads->publicUrl('template-previews', $templateRow->preview_image)
-            : $this->previewCoverUrl($templateId, $imageMap);
+
+        $coverRel = (string) ($imageMap['restaurant_cover'] ?? 'demo_restaurant_coverimage.jpg');
+        $heroUrl = $uploadBaseUrl.'/'.ltrim($coverRel, '/');
+        $heroFilename = basename($coverRel);
 
         $restaurant = LegacyMenuViewData::normalizeRestaurant([
             'id' => 0,
@@ -53,7 +52,7 @@ class TemplatePreviewDemoService
             'address' => '123 Sample Street, Victoria Island, Lagos',
             'phone' => '+234 800 000 0000',
             'email' => 'hello@yourrestaurant.com',
-            'hero_image' => null,
+            'hero_image' => $heroFilename,
             'hero_image_url' => $heroUrl,
             'footer_content' => 'This is a demonstration menu for the '.$templateName.' design. Sign up to publish your own menu with ordering and reservations.',
             'google_rating' => 4.8,
@@ -66,6 +65,10 @@ class TemplatePreviewDemoService
             'enable_food_ordering' => true,
             'enable_table_reservations' => true,
         ], $uploadBaseUrl);
+
+        // Keep absolute cover URL (normalizeRestaurant may rebuild from /heroes/{filename}).
+        $restaurant['hero_image_url'] = $heroUrl;
+        $restaurant['hero_image'] = $heroFilename;
 
         $customization = $this->customization->templateDefaultsForPreview($templateId);
 
@@ -97,6 +100,12 @@ class TemplatePreviewDemoService
             'popularItems' => [],
             'reservationFormData' => $this->demoReservationFormData($previewBase),
         ]);
+
+        // Keep shared demo cover URL after normalize (do not rebuild as /heroes/{basename}).
+        if (isset($payload['restaurant']) && is_array($payload['restaurant'])) {
+            $payload['restaurant']['hero_image_url'] = $heroUrl;
+            $payload['restaurant']['hero_image'] = $heroFilename;
+        }
 
         if ($templateId === 6 && ! $fullCatalogue) {
             $popular = [];
@@ -183,7 +192,7 @@ class TemplatePreviewDemoService
                         'name' => $itemDef['name'],
                         'description' => $itemDef['description'],
                         'price' => $itemDef['price'],
-                        'image' => $this->menuItemImageRef($slug, $itemImages, $categoryImages, $catDef['slug']),
+                        'image' => $this->menuItemImageRef($slug, $itemImages),
                         'display_order' => $order++,
                         'is_available' => 1,
                     ];
@@ -218,13 +227,10 @@ class TemplatePreviewDemoService
         return $sections;
     }
 
-    /**
-     * @param  array<string, string>  $itemImages
-     * @param  array<string, string>  $categoryImages
-     */
-    private function menuItemImageRef(string $itemSlug, array $itemImages, array $categoryImages, string $categorySlug): ?string
+    /** @param  array<string, string>  $itemImages */
+    private function menuItemImageRef(string $itemSlug, array $itemImages): ?string
     {
-        $filename = $itemImages[$itemSlug] ?? $categoryImages[$categorySlug] ?? null;
+        $filename = $itemImages[$itemSlug] ?? null;
         if ($filename === null || $filename === '') {
             return null;
         }
@@ -235,7 +241,7 @@ class TemplatePreviewDemoService
     /** @param  array<string, string>  $categoryImages */
     private function categoryImageRef(string $categorySlug, array $categoryImages): ?string
     {
-        $filename = $categoryImages[$categorySlug] ?? $categoryImages['mains'] ?? null;
+        $filename = $categoryImages[$categorySlug] ?? null;
         if ($filename === null || $filename === '') {
             return null;
         }
@@ -264,26 +270,11 @@ class TemplatePreviewDemoService
             }
         }
 
-        return $categoryImages['mains'] ?? null;
-    }
-
-    /** @param  array<string, mixed>  $imageMap */
-    private function previewCoverUrl(int $templateId, array $imageMap): string
-    {
-        $covers = $imageMap['covers'] ?? ['5qRm87VW5lLs5bHzJRlcNQHJTg95ef.png'];
-        $covers = array_values(array_filter($covers, 'is_string'));
-        if ($covers === []) {
-            return url('/templates/template'.$templateId.'/cover.jpg');
-        }
-
-        $filename = $covers[($templateId - 1) % count($covers)];
-
-        return asset('assets/images/menu-items/'.$filename);
+        return null;
     }
 
     /**
-     * Shared demo menu — existing Food/Desserts/Drinks preserved and enriched with
-     * DESIGN_1-style coverage (Breakfast, Wraps) without wiping working items.
+     * Demo catalogue — only categories that exist under preview_images/menu_images/.
      *
      * @return list<array{name: string, slug: string, description?: string, categories: list<array<string, mixed>>}>
      */
@@ -333,44 +324,26 @@ class TemplatePreviewDemoService
                         ['Fried Rice Special', 'Wok-fried rice, prawns, vegetables, soy', 9200],
                         ['Coconut Rice', 'Fragrant rice, curry leaf, grilled fish', 11000],
                     ])),
-                    $this->cat('Grill & Burgers', 'grill', $this->items([
-                        ['Classic Beef Burger', 'Angus patty, cheddar, pickles, brioche bun', 9500],
-                        ['BBQ Chicken Burger', 'Slaw, smoked cheddar, crispy onions', 8800],
-                        ['Grilled Prawns', 'Garlic butter, charred lemon, herb salad', 16500],
-                        ['Mixed Grill Platter', 'Assorted meats, sauces, grilled vegetables', 22000],
-                    ])),
-                    $this->cat('Sides', 'sides', $this->items([
-                        ['Truffle Fries', 'Parmesan, truffle oil, parsley', 4200],
-                        ['Plantain Chips', 'Sweet plantain, spicy dip', 3500],
-                        ['Steamed Vegetables', 'Seasonal greens, herb butter', 3800],
-                        ['Coleslaw', 'Creamy house slaw', 2800],
-                    ])),
                 ],
             ],
             [
                 'name' => 'Desserts',
                 'slug' => 'desserts',
-                'description' => 'Sweet finishes and pastries.',
+                'description' => 'Sweet finishes.',
                 'categories' => [
                     $this->cat('Desserts', 'desserts', $this->items([
-                        ['Chocolate Lava Cake', 'Warm fondant, vanilla ice cream', 5500],
-                        ['New York Cheesecake', 'Berry compote, biscuit base', 5200],
-                        ['Tiramisu', 'Espresso soak, mascarpone, cocoa', 4800],
-                        ['Fruit Salad', 'Seasonal fruit, mint syrup', 3500],
-                        ['Ice Cream Scoop', 'Vanilla, chocolate, or strawberry', 2800],
-                    ])),
-                    $this->cat('Pastries', 'pastries', $this->items([
-                        ['Red Velvet Slice', 'Cream cheese frosting', 4200],
-                        ['Carrot Cake', 'Walnuts, cream cheese icing', 4500],
-                        ['Croissant', 'Butter laminated, served warm', 2500],
-                        ['Puff Puff Basket', 'Nigerian dough bites, cinnamon sugar', 3200],
+                        ['Cookies & Cream Shake', 'Oreo blend, whipped cream', 4500],
+                        ['Strawberry Milkshake', 'Fresh strawberry, whipped cream', 4200],
+                        ['Banana Split', 'Ice cream, nuts, cherries', 5500],
+                        ['Vanilla Milkshake', 'Classic vanilla, sprinkles', 4000],
+                        ['Milkshake Flight', 'Three signature shakes to share', 9800],
                     ])),
                 ],
             ],
             [
                 'name' => 'Drinks',
                 'slug' => 'drinks',
-                'description' => 'Cocktails, wine, soft drinks, and coffee.',
+                'description' => 'Cocktails, beer, soft drinks, and coffee.',
                 'categories' => [
                     $this->cat('Cocktails', 'cocktails', $this->items([
                         ['Old Fashioned', 'Bourbon, bitters, orange twist', 7500],
@@ -379,16 +352,22 @@ class TemplatePreviewDemoService
                         ['Nigerian Chapman', 'Fruit punch, Angostura, cucumber', 4500],
                     ])),
                     $this->cat('Wine & Beer', 'wine-beer', $this->items([
-                        ['House Red', 'Glass — smooth merlot blend', 5500],
-                        ['House White', 'Glass — crisp sauvignon', 5500],
-                        ['Craft Lager', '330ml — local brewery', 3500],
-                        ['Imported Beer', '330ml — premium lager', 4200],
+                        ['Budweiser', '330ml lager', 3500],
+                        ['Desperado', '330ml tequila-flavoured beer', 4000],
+                        ['Guinness Stout', '330ml', 3800],
+                        ['Gulder', '330ml lager', 3200],
+                        ['Power Horse', 'Energy drink 250ml', 2800],
+                        ['Red Bull', 'Energy drink 250ml', 3000],
+                        ['Smirnoff Ice', '275ml', 4200],
                     ])),
                     $this->cat('Soft Drinks', 'soft-drinks', $this->items([
-                        ['Fresh Lemonade', 'House-made, mint optional', 2500],
-                        ['Chapman Pitcher', 'Sharing size fruit punch', 8500],
-                        ['Bottled Water', 'Still or sparkling 75cl', 1500],
-                        ['Ginger Ale', 'Premium ginger beer', 2200],
+                        ['Active Chivita', '1 litre fruit juice', 2500],
+                        ['Chi Exotic', 'Can — tropical blend', 1800],
+                        ['Coca-Cola', 'Can', 1500],
+                        ['Fanta', 'Can', 1500],
+                        ['Hollandia Yoghurt', '1 litre', 2800],
+                        ['Malta Guinness', 'Non-alcoholic malt', 2000],
+                        ['Sprite', 'Can', 1500],
                     ])),
                     $this->cat('Coffee & Tea', 'coffee-tea', $this->items([
                         ['Espresso', 'Double shot', 1800],

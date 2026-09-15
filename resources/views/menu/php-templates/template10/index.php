@@ -50,7 +50,7 @@ if (!empty($singleSectionView) && !empty($sections) && is_array($sections) && !e
         $snswHeaderTitle = $sections[0]['name'];
     }
     if (!empty($sections[0]['image'])) {
-        $snswSectionHeroUrl = $uploadBaseUrl . '/sections/' . rawurlencode((string) $sections[0]['image']);
+        $snswSectionHeroUrl = resmenu_media_url($uploadBaseUrl, 'sections', (string) $sections[0]['image']);
     }
 }
 $brandName = $restaurant['name'] ?? 'Menu';
@@ -565,7 +565,7 @@ body.snsw-body #scrollToTop {
 ?>
 <a href="<?php echo $snswWelHref; ?>" class="snsw-welcome-section-link snsw-welcome-sep block py-1 text-center">
 <?php if (!empty($snswWelSec['image'])): ?>
-<div class="mx-auto mb-1.5 flex justify-center"><img src="<?php echo $uploadBaseUrl . '/sections/' . htmlspecialchars($snswWelSec['image']); ?>" alt="" class="snsw-welcome-section-img w-auto rounded shadow-sm" loading="eager" decoding="async"/></div>
+<div class="mx-auto mb-1.5 flex justify-center"><img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'sections', $snswWelSec['image'])); ?>" alt="" class="snsw-welcome-section-img w-auto rounded shadow-sm" loading="eager" decoding="async"/></div>
 <?php endif; ?>
 <span class="snsw-welcome-section-label"><?php echo $snswWelName; ?></span>
 </a>
@@ -655,7 +655,7 @@ body.snsw-body #scrollToTop {
         $itemAvailable = !isset($item['is_available']) || $item['is_available'];
       ?>
       <div class="menu-item">
-        <?php if (!empty($item['image'])): ?><div class="mb-2"><img src="<?php echo $uploadBaseUrl . '/menu-items/' . htmlspecialchars($item['image']); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="max-h-20 w-full max-w-full rounded object-cover md:max-h-24"/></div><?php endif; ?>
+        <?php if (!empty($item['image'])): ?><div class="mb-2"><img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="max-h-20 w-full max-w-full rounded object-cover md:max-h-24"/></div><?php endif; ?>
         <div class="menu-item-row">
           <span class="item-name"><?php echo htmlspecialchars($item['name']); ?></span>
           <span class="item-dots"></span>

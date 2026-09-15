@@ -35,11 +35,11 @@ if (!empty($sections) && is_array($sections)) {
 /* Cover / hero: section-specific page uses section banner; else restaurant cover URL or file or logo */
 $nfmHeroBgUrl = '';
 if (!empty($singleSectionView) && !empty($sections) && is_array($sections) && !empty($sections[0]['image'])) {
-    $nfmHeroBgUrl = $uploadBaseUrl . '/sections/' . htmlspecialchars($sections[0]['image']);
+    $nfmHeroBgUrl = htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'sections', $sections[0]['image']));
 } elseif (!empty($restaurant['hero_image_url'])) {
     $nfmHeroBgUrl = $restaurant['hero_image_url'];
 } elseif (!empty($restaurant['hero_image']) && empty($isTemplatePreview)) {
-    $nfmHeroBgUrl = $uploadBaseUrl . '/heroes/' . htmlspecialchars($restaurant['hero_image']);
+    $nfmHeroBgUrl = htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'heroes', $restaurant['hero_image']));
 } elseif (!empty($restaurant['logo']) && empty($isTemplatePreview)) {
     $nfmHeroBgUrl = $uploadBaseUrl . '/logos/' . htmlspecialchars($restaurant['logo']);
 }
@@ -250,7 +250,7 @@ body.nfm-body {
 <h2 class="nfm-section-title mb-4 text-center <?php echo !empty($singleSectionView) ? 'text-3xl text-gray-400 sm:text-4xl md:mb-4 md:text-4xl lg:text-5xl' : 'text-4xl text-brandGold sm:text-5xl md:mb-4 md:text-5xl lg:text-6xl xl:text-7xl'; ?>"><?php if (!empty($fullMenuUrl) && empty($singleSectionView)): ?><a href="<?php echo htmlspecialchars($fullMenuUrl . '/' . $section['slug']); ?>" class="text-brandGold hover:underline"><?php echo htmlspecialchars($section['name']); ?></a><?php else: ?><?php echo htmlspecialchars($section['name']); ?><?php endif; ?></h2>
 <?php if (empty($singleSectionView) && !empty($section['image'])): ?>
 <div class="mx-auto mb-4 max-w-[11.5rem] px-1 sm:mb-5 sm:max-w-xs md:mb-6 md:max-w-md">
-  <img src="<?php echo $uploadBaseUrl . '/sections/' . htmlspecialchars($section['image']); ?>" alt="" class="mx-auto max-h-[4.25rem] w-full rounded-md object-contain shadow-md sm:max-h-28 md:max-h-36" loading="lazy" decoding="async"/>
+  <img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'sections', $section['image'])); ?>" alt="" class="mx-auto max-h-[4.25rem] w-full rounded-md object-contain shadow-md sm:max-h-28 md:max-h-36" loading="lazy" decoding="async"/>
 </div>
 <?php endif; ?>
 <div class="grid grid-cols-1 gap-y-12 gap-x-0 sm:gap-y-14 md:grid-cols-2 md:gap-x-8 md:gap-y-12 lg:gap-x-10 lg:gap-y-14">
@@ -262,14 +262,14 @@ body.nfm-body {
 <section class="card-border flex h-full min-w-0 flex-col rounded-sm border-brandGold/30 bg-transparent p-4 sm:p-5 md:p-5 lg:p-6" id="<?php echo htmlspecialchars($slug); ?>">
 <h3 class="nfm-category-title mb-4 flex flex-wrap items-center justify-center gap-3 border-b border-brandGold/25 pb-3 text-center text-5xl leading-tight text-white sm:text-5xl md:mb-5 md:justify-start md:text-left md:text-4xl lg:text-5xl xl:text-6xl">
   <?php if (!empty($category['image'])): ?>
-    <img src="<?php echo $uploadBaseUrl . '/categories/' . htmlspecialchars($category['image']); ?>" alt="" class="h-11 w-11 shrink-0 rounded-full object-cover ring-2 ring-brandGold/45 md:h-10 md:w-10" width="44" height="44" loading="lazy" decoding="async"/>
+    <img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'categories', $category['image'])); ?>" alt="" class="h-11 w-11 shrink-0 rounded-full object-cover ring-2 ring-brandGold/45 md:h-10 md:w-10" width="44" height="44" loading="lazy" decoding="async"/>
   <?php endif; ?>
   <span class="min-w-0"><?php echo htmlspecialchars($category['name']); ?></span>
 </h3>
 <div class="flex flex-col gap-3 md:gap-3.5">
 <?php foreach ($items as $item): ?>
 <article class="nfm-menu-item nfm-reveal flex min-w-0 items-start gap-3 rounded-md px-3 py-3 sm:px-4 sm:py-3.5">
-<?php if (!empty($item['image'])): ?><img src="<?php echo $uploadBaseUrl . '/menu-items/' . htmlspecialchars($item['image']); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="h-14 w-14 shrink-0 rounded-md object-cover ring-1 ring-white/15 sm:h-16 sm:w-16 md:h-14 md:w-14" loading="lazy" decoding="async"/><?php endif; ?>
+<?php if (!empty($item['image'])): ?><img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="h-14 w-14 shrink-0 rounded-md object-cover ring-1 ring-white/15 sm:h-16 sm:w-16 md:h-14 md:w-14" loading="lazy" decoding="async"/><?php endif; ?>
 <div class="flex min-w-0 flex-1 flex-col gap-1.5">
 <div class="flex w-full min-w-0 items-start gap-3">
 <div class="flex min-w-0 flex-1 items-start gap-2">

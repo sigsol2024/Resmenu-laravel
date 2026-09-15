@@ -43,3 +43,32 @@ if (! function_exists('e_menu')) {
         return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
     }
 }
+
+/**
+ * Resolve upload/media URLs for menu templates.
+ * Nested paths (demo preview_images) use {base}/{path}; basenames use {base}/{kind}/{file}.
+ */
+if (! function_exists('resmenu_media_url')) {
+    function resmenu_media_url(?string $base, string $kind, ?string $file): string
+    {
+        if ($file === null || trim((string) $file) === '') {
+            return '';
+        }
+
+        $file = (string) $file;
+        if (preg_match('#^https?://#i', $file)) {
+            return $file;
+        }
+
+        $base = rtrim((string) $base, '/');
+        if (str_starts_with($file, '/')) {
+            return rtrim((string) config('app.url'), '/').$file;
+        }
+
+        if (str_contains($file, '/')) {
+            return $base.'/'.ltrim($file, '/');
+        }
+
+        return $base.'/'.trim($kind, '/').'/'.ltrim($file, '/');
+    }
+}

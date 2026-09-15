@@ -147,7 +147,7 @@ body.sfh-body .sfh-bg { position: absolute; inset: 0; pointer-events: none; back
 <div class="masonry-grid">
 <?php foreach ($items as $itemIndex => $item): 
         $masonry = $masonryClasses[$itemIndex % 3];
-        $imgUrl = !empty($item['image']) ? $uploadBaseUrl . '/menu-items/' . htmlspecialchars($item['image']) : '';
+        $imgUrl = !empty($item['image']) ? htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])) : '';
         $itemAvailable = !isset($item['is_available']) || $item['is_available'];
 ?>
 <article class="<?php echo $masonry; ?> sfh-card bg-white comic-border shadow-brutal flex flex-col relative overflow-hidden group <?php echo $imgUrl ? '' : 'sfh-no-img'; ?>" data-purpose="menu-item">

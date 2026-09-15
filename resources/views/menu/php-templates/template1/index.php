@@ -32,11 +32,11 @@ $primaryColor = isset($customization['primary_color']) ? $customization['primary
 // Hero image: use section image on section pages when available; otherwise restaurant hero/cover/logo as before
 $heroMainImageUrl = '';
 if (!empty($singleSectionView) && !empty($sections[0]['image'])) {
-    $heroMainImageUrl = $uploadBaseUrl . '/sections/' . htmlspecialchars($sections[0]['image']);
+    $heroMainImageUrl = htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'sections', $sections[0]['image']));
 } elseif (!empty($restaurant['hero_image_url'])) {
     $heroMainImageUrl = $restaurant['hero_image_url'];
 } elseif (!empty($restaurant['hero_image'])) {
-    $heroMainImageUrl = $uploadBaseUrl . '/heroes/' . htmlspecialchars($restaurant['hero_image']);
+    $heroMainImageUrl = htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'heroes', $restaurant['hero_image']));
 } elseif (!empty($restaurant['logo'])) {
     $heroMainImageUrl = $uploadBaseUrl . '/logos/' . htmlspecialchars($restaurant['logo']);
 }
@@ -315,7 +315,7 @@ foreach ($sections as $section):
   <div class="container">
     <div class="menu-container">
       <?php if (!empty($category['image'])): ?>
-        <div class="menu-image" style="background-image: url('<?php echo $uploadBaseUrl . '/categories/' . htmlspecialchars($category['image']); ?>'); background-size: cover; background-position: center;"></div>
+        <div class="menu-image" style="background-image: url('<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'categories', $category['image'])); ?>'); background-size: cover; background-position: center;"></div>
       <?php else: ?>
         <div class="menu-image menu-image--no-photo">
           <div class="menu-image__bg-pattern" style="background-image: url('<?php echo htmlspecialchars($template1BaseUrl); ?>/bg_black.png');"></div>
@@ -329,7 +329,7 @@ foreach ($sections as $section):
               <div class="menu-item-content">
                 <?php if (!empty($item['image'])): ?>
                   <div class="item-image">
-                    <img src="<?php echo $uploadBaseUrl . '/menu-items/' . htmlspecialchars($item['image']); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>">
+                    <img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>">
                   </div>
                 <?php endif; ?>
                 <div class="item-details">
@@ -395,7 +395,7 @@ endif;
           if (!empty($restaurant['hero_image_url'])) {
               $visitImageUrl = $restaurant['hero_image_url'];
           } elseif (!empty($restaurant['hero_image'])) {
-              $visitImageUrl = $uploadBaseUrl . '/heroes/' . $restaurant['hero_image'];
+              $visitImageUrl = resmenu_media_url($uploadBaseUrl, 'heroes', $restaurant['hero_image']);
           } elseif (!empty($restaurant['logo'])) {
               $visitImageUrl = $uploadBaseUrl . '/logos/' . $restaurant['logo'];
           }

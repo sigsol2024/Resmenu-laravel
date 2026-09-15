@@ -60,7 +60,7 @@ $cardImages = ['https://lh3.googleusercontent.com/aida-public/AB6AXuD-NUGPkPCxpJ
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 <?php foreach ($activeCategories as $i => $cat): 
     $slug = isset($cat['slug']) ? $cat['slug'] : ('section-'.$i);
-    $img = !empty($cat['image']) ? $uploadBaseUrl . '/categories/' . htmlspecialchars($cat['image']) : ($cardImages[$i % count($cardImages)] ?? $cardImages[0]);
+    $img = !empty($cat['image']) ? htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'categories', $cat['image'])) : ($cardImages[$i % count($cardImages)] ?? $cardImages[0]);
 ?>
 <a class="card-border bg-black/40 backdrop-blur-sm p-2 flex flex-col items-center group cursor-pointer" href="#<?php echo htmlspecialchars($slug); ?>">
 <div class="overflow-hidden w-full h-48 mb-6">
@@ -90,7 +90,7 @@ foreach ($sections as $section):
 <div class="space-y-4">
 <?php foreach ($items as $item): ?>
 <div class="flex gap-4 items-start border-b border-gray-700 pb-3">
-<?php if (!empty($item['image'])): ?><img src="<?php echo $uploadBaseUrl . '/menu-items/' . htmlspecialchars($item['image']); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="w-16 h-16 flex-shrink-0 object-cover rounded"/><?php endif; ?>
+<?php if (!empty($item['image'])): ?><img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="w-16 h-16 flex-shrink-0 object-cover rounded"/><?php endif; ?>
 <div class="flex-1 min-w-0 flex justify-between items-baseline">
 <div><h3 class="text-lg font-semibold"><?php echo htmlspecialchars($item['name']); ?></h3><p class="text-sm text-gray-400"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p><?php if (!empty($supportsOrdering) && !empty($item['is_available'])): ?><button type="button" class="add-to-bag-btn mt-2 text-brandGold border border-brandGold px-3 py-1.5 rounded hover:bg-brandGold hover:text-black" data-item-id="<?php echo (int)$item['id']; ?>" data-item-name="<?php echo htmlspecialchars($item['name']); ?>" data-item-price="<?php echo htmlspecialchars($item['price']); ?>" data-item-image="<?php echo !empty($item['image']) ? htmlspecialchars($item['image']) : ''; ?>">Add to bag</button><?php endif; ?></div>
 <span class="text-brandGold font-serif"><?php echo nfp_price($item['price']); ?></span>

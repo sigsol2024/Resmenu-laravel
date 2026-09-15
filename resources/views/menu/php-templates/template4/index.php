@@ -53,11 +53,11 @@ if (empty($isTemplatePreview)) {
 // Hero image (section image for section pages if set; else restaurant hero, fallback)
 $heroBgImage = '';
 if (!empty($singleSectionView) && !empty($sections[0]['image'])) {
-    $heroBgImage = $uploadBaseUrl . '/sections/' . htmlspecialchars($sections[0]['image']);
+    $heroBgImage = htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'sections', $sections[0]['image']));
 } elseif (!empty($restaurant['hero_image_url'])) {
     $heroBgImage = $restaurant['hero_image_url'];
 } elseif (!empty($restaurant['hero_image'])) {
-    $heroBgImage = $uploadBaseUrl . '/heroes/' . htmlspecialchars($restaurant['hero_image']);
+    $heroBgImage = htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'heroes', $restaurant['hero_image']));
 } else {
     $heroBgImage = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1600&h=900&fit=crop';
 }
@@ -366,7 +366,7 @@ if ($heroNameLen > 28) {
                 </div>
                 <?php if (empty($singleSectionView) && !empty($section['image'])): ?>
                 <div class="flex justify-center mb-10 px-4">
-                    <img src="<?php echo $uploadBaseUrl . '/sections/' . htmlspecialchars($section['image']); ?>" alt="" class="max-h-32 md:max-h-40 w-auto max-w-full rounded-xl object-contain shadow-md" loading="lazy" decoding="async"/>
+                    <img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'sections', $section['image'])); ?>" alt="" class="max-h-32 md:max-h-40 w-auto max-w-full rounded-xl object-contain shadow-md" loading="lazy" decoding="async"/>
                 </div>
                 <?php endif; ?>
             </div>
@@ -377,7 +377,7 @@ if ($heroNameLen > 28) {
                     <div class="flex items-center gap-4 md:gap-6 mb-8 category-title-animate">
                         <?php if (!empty($category['image'])): ?>
                         <div class="h-20 w-20 md:h-24 md:w-24 lg:h-28 lg:w-28 shrink-0 rounded-xl border-2 border-charcoal/15 bg-white shadow-sm flex items-center justify-center overflow-hidden p-2 md:p-2.5 box-border" aria-hidden="true">
-                            <img src="<?php echo $uploadBaseUrl . '/categories/' . htmlspecialchars($category['image']); ?>" alt="" class="max-h-full max-w-full w-auto h-auto object-contain object-center" loading="lazy" decoding="async"/>
+                            <img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'categories', $category['image'])); ?>" alt="" class="max-h-full max-w-full w-auto h-auto object-contain object-center" loading="lazy" decoding="async"/>
                         </div>
                         <?php endif; ?>
                         <h3 class="text-base md:text-lg font-serif font-black tracking-tight bg-charcoal rounded-xl px-4 py-3 shrink-0" style="color: <?php echo htmlspecialchars($categoryTitleColor); ?>"><?php echo htmlspecialchars($category['name']); ?></h3>
@@ -388,7 +388,7 @@ if ($heroNameLen > 28) {
                             <?php
                             $itemImage = '';
                             if (!empty($item['image'])) {
-                                $itemImage = $uploadBaseUrl . '/menu-items/' . htmlspecialchars($item['image']);
+                                $itemImage = htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image']));
                             }
                             $hasImage = !empty($itemImage);
                             ?>

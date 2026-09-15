@@ -30,7 +30,7 @@ function t6_section_image(string $uploadBaseUrl, array $section): ?string
         return null;
     }
 
-    return rtrim($uploadBaseUrl, '/').'/sections/'.ltrim((string) $section['image'], '/');
+    return resmenu_media_url($uploadBaseUrl, 'sections', $section['image']);
 }
 
 function t6_category_image(string $uploadBaseUrl, array $category): ?string
@@ -39,7 +39,7 @@ function t6_category_image(string $uploadBaseUrl, array $category): ?string
         return null;
     }
 
-    return rtrim($uploadBaseUrl, '/').'/categories/'.ltrim((string) $category['image'], '/');
+    return resmenu_media_url($uploadBaseUrl, 'categories', $category['image']);
 }
 
 function t6_item_image(string $uploadBaseUrl, array $item): ?string
@@ -48,7 +48,7 @@ function t6_item_image(string $uploadBaseUrl, array $item): ?string
         return null;
     }
 
-    return rtrim($uploadBaseUrl, '/').'/menu-items/'.ltrim((string) $item['image'], '/');
+    return resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image']);
 }
 
 function t6_item_anchor(array $item): string

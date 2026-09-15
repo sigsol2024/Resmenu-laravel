@@ -219,7 +219,7 @@ foreach ($sections as $section):
 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
 <?php foreach ($items as $item): $itemAvailable = !isset($item['is_available']) || $item['is_available']; ?>
 <div class="flex flex-col text-left">
-<?php if (!empty($item['image'])): ?><div class="mb-3"><img src="<?php echo $uploadBaseUrl . '/menu-items/' . htmlspecialchars($item['image']); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="w-full max-h-40 object-cover rounded border border-gold/30"/></div><?php endif; ?>
+<?php if (!empty($item['image'])): ?><div class="mb-3"><img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="w-full max-h-40 object-cover rounded border border-gold/30"/></div><?php endif; ?>
 <div class="flex justify-between items-baseline mb-1">
 <h3 class="font-serif text-xl font-bold"><?php echo htmlspecialchars($item['name']); ?></h3>
 <span class="text-gold font-serif"><?php echo the_prime_cut_price($item['price']); ?></span>

@@ -55,11 +55,11 @@ if (empty($isTemplatePreview)) {
 // Get hero image (section image for section pages if set; else restaurant hero; else fallback)
 $heroImage = '';
 if (!empty($singleSectionView) && !empty($sections[0]['image'])) {
-    $heroImage = $uploadBaseUrl . '/sections/' . htmlspecialchars($sections[0]['image']);
+    $heroImage = htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'sections', $sections[0]['image']));
 } elseif (!empty($restaurant['hero_image_url'])) {
     $heroImage = $restaurant['hero_image_url'];
 } elseif (!empty($restaurant['hero_image'])) {
-    $heroImage = $uploadBaseUrl . '/heroes/' . htmlspecialchars($restaurant['hero_image']);
+    $heroImage = htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'heroes', $restaurant['hero_image']));
 } else {
     $heroImage = 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&h=800&fit=crop';
 }
@@ -281,7 +281,7 @@ endif;
 <div class="relative flex flex-col group cursor-pointer" style="--index: <?php echo $itemIndex - 1; ?>;">
 <?php if (!empty($item['image'])): ?>
 <div class="w-full aspect-[4/3] overflow-hidden rounded-xl bg-gray-100 relative mb-0">
-<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style='background-image: url("<?php echo $uploadBaseUrl . '/menu-items/' . htmlspecialchars($item['image']); ?>");'></div>
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style='background-image: url("<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])); ?>");'></div>
 <div class="absolute top-3 right-3 bg-white/90 dark:bg-black/80 backdrop-blur rounded-full px-3 py-1 text-xs font-bold shadow-sm"><?php echo formatPriceTemplate2($item['price']); ?></div>
 <?php if (!$item['is_available']): ?>
 <div class="absolute inset-0 bg-black/60 flex items-center justify-center">

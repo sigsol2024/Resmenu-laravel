@@ -67,7 +67,7 @@ if (!empty($sections) && is_array($sections)) {
 <div class="space-y-8">
 <?php foreach ($items as $item): ?>
 <div class="group">
-<?php if (!empty($item['image'])): ?><img src="<?php echo $uploadBaseUrl . '/menu-items/' . htmlspecialchars($item['image']); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="w-full max-h-36 object-cover rounded border border-lemonYellow/30 mb-2"/><?php endif; ?>
+<?php if (!empty($item['image'])): ?><img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="w-full max-h-36 object-cover rounded border border-lemonYellow/30 mb-2"/><?php endif; ?>
 <div class="flex justify-between items-baseline mb-1">
 <h3 class="text-xl font-bold text-medBlue group-hover:text-lemonYellow transition-colors"><?php echo htmlspecialchars($item['name']); ?></h3>
 <span class="font-bold text-medBlue"><?php echo mf_price($item['price']); ?></span>

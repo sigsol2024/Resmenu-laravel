@@ -62,7 +62,7 @@ if (!empty($sections) && is_array($sections)) {
 <h3 class="text-2xl font-raleway border-b-4 border-accent pb-2 mb-6 inline-block"><?php echo htmlspecialchars($category['name']); ?></h3>
 <div class="space-y-2">
 <?php foreach ($items as $item): ?>
-<?php if (!empty($item['image'])): ?><div class="mb-2"><img src="<?php echo $uploadBaseUrl . '/menu-items/' . htmlspecialchars($item['image']); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="max-h-24 w-auto object-cover rounded"/></div><?php endif; ?>
+<?php if (!empty($item['image'])): ?><div class="mb-2"><img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="max-h-24 w-auto object-cover rounded"/></div><?php endif; ?>
 <div class="item-row">
 <span class="font-bold"><?php echo htmlspecialchars($item['name']); ?></span>
 <span class="item-dots"></span>
