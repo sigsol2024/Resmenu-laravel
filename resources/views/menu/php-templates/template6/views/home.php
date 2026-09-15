@@ -32,7 +32,16 @@ if ($t6SectionCount === 1) {
 </span>
 </div>
 <h1 class="font-display-lg text-[clamp(2rem,8vw,4.5rem)] mb-6 md:mb-8 max-w-3xl leading-[1.05] serif">
-<?php echo t6_esc($restaurant['name'] ?? ''); ?> <span class="italic text-primary">Fine Dining</span>
+<?php
+$t6HeroName = trim((string) ($restaurant['name'] ?? ''));
+$t6HeroParts = preg_split('/\s+/u', $t6HeroName, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+if (count($t6HeroParts) >= 2) {
+    $t6HeroAccent = array_pop($t6HeroParts);
+    echo t6_esc(implode(' ', $t6HeroParts)).' <span class="italic text-primary">'.t6_esc($t6HeroAccent).'</span>';
+} elseif ($t6HeroName !== '') {
+    echo '<span class="italic text-primary">'.t6_esc($t6HeroName).'</span>';
+}
+?>
 </h1>
 <?php if (! empty($restaurant['description'])): ?>
 <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mb-6 md:mb-8 line-clamp-4 md:line-clamp-none"><?php echo t6_esc($restaurant['description']); ?></p>
@@ -84,7 +93,18 @@ if ($t6SectionCount === 1) {
 <section class="py-12 md:py-xl bg-background border-t border-outline-variant/10">
 <div class="max-w-container-max mx-auto px-4 md:px-gutter text-center">
 <p class="text-primary font-label-lg text-label-lg uppercase tracking-[0.3em] mb-4">Our Philosophy</p>
-<h2 class="font-display-lg text-headline-xl mb-6 md:mb-8 serif">Modern African Luxury</h2>
+<h2 class="font-display-lg text-headline-xl mb-6 md:mb-8 serif">
+<?php
+$t6PhilName = trim((string) ($restaurant['name'] ?? ''));
+$t6PhilParts = preg_split('/\s+/u', $t6PhilName, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+if (count($t6PhilParts) >= 2) {
+    $t6PhilAccent = array_pop($t6PhilParts);
+    echo t6_esc(implode(' ', $t6PhilParts)).' <span class="italic text-primary">'.t6_esc($t6PhilAccent).'</span>';
+} elseif ($t6PhilName !== '') {
+    echo '<span class="italic text-primary">'.t6_esc($t6PhilName).'</span>';
+}
+?>
+</h2>
 <div class="max-w-3xl mx-auto">
 <p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed"><?php echo t6_esc($restaurant['footer_content'] ?? $restaurant['description'] ?? 'A curated dining experience crafted with heritage and contemporary refinement.'); ?></p>
 </div>
