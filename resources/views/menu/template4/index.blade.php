@@ -141,8 +141,19 @@ tailwind.config = { darkMode: "class", theme: { extend: {
                         @if(empty($category['menu_items'])) @continue @endif
                         <div class="mb-16" id="{{ $category['slug'] }}-section">
                             <h3 class="text-lg font-serif font-black bg-charcoal rounded-xl px-4 py-3 inline-block mb-6" style="color:{{ $categoryTitleColor }}">{{ $category['name'] }}</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                                @foreach($category['menu_items'] as $item)
+                            @php
+                                $menuItems = array_values(array_filter($category['menu_items'] ?? [], fn ($item) => is_array($item)));
+                                $itemCount = count($menuItems);
+                                if ($itemCount <= 1) {
+                                    $itemGridClass = 'grid grid-cols-1 gap-6';
+                                } elseif ($itemCount <= 3) {
+                                    $itemGridClass = 'grid grid-cols-1 md:grid-cols-2 gap-6';
+                                } else {
+                                    $itemGridClass = 'grid grid-cols-1 md:grid-cols-4 gap-6';
+                                }
+                            @endphp
+                            <div class="{{ $itemGridClass }}">
+                                @foreach($menuItems as $item)
                                     @php $itemImage = !empty($item['image']) ? $uploadBaseUrl.'/menu-items/'.$item['image'] : ''; @endphp
                                     <div class="bg-white border border-charcoal/5 rounded-2xl overflow-hidden flex flex-col hover:shadow-lg">
                                         @if($itemImage)

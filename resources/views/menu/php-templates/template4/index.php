@@ -383,8 +383,24 @@ if ($heroNameLen > 28) {
                         <h3 class="text-base md:text-lg font-serif font-black tracking-tight bg-charcoal rounded-xl px-4 py-3 shrink-0" style="color: <?php echo htmlspecialchars($categoryTitleColor); ?>"><?php echo htmlspecialchars($category['name']); ?></h3>
                         <div class="h-px flex-1 bg-charcoal/20"></div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-4">
-                        <?php foreach (($category['menu_items'] ?? []) as $item): ?>
+                    <?php
+                    $menuItems = array_values(array_filter(
+                        $category['menu_items'] ?? [],
+                        static fn ($item) => is_array($item)
+                    ));
+                    $itemCount = count($menuItems);
+                    if ($itemCount <= 1) {
+                        $itemGridClass = 'grid grid-cols-1 gap-6 md:gap-4';
+                    } elseif ($itemCount <= 3) {
+                        // 2 or 3 items: two columns on desktop; third wraps under
+                        $itemGridClass = 'grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-4';
+                    } else {
+                        // 4+ items: four columns on desktop / wide screens
+                        $itemGridClass = 'grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-4';
+                    }
+                    ?>
+                    <div class="<?php echo $itemGridClass; ?>">
+                        <?php foreach ($menuItems as $item): ?>
                             <?php
                             $itemImage = '';
                             if (!empty($item['image'])) {
