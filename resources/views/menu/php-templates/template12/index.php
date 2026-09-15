@@ -41,9 +41,11 @@ if (!empty($sections) && is_array($sections)) {
 <body class="tile-pattern text-slate-800 min-h-screen">
 <header class="w-full py-12 px-6 text-center bg-white/80 backdrop-blur-sm border-b-4 border-medBlue" data-template-preview-hero>
 <div class="max-w-4xl mx-auto">
-<?php if (!empty($restaurant['logo']) && empty($isTemplatePreview)): ?><div class="mb-4"><img src="<?php echo $uploadBaseUrl . '/logos/' . htmlspecialchars($restaurant['logo']); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="h-20 w-auto object-contain mx-auto"/></div><?php endif; ?>
+<?php $t12BrandLogo = (!empty($isTemplatePreview)) ? null : resmenu_logo_url($uploadBaseUrl ?? '', $restaurant['logo'] ?? null); ?>
+<?php if ($t12BrandLogo): ?><div class="mb-4"><img src="<?php echo htmlspecialchars($t12BrandLogo); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="h-20 w-auto object-contain mx-auto"/></div><?php else: ?>
 <span class="text-lemonYellow text-4xl">☀</span>
 <h1 class="text-5xl md:text-6xl text-medBlue font-bold mb-2"><?php echo htmlspecialchars($restaurant['name']); ?></h1>
+<?php endif; ?>
 <p class="italic text-lg text-slate-500 font-serif"><?php echo htmlspecialchars($restaurant['description'] ?? 'A Taste of the Sun-Drenched Coast'); ?></p>
 <?php if (!empty($singleSectionView) && !empty($fullMenuUrl)): ?><p class="mt-2"><a href="<?php echo htmlspecialchars($fullMenuUrl); ?>" class="text-medBlue font-semibold hover:underline">Full menu</a></p><?php endif; ?>
 <?php if (!empty($supportsReservations)): ?><p class="mt-2"><a href="<?php echo htmlspecialchars($reservationUrl); ?>" class="text-medBlue font-semibold hover:underline">Reserve Table</a></p><?php endif; ?>

@@ -245,8 +245,9 @@ function t4_formatPrice($price, $symbol = '₦') {
 <header class="fixed top-0 w-full z-50 bg-gray-800/50 backdrop-blur-xl border-b border-white/10 px-6 py-4">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
         <div class="flex items-center gap-2">
-            <?php if (!empty($restaurant['logo']) && empty($isTemplatePreview)): ?>
-                <img src="<?php echo $uploadBaseUrl . '/logos/' . htmlspecialchars($restaurant['logo']); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="h-10 w-auto object-contain">
+            <?php $t4BrandLogo = (!empty($isTemplatePreview)) ? null : resmenu_logo_url($uploadBaseUrl ?? '', $restaurant['logo'] ?? null); ?>
+            <?php if ($t4BrandLogo): ?>
+                <img src="<?php echo htmlspecialchars($t4BrandLogo); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="h-10 w-auto object-contain">
             <?php elseif (!empty($isTemplatePreview)): ?>
                 <span class="text-white text-xl font-bold tracking-tight">Logo</span>
             <?php else: ?>

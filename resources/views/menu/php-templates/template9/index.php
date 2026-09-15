@@ -126,8 +126,9 @@ body.sfh-body .sfh-bg { position: absolute; inset: 0; pointer-events: none; back
 </aside>
 <header class="max-w-7xl mx-auto mb-12 text-center relative z-10" data-purpose="page-header" data-template-preview-hero>
 <div class="inline-block bg-brandBlack text-white p-6 comic-border shadow-brutal -rotate-2 mb-6">
-<?php if (!empty($restaurant['logo']) && empty($isTemplatePreview)): ?>
-<img src="<?php echo $uploadBaseUrl . '/logos/' . htmlspecialchars($restaurant['logo']); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="h-20 w-auto object-contain mx-auto"/>
+<?php $t9BrandLogo = (!empty($isTemplatePreview)) ? null : resmenu_logo_url($uploadBaseUrl ?? '', $restaurant['logo'] ?? null); ?>
+<?php if ($t9BrandLogo): ?>
+<img src="<?php echo htmlspecialchars($t9BrandLogo); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="h-20 w-auto object-contain mx-auto"/>
 <?php else: ?>
 <h1 class="font-chunky text-5xl md:text-7xl uppercase tracking-tighter"><?php echo htmlspecialchars($restaurant['name']); ?></h1>
 <?php endif; ?>

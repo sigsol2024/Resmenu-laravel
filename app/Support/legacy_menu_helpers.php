@@ -72,3 +72,30 @@ if (! function_exists('resmenu_media_url')) {
         return $base.'/'.trim($kind, '/').'/'.ltrim($file, '/');
     }
 }
+
+/**
+ * Public logo URL only when the file exists on disk (avoids broken img + hidden name).
+ */
+if (! function_exists('resmenu_logo_url')) {
+    function resmenu_logo_url(?string $base, ?string $logoFilename): ?string
+    {
+        if ($logoFilename === null || trim((string) $logoFilename) === '') {
+            return null;
+        }
+
+        try {
+            /** @var \App\Services\UploadService $uploads */
+            $uploads = app(\App\Services\UploadService::class);
+            if (! $uploads->logoFileExists($logoFilename)) {
+                return null;
+            }
+        } catch (\Throwable) {
+            // Cannot verify the file — do not claim a usable logo (show name instead).
+            return null;
+        }
+
+        $url = resmenu_media_url($base, 'logos', $logoFilename);
+
+        return $url !== '' ? $url : null;
+    }
+}

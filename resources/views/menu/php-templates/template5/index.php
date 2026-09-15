@@ -159,8 +159,9 @@ body.prime-cut-outer .prime-cut-outer-bg { position: absolute; inset: 0; pointer
 <main class="menu-page prime-cut-main max-w-4xl w-full text-cream p-8 md:p-16 gold-border relative z-10" id="menu">
 <div class="menu-page-pattern" aria-hidden="true"></div>
 <header class="text-center mb-16 relative z-10" data-purpose="main-header" data-template-preview-hero>
-<?php if (!empty($restaurant['logo']) && empty($isTemplatePreview)): ?>
-<div class="mb-4"><img src="<?php echo $uploadBaseUrl . '/logos/' . htmlspecialchars($restaurant['logo']); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="prime-cut-logo h-24 w-auto object-contain mx-auto"/></div>
+<?php $t5BrandLogo = (!empty($isTemplatePreview)) ? null : resmenu_logo_url($uploadBaseUrl ?? '', $restaurant['logo'] ?? null); ?>
+<?php if ($t5BrandLogo): ?>
+<div class="mb-4"><img src="<?php echo htmlspecialchars($t5BrandLogo); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="prime-cut-logo h-24 w-auto object-contain mx-auto"/></div>
 <div class="mb-4"><span class="text-gold tracking-[0.3em] uppercase text-sm font-sans"><?php echo !empty($restaurant['description']) ? htmlspecialchars(mb_substr($restaurant['description'], 0, 60)) : 'Established'; ?></span></div>
 <?php else: ?>
 <h1 class="font-serif text-4xl md:text-6xl text-gold italic mb-2"><?php echo htmlspecialchars($restaurant['name']); ?></h1>

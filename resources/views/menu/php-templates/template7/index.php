@@ -432,11 +432,12 @@ $bodyClass = $menuViewLevel === 'home'
       <a href="<?php echo t7_esc($fullMenuUrl ?: '#'); ?>" class="flex-shrink-0 p-1 bg-white/95 border border-onyx-border rounded hover:border-champagne-gold transition-colors">
         <img src="<?php echo t7_esc($t7LogoUrl); ?>" alt="<?php echo t7_esc($t7RestaurantName); ?>" class="h-7 w-auto object-contain">
       </a>
+      <?php else: ?>
+      <a href="<?php echo t7_esc($fullMenuUrl ?: '#'); ?>" class="font-serif-luxury text-base sm:text-lg tracking-[0.14em] uppercase font-medium text-champagne-light hover:text-white transition-colors block leading-tight truncate min-w-0">
+        <?php echo t7_esc($t7RestaurantName); ?>
+      </a>
       <?php endif; ?>
-      <div class="truncate">
-        <a href="<?php echo t7_esc($fullMenuUrl ?: '#'); ?>" class="font-serif-luxury text-base sm:text-lg tracking-[0.14em] uppercase font-medium text-champagne-light hover:text-white transition-colors block leading-tight truncate">
-          <?php echo t7_esc($t7RestaurantName); ?>
-        </a>
+      <div class="truncate min-w-0">
         <?php if ($menuViewLevel === 'section' && ! empty($activeSection['name'])): ?>
         <span class="text-[10px] tracking-[0.20em] uppercase text-white/50 block truncate"><?php echo t7_esc($activeSection['name']); ?></span>
         <?php else: ?>

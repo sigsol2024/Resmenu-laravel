@@ -36,7 +36,15 @@ return [
 
     'max_file_size' => (int) env('MAX_FILE_SIZE', 5 * 1024 * 1024),
     'image_max_bytes' => (int) env('IMAGE_MAX_BYTES', 512000),
+    /** Hard reject above this size (default 1MB). */
     'image_upload_max_bytes' => (int) env('IMAGE_UPLOAD_MAX_BYTES', 1048576),
+    /** Soft optimize band: keep files already under max; compress larger uploads toward ≤ max. */
+    'image_target_min_bytes' => (int) env('IMAGE_TARGET_MIN_BYTES', 300000),
+    'image_target_max_bytes' => (int) env('IMAGE_TARGET_MAX_BYTES', 512000),
+    'image_max_long_edge' => (int) env('IMAGE_MAX_LONG_EDGE', 1920),
+    'image_min_long_edge' => (int) env('IMAGE_MIN_LONG_EDGE', 800),
+    'image_jpeg_quality_start' => (int) env('IMAGE_JPEG_QUALITY_START', 85),
+    'image_jpeg_quality_floor' => (int) env('IMAGE_JPEG_QUALITY_FLOOR', 72),
     'allowed_image_types' => ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
 
     'mail_enabled' => filter_var(env('MAIL_ENABLED', true), FILTER_VALIDATE_BOOLEAN),

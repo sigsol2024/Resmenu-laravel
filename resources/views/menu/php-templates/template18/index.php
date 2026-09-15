@@ -221,10 +221,10 @@ body.nfm-body {
   <?php endif; ?>
   <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/35 to-black/15"></div>
   <div class="relative mx-auto flex max-w-4xl flex-col items-center justify-center px-6 pb-14 pt-16 text-center sm:pb-16 sm:pt-20 md:max-w-5xl md:pb-20 md:pt-24 lg:max-w-6xl lg:pb-20 lg:pt-24">
-    <?php if (!empty($restaurant['logo']) && empty($isTemplatePreview)): ?>
-      <div class="mb-4"><img src="<?php echo $uploadBaseUrl . '/logos/' . htmlspecialchars($restaurant['logo']); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="mx-auto h-16 w-auto max-w-[220px] object-contain md:h-20"/></div>
-    <?php endif; ?>
-    <?php if (empty($restaurant['logo']) || !empty($isTemplatePreview)): ?>
+    <?php $t18BrandLogo = (!empty($isTemplatePreview)) ? null : resmenu_logo_url($uploadBaseUrl ?? '', $restaurant['logo'] ?? null); ?>
+    <?php if ($t18BrandLogo): ?>
+      <div class="mb-4"><img src="<?php echo htmlspecialchars($t18BrandLogo); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="mx-auto h-16 w-auto max-w-[220px] object-contain md:h-20"/></div>
+    <?php else: ?>
     <h1 class="font-serif text-3xl uppercase tracking-[0.2em] text-brandGold sm:text-4xl md:text-5xl"><?php echo htmlspecialchars($restaurant['name']); ?></h1>
     <?php endif; ?>
     <?php if (!empty($singleSectionView) && !empty($sections) && is_array($sections) && !empty($sections[0]['name'])): ?>

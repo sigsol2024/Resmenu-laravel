@@ -40,14 +40,16 @@ $cardImages = ['https://lh3.googleusercontent.com/aida-public/AB6AXuD-NUGPkPCxpJ
 <body class="text-white min-h-screen flex flex-col justify-between overflow-x-hidden">
 <header class="pt-12 pb-8 flex flex-col items-center px-4" data-template-preview-hero>
 <div class="mb-8">
-<?php if (!empty($restaurant['logo']) && empty($isTemplatePreview)): ?>
-<img alt="Logo" class="h-24 w-auto object-contain" src="<?php echo $uploadBaseUrl . '/logos/' . htmlspecialchars($restaurant['logo']); ?>"/>
+<?php $t17BrandLogo = (!empty($isTemplatePreview)) ? null : resmenu_logo_url($uploadBaseUrl ?? '', $restaurant['logo'] ?? null); ?>
+<?php if ($t17BrandLogo): ?>
+<img alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="h-24 w-auto object-contain" src="<?php echo htmlspecialchars($t17BrandLogo); ?>"/>
 <?php else: ?>
-<img alt="Logo" class="h-24 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3Cg2JO4hgMJxCrFb7fDZxWxS6ktqXPXZn8efe4mOW-MRu9zPxbXANC1NRGivKk0OPK7YROdVnueD5Jb5ut8rtJ1HBwr3f85kemYDAdgnuTtbH1xj8SpVhd2iv3dL-le1py0nk0_qR6BaLEj3075REO7lYhAAkIyVr__xEKUsCCQstBFytqy3fC2sKQA0BeT-ZxgHKJI-S68dkwF1QSX3HmnMhimbVw6XmXkIK0DYTEO3Ay2fHJ4nKS4PgEErcb9uhQoLzzDXbYT-o"/>
+<h1 class="text-4xl md:text-6xl font-serif tracking-widest text-center mb-6 uppercase"><?php echo htmlspecialchars($restaurant['name']); ?></h1>
 <?php endif; ?>
-<div class="mt-4 tracking-[0.5em] text-xs font-light text-center"><?php echo strtoupper(htmlspecialchars($restaurant['name'])); ?></div>
 </div>
-<h1 class="text-4xl md:text-6xl font-serif tracking-widest text-center mb-6 uppercase"><?php echo htmlspecialchars($restaurant['name']); ?> Menu</h1>
+<?php if ($t17BrandLogo): ?>
+<p class="text-sm tracking-[0.3em] uppercase text-center mb-6 opacity-80">Menu</p>
+<?php endif; ?>
 <div class="flex items-center gap-4 w-full justify-center opacity-80">
 <div class="divider-line"></div>
 <div class="text-brandGold"><svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22 19H2v-2h1c0-4.97 4.03-9 9-9s9 4.03 9 9h1v2zm-10-15c-1.1 0-2 .9-2 2h4c0-1.1-.9-2-2-2z"/></svg></div>

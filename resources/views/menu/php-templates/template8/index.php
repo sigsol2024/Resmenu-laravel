@@ -97,8 +97,9 @@ h1, h2, h3 { font-family: 'Fredoka One', cursive; }
 </div>
 </aside>
 <header class="py-12 text-center relative z-10" data-purpose="header-container" id="sd-hero-header" data-template-preview-hero>
-<?php if (!empty($restaurant['logo']) && empty($isTemplatePreview)): ?>
-<div class="inline-block p-4 bg-white rounded-full shadow-lg mb-4"><img src="<?php echo $uploadBaseUrl . '/logos/' . htmlspecialchars($restaurant['logo']); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" style="max-height: 48px; width: auto;"/></div>
+<?php $t8BrandLogo = (!empty($isTemplatePreview)) ? null : resmenu_logo_url($uploadBaseUrl ?? '', $restaurant['logo'] ?? null); ?>
+<?php if ($t8BrandLogo): ?>
+<div class="inline-block p-4 bg-white rounded-full shadow-lg mb-4"><img src="<?php echo htmlspecialchars($t8BrandLogo); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" style="max-height: 48px; width: auto;"/></div>
 <p class="text-lg text-gray-600 font-semibold italic mb-4"><?php echo htmlspecialchars($restaurant['description'] ?? 'Where every scoop is a dream!'); ?></p>
 <?php else: ?>
 <div class="inline-block p-4 bg-white rounded-full shadow-lg mb-4"><span class="text-4xl">🍦</span></div>

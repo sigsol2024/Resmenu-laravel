@@ -65,11 +65,8 @@ function t6_logo_url(string $uploadBaseUrl, array $restaurant): ?string
     if (! empty($GLOBALS['t6_is_template_preview'] ?? false)) {
         return null;
     }
-    if (empty($restaurant['logo'])) {
-        return null;
-    }
 
-    return rtrim($uploadBaseUrl, '/').'/logos/'.ltrim((string) $restaurant['logo'], '/');
+    return resmenu_logo_url($uploadBaseUrl, $restaurant['logo'] ?? null);
 }
 
 function t6_esc(?string $value): string

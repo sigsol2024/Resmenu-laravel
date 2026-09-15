@@ -147,13 +147,6 @@ class MenuController extends Controller
         // Template 7 directory must match the sidebar: every nav section gets a landing card.
         $sections = $this->mergeMissingNavSectionsOntoHome($restaurant, $sections, $sectionsForNav);
 
-        if (count($sections) === 1) {
-            $onlySection = $sections[0];
-            $secSlug = $onlySection['slug'] ?? 'menu';
-
-            return redirect()->to($baseUrl.'/'.$secSlug);
-        }
-
         $categories = LegacyMenuViewData::flattenCategoriesFromSections($sections);
 
         return $this->renderMenu($templateId, $this->baseViewData($restaurant, $slug, $templateId, $sections, $categories, $sectionsForNav, array_merge([
@@ -256,20 +249,6 @@ class MenuController extends Controller
             $menuViewLevel = 'category';
             $singleSectionView = true;
         } elseif ($sectionSlug !== null && $sectionSlug !== '') {
-            $sectionRowFull = $this->menu->sectionWithMenuBySlug($restaurant, $sectionSlug);
-            if ($sectionRowFull === null) {
-                abort(404, 'Section not found.');
-            }
-            $visibleCategories = array_values(array_filter(
-                $sectionRowFull['categories'] ?? [],
-                static fn (array $cat): bool => ! empty($cat['is_active']) && ! empty($cat['menu_items'])
-            ));
-            if (count($visibleCategories) === 1) {
-                $only = $visibleCategories[0];
-                $catSlug = $only['slug'] ?? '';
-
-                return redirect()->to($baseUrl.'/'.$sectionSlug.'/'.$catSlug);
-            }
             $sectionRow = $this->menu->sectionWithCategoriesOnlyBySlug($restaurant, $sectionSlug);
             if ($sectionRow === null) {
                 abort(404, 'Section not found.');
@@ -281,12 +260,7 @@ class MenuController extends Controller
         } else {
             $sections = LegacyMenuViewData::normalizeSections($this->menu->sectionsForHome($restaurant));
             $popularItems = LegacyMenuViewData::normalizeMenuItems($this->menu->popularMenuItems($restaurant, 3));
-            if (count($sections) === 1) {
-                $onlySection = $sections[0];
-                $secSlug = $onlySection['slug'] ?? 'menu';
-
-                return redirect()->to($baseUrl.'/'.$secSlug);
-            }
+            // Always stay on the restaurant landing — do not auto-skip to a sole section.
             $menuViewLevel = 'home';
         }
 

@@ -42,8 +42,10 @@ if (!empty($sections) && is_array($sections)) {
 <div class="flex min-h-screen">
 <aside class="w-1/4 lg:w-1/5 h-screen sticky top-0 border-r border-white/10 bg-black flex flex-col justify-between p-8">
 <div>
-<?php if (!empty($restaurant['logo']) && empty($isTemplatePreview)): ?><div class="mb-6"><img src="<?php echo $uploadBaseUrl . '/logos/' . htmlspecialchars($restaurant['logo']); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="h-14 w-auto object-contain"/></div><?php endif; ?>
+<?php $t15BrandLogo = (!empty($isTemplatePreview)) ? null : resmenu_logo_url($uploadBaseUrl ?? '', $restaurant['logo'] ?? null); ?>
+<?php if ($t15BrandLogo): ?><div class="mb-6"><img src="<?php echo htmlspecialchars($t15BrandLogo); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="h-14 w-auto object-contain"/></div><?php else: ?>
 <h1 class="text-3xl font-black tracking-tighter italic text-neonPink mb-12"><?php echo htmlspecialchars(mb_substr($restaurant['name'], 0, 12)); ?><br/><span class="text-neonBlue"><?php echo htmlspecialchars(mb_substr($restaurant['name'], 12, 20) ?: 'Menu'); ?></span></h1>
+<?php endif; ?>
 <nav class="space-y-6">
 <?php if (!empty($singleSectionView) && !empty($fullMenuUrl)): ?>
 <a href="<?php echo htmlspecialchars($fullMenuUrl); ?>" class="block text-xl font-bold hover:text-neonPink transition-colors duration-300 group">Full menu</a>

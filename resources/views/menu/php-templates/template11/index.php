@@ -42,8 +42,10 @@ if (!empty($sections) && is_array($sections)) {
 <body class="min-h-screen p-6 md:p-12 text-gray-800">
 <main class="max-w-4xl mx-auto bg-white/90 backdrop-blur shadow-xl p-8 md:p-16 rounded-lg border border-gold/30">
 <header class="text-center mb-16" data-template-preview-hero>
-<?php if (!empty($restaurant['logo']) && empty($isTemplatePreview)): ?><div class="mb-4"><img src="<?php echo $uploadBaseUrl . '/logos/' . htmlspecialchars($restaurant['logo']); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="h-20 w-auto object-contain mx-auto"/></div><?php endif; ?>
+<?php $t11BrandLogo = (!empty($isTemplatePreview)) ? null : resmenu_logo_url($uploadBaseUrl ?? '', $restaurant['logo'] ?? null); ?>
+<?php if ($t11BrandLogo): ?><div class="mb-4"><img src="<?php echo htmlspecialchars($t11BrandLogo); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="h-20 w-auto object-contain mx-auto"/></div><?php else: ?>
 <h1 class="text-4xl md:text-6xl font-raleway font-semibold text-accent mb-2"><?php echo htmlspecialchars($restaurant['name']); ?></h1>
+<?php endif; ?>
 <p class="text-sm uppercase tracking-widest text-gold"><?php echo htmlspecialchars($restaurant['description'] ?? 'Menu'); ?></p>
 <?php if (!empty($singleSectionView) && !empty($fullMenuUrl)): ?><p class="mt-2"><a href="<?php echo htmlspecialchars($fullMenuUrl); ?>" class="text-accent font-semibold hover:underline">Full menu</a></p><?php endif; ?>
 <?php if (!empty($supportsReservations)): ?><p class="mt-2"><a href="<?php echo htmlspecialchars($reservationUrl); ?>" class="text-accent font-semibold hover:underline">Reserve Table</a></p><?php endif; ?>

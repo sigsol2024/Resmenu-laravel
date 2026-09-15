@@ -116,16 +116,14 @@ function formatPriceTemplate2($price, $currency = '$') {
 <nav class="w-full bg-[#fcf8f8] dark:bg-[#1b0e0e] border-b border-[#f3e7e8] dark:border-[#332222] sticky top-0 z-50">
 <div class="px-4 md:px-10 py-3 flex items-center justify-between max-w-[1440px] mx-auto">
 <div class="flex items-center gap-4 text-[#1b0e0e] dark:text-white">
-<?php if (!empty($restaurant['logo']) && empty($isTemplatePreview)): ?>
-    <img src="<?php echo $uploadBaseUrl . '/logos/' . htmlspecialchars($restaurant['logo']); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="h-8 w-auto object-contain max-w-[200px]">
+<?php $t2BrandLogo = resmenu_logo_url($uploadBaseUrl ?? '', $restaurant['logo'] ?? null); ?>
+<?php if ($t2BrandLogo): ?>
+    <img src="<?php echo htmlspecialchars($t2BrandLogo); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="h-8 w-auto object-contain max-w-[200px]">
 <?php elseif (!empty($isTemplatePreview)): ?>
     <span class="text-lg font-bold">Logo</span>
 <?php else: ?>
-    <div class="size-8 flex items-center justify-center text-primary">
-        <?php echo resmenu_icon('restaurant_menu', ['size' => 28, 'class' => 'text-3xl']); ?>
-    </div>
+    <h2 class="text-lg font-bold leading-tight tracking-[-0.015em]"><?php echo htmlspecialchars($restaurant['name'] ?? 'Restaurant'); ?></h2>
 <?php endif; ?>
-<h2 class="text-lg font-bold leading-tight tracking-[-0.015em]"><?php echo htmlspecialchars($restaurant['name'] ?? 'Restaurant'); ?></h2>
 </div>
 <div class="flex items-center gap-6 hidden md:flex flex-wrap">
 <?php if (!empty($singleSectionView) && !empty($fullMenuUrl)): ?>

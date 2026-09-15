@@ -616,8 +616,9 @@ body.snsw-body #scrollToTop {
       <svg class="h-3 w-3 sm:h-4 sm:w-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12l-6-6h12l-6 6z"></path></svg>
     </div>
     <?php endif; ?>
-    <?php if (!empty($restaurant['logo']) && empty($isTemplatePreview) && empty($singleSectionView)): ?>
-    <div class="mb-3 md:mb-4"><img src="<?php echo $uploadBaseUrl . '/logos/' . htmlspecialchars($restaurant['logo']); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="mx-auto h-16 w-auto max-w-full object-contain sm:h-20 md:h-24"/></div>
+    <?php $t10BrandLogo = (!empty($isTemplatePreview) || !empty($singleSectionView)) ? null : resmenu_logo_url($uploadBaseUrl ?? '', $restaurant['logo'] ?? null); ?>
+    <?php if ($t10BrandLogo): ?>
+    <div class="mb-3 md:mb-4"><img src="<?php echo htmlspecialchars($t10BrandLogo); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="mx-auto h-16 w-auto max-w-full object-contain sm:h-20 md:h-24"/></div>
     <?php elseif (empty($singleSectionView) || $snswSectionHeroUrl === ''): ?>
     <h1 class="font-cinzel-deco break-words text-lg font-light tracking-[0.2em] text-menu-text sm:text-xl md:text-2xl sm:tracking-[0.3em]"><?php echo htmlspecialchars(strtoupper($snswHeaderTitle)); ?></h1>
     <?php endif; ?>
@@ -627,7 +628,7 @@ body.snsw-body #scrollToTop {
     </div>
     <h1 class="font-cinzel-deco snsw-section-title mb-2 text-center"><?php echo htmlspecialchars($snswHeaderTitle); ?></h1>
     <?php endif; ?>
-    <?php if (!empty($restaurant['description']) && empty($restaurant['logo']) && empty($singleSectionView)): ?><p class="mt-1 break-words text-[10px] tracking-widest text-gray-700 sm:text-xs"><?php echo htmlspecialchars(mb_substr($restaurant['description'], 0, 60)); ?></p><?php endif; ?>
+    <?php if (!empty($restaurant['description']) && ! $t10BrandLogo && empty($singleSectionView)): ?><p class="mt-1 break-words text-[10px] tracking-widest text-gray-700 sm:text-xs"><?php echo htmlspecialchars(mb_substr($restaurant['description'], 0, 60)); ?></p><?php endif; ?>
     <?php if (!empty($supportsReservations) && empty($singleSectionView)): ?><p class="mt-2 md:mt-3"><a href="<?php echo htmlspecialchars($reservationUrl); ?>" class="text-xs font-semibold text-[#002F47] hover:underline sm:text-sm">Reserve Table</a></p><?php endif; ?>
   </header>
 

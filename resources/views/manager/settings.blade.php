@@ -131,7 +131,7 @@
                             <img src="{{ $logoUrl }}" alt="Current logo" style="max-width: 160px; max-height: 160px; border-radius: 8px; border: 2px solid #e5e7eb;">
                         </div>
                     @endif
-                    <small style="color: var(--muted); display: block; margin-top: 5px;">Recommended: square or horizontal logo (PNG/JPEG), max ~1MB.</small>
+                    <small style="color: var(--muted); display: block; margin-top: 5px;">Recommended: square or horizontal logo (PNG/JPEG/WebP), max ~1MB. Images are optimized on upload (toward ~300–500KB).</small>
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="rest_hero_image">Cover / Hero Image</label>

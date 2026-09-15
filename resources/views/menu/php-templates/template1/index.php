@@ -76,8 +76,9 @@ section.hero .container { position: relative; z-index: 1; }
   <div class="container">
     <nav class="nav">
       <div class="logo">
-        <?php if (!empty($restaurant['logo']) && empty($isTemplatePreview)): ?>
-          <img src="<?php echo $uploadBaseUrl . '/logos/' . htmlspecialchars($restaurant['logo']); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" style="max-height: 40px; width: auto;">
+        <?php $t1BrandLogo = (!empty($isTemplatePreview)) ? null : resmenu_logo_url($uploadBaseUrl ?? '', $restaurant['logo'] ?? null); ?>
+        <?php if ($t1BrandLogo): ?>
+          <img src="<?php echo htmlspecialchars($t1BrandLogo); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" style="max-height: 40px; width: auto;">
         <?php elseif (!empty($isTemplatePreview)): ?>
           Logo
         <?php else: ?>
