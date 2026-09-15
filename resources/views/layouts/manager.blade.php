@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="{{ resmenu_public_asset('css/admin.css') }}">
 <link rel="stylesheet" href="{{ resmenu_public_asset('css/manager-shell.css') }}">
 <style>
-:root{--bg:#f2f4f7;--sidebar:#0f172a;--primary:#1e3a5f;--primary-dark:#0f172a;--danger:#dc2626;--text:#111827;--muted:#6b7280;--card:#ffffff;--radius:14px;}
+:root{--bg:#f2f4f7;--sidebar:#0f172a;--primary:#1e3a5f;--primary-dark:#0f172a;--danger:#dc2626;--text:#111827;--muted:#6b7280;--card:#ffffff;--radius:14px;--impersonation-banner-height:0px;}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Inter,sans-serif;background:var(--bg);color:var(--text)}
 .app{display:flex;min-height:100vh}
