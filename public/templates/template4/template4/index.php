@@ -404,7 +404,7 @@ if ($heroNameLen > 28) {
                             ?>
                             <div class="menu-card-animate bg-white border border-charcoal/5 rounded-2xl overflow-hidden flex flex-col <?php echo $hasImage ? '' : 'menu-card-no-image'; ?> hover:shadow-xl hover:border-primary/10 transition-shadow duration-300 group relative">
                                 <?php if ($hasImage): ?>
-                                <div class="w-full h-44 md:h-36 lg:h-32 shrink-0 bg-cover bg-center rounded-t-2xl" style="background-image: url('<?php echo htmlspecialchars($itemImage); ?>');"></div>
+                                <div class="w-full h-44 md:h-52 lg:h-56 shrink-0 bg-cover bg-center rounded-t-2xl" style="background-image: url('<?php echo htmlspecialchars($itemImage); ?>');"></div>
                                 <?php endif; ?>
                                 <div class="flex-1 flex flex-col justify-center p-5 md:p-3 lg:p-3 relative z-10 min-w-0">
                                     <h4 class="text-lg md:text-base lg:text-sm font-bold group-hover:text-primary transition-colors mb-0.5 md:mb-0 line-clamp-2" style="color: <?php echo htmlspecialchars($menuTitleColor); ?>"><?php echo htmlspecialchars($item['name']); ?></h4>

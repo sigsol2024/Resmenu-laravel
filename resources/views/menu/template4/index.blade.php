@@ -157,7 +157,7 @@ tailwind.config = { darkMode: "class", theme: { extend: {
                                     @php $itemImage = !empty($item['image']) ? $uploadBaseUrl.'/menu-items/'.$item['image'] : ''; @endphp
                                     <div class="bg-white border border-charcoal/5 rounded-2xl overflow-hidden flex flex-col hover:shadow-lg">
                                         @if($itemImage)
-                                            <div class="h-40 bg-cover bg-center" style="background-image:url('{{ $itemImage }}')"></div>
+                                            <div class="h-44 md:h-52 lg:h-56 bg-cover bg-center" style="background-image:url('{{ $itemImage }}')"></div>
                                         @endif
                                         <div class="p-4">
                                             <h4 class="font-bold mb-1" style="color:{{ $menuTitleColor }}">{{ $item['name'] }}</h4>
