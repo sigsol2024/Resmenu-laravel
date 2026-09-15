@@ -45,6 +45,11 @@ class DashboardController extends Controller
       ->limit(7)
       ->get();
 
-    return view('admin.dashboard', compact('stats', 'chartData', 'recentRestaurants'));
+    $managerRestaurantIds = \App\Models\Manager::query()
+      ->whereIn('restaurant_id', $recentRestaurants->pluck('id')->all())
+      ->pluck('restaurant_id')
+      ->flip();
+
+    return view('admin.dashboard', compact('stats', 'chartData', 'recentRestaurants', 'managerRestaurantIds'));
   }
 }

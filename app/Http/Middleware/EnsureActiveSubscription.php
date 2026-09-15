@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Services\SubscriptionService;
+use App\Support\ManagerImpersonation;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,6 +14,11 @@ class EnsureActiveSubscription
 
     public function handle(Request $request, Closure $next): Response
     {
+        // Admins impersonating a manager need full setup access (sections/menu) even without an active plan.
+        if (ManagerImpersonation::active($request)) {
+            return $next($request);
+        }
+
         $restaurantId = (int) $request->attributes->get('restaurant_id');
         if ($restaurantId <= 0) {
             return $next($request);

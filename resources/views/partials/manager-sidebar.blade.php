@@ -6,6 +6,9 @@
             $activeId = $item['id'];
         }
     }
+    if (request()->routeIs('manager.sections.*')) {
+        $activeId = 'sections';
+    }
     if (request()->routeIs('manager.dashboard')) {
         $activeId = 'dashboard';
     }

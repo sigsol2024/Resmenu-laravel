@@ -19,7 +19,7 @@ Source of truth: `Resmenu/` legacy PHP. Laravel matches **DOM structure, class n
 |--------|---------------|--------------|--------|
 | `admin/dashboard.php` | `admin.dashboard` | `admin/dashboard.blade.php` | ported |
 | `admin/restaurants.php` | `admin.restaurants.index` | `admin/restaurants/index.blade.php` | ported |
-| `admin/restaurant-view.php` | `admin.restaurants.hub` | `admin/restaurants/hub.blade.php` | ported |
+| `admin/restaurant-view.php` | `admin.restaurants.impersonate` (+ temporary `admin.restaurants.hub` redirect) | manager layout via impersonation | replaced hub with Login as Manager |
 | `admin/subscription-plans.php` | `admin.subscription-plans.index` | `admin/subscription-plans/index.blade.php` | ported |
 | `admin/subscriptions.php` | `admin.subscriptions.index` | `admin/subscriptions/index.blade.php` | ported |
 | `admin/payments.php` | `admin.payments.index` | `admin/payments/index.blade.php` | ported |

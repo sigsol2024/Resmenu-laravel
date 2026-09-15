@@ -19,6 +19,10 @@ Route::get('/', [LoginController::class, 'show'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:10,1')->name('login.submit');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+Route::post('/impersonation/leave', [\App\Http\Controllers\Admin\ImpersonationController::class, 'leave'])
+    ->middleware(['auth:manager', 'session.idle:manager'])
+    ->name('impersonation.leave');
+
 Route::middleware('throttle:30,1')->group(function () {
     Route::get('/register', [RegisterController::class, 'show'])->name('register');
     Route::post('/register/otp', [RegisterController::class, 'sendOtp'])->middleware('throttle:5,1')->name('register.otp');

@@ -13,7 +13,7 @@
 
 - **Public reservation**: Full legacy 4-step wizard (`reservation-booking.blade.php` + `reservation-wizard.js`), calendar, occasions, deposit redirect, feature gating.
 - **Styled QR**: Endroid via `QrGeneratorService`, `QrImageController`, manager/admin routes; removed qrserver for main/section downloads.
-- **Admin restaurant hub**: `RestaurantHubController` + tabbed manage view (menu CRUD, customization, header/footer).
+- **Admin restaurant setup**: Login as Manager (impersonation) opens the full manager UI. Legacy hub at `admin.restaurants.hub` redirects to restaurants index.
 - **Table inventory**: Manager UI + `table-inventory.js` wired to `/api/table-inventory`.
 - **Transactional emails**: `RestaurantTransactionalMailService` for orders/reservations (create + status).
 - **Registration MX**: User-facing deliverability messages on OTP send.

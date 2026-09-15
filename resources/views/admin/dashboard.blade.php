@@ -79,22 +79,30 @@
         @endif
         <div class="restaurant-actions">
           @include('partials.admin.actions-dropdown', [
-            'items' => [
-              ['label' => 'Manage', 'url' => route('admin.restaurants.hub', $restaurant)],
+            'items' => array_values(array_filter([
+              isset(($managerRestaurantIds ?? [])[$restaurant->id]) ? [
+                'type' => 'form',
+                'label' => 'Login as Manager',
+                'action' => route('admin.restaurants.impersonate', $restaurant),
+              ] : null,
               ['label' => 'Edit', 'url' => route('admin.restaurants.edit', $restaurant)],
               ['label' => 'View Menu', 'url' => route('public.menu', $restaurant->slug), 'target' => '_blank', 'rel' => 'noopener'],
-            ],
+            ])),
           ])
         </div>
         <span class="restaurant-toggle" aria-hidden="true">▼</span>
       </div>
       <div class="restaurant-body">
         @include('partials.admin.actions-dropdown', [
-          'items' => [
-            ['label' => 'Manage', 'url' => route('admin.restaurants.hub', $restaurant)],
+          'items' => array_values(array_filter([
+            isset(($managerRestaurantIds ?? [])[$restaurant->id]) ? [
+              'type' => 'form',
+              'label' => 'Login as Manager',
+              'action' => route('admin.restaurants.impersonate', $restaurant),
+            ] : null,
             ['label' => 'Edit', 'url' => route('admin.restaurants.edit', $restaurant)],
             ['label' => 'View Menu', 'url' => route('public.menu', $restaurant->slug), 'target' => '_blank', 'rel' => 'noopener'],
-          ],
+          ])),
         ])
       </div>
     </div>

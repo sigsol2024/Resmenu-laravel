@@ -109,7 +109,12 @@
                   ];
                 }
                 $assignItems[] = ['type' => 'divider'];
-                $assignItems[] = ['label' => 'View Restaurant', 'url' => route('admin.restaurants.hub', $restaurant)];
+                $assignItems[] = [
+                  'type' => 'form',
+                  'label' => 'Login as Manager',
+                  'action' => route('admin.restaurants.impersonate', $restaurant),
+                ];
+                $assignItems[] = ['label' => 'View Restaurant', 'url' => route('admin.restaurants.show', $restaurant)];
               @endphp
               @include('partials.admin.actions-dropdown', ['items' => $assignItems])
             </td>
@@ -205,7 +210,12 @@
                 }
                 $subItems[] = ['type' => 'divider'];
                 if ($s->restaurant) {
-                  $subItems[] = ['label' => 'View Restaurant', 'url' => route('admin.restaurants.hub', $s->restaurant)];
+                  $subItems[] = [
+                    'type' => 'form',
+                    'label' => 'Login as Manager',
+                    'action' => route('admin.restaurants.impersonate', $s->restaurant),
+                  ];
+                  $subItems[] = ['label' => 'View Restaurant', 'url' => route('admin.restaurants.show', $s->restaurant)];
                   $subItems[] = ['label' => 'View Payments', 'url' => route('admin.payments.index', ['restaurant_id' => $s->restaurant_id])];
                 }
               @endphp

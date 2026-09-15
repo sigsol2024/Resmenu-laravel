@@ -363,7 +363,12 @@
                                             <div class="actions-dropdown-divider"></div>
                                             <button type="button" onclick="openDeleteModal({{ $restaurant->id }}, '{{ addslashes($restaurant->name) }}')" class="actions-dropdown-item danger">Permanent Delete</button>
                                         @else
-                                            <a href="{{ route('admin.restaurants.hub', $restaurant) }}" class="actions-dropdown-item">Manage</a>
+                                            @if(($managersByRestaurant ?? collect())->get($restaurant->id))
+                                            <form method="POST" action="{{ route('admin.restaurants.impersonate', $restaurant) }}" style="margin:0;">
+                                                @csrf
+                                                <button type="submit" class="actions-dropdown-item">Login as Manager</button>
+                                            </form>
+                                            @endif
                                             <a href="{{ route('admin.restaurants.index', ['edit' => $restaurant->id]) }}" class="actions-dropdown-item">Edit</a>
                                             <a href="{{ route('public.menu', $restaurant->slug) }}" target="_blank" class="actions-dropdown-item">View Menu</a>
                                             <div class="actions-dropdown-divider"></div>

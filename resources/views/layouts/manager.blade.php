@@ -18,6 +18,7 @@ body{font-family:Inter,sans-serif;background:var(--bg);color:var(--text)}
 @stack('head')
 </head>
 <body>
+@include('partials.impersonation-banner')
 <div class="app">
   @include('partials.manager-sidebar')
   <div class="content">

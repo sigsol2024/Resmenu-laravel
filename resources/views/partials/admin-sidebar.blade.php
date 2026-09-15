@@ -10,7 +10,7 @@
     if (request()->routeIs('admin.dashboard')) {
         $activeId = 'dashboard';
     }
-    if (request()->routeIs('admin.restaurants.hub', 'admin.restaurants.show')) {
+    if (request()->routeIs('admin.restaurants.show', 'admin.restaurants.impersonate', 'admin.restaurants.hub')) {
         $activeId = 'restaurants';
     }
 @endphp

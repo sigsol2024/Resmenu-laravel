@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Support\ManagerImpersonation;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,6 +16,15 @@ class SessionIdleTimeout
         if ($idle > 0 && Auth::guard($guard)->check()) {
             $last = (int) session('last_activity', 0);
             if ($last > 0 && (time() - $last) > $idle) {
+                // Never wipe impersonator_admin_id — restore the admin instead.
+                if ($guard === 'manager' && ManagerImpersonation::active($request)) {
+                    return ManagerImpersonation::restoreAdmin(
+                        $request,
+                        'Manager session expired due to inactivity. Returned to administrator.',
+                        'idle_timeout'
+                    );
+                }
+
                 Auth::guard($guard)->logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();

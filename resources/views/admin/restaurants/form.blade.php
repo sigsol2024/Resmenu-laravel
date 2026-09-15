@@ -129,7 +129,12 @@
                 {{ $restaurant->exists ? 'Update Restaurant' : 'Create Restaurant' }}
             </button>
             @if($restaurant->exists)
-                <a href="{{ route('admin.restaurants.hub', $restaurant) }}" class="btn btn-secondary">Manage Restaurant</a>
+                @if($manager ?? null)
+                <form method="POST" action="{{ route('admin.restaurants.impersonate', $restaurant) }}" style="display:inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-secondary">Login as Manager</button>
+                </form>
+                @endif
             @endif
             <a href="{{ route('admin.restaurants.index') }}" class="btn btn-secondary">Cancel</a>
         </div>

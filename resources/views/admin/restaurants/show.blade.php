@@ -57,11 +57,15 @@
 </div>
 @endif
 
-<div class="actions" style="display:flex;flex-wrap:wrap;gap:8px;">
-  <a href="{{ route('admin.restaurants.hub', $restaurant) }}" class="btn-manage">Manage menu &amp; settings</a>
+<div class="actions" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+  @if($manager)
+  <form method="POST" action="{{ route('admin.restaurants.impersonate', $restaurant) }}" style="margin:0;">
+    @csrf
+    <button type="submit" class="btn-manage">Login as Manager</button>
+  </form>
+  @endif
   <a href="{{ route('admin.restaurants.edit', $restaurant) }}" class="btn-manage">Edit restaurant</a>
   <a href="{{ route('public.menu', $restaurant->slug) }}" target="_blank" class="btn-view">View menu</a>
-  <a href="{{ url('/manager/'.$restaurant->slug) }}" target="_blank" class="btn-view">Manager dashboard</a>
   <a href="{{ route('admin.subscriptions.index', ['q' => $restaurant->slug]) }}" class="btn-view">Subscriptions</a>
   <a href="{{ route('admin.payments.index') }}" class="btn-view">Payments</a>
 </div>

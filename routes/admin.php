@@ -1,18 +1,19 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ImpersonationController;
 use App\Http\Controllers\Admin\LoginController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PaymentSettingsController;
 use App\Http\Controllers\Admin\QrTemplateController;
 use App\Http\Controllers\Admin\RestaurantController;
-use App\Http\Controllers\Admin\RestaurantHubController;
 use App\Http\Controllers\Public\QrImageController;
 use App\Http\Controllers\Admin\RestaurantSearchController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\SubscriptionController;
 use App\Http\Controllers\Admin\SubscriptionPlanController;
 use App\Http\Controllers\Admin\TemplateController;
+use App\Models\Restaurant;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -28,7 +29,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/restaurants', [RestaurantController::class, 'store'])->name('restaurants.store');
         Route::get('/restaurants/search', [RestaurantSearchController::class, 'index'])->name('restaurants.search');
         Route::get('/restaurants/{restaurant}', [RestaurantController::class, 'show'])->name('restaurants.show');
-        Route::match(['get', 'post'], '/restaurants/{restaurant}/hub', [RestaurantHubController::class, 'show'])->name('restaurants.hub');
+        Route::post('/restaurants/{restaurant}/impersonate', [ImpersonationController::class, 'start'])->name('restaurants.impersonate');
+        // Temporary bookmark-safe redirect (hub CRUD removed — use Login as Manager).
+        Route::match(['get', 'post'], '/restaurants/{restaurant}/hub', function (Restaurant $restaurant) {
+            return redirect()
+                ->route('admin.restaurants.index')
+                ->with('success', 'Use Login as Manager to open the restaurant.');
+        })->name('restaurants.hub');
         Route::get('/qr-image', QrImageController::class)->name('qr.image');
         Route::get('/restaurants/{restaurant}/edit', [RestaurantController::class, 'edit'])->name('restaurants.edit');
         Route::put('/restaurants/{restaurant}', [RestaurantController::class, 'update'])->name('restaurants.update');

@@ -110,8 +110,18 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
+        // Accidental Logout while impersonating should return to admin, not destroy the admin session.
+        if (\App\Support\ManagerImpersonation::active($request)) {
+            return \App\Support\ManagerImpersonation::restoreAdmin(
+                $request,
+                'Returned to administrator.',
+                'logout_while_impersonating'
+            );
+        }
+
         Auth::guard('admin')->logout();
         Auth::guard('manager')->logout();
+        $request->session()->forget(['impersonating', 'impersonator_admin_id', 'user_role', 'restaurant_id']);
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
