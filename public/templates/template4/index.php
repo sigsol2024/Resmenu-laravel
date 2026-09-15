@@ -379,6 +379,9 @@ if ($heroNameLen > 28) {
                         <h3 class="text-base md:text-lg font-serif font-black tracking-tight bg-charcoal rounded-xl px-4 py-3 shrink-0" style="color: <?php echo htmlspecialchars($categoryTitleColor); ?>"><?php echo htmlspecialchars($category['name']); ?></h3>
                         <div class="h-px flex-1 bg-charcoal/20"></div>
                     </div>
+                    <?php if (!empty($category['description'])): ?>
+                        <p class="text-sm md:text-base leading-relaxed mb-8 -mt-4 max-w-3xl" style="color: <?php echo htmlspecialchars($descColor); ?>"><?php echo nl2br(htmlspecialchars($category['description'])); ?></p>
+                    <?php endif; ?>
                     <?php
                     $menuItems = array_values(array_filter(
                         $category['menu_items'] ?? [],

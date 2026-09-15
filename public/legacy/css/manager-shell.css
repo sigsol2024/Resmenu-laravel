@@ -9,6 +9,73 @@
   --muted:#6b7280;
   --card:#ffffff;
   --radius:14px;
+  --impersonation-banner-height:0px;
+}
+
+body.is-impersonating{
+  --impersonation-banner-height:48px;
+}
+
+@media (max-width:768px){
+  body.is-impersonating{
+    --impersonation-banner-height:56px;
+  }
+}
+
+/* ===== IMPERSONATION TOPBAR ===== */
+.impersonation-banner{
+  position:fixed !important;
+  top:0 !important;
+  left:0 !important;
+  right:0 !important;
+  width:100% !important;
+  max-width:100% !important;
+  margin:0 !important;
+  z-index:10050 !important;
+  min-height:var(--impersonation-banner-height, 48px);
+  background:#92400e;
+  color:#fffbeb;
+  padding:10px 16px;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:center;
+  gap:10px 14px;
+  font-size:0.875rem;
+  font-weight:500;
+  box-sizing:border-box;
+  text-align:center;
+}
+
+.impersonation-banner__return{
+  background:#fffbeb;
+  color:#92400e;
+  border:none;
+  border-radius:6px;
+  padding:6px 12px;
+  font-weight:600;
+  font-size:0.8125rem;
+  cursor:pointer;
+  flex-shrink:0;
+  white-space:nowrap;
+}
+
+body.is-impersonating .app{
+  padding-top:var(--impersonation-banner-height);
+  overflow-x:hidden;
+}
+
+body.is-impersonating .sidebar-modern{
+  top:var(--impersonation-banner-height) !important;
+  height:calc(100% - var(--impersonation-banner-height)) !important;
+}
+
+body.is-impersonating .header{
+  top:var(--impersonation-banner-height) !important;
+}
+
+body.is-impersonating .mobile-hamburger{
+  top:calc(var(--impersonation-banner-height) + 12px) !important;
 }
 
 *{
@@ -19,6 +86,14 @@
 
 html,body{
   overflow-x:hidden;
+}
+
+body.is-impersonating{
+  overflow-x:visible;
+}
+
+html:has(body.is-impersonating){
+  overflow-x:visible;
 }
 
 body{

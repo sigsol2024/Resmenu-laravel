@@ -140,7 +140,10 @@ tailwind.config = { darkMode: "class", theme: { extend: {
                     @foreach($section['categories'] as $category)
                         @if(empty($category['menu_items'])) @continue @endif
                         <div class="mb-16" id="{{ $category['slug'] }}-section">
-                            <h3 class="text-lg font-serif font-black bg-charcoal rounded-xl px-4 py-3 inline-block mb-6" style="color:{{ $categoryTitleColor }}">{{ $category['name'] }}</h3>
+                            <h3 class="text-lg font-serif font-black bg-charcoal rounded-xl px-4 py-3 inline-block mb-2" style="color:{{ $categoryTitleColor }}">{{ $category['name'] }}</h3>
+                            @if(!empty($category['description']))
+                                <p class="text-sm md:text-base leading-relaxed mb-6 max-w-3xl" style="color:{{ $descColor }}">{{ $category['description'] }}</p>
+                            @endif
                             @php
                                 $menuItems = array_values(array_filter($category['menu_items'] ?? [], fn ($item) => is_array($item)));
                                 $itemCount = count($menuItems);
