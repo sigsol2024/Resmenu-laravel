@@ -410,7 +410,7 @@ if ($heroNameLen > 28) {
                                     <h4 class="text-lg md:text-base lg:text-sm font-bold group-hover:text-primary transition-colors mb-0.5 md:mb-0 line-clamp-2" style="color: <?php echo htmlspecialchars($menuTitleColor); ?>"><?php echo htmlspecialchars($item['name']); ?></h4>
                                     <span class="font-black text-xl md:text-lg lg:text-base mb-2 md:mb-1" style="color: <?php echo htmlspecialchars($priceColor); ?>; font-size: <?php echo $priceSize; ?>px; font-family: <?php echo htmlspecialchars($priceFont, ENT_QUOTES, 'UTF-8'); ?>, sans-serif;"><?php echo t4_formatPrice($item['price'], $currencySymbol); ?></span>
                                     <?php if (!empty($item['description'])): ?>
-                                        <p class="text-sm md:text-xs leading-relaxed mb-3 md:mb-2 line-clamp-2" style="color: <?php echo htmlspecialchars($descColor); ?>"><?php echo nl2br(htmlspecialchars($item['description'])); ?></p>
+                                        <p class="text-sm md:text-xs leading-relaxed mb-3 md:mb-2" style="color: <?php echo htmlspecialchars($descColor); ?>"><?php echo nl2br(htmlspecialchars($item['description'])); ?></p>
                                     <?php endif; ?>
                                     <?php if (!empty($supportsOrdering)): ?>
                                     <div class="flex justify-start mt-auto">

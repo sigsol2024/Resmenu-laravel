@@ -163,7 +163,7 @@ tailwind.config = { darkMode: "class", theme: { extend: {
                                             <h4 class="font-bold mb-1" style="color:{{ $menuTitleColor }}">{{ $item['name'] }}</h4>
                                             <span class="font-black text-lg" style="color:{{ $priceColor }};font-size:{{ $priceSize }}px;font-family:{{ $priceFont }},sans-serif">{{ \App\Support\PriceFormatter::format($item['price']) }}</span>
                                             @if(!empty($item['description']))
-                                                <p class="text-sm mt-2 line-clamp-2" style="color:{{ $descColor }}">{{ $item['description'] }}</p>
+                                                <p class="text-sm mt-2" style="color:{{ $descColor }}">{{ $item['description'] }}</p>
                                             @endif
                                         </div>
                                     </div>
