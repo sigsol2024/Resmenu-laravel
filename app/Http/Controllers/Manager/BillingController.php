@@ -109,6 +109,14 @@ class BillingController extends Controller
 
             $decision = $this->subscriptions->getSubscriptionChangeDecision($subscription, $targetPlan, $targetCycle);
 
+            if ($decision['mode'] === 'blocked') {
+                $message = ($decision['reason'] ?? '') === 'annual_to_monthly_blocked'
+                    ? 'You cannot switch from annual to monthly while your annual period is active. There is no credit for unused annual time.'
+                    : 'This plan change is not allowed.';
+
+                return redirect()->route('manager.billing.index')->with('error', $message);
+            }
+
             if ($decision['mode'] === 'immediate') {
                 return redirect()->route('manager.billing.checkout', [
                     'plan' => $targetPlan['slug'],

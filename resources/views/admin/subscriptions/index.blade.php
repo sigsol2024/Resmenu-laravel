@@ -184,20 +184,6 @@
                   }
                 }
                 $subItems[] = ['type' => 'divider'];
-                $subItems[] = ['type' => 'title', 'label' => 'Change Plan'];
-                foreach ($plans as $plan) {
-                  if ($plan->id != $s->plan_id) {
-                    $subItems[] = [
-                      'type' => 'form',
-                      'label' => $plan->name,
-                      'action' => route('admin.subscriptions.update', $s),
-                      'method' => 'PATCH',
-                      'hidden' => ['action' => 'change_plan', 'new_plan_id' => $plan->id],
-                      'confirm' => 'Change subscription plan to '.$plan->name.'?',
-                    ];
-                  }
-                }
-                $subItems[] = ['type' => 'divider'];
                 $subItems[] = ['type' => 'title', 'label' => 'Extend Period'];
                 foreach ([7, 30, 90, 365] as $days) {
                   $subItems[] = [
@@ -210,6 +196,10 @@
                 }
                 $subItems[] = ['type' => 'divider'];
                 if ($s->restaurant) {
+                  $subItems[] = [
+                    'label' => 'Record Payment',
+                    'url' => route('admin.payments.index', ['manual' => 1, 'restaurant_id' => $s->restaurant_id]),
+                  ];
                   $subItems[] = [
                     'type' => 'form',
                     'label' => 'Login as Manager',

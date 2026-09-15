@@ -236,8 +236,10 @@
                         $changeHint = 'Your plan has expired. Renew to restore your public menu and manager features.';
                     } elseif ($isCurrent) {
                         $changeHint = 'Current plan. Upgrades are immediate; downgrades or billing-cycle changes are scheduled.';
+                    } elseif ($monthlyDecision['mode'] === 'blocked' || $annualDecision['mode'] === 'blocked') {
+                        $changeHint = 'Annual to monthly switches are blocked while your annual period is active.';
                     } elseif ($monthlyDecision['mode'] === 'scheduled' || $annualDecision['mode'] === 'scheduled') {
-                        $changeHint = 'Downgrades and billing-cycle changes are scheduled for your period end.';
+                        $changeHint = 'Downgrades are scheduled for your period end. No charge now.';
                     } else {
                         $changeHint = 'Upgrade changes are applied immediately after successful payment.';
                     }

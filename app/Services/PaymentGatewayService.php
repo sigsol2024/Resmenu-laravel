@@ -39,71 +39,111 @@ class PaymentGatewayService
             return ['error' => 'Restaurant or manager email missing'];
         }
 
-        $subscription = Subscription::query()->where('restaurant_id', $restaurantId)->orderByDesc('id')->first();
-        if (! $subscription) {
-            $subscription = Subscription::forceCreate([
+        $quote = $this->subscriptions->quotePlanChange($restaurantId, $planId, $cycle);
+        $outcome = (string) ($quote['outcome'] ?? '');
+
+        if ($outcome === 'already_on_plan') {
+            return ['error' => $quote['message'] ?? 'Already on this plan.'];
+        }
+        if ($outcome === 'blocked') {
+            return ['error' => $quote['message'] ?? 'This plan change is not allowed.'];
+        }
+        if ($outcome === 'schedule_downgrade') {
+            return ['error' => $quote['message'] ?? 'This change is scheduled at period end and does not require payment.'];
+        }
+        if ($outcome !== 'charge') {
+            return ['error' => 'Unable to calculate payment amount for this plan change.'];
+        }
+
+        $amount = (float) ($quote['amount'] ?? 0);
+        if ($amount <= 0) {
+            return ['error' => 'Quoted amount must be greater than zero. Free upgrades are not allowed.'];
+        }
+
+        return DB::transaction(function () use ($restaurantId, $planId, $cycle, $gateway, $amount, $quote, $plan, $restaurant, $managerEmail) {
+            $subscription = Subscription::query()
+                ->where('restaurant_id', $restaurantId)
+                ->orderByDesc('id')
+                ->lockForUpdate()
+                ->first();
+
+            if (! $subscription) {
+                $subscription = Subscription::forceCreate([
+                    'restaurant_id' => $restaurantId,
+                    'plan_id' => $planId,
+                    'billing_cycle' => $cycle,
+                    'status' => 'pending',
+                ]);
+                $subscription = Subscription::query()->where('id', $subscription->id)->lockForUpdate()->first();
+            }
+
+            $billingIntent = $this->paymentLifecycle->buildBillingIntent(
+                $restaurantId,
+                (int) $subscription->id,
+                $planId,
+                $cycle,
+                $amount,
+                (string) ($quote['pricing_mode'] ?? ''),
+                (string) ($quote['apply_mode'] ?? ''),
+            );
+
+            $resolved = $this->paymentLifecycle->resolvePendingPaymentRecord(
+                $restaurantId,
+                (int) $subscription->id,
+                $planId,
+                $cycle,
+                $gateway,
+                $amount,
+                $billingIntent,
+            );
+
+            $paymentId = $resolved['payment_id'];
+            $reference = $resolved['transaction_reference'];
+
+            $metadata = [
+                'payment_id' => $paymentId,
+                'subscription_id' => $subscription->id,
                 'restaurant_id' => $restaurantId,
                 'plan_id' => $planId,
                 'billing_cycle' => $cycle,
-                'status' => 'pending',
-            ]);
-        }
+                'pricing_mode' => $quote['pricing_mode'] ?? null,
+                'apply_mode' => $quote['apply_mode'] ?? null,
+            ];
 
-        $amount = $cycle === 'annual' ? (float) ($plan->annual_price ?? 0) : (float) ($plan->monthly_price ?? 0);
+            $keys = $this->platformKeys($gateway);
+            if (empty($keys['secret_key'])) {
+                $this->paymentLifecycle->markFailed($paymentId, ['reason' => 'gateway_not_configured']);
 
-        $resolved = $this->paymentLifecycle->resolvePendingPaymentRecord(
-            $restaurantId,
-            (int) $subscription->id,
-            $planId,
-            $cycle,
-            $gateway,
-            $amount,
-        );
+                return ['error' => 'Payment gateway not configured'];
+            }
 
-        $paymentId = $resolved['payment_id'];
-        $reference = $resolved['transaction_reference'];
+            if ($gateway === 'flutterwave') {
+                $result = $this->flutterwaveInitialize(
+                    $keys['secret_key'],
+                    $amount,
+                    $managerEmail,
+                    $restaurant->name ?? 'Restaurant',
+                    $reference,
+                    $metadata,
+                    route('manager.billing.payment-callback', ['gateway' => 'flutterwave']),
+                );
+            } else {
+                $result = $this->paystackInitialize(
+                    $keys['secret_key'],
+                    (int) round($amount * 100),
+                    $managerEmail,
+                    $reference,
+                    $metadata,
+                    route('manager.billing.payment-callback', ['gateway' => 'paystack']),
+                );
+            }
 
-        $metadata = [
-            'payment_id' => $paymentId,
-            'subscription_id' => $subscription->id,
-            'restaurant_id' => $restaurantId,
-            'plan_id' => $planId,
-            'billing_cycle' => $cycle,
-        ];
+            if (! empty($result['error'])) {
+                $this->paymentLifecycle->markFailed($paymentId, $result);
+            }
 
-        $keys = $this->platformKeys($gateway);
-        if (empty($keys['secret_key'])) {
-            $this->paymentLifecycle->markFailed($paymentId, ['reason' => 'gateway_not_configured']);
-
-            return ['error' => 'Payment gateway not configured'];
-        }
-
-        if ($gateway === 'flutterwave') {
-            $result = $this->flutterwaveInitialize(
-                $keys['secret_key'],
-                $amount,
-                $managerEmail,
-                $restaurant->name ?? 'Restaurant',
-                $reference,
-                $metadata,
-                route('manager.billing.payment-callback', ['gateway' => 'flutterwave']),
-            );
-        } else {
-            $result = $this->paystackInitialize(
-                $keys['secret_key'],
-                (int) round($amount * 100),
-                $managerEmail,
-                $reference,
-                $metadata,
-                route('manager.billing.payment-callback', ['gateway' => 'paystack']),
-            );
-        }
-
-        if (! empty($result['error'])) {
-            $this->paymentLifecycle->markFailed($paymentId, $result);
-        }
-
-        return $result;
+            return $result;
+        });
     }
 
     /** @return array{redirect_url?:string, reference?:string, error?:string} */
@@ -178,7 +218,10 @@ class PaymentGatewayService
             DB::table('payments')->where('id', $payment->id)->update([
                 'status' => 'success',
                 'paid_at' => now(),
-                'gateway_response' => json_encode($data),
+                'gateway_response' => $this->paymentLifecycle->mergeGatewayPayloadPreservingIntent(
+                    $payment->gateway_response ?? null,
+                    $data,
+                ),
             ]);
 
             return $this->activateSubscriptionForVerifiedPayment($payment);
@@ -215,7 +258,10 @@ class PaymentGatewayService
             DB::table('payments')->where('id', $payment->id)->update([
                 'status' => 'success',
                 'paid_at' => now(),
-                'gateway_response' => json_encode($data),
+                'gateway_response' => $this->paymentLifecycle->mergeGatewayPayloadPreservingIntent(
+                    $payment->gateway_response ?? null,
+                    $data,
+                ),
             ]);
 
             return $this->activateSubscriptionForVerifiedPayment($payment);
@@ -308,19 +354,88 @@ class PaymentGatewayService
 
     private function activateSubscriptionForVerifiedPayment(object $payment): bool
     {
-        $subscriptionId = (int) $payment->subscription_id;
-        $planId = (int) ($payment->plan_id ?? 0);
-        $cycle = ($payment->billing_cycle ?? 'monthly') === 'annual' ? 'annual' : 'monthly';
+        return $this->fulfillSubscriptionPayment($payment);
+    }
 
-        if ($planId > 0) {
-            DB::table('subscriptions')->where('id', $subscriptionId)->update([
-                'plan_id' => $planId,
-                'billing_cycle' => $cycle,
-                'updated_at' => now(),
-            ]);
+    /**
+     * Apply a successful subscription payment only when the live quote still matches
+     * the original billing intent. Never force blocked/scheduled outcomes into charge.
+     */
+    public function fulfillSubscriptionPayment(object $payment): bool
+    {
+        $intent = $this->paymentLifecycle->extractBillingIntent($payment);
+        $restaurantId = (int) ($intent['restaurant_id'] ?? $payment->restaurant_id ?? 0);
+        $planId = (int) ($intent['plan_id'] ?? $payment->plan_id ?? 0);
+        $cycle = (($intent['billing_cycle'] ?? $payment->billing_cycle ?? 'monthly') === 'annual')
+            ? 'annual'
+            : 'monthly';
+        $paidAmount = (float) ($payment->amount ?? 0);
+
+        if ($planId <= 0) {
+            $planId = (int) DB::table('subscriptions')
+                ->where('id', $payment->subscription_id)
+                ->value('plan_id');
         }
 
-        return $this->subscriptions->activateSubscription($subscriptionId, $cycle);
+        if ($restaurantId <= 0 || $planId <= 0) {
+            $this->paymentLifecycle->logPaymentReconciliation('missing_restaurant_or_plan', $payment, null, $intent);
+
+            return true; // payment stays successful; no mutation
+        }
+
+        if ($intent === null) {
+            // Legacy rows without intent: reconstruct minimal intent from columns only.
+            $intent = $this->paymentLifecycle->buildBillingIntent(
+                $restaurantId,
+                (int) ($payment->subscription_id ?? 0),
+                $planId,
+                $cycle,
+                $paidAmount,
+                null,
+                null,
+            );
+        }
+
+        $quote = $this->subscriptions->quotePlanChange($restaurantId, $planId, $cycle);
+        $outcome = (string) ($quote['outcome'] ?? '');
+
+        if ($outcome === 'already_on_plan') {
+            return true;
+        }
+
+        if ($outcome === 'blocked' || $outcome === 'schedule_downgrade') {
+            $this->paymentLifecycle->logPaymentReconciliation(
+                'live_outcome_not_charge_'.$outcome,
+                $payment,
+                $quote,
+                $intent,
+            );
+
+            return true; // keep payment success; do not mutate
+        }
+
+        if ($outcome !== 'charge') {
+            $this->paymentLifecycle->logPaymentReconciliation('live_outcome_unknown', $payment, $quote, $intent);
+
+            return true;
+        }
+
+        if (! $this->paymentLifecycle->isLiveQuoteCompatibleWithIntent($quote, $intent, $paidAmount)) {
+            $this->paymentLifecycle->logPaymentReconciliation('intent_mismatch', $payment, $quote, $intent);
+
+            return true; // keep payment success; do not under-apply or force activate
+        }
+
+        $quote['subscription_id'] = (int) ($intent['subscription_id'] ?? $payment->subscription_id ?: ($quote['subscription_id'] ?? 0));
+        // Prefer stored apply_mode when present so residual stays preserve_period.
+        if (! empty($intent['apply_mode'])) {
+            $quote['apply_mode'] = $intent['apply_mode'];
+        }
+        if (! empty($intent['pricing_mode'])) {
+            $quote['pricing_mode'] = $intent['pricing_mode'];
+        }
+
+        return $this->subscriptions->applyQuotedPlanChange($quote);
     }
 
     public function verifyPaystackSignature(string $payload, string $signature, ?string $secret = null): bool
@@ -484,9 +599,17 @@ class PaymentGatewayService
             return false;
         }
 
+        $payment = DB::table('payments')->where('id', $paymentId)->first();
+        if (! $payment) {
+            return false;
+        }
+
         $payload = ['status' => $status];
         if ($gatewayResponse !== null) {
-            $payload['gateway_response'] = json_encode($gatewayResponse);
+            $payload['gateway_response'] = $this->paymentLifecycle->mergeGatewayPayloadPreservingIntent(
+                $payment->gateway_response ?? null,
+                $gatewayResponse,
+            );
         }
         if ($status === 'success') {
             $payload['paid_at'] = now();
@@ -495,10 +618,25 @@ class PaymentGatewayService
         return DB::table('payments')->where('id', $paymentId)->update($payload) > 0;
     }
 
-    /** @param array{restaurant_id:int,subscription_id:int,amount:float,payment_gateway:string,transaction_reference?:string,status?:string} $data */
+    /**
+     * @param  array{
+     *   restaurant_id:int,
+     *   subscription_id:int,
+     *   amount:float,
+     *   payment_gateway:string,
+     *   transaction_reference?:string,
+     *   status?:string,
+     *   plan_id?:int|null,
+     *   billing_cycle?:string|null,
+     *   paid_at?:mixed,
+     *   currency?:string,
+     *   gateway_response?:string|null,
+     *   billing_intent?:array<string, mixed>|null
+     * }  $data
+     */
     public function createPayment(array $data): ?int
     {
-        return DB::table('payments')->insertGetId([
+        $payload = [
             'restaurant_id' => $data['restaurant_id'],
             'subscription_id' => $data['subscription_id'],
             'amount' => $data['amount'],
@@ -507,7 +645,30 @@ class PaymentGatewayService
             'transaction_reference' => $data['transaction_reference'] ?? null,
             'status' => $data['status'] ?? 'pending',
             'created_at' => now(),
-        ]) ?: null;
+        ];
+
+        if (array_key_exists('plan_id', $data)) {
+            $payload['plan_id'] = $data['plan_id'];
+        }
+        if (array_key_exists('billing_cycle', $data)) {
+            $payload['billing_cycle'] = $data['billing_cycle'];
+        }
+        if (($data['status'] ?? '') === 'success') {
+            $payload['paid_at'] = $data['paid_at'] ?? now();
+        } elseif (array_key_exists('paid_at', $data)) {
+            $payload['paid_at'] = $data['paid_at'];
+        }
+
+        if (! empty($data['billing_intent']) && is_array($data['billing_intent'])) {
+            $payload['gateway_response'] = $this->paymentLifecycle->encodeBillingIntentResponse(
+                $data['gateway_response'] ?? null,
+                $data['billing_intent'],
+            );
+        } elseif (array_key_exists('gateway_response', $data)) {
+            $payload['gateway_response'] = $data['gateway_response'];
+        }
+
+        return DB::table('payments')->insertGetId($payload) ?: null;
     }
 
     public function activateSubscriptionForPayment(int $paymentId): void
@@ -517,12 +678,6 @@ class PaymentGatewayService
             return;
         }
 
-        $sub = DB::table('subscriptions')->where('id', $payment->subscription_id)->first();
-        if (! $sub) {
-            return;
-        }
-
-        $cycle = ($sub->billing_cycle ?? 'monthly') === 'annual' ? 'annual' : 'monthly';
-        $this->subscriptions->activateSubscription((int) $payment->subscription_id, $cycle);
+        $this->fulfillSubscriptionPayment($payment);
     }
 }

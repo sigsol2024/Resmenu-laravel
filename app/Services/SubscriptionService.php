@@ -6,6 +6,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SubscriptionService
 {
@@ -535,6 +536,11 @@ class SubscriptionService
             return ['mode' => 'immediate', 'reason' => 'non_active_or_trial', 'type' => 'subscribe'];
         }
 
+        // Active paid period: annual → monthly is never allowed (no wallet/credit).
+        if ($currentCycle === 'annual' && $targetCycle === 'monthly') {
+            return ['mode' => 'blocked', 'reason' => 'annual_to_monthly_blocked', 'type' => 'blocked'];
+        }
+
         $currentRank = $this->getSubscriptionPlanRank($currentSubscription);
         $targetRank = $this->getSubscriptionPlanRank($targetPlan);
 
@@ -546,11 +552,311 @@ class SubscriptionService
             return ['mode' => 'scheduled', 'reason' => 'downgrade', 'type' => 'downgrade'];
         }
 
+        // Same plan rank, cycle change only.
+        if ($currentCycle === 'monthly' && $targetCycle === 'annual') {
+            return ['mode' => 'immediate', 'reason' => 'monthly_to_annual', 'type' => 'cycle_upgrade'];
+        }
+
         if ($currentCycle !== $targetCycle) {
-            return ['mode' => 'scheduled', 'reason' => 'billing_cycle_change', 'type' => 'cycle_change'];
+            return ['mode' => 'blocked', 'reason' => 'unsupported_cycle_change', 'type' => 'blocked'];
         }
 
         return ['mode' => 'none', 'reason' => 'already_on_plan', 'type' => 'same'];
+    }
+
+    /**
+     * Authoritative plan-change quote for manager gateway and admin manual payment.
+     *
+     * @return array<string, mixed>
+     */
+    public function quotePlanChange(int $restaurantId, int $planId, string $billingCycle): array
+    {
+        $targetCycle = $billingCycle === 'annual' ? 'annual' : 'monthly';
+        $targetPlan = $this->getPlanById($planId);
+
+        if (! $targetPlan || (array_key_exists('is_active', $targetPlan) && ! (int) $targetPlan['is_active'])) {
+            return [
+                'outcome' => 'blocked',
+                'message' => 'Selected plan could not be found or is inactive.',
+                'amount' => 0.0,
+                'pricing_mode' => null,
+                'apply_mode' => null,
+                'decision' => ['mode' => 'blocked', 'reason' => 'plan_not_found', 'type' => 'blocked'],
+            ];
+        }
+
+        $current = $this->getRestaurantSubscription($restaurantId);
+        $decision = $this->getSubscriptionChangeDecision($current, $targetPlan, $targetCycle);
+        $listPrice = $this->planListPrice($targetPlan, $targetCycle);
+        $base = [
+            'restaurant_id' => $restaurantId,
+            'subscription_id' => $current ? (int) ($current['id'] ?? 0) : null,
+            'current_subscription' => $current,
+            'target_plan_id' => (int) $targetPlan['id'],
+            'target_plan_name' => (string) ($targetPlan['name'] ?? ''),
+            'target_billing_cycle' => $targetCycle,
+            'list_price' => $listPrice,
+            'decision' => $decision,
+            'remaining_fraction' => null,
+            'amount' => 0.0,
+            'pricing_mode' => null,
+            'apply_mode' => null,
+        ];
+
+        if (($decision['mode'] ?? '') === 'none') {
+            return array_merge($base, [
+                'outcome' => 'already_on_plan',
+                'message' => 'Already on this plan.',
+            ]);
+        }
+
+        if (($decision['mode'] ?? '') === 'blocked') {
+            return array_merge($base, [
+                'outcome' => 'blocked',
+                'message' => ($decision['reason'] ?? '') === 'annual_to_monthly_blocked'
+                    ? 'You cannot switch from annual to monthly while your annual period is active. There is no credit for unused annual time.'
+                    : 'This plan change is not allowed.',
+            ]);
+        }
+
+        if (($decision['mode'] ?? '') === 'scheduled') {
+            $effectiveAt = $current['current_period_end']
+                ?? $current['trial_ends_at']
+                ?? now()->toDateTimeString();
+
+            return array_merge($base, [
+                'outcome' => 'schedule_downgrade',
+                'message' => 'Your plan will change at the end of the current billing period. No payment is required now.',
+                'effective_at' => $effectiveAt,
+                'change_type' => (string) ($decision['type'] ?? 'downgrade'),
+            ]);
+        }
+
+        // Immediate charge paths.
+        $effectiveStatus = $current
+            ? $this->resolveEffectiveSubscriptionStatus($current)
+            : 'none';
+        $currentCycle = $current
+            ? ((($current['billing_cycle'] ?? 'monthly') === 'annual') ? 'annual' : 'monthly')
+            : null;
+
+        $isActivePaid = $effectiveStatus === 'active' && $current !== null;
+        $isMonthlyToAnnual = $isActivePaid && $currentCycle === 'monthly' && $targetCycle === 'annual';
+        $isSameCycleUpgrade = $isActivePaid && $currentCycle === $targetCycle;
+
+        if ($isSameCycleUpgrade) {
+            $fraction = $this->remainingPeriodFraction($current);
+            $currentPlan = [
+                'monthly_price' => $current['monthly_price'] ?? 0,
+                'annual_price' => $current['annual_price'] ?? 0,
+            ];
+            $currentRemaining = $this->planListPrice($currentPlan, $currentCycle) * $fraction;
+            $newRemaining = $listPrice * $fraction;
+            $amount = max(0, round($newRemaining - $currentRemaining, 2));
+
+            return array_merge($base, [
+                'outcome' => 'charge',
+                'message' => 'Pay the remaining-period difference to upgrade immediately.',
+                'amount' => $amount,
+                'pricing_mode' => 'residual_difference',
+                'apply_mode' => 'preserve_period',
+                'remaining_fraction' => $fraction,
+            ]);
+        }
+
+        // Full list price: new / trial / expired / cancelled / pending, or monthly → annual.
+        $message = $isMonthlyToAnnual
+            ? 'Switching to annual starts a new annual billing period at the full annual price.'
+            : 'Full plan price for a new billing period.';
+
+        return array_merge($base, [
+            'outcome' => 'charge',
+            'message' => $message,
+            'amount' => round($listPrice, 2),
+            'pricing_mode' => 'full',
+            'apply_mode' => 'activate',
+            'remaining_fraction' => $isActivePaid ? $this->remainingPeriodFraction($current) : null,
+        ]);
+    }
+
+    /**
+     * Apply a previously quoted chargeable plan change after successful payment.
+     *
+     * @param  array<string, mixed>  $quote
+     */
+    public function applyQuotedPlanChange(array $quote): bool
+    {
+        if (($quote['outcome'] ?? '') !== 'charge') {
+            return false;
+        }
+
+        $restaurantId = (int) ($quote['restaurant_id'] ?? 0);
+        $planId = (int) ($quote['target_plan_id'] ?? 0);
+        $cycle = (($quote['target_billing_cycle'] ?? 'monthly') === 'annual') ? 'annual' : 'monthly';
+        $applyMode = (string) ($quote['apply_mode'] ?? 'activate');
+
+        if ($restaurantId <= 0 || $planId <= 0) {
+            return false;
+        }
+
+        return DB::transaction(function () use ($restaurantId, $planId, $cycle, $applyMode, $quote) {
+            $subscriptionId = (int) ($quote['subscription_id'] ?? 0);
+            $subscription = null;
+
+            $targetPlan = $this->getPlanById($planId);
+            if (! $targetPlan || (array_key_exists('is_active', $targetPlan) && ! (int) $targetPlan['is_active'])) {
+                Log::warning('applyQuotedPlanChange rejected inactive or missing plan', [
+                    'restaurant_id' => $restaurantId,
+                    'plan_id' => $planId,
+                ]);
+
+                return false;
+            }
+
+            if ($subscriptionId > 0) {
+                $subscription = Subscription::query()
+                    ->where('id', $subscriptionId)
+                    ->where('restaurant_id', $restaurantId)
+                    ->lockForUpdate()
+                    ->first();
+
+                if (! $subscription) {
+                    Log::warning('applyQuotedPlanChange restaurant ownership mismatch', [
+                        'restaurant_id' => $restaurantId,
+                        'subscription_id' => $subscriptionId,
+                    ]);
+
+                    return false;
+                }
+            }
+
+            if (! $subscription) {
+                $subscription = Subscription::query()
+                    ->where('restaurant_id', $restaurantId)
+                    ->orderByDesc('id')
+                    ->lockForUpdate()
+                    ->first();
+            }
+
+            if (! $subscription) {
+                $subscription = Subscription::forceCreate([
+                    'restaurant_id' => $restaurantId,
+                    'plan_id' => $planId,
+                    'billing_cycle' => $cycle,
+                    'status' => 'pending',
+                ]);
+            }
+
+            if ((int) $subscription->restaurant_id !== $restaurantId) {
+                Log::warning('applyQuotedPlanChange refused cross-restaurant mutation', [
+                    'quote_restaurant_id' => $restaurantId,
+                    'subscription_id' => $subscription->id,
+                    'subscription_restaurant_id' => $subscription->restaurant_id,
+                ]);
+
+                return false;
+            }
+
+            $subscriptionId = (int) $subscription->id;
+            $this->cancelScheduledSubscriptionChange($subscriptionId);
+
+            if ($applyMode === 'preserve_period') {
+                $updated = Subscription::query()->where('id', $subscriptionId)->where('restaurant_id', $restaurantId)->update([
+                    'plan_id' => $planId,
+                    'billing_cycle' => $cycle,
+                    'status' => 'active',
+                    'trial_ends_at' => null,
+                    'cancelled_at' => null,
+                    'updated_at' => now(),
+                ]) > 0;
+
+                if ($updated) {
+                    app(PlanVisibilityService::class)->forgetCache($restaurantId);
+                }
+
+                return $updated;
+            }
+
+            Subscription::query()->where('id', $subscriptionId)->where('restaurant_id', $restaurantId)->update([
+                'plan_id' => $planId,
+                'billing_cycle' => $cycle,
+                'updated_at' => now(),
+            ]);
+
+            return $this->activateSubscription($subscriptionId, $cycle);
+        });
+    }
+
+    /**
+     * Schedule a downgrade/cycle change returned by quotePlanChange (no payment).
+     *
+     * @param  array<string, mixed>  $quote
+     */
+    public function applyScheduledDowngradeQuote(array $quote, string $requestedBy = 'manager'): bool
+    {
+        if (($quote['outcome'] ?? '') !== 'schedule_downgrade') {
+            return false;
+        }
+
+        $restaurantId = (int) ($quote['restaurant_id'] ?? 0);
+        $subscriptionId = (int) ($quote['subscription_id'] ?? 0);
+        $toPlanId = (int) ($quote['target_plan_id'] ?? 0);
+        $cycle = (($quote['target_billing_cycle'] ?? 'monthly') === 'annual') ? 'annual' : 'monthly';
+        $effectiveAt = (string) ($quote['effective_at'] ?? now()->toDateTimeString());
+        $changeType = (string) ($quote['change_type'] ?? 'downgrade');
+
+        if ($restaurantId <= 0 || $subscriptionId <= 0 || $toPlanId <= 0) {
+            return false;
+        }
+
+        return $this->createOrUpdateScheduledSubscriptionChange(
+            $restaurantId,
+            $subscriptionId,
+            $toPlanId,
+            $cycle,
+            $effectiveAt,
+            $changeType,
+            $requestedBy,
+        );
+    }
+
+    /** @param  array<string, mixed>  $plan */
+    public function planListPrice(array $plan, string $billingCycle): float
+    {
+        $cycle = $billingCycle === 'annual' ? 'annual' : 'monthly';
+
+        return $cycle === 'annual'
+            ? (float) ($plan['annual_price'] ?? 0)
+            : (float) ($plan['monthly_price'] ?? 0);
+    }
+
+    /** @param  array<string, mixed>  $subscription */
+    public function remainingPeriodFraction(array $subscription): float
+    {
+        $periodEndRaw = $subscription['current_period_end'] ?? null;
+        if (! $periodEndRaw) {
+            return 0.0;
+        }
+
+        $periodEnd = Carbon::parse($periodEndRaw);
+        $cycle = (($subscription['billing_cycle'] ?? 'monthly') === 'annual') ? 'annual' : 'monthly';
+
+        if (! empty($subscription['current_period_start'])) {
+            $periodStart = Carbon::parse($subscription['current_period_start']);
+        } else {
+            $periodStart = $cycle === 'annual'
+                ? $periodEnd->copy()->subYear()
+                : $periodEnd->copy()->subMonth();
+        }
+
+        $totalSeconds = max(0, $periodEnd->getTimestamp() - $periodStart->getTimestamp());
+        if ($totalSeconds <= 0) {
+            return 0.0;
+        }
+
+        $remainingSeconds = max(0, $periodEnd->getTimestamp() - now()->getTimestamp());
+
+        return max(0.0, min(1.0, $remainingSeconds / $totalSeconds));
     }
 
     /**
@@ -628,6 +934,15 @@ class SubscriptionService
             ];
         }
 
+        if ($mode === 'blocked') {
+            return [
+                'label' => 'Not available',
+                'button_class' => 'btn-select-plan current plan-action-current',
+                'is_current_state' => true,
+                'variant' => 'blocked',
+            ];
+        }
+
         if ($type === 'renew') {
             return [
                 'label' => 'Renew',
@@ -649,6 +964,15 @@ class SubscriptionService
         if ($type === 'upgrade') {
             return [
                 'label' => 'Upgrade',
+                'button_class' => 'btn-select-plan primary plan-action-btn',
+                'is_current_state' => false,
+                'variant' => 'upgrade',
+            ];
+        }
+
+        if ($type === 'cycle_upgrade') {
+            return [
+                'label' => 'Switch to annual',
                 'button_class' => 'btn-select-plan primary plan-action-btn',
                 'is_current_state' => false,
                 'variant' => 'upgrade',

@@ -68,6 +68,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/qr-templates/regenerate-previews', [QrTemplateController::class, 'regeneratePreviews'])->name('qr-templates.regenerate-previews');
 
         Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+        Route::get('/payments/quote', [PaymentController::class, 'quote'])->name('payments.quote');
         Route::post('/payments', [PaymentController::class, 'store'])->name('payments.store');
         Route::get('/payment-settings', [PaymentSettingsController::class, 'index'])->name('payment-settings.index');
         Route::post('/payment-settings', [PaymentSettingsController::class, 'update'])->name('payment-settings.update');

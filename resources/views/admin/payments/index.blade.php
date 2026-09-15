@@ -160,30 +160,45 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">Record Manual Payment</h2>
-            <button class="modal-close" onclick="closeManualPaymentModal()" aria-label="Close">&times;</button>
+            <button class="modal-close" type="button" onclick="closeManualPaymentModal()" aria-label="Close">&times;</button>
         </div>
         <div class="modal-body">
-            <form method="POST" action="{{ route('admin.payments.store') }}">
+            <form method="POST" action="{{ route('admin.payments.store') }}" id="manualPaymentForm">
                 @csrf
                 <input type="hidden" name="action" value="create_manual">
                 <div class="form-group">
                     <label class="form-label" for="manual_restaurant_id">Restaurant</label>
                     <select id="manual_restaurant_id" name="restaurant_id" class="form-select" required>
+                        <option value="">Select restaurant</option>
                         @foreach($restaurants as $r)
-                            <option value="{{ $r->id }}">{{ $r->name }}</option>
+                            <option value="{{ $r->id }}" @selected($restaurantFilter == $r->id)>{{ $r->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="current-sub-box" id="manualCurrentSub">
+                    Select a restaurant to see the current subscription.
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="manual_plan_id">New Plan</label>
+                    <select id="manual_plan_id" name="plan_id" class="form-select" required>
+                        <option value="">Select plan</option>
+                        @foreach($plans as $plan)
+                            <option value="{{ $plan['id'] }}">{{ $plan['name'] }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="subscription_id">Subscription ID</label>
-                    <input type="number" id="subscription_id" name="subscription_id" class="form-input" required min="1">
+                    <label class="form-label" for="manual_billing_cycle">Billing Cycle</label>
+                    <select id="manual_billing_cycle" name="billing_cycle" class="form-select" required>
+                        <option value="monthly">Monthly</option>
+                        <option value="annual">Annual</option>
+                    </select>
+                </div>
+                <div class="quote-box" id="manualQuoteBox">
+                    Choose restaurant, plan, and billing cycle to see the amount payable.
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="amount">Amount (₦)</label>
-                    <input type="number" id="amount" name="amount" class="form-input" step="0.01" required min="0.01">
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="manual_status">Status</label>
+                    <label class="form-label" for="manual_status">Payment Status</label>
                     <select id="manual_status" name="status" class="form-select">
                         <option value="success">Success</option>
                         <option value="pending">Pending</option>
@@ -191,7 +206,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="closeManualPaymentModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Record Payment</button>
+                    <button type="submit" class="btn btn-primary" id="manualSubmitBtn" disabled>Record Payment</button>
                 </div>
             </form>
         </div>
@@ -200,11 +215,134 @@
 @endsection
 @push('scripts')
 <script>
-function openManualPaymentModal() {
-    document.getElementById('manualPaymentModal').style.display = 'flex';
-}
-function closeManualPaymentModal() {
-    document.getElementById('manualPaymentModal').style.display = 'none';
-}
+(function () {
+    const quoteUrl = @json(route('admin.payments.quote'));
+    const openManual = @json(!empty($openManual));
+    const preselectRestaurantId = @json($restaurantFilter > 0 ? $restaurantFilter : null);
+
+    const restaurantSelect = document.getElementById('manual_restaurant_id');
+    const planSelect = document.getElementById('manual_plan_id');
+    const cycleSelect = document.getElementById('manual_billing_cycle');
+    const quoteBox = document.getElementById('manualQuoteBox');
+    const currentBox = document.getElementById('manualCurrentSub');
+    const submitBtn = document.getElementById('manualSubmitBtn');
+    let quoteTimer = null;
+
+    window.openManualPaymentModal = function openManualPaymentModal(restaurantId) {
+        const modal = document.getElementById('manualPaymentModal');
+        modal.style.display = 'flex';
+        if (restaurantId) {
+            restaurantSelect.value = String(restaurantId);
+        }
+        refreshManualQuote();
+    };
+
+    window.closeManualPaymentModal = function closeManualPaymentModal() {
+        document.getElementById('manualPaymentModal').style.display = 'none';
+    };
+
+    function setSubmitEnabled(enabled, label) {
+        submitBtn.disabled = !enabled;
+        if (label) {
+            submitBtn.textContent = label;
+        }
+    }
+
+    function refreshManualQuote() {
+        const restaurantId = restaurantSelect.value;
+        const planId = planSelect.value;
+        const cycle = cycleSelect.value;
+
+        if (!restaurantId) {
+            quoteBox.className = 'quote-box';
+            quoteBox.textContent = 'Choose restaurant, plan, and billing cycle to see the amount payable.';
+            currentBox.textContent = 'Select a restaurant to see the current subscription.';
+            setSubmitEnabled(false, 'Record Payment');
+            return;
+        }
+
+        if (!planId || !cycle) {
+            quoteBox.className = 'quote-box';
+            quoteBox.textContent = 'Choose a plan and billing cycle to see the amount payable.';
+            currentBox.textContent = 'Select a plan to load subscription details.';
+            setSubmitEnabled(false, 'Record Payment');
+            return;
+        }
+
+        quoteBox.className = 'quote-box';
+        quoteBox.textContent = 'Calculating…';
+        setSubmitEnabled(false, 'Record Payment');
+
+        const params = new URLSearchParams({
+            restaurant_id: restaurantId,
+            plan_id: planId,
+            billing_cycle: cycle,
+        });
+
+        fetch(quoteUrl + '?' + params.toString(), {
+            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+        })
+            .then(r => {
+                if (!r.ok) throw new Error('Quote failed');
+                return r.json();
+            })
+            .then(data => {
+                renderCurrent(data.current);
+
+                if (data.outcome === 'charge') {
+                    quoteBox.className = 'quote-box';
+                    quoteBox.innerHTML = '<div>' + (data.message || 'Amount payable') + '</div>'
+                        + '<div class="quote-amount">' + (data.formatted_amount || ('₦' + Number(data.amount || 0).toLocaleString())) + '</div>';
+                    setSubmitEnabled(true, Number(data.amount || 0) > 0 ? 'Record Payment' : 'Apply Plan Change');
+                    return;
+                }
+
+                if (data.outcome === 'schedule_downgrade') {
+                    quoteBox.className = 'quote-box';
+                    quoteBox.textContent = data.message || 'Downgrade will be scheduled at period end. No payment now.';
+                    setSubmitEnabled(true, 'Schedule Downgrade');
+                    return;
+                }
+
+                quoteBox.className = 'quote-box quote-error';
+                quoteBox.textContent = data.message || 'This plan change is not allowed.';
+                setSubmitEnabled(false, 'Record Payment');
+            })
+            .catch(() => {
+                quoteBox.className = 'quote-box quote-error';
+                quoteBox.textContent = 'Unable to calculate amount. Please try again.';
+                setSubmitEnabled(false, 'Record Payment');
+            });
+    }
+
+    function renderCurrent(current) {
+        if (!current) {
+            currentBox.textContent = 'No current subscription for this restaurant.';
+            return;
+        }
+        const parts = [
+            'Current: ' + (current.plan_name || 'Unknown plan'),
+            (current.billing_cycle || 'monthly'),
+            (current.status_label || current.status || ''),
+        ];
+        if (current.period_end) {
+            parts.push('Period ends ' + current.period_end);
+        }
+        currentBox.textContent = parts.filter(Boolean).join(' · ');
+    }
+
+    function queueQuote() {
+        clearTimeout(quoteTimer);
+        quoteTimer = setTimeout(refreshManualQuote, 150);
+    }
+
+    restaurantSelect.addEventListener('change', queueQuote);
+    planSelect.addEventListener('change', queueQuote);
+    cycleSelect.addEventListener('change', queueQuote);
+
+    if (openManual) {
+        openManualPaymentModal(preselectRestaurantId);
+    }
+})();
 </script>
 @endpush

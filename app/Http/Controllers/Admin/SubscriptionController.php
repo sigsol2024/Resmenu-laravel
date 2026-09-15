@@ -126,18 +126,7 @@ class SubscriptionController extends Controller
     }
 
     if ($action === 'change_plan') {
-      $data = $request->validate([
-        'new_plan_id' => 'required|integer|exists:subscription_plans,id',
-      ]);
-
-      $oldPlanId = (int) $subscription->plan_id;
-      $this->forceUpdate($subscription, ['plan_id' => (int) $data['new_plan_id']]);
-
-      $activityLog->record('admin', $adminId, 'subscription.plan_changed', (int) $subscription->restaurant_id, 'subscription', (int) $subscription->id, ['plan_id' => $oldPlanId], ['plan_id' => (int) $data['new_plan_id']], $request->ip(), $request->userAgent());
-
-      $planVisibility->forgetCache($restaurantId);
-
-      return back()->with('success', 'Subscription plan updated.');
+      return back()->with('error', 'Plan changes require a recorded payment. Use Record Payment from the subscription actions.');
     }
 
     if ($action === 'extend_period') {
