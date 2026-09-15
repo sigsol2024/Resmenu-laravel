@@ -140,10 +140,15 @@ tailwind.config = { darkMode: "class", theme: { extend: {
                     @foreach($section['categories'] as $category)
                         @if(empty($category['menu_items'])) @continue @endif
                         <div class="mb-16" id="{{ $category['slug'] }}-section">
-                            <h3 class="text-lg font-serif font-black bg-charcoal rounded-xl px-4 py-3 inline-block mb-2" style="color:{{ $categoryTitleColor }}">{{ $category['name'] }}</h3>
-                            @if(!empty($category['description']))
-                                <p class="text-sm md:text-base leading-relaxed mb-6 max-w-3xl" style="color:{{ $descColor }}">{{ $category['description'] }}</p>
-                            @endif
+                            <div class="flex items-center gap-4 mb-6">
+                                <h3 class="text-lg font-serif font-black bg-charcoal rounded-xl px-4 py-3 shrink-0" style="color:{{ $categoryTitleColor }}">{{ $category['name'] }}</h3>
+                                <div class="flex-1 min-w-0 flex flex-col justify-center gap-2">
+                                    @if(!empty($category['description']))
+                                        <p class="text-sm md:text-base leading-relaxed" style="color:{{ $descColor }}">{{ $category['description'] }}</p>
+                                    @endif
+                                    <div class="h-px w-full bg-charcoal/20"></div>
+                                </div>
+                            </div>
                             @php
                                 $menuItems = array_values(array_filter($category['menu_items'] ?? [], fn ($item) => is_array($item)));
                                 $itemCount = count($menuItems);
