@@ -16,7 +16,7 @@ $t6ShowNavMenu = ($t6MenuViewLevel === 'home' && ! empty($t6HomeSections))
 <div class="flex items-center gap-4 md:gap-8 min-w-0 flex-1">
 <a href="<?php echo t6_esc($fullMenuUrl ?? '#'); ?>" class="flex items-center gap-2 min-w-0">
 <?php if ($t6Logo): ?>
-<img alt="<?php echo t6_esc($restaurant['name'] ?? ''); ?>" class="w-8 h-8 object-contain shrink-0" src="<?php echo t6_esc($t6Logo); ?>">
+<img alt="<?php echo t6_esc($restaurant['name'] ?? ''); ?>" class="h-11 w-auto max-h-11 md:h-14 md:max-h-14 object-contain shrink-0" src="<?php echo t6_esc($t6Logo); ?>">
 <?php else: ?>
 <span class="font-display-lg text-headline-md tracking-widest text-primary truncate"><?php echo t6_esc($restaurant['name'] ?? ''); ?></span>
 <?php endif; ?>

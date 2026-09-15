@@ -91,7 +91,7 @@ body.t6-drawer-open { overflow: hidden; }
 #t6-search-bar.is-open { max-height: 88px; }
 html { scroll-behavior: smooth; scroll-padding-top: 6rem; }
 :root {
-  --t6-header-h: 88px;
+  --t6-header-h: 96px;
   --t6-header-gap: 3.5rem;
 }
 @media (min-width: 768px) {

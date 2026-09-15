@@ -10,11 +10,11 @@ if (! empty($category['description'])) {
 }
 ?>
 <?php if ($catHeroUrl): ?>
-<section class="relative w-full h-[38vh] md:h-[42vh] min-h-[220px] max-h-[440px] overflow-hidden">
+<section class="relative w-full h-[52vh] md:h-[48vh] min-h-[300px] md:min-h-[340px] max-h-[560px] overflow-hidden" style="margin-top: var(--t6-header-h, 88px);">
 <img class="absolute inset-0 w-full h-full object-cover" alt="<?php echo t6_esc($catName); ?>" src="<?php echo t6_esc($catHeroUrl); ?>" loading="eager">
 <div class="absolute inset-0 lusso-gradient"></div>
 <div class="absolute inset-0 bg-surface/30"></div>
-<div class="absolute bottom-0 left-0 right-0 px-4 md:px-gutter pb-8 md:pb-10 pt-24 max-w-container-max mx-auto">
+<div class="absolute bottom-0 left-0 right-0 px-4 md:px-gutter pb-8 md:pb-10 pt-10 max-w-container-max mx-auto">
 <h1 class="font-display-lg text-headline-md md:text-headline-lg text-primary serif mb-2"><?php echo t6_esc($catName); ?></h1>
 <p class="font-body-md md:text-body-lg text-on-surface-variant max-w-xl"><?php echo t6_esc($catSubtitle); ?></p>
 </div>
