@@ -7,6 +7,7 @@ class ReservationSlotService
     public function __construct(
         private TableInventoryService $inventory,
         private SubscriptionService $subscriptions,
+        private ManagerFeatureAccess $features,
     ) {}
 
     /**
@@ -71,8 +72,8 @@ class ReservationSlotService
         if (! $this->subscriptions->isSubscriptionActive($restaurantId)) {
             return 'Subscription required';
         }
-        if (! $this->subscriptions->hasFeatureAccess($restaurantId, 'table_reservations')) {
-            return 'Table reservations are not available for this restaurant plan.';
+        if (! $this->features->tableReservationsUsable($restaurantId)) {
+            return 'Table reservations are not available for this restaurant.';
         }
 
         return null;

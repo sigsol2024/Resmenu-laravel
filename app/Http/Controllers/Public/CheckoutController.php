@@ -7,9 +7,11 @@ use App\Models\Restaurant;
 use App\Models\TableReservation;
 use App\Services\BankTransferService;
 use App\Services\CustomizationService;
+use App\Services\ManagerFeatureAccess;
 use App\Services\OrderSubmissionService;
 use App\Services\RestaurantPaymentService;
 use App\Services\SubscriptionService;
+use App\Services\UploadService;
 use App\Support\OrderConfirmationToken;
 use Illuminate\Http\Request;
 
@@ -21,6 +23,8 @@ class CheckoutController extends Controller
         private RestaurantPaymentService $payments,
         private OrderSubmissionService $orders,
         private BankTransferService $bankTransfers,
+        private ManagerFeatureAccess $features,
+        private UploadService $uploads,
     ) {}
 
     public function show(Request $request, string $slug)
@@ -35,6 +39,7 @@ class CheckoutController extends Controller
             return view('public.subscription-blocked', [
                 'restaurant' => $restaurant,
                 'access' => $access,
+                'uploads' => $this->uploads,
                 'context' => 'Checkout',
             ]);
         }
@@ -42,6 +47,20 @@ class CheckoutController extends Controller
         $reservation = null;
         $reservationId = (int) $request->query('reservation_id', 0);
         if ($reservationId > 0) {
+            if (! $this->features->tableReservationsUsable((int) $restaurant->id)) {
+                return view('public.subscription-blocked', [
+                    'restaurant' => $restaurant,
+                    'access' => [
+                        'valid' => false,
+                        'lockout_reason' => 'feature_not_available',
+                        'message' => 'Table reservations are not available for this restaurant.',
+                        'subscription' => $this->subscriptions->getRestaurantSubscription($restaurant->id),
+                    ],
+                    'uploads' => $this->uploads,
+                    'context' => 'Checkout',
+                ]);
+            }
+
             $reservation = TableReservation::query()
                 ->where('id', $reservationId)
                 ->where('restaurant_id', $restaurant->id)
@@ -49,6 +68,23 @@ class CheckoutController extends Controller
                 ->where('deposit_amount', '>', 0)
                 ->where('deposit_paid', false)
                 ->first();
+
+            if (! $reservation) {
+                return redirect()->route('public.menu', $slug)
+                    ->withErrors(['checkout' => 'That reservation deposit is not available.']);
+            }
+        } elseif (! $this->features->foodOrderingUsable((int) $restaurant->id)) {
+            return view('public.subscription-blocked', [
+                'restaurant' => $restaurant,
+                'access' => [
+                    'valid' => false,
+                    'lockout_reason' => 'feature_not_available',
+                    'message' => 'Food ordering is not available for this restaurant.',
+                    'subscription' => $this->subscriptions->getRestaurantSubscription($restaurant->id),
+                ],
+                'uploads' => $this->uploads,
+                'context' => 'Checkout',
+            ]);
         }
 
         $custom = $this->customization->forRestaurant($restaurant);
@@ -86,7 +122,17 @@ class CheckoutController extends Controller
 
         $reservationId = (int) $request->input('reservation_id', 0);
         if ($reservationId > 0) {
+            if (! $this->features->tableReservationsUsable((int) $restaurant->id)) {
+                return redirect()->route('public.menu', $slug)
+                    ->withErrors(['checkout' => 'Table reservations are not available for this restaurant.']);
+            }
+
             return $this->submitReservationDeposit($request, $restaurant, $reservationId);
+        }
+
+        if (! $this->features->foodOrderingUsable((int) $restaurant->id)) {
+            return redirect()->route('public.menu', $slug)
+                ->withErrors(['checkout' => 'Food ordering is not available for this restaurant.']);
         }
 
         $cart = json_decode($request->input('cart_json', '[]'), true) ?: [];

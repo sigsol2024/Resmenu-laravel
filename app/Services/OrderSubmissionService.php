@@ -14,6 +14,7 @@ class OrderSubmissionService
         private SubscriptionService $subscriptions,
         private MailService $mail,
         private PlanVisibilityService $planVisibility,
+        private ManagerFeatureAccess $features,
     ) {}
 
     /**
@@ -31,6 +32,10 @@ class OrderSubmissionService
         $access = $this->subscriptions->checkAccess($restaurantId);
         if (! $access['valid']) {
             return ['success' => false, 'errors' => [$access['message'] ?: 'Subscription required.']];
+        }
+
+        if (! $this->features->foodOrderingUsable($restaurantId)) {
+            return ['success' => false, 'errors' => ['Food ordering is not available for this restaurant.']];
         }
 
         $errors = $this->validateCustomer($customer);

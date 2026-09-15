@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Services\CustomizationService;
+use App\Services\ManagerFeatureAccess;
 use App\Services\MenuService;
 use App\Services\MenuTemplateRenderService;
 use App\Services\ReservationSlotService;
@@ -30,6 +31,7 @@ class MenuController extends Controller
         private MenuTemplateResolver $templates,
         private MenuTemplateRenderService $templateRenderer,
         private ReservationSlotService $reservationSlots,
+        private ManagerFeatureAccess $features,
     ) {}
 
     public function show(Request $request, string $slug, ?string $section = null, ?string $category = null): Response|RedirectResponse
@@ -312,7 +314,7 @@ class MenuController extends Controller
     /** @return array<string, mixed> */
     private function reservationFormPayload($restaurant, string $slug): array
     {
-        if (! ($restaurant->enable_table_reservations ?? false)) {
+        if (! $this->features->tableReservationsUsable((int) $restaurant->id)) {
             return [];
         }
 
@@ -367,8 +369,8 @@ class MenuController extends Controller
             'uploadBaseUrl' => rtrim(config('resmenu.canonical_upload_url') ?: config('resmenu.upload_url'), '/'),
             'templateAssetBaseUrl' => url('/templates/template'.$templateId),
             'template4BaseUrl' => url('/templates/template4'),
-            'supportsOrdering' => (bool) ($restaurant->enable_food_ordering ?? true),
-            'supportsReservations' => (bool) ($restaurant->enable_table_reservations ?? false),
+            'supportsOrdering' => $this->features->foodOrderingUsable((int) $restaurant->id),
+            'supportsReservations' => $this->features->tableReservationsUsable((int) $restaurant->id),
             'reservationUrl' => url('/restaurant/'.$slug.'/reservation'),
             'menuViewLevel' => 'home',
             'activeSection' => null,

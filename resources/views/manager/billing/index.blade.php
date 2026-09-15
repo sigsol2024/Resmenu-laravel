@@ -117,7 +117,7 @@
             @include('partials.manager.usage-bar', ['label' => 'Categories', 'usage' => $usage['categories']])
             @include('partials.manager.usage-bar', ['label' => 'Menu Items', 'usage' => $usage['menu_items']])
             @include('partials.manager.usage-bar', ['label' => 'QR Styles', 'usage' => $usage['qr_styles']])
-            @include('partials.manager.usage-bar', ['label' => 'Templates', 'usage' => $usage['templates']])
+            @include('partials.manager.usage-bar', ['label' => 'Menu Designs', 'usage' => $usage['templates']])
         </div>
 
         <div class="payment-card">
@@ -210,7 +210,7 @@
                     </li>
                     <li>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
-                        {{ (int)($plan['max_templates'] ?? 0) === -1 ? 'All' : $plan['max_templates'] }} Templates
+                        {{ (int)($plan['max_templates'] ?? 0) === -1 ? 'All' : $plan['max_templates'] }} Menu Designs
                     </li>
                 </ul>
                 <form method="post" action="{{ route('manager.billing.index') }}" class="plan-select-form" style="margin:0;"

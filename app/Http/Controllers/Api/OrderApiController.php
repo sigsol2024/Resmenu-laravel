@@ -67,7 +67,9 @@ class OrderApiController extends Controller
 
         }
 
-
+        if (! app(\App\Services\ManagerFeatureAccess::class)->foodOrderingUsable((int) $restaurant->id)) {
+            return ApiJsonResponse::error('Food ordering is not available for this restaurant.', null, 403);
+        }
 
         $cartJson = $request->input('cart_json', '[]');
 

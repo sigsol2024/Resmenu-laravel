@@ -4,6 +4,7 @@
 <link rel="stylesheet" href="{{ asset('legacy/css/pages/manager-table-inventory.css') }}">
 @endpush
 @section('content')
+<div class="resmenu-manager-content-wrap {{ !empty($showUpgradeOverlay) ? 'resmenu-manager-blurred' : '' }}">
 <p style="margin-bottom:8px;">
     <a href="{{ route('manager.reservations.index') }}" class="btn btn-secondary" style="font-size:0.8rem;display:inline-flex;align-items:center;gap:6px;">← Back to Reservations</a>
 </p>
@@ -62,4 +63,10 @@ window.TABLE_INVENTORY_CONFIG = {
 };
 </script>
 <script src="{{ asset('assets/js/table-inventory.js') }}"></script>
+</div>
+@include('partials.manager.upgrade-overlay', [
+    'showUpgradeOverlay' => $showUpgradeOverlay ?? false,
+    'overlayTitle' => 'Reservations',
+    'overlayMessage' => $upgradeMessage ?? 'Table reservations are available on the Enterprise plan. Upgrade to enable reservations.',
+])
 @endsection

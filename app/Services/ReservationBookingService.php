@@ -13,6 +13,7 @@ class ReservationBookingService
     public function __construct(
         private SubscriptionService $subscriptions,
         private RestaurantTransactionalMailService $mail,
+        private ManagerFeatureAccess $features,
     ) {}
 
     /**
@@ -31,8 +32,8 @@ class ReservationBookingService
             return ['success' => false, 'errors' => [$access['message'] ?: 'Subscription required.']];
         }
 
-        if (! $this->subscriptions->hasFeatureAccess($restaurantId, 'table_reservations')) {
-            return ['success' => false, 'errors' => ['Table reservations are not available on this plan.']];
+        if (! $this->features->tableReservationsUsable($restaurantId)) {
+            return ['success' => false, 'errors' => ['Table reservations are not available for this restaurant.']];
         }
 
         $deposit = (float) (DB::table('restaurant_reservation_settings')

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\TableReservation;
 use App\Services\MenuService;
+use App\Services\ManagerFeatureAccess;
 use App\Services\ReservationBookingService;
 use App\Services\ReservationSlotService;
 use App\Services\TableInventoryService;
@@ -145,9 +146,12 @@ class ReservationApiController extends Controller
         return ApiJsonResponse::success('Deposit updated', ['deposit_amount' => $amount]);
     }
 
-    public function tableInventory(Request $request, TableInventoryService $inventory)
+    public function tableInventory(Request $request, TableInventoryService $inventory, ManagerFeatureAccess $features)
     {
         $restaurantId = (int) $request->attributes->get('restaurant_id');
+        if (! $features->tableReservationsUsable($restaurantId)) {
+            return ApiJsonResponse::error('Table reservations are not available for this restaurant.', null, 403);
+        }
         $action = trim((string) $request->input('action', $request->query('action', 'month')));
 
         if ($request->isMethod('post')) {

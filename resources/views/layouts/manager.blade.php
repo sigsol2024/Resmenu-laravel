@@ -17,7 +17,7 @@ body{font-family:Inter,sans-serif;background:var(--bg);color:var(--text)}
 </style>
 @stack('head')
 </head>
-<body>
+<body @class(['is-impersonating' => session('impersonating')])>
 @include('partials.impersonation-banner')
 <div class="app">
   @include('partials.manager-sidebar')

@@ -5,9 +5,19 @@
         'trial_expired' => 'Trial Ended',
         'subscription_expired' => 'Subscription Expired',
         'no_subscription' => 'Subscription Required',
+        'feature_not_available' => 'Feature Unavailable',
+        'feature_not_in_plan' => 'Feature Unavailable',
     ];
     $title = $titles[$reason] ?? 'Access Restricted';
-    $logoUrl = $restaurant->logo ? $uploads->publicUrl('logos', $restaurant->logo) : null;
+    $logoUrl = null;
+    if (! empty($restaurant->logo)) {
+        if (isset($uploads) && is_object($uploads) && method_exists($uploads, 'publicUrl')) {
+            $logoUrl = $uploads->publicUrl('logos', $restaurant->logo);
+        } else {
+            $uploadBase = rtrim((string) (config('resmenu.canonical_upload_url') ?: config('resmenu.upload_url') ?: url('/uploads')), '/');
+            $logoUrl = $uploadBase.'/logos/'.rawurlencode((string) $restaurant->logo);
+        }
+    }
 @endphp
 <!DOCTYPE html>
 <html lang="en">

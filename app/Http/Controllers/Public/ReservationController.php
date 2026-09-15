@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Models\Restaurant;
 use App\Services\CustomizationService;
+use App\Services\ManagerFeatureAccess;
 use App\Services\ReservationBookingService;
 use App\Services\ReservationSlotService;
 use App\Services\SubscriptionService;
+use App\Services\UploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -18,6 +20,8 @@ class ReservationController extends Controller
         private CustomizationService $customization,
         private ReservationBookingService $booking,
         private ReservationSlotService $slots,
+        private ManagerFeatureAccess $features,
+        private UploadService $uploads,
     ) {}
 
     public function show(Request $request, string $slug)
@@ -32,19 +36,21 @@ class ReservationController extends Controller
             return view('public.subscription-blocked', [
                 'restaurant' => $restaurant,
                 'access' => $access,
+                'uploads' => $this->uploads,
                 'context' => 'Table reservations',
             ]);
         }
 
-        if (! $this->subscriptions->hasFeatureAccess($restaurant->id, 'table_reservations')) {
+        if (! $this->features->tableReservationsUsable($restaurant->id)) {
             return view('public.subscription-blocked', [
                 'restaurant' => $restaurant,
                 'access' => [
                     'valid' => false,
-                    'lockout_reason' => 'feature_not_in_plan',
-                    'message' => 'Table reservations are not included on this plan.',
+                    'lockout_reason' => 'feature_not_available',
+                    'message' => 'Table reservations are not available for this restaurant.',
                     'subscription' => $this->subscriptions->getRestaurantSubscription($restaurant->id),
                 ],
+                'uploads' => $this->uploads,
                 'context' => 'Table reservations',
             ]);
         }

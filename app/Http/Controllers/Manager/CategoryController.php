@@ -131,7 +131,7 @@ class CategoryController extends Controller
         $this->planVisibility->forgetCache($restaurantId);
 
         return redirect()
-            ->route('manager.categories.index', ['edit' => $category->id])
+            ->route('manager.categories.index')
             ->with('success', 'Category updated.');
     }
 

@@ -132,8 +132,8 @@ class CustomizationController extends Controller
     private function flashMessage(?string $key): ?string
     {
         return match ($key) {
-            'template_updated' => 'Template updated successfully',
-            'customization_updated' => 'Template colors and styles saved. Each template keeps its own settings when you switch.',
+            'template_updated' => 'Menu design updated successfully',
+            'customization_updated' => 'Menu design colors and styles saved. Each design keeps its own settings when you switch.',
             'features_updated' => 'Ordering & reservation settings updated for your menu.',
             'ordering_disabled' => 'Food ordering is turned off for your public menu. Turn it back on under Ordering & reservations below.',
             'reservations_disabled' => 'Table reservations are turned off for your public menu. Turn them back on under Ordering & reservations below.',

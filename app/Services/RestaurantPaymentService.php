@@ -11,6 +11,7 @@ class RestaurantPaymentService
     public function __construct(
         private PendingOnlinePaymentService $pending,
         private PaymentGatewayService $gateway,
+        private ManagerFeatureAccess $features,
     ) {}
 
     /** @return list<array{code:string,label:string}> */
@@ -52,6 +53,10 @@ class RestaurantPaymentService
         array $customer,
         string $gateway,
     ): array {
+        if (! $this->features->foodOrderingUsable((int) $restaurant->id)) {
+            return ['success' => false, 'errors' => ['Food ordering is not available for this restaurant.']];
+        }
+
         $pending = $this->pending->createPendingOrder(
             $restaurant->id,
             $cart,
@@ -90,6 +95,10 @@ class RestaurantPaymentService
      */
     public function initiateReservationDeposit(Restaurant $restaurant, TableReservation $reservation, array $customer): array
     {
+        if (! $this->features->tableReservationsUsable((int) $restaurant->id)) {
+            return [];
+        }
+
         $gateway = $customer['payment_method'] ?? 'paystack';
         if (! in_array($gateway, ['paystack', 'flutterwave'], true)) {
             return [];

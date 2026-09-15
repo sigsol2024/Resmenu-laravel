@@ -244,9 +244,9 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                 </div>
-                <div class="action-title">Design Template</div>
+                <div class="action-title">Menu Design</div>
             </div>
-            <p class="action-desc">Select and customize menu templates to match your restaurant's style</p>
+            <p class="action-desc">Select and customize menu designs to match your restaurant's style</p>
             @include('partials.manager.action-arrow')
         </a>
 

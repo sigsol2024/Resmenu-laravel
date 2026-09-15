@@ -8,6 +8,66 @@
   --muted:#6b7280;
   --card:#ffffff;
   --radius:14px;
+  --impersonation-banner-height:0px;
+}
+
+body.is-impersonating{
+  --impersonation-banner-height:48px;
+}
+
+@media (max-width:768px){
+  body.is-impersonating{
+    --impersonation-banner-height:64px;
+  }
+}
+
+/* ===== IMPERSONATION TOPBAR ===== */
+.impersonation-banner{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  z-index:100;
+  min-height:var(--impersonation-banner-height, 48px);
+  background:#92400e;
+  color:#fffbeb;
+  padding:8px 16px;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  font-size:0.875rem;
+  font-weight:500;
+  box-sizing:border-box;
+}
+
+.impersonation-banner__return{
+  background:#fffbeb;
+  color:#92400e;
+  border:none;
+  border-radius:6px;
+  padding:6px 12px;
+  font-weight:600;
+  font-size:0.8125rem;
+  cursor:pointer;
+}
+
+body.is-impersonating .sidebar-modern{
+  top:var(--impersonation-banner-height);
+  height:calc(100% - var(--impersonation-banner-height));
+}
+
+body.is-impersonating .header{
+  top:var(--impersonation-banner-height);
+}
+
+body.is-impersonating .mobile-hamburger{
+  top:calc(var(--impersonation-banner-height) + 12px);
+}
+
+body.is-impersonating .app{
+  padding-top:var(--impersonation-banner-height);
 }
 
 *{
@@ -828,6 +888,10 @@ main{
   
   /* Add padding to main so content isn't hidden under fixed header */
   main{
+    padding-top:72px;
+  }
+
+  body.is-impersonating main{
     padding-top:72px;
   }
   

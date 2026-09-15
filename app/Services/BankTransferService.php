@@ -32,6 +32,10 @@ class BankTransferService
         float $deliveryFee = 0,
         float $taxRate = 0,
     ): array {
+        if (! app(ManagerFeatureAccess::class)->foodOrderingUsable($restaurantId)) {
+            return ['success' => false, 'message' => 'Food ordering is not available for this restaurant.'];
+        }
+
         $priced = $this->orders->validateCartPublic($restaurantId, $cart);
         if (! $priced['success']) {
             return ['success' => false, 'message' => implode(' ', $priced['errors'] ?? ['Invalid cart.'])];
@@ -73,6 +77,10 @@ class BankTransferService
      */
     public function createDraftForReservation(int $restaurantId, TableReservation $reservation, array $customer): array
     {
+        if (! app(ManagerFeatureAccess::class)->tableReservationsUsable($restaurantId)) {
+            return ['success' => false, 'message' => 'Table reservations are not available for this restaurant.'];
+        }
+
         $deposit = (float) ($reservation->deposit_amount ?? 0);
         if ($deposit <= 0) {
             return ['success' => false, 'message' => 'No deposit required for this reservation.'];
