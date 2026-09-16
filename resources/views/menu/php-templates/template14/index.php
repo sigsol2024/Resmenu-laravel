@@ -114,7 +114,7 @@ if (!empty($sections) && is_array($sections)) {
 </head>
 <body class="paper-texture text-earth font-sans min-h-screen p-3 md:p-12">
 <div class="max-w-5xl mx-auto relative">
-<header class="text-center mb-10 md:mb-16 relative z-10 bg-white/50 border border-sage/20 rounded-xl shadow-md p-5 md:p-10" data-template-preview-hero>
+<header class="text-center mb-10 md:mb-16 relative z-10" data-template-preview-hero>
 <?php $t14BrandLogo = (!empty($isTemplatePreview)) ? null : resmenu_logo_url($uploadBaseUrl ?? '', $restaurant['logo'] ?? null); ?>
 <?php if ($t14BrandLogo): ?><div class="mb-4"><img src="<?php echo htmlspecialchars($t14BrandLogo); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="h-16 md:h-20 w-auto object-contain mx-auto"/></div><?php else: ?>
 <h1 class="font-serif text-3xl sm:text-4xl md:text-7xl font-bold text-earth mb-2"><?php echo htmlspecialchars($restaurant['name']); ?></h1>
