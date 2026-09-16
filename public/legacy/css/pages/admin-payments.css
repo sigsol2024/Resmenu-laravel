@@ -307,61 +307,41 @@
     letter-spacing: 0.5px;
 }
 
-/* Modal — viewport-centered overlay (must beat layout/shell rules) */
-#manualPaymentModal.modal,
-.modal#manualPaymentModal {
-    position: fixed !important;
-    inset: 0 !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    z-index: 10050 !important;
+/* Modal — same pattern as admin-settings (overlay is the fixed full-screen flex host) */
+.modal-overlay {
     display: none;
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 16px;
-    margin: 0 !important;
-    box-sizing: border-box;
-    width: 100vw !important;
-    max-width: none !important;
-    height: 100vh !important;
-    max-height: none !important;
-    overflow: auto;
-    background: transparent;
-}
-
-#manualPaymentModal.modal.is-open {
-    display: flex !important;
-}
-
-#manualPaymentModal .modal-overlay {
-    position: fixed !important;
-    inset: 0 !important;
+    position: fixed;
+    inset: 0;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 10051;
+    z-index: 10050;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
 }
 
-#manualPaymentModal .modal-content {
-    position: relative !important;
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-box {
     background: #fff;
-    border-radius: 8px;
+    border-radius: 10px;
+    padding: 24px;
+    width: 100%;
     max-width: 560px;
-    width: min(560px, 100%);
-    max-height: min(90vh, 900px);
+    max-height: 90vh;
     overflow-y: auto;
-    z-index: 10052;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    margin: auto;
-    flex-shrink: 0;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    position: relative;
+    z-index: 10051;
 }
 
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 24px;
-    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 20px;
 }
 
 .modal-title {
@@ -374,31 +354,27 @@
 .modal-close {
     background: none;
     border: none;
-    font-size: 24px;
-    color: #6b7280;
+    font-size: 1.5rem;
+    line-height: 1;
     cursor: pointer;
+    color: #6b7280;
     padding: 0;
     width: 32px;
     height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
-    line-height: 1;
 }
 
 .modal-close:hover {
     color: #111827;
 }
 
-.modal-body {
-    padding: 24px;
-}
-
 .modal-footer {
     display: flex;
     gap: 12px;
     justify-content: flex-end;
-    padding-top: 8px;
+    margin-top: 8px;
 }
 
 .quote-box {

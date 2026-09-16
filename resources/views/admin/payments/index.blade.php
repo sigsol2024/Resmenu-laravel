@@ -1,7 +1,7 @@
 ﻿@extends('layouts.admin')
 @section('title', 'Payments')
 @push('head')
-<link rel="stylesheet" href="{{ asset('legacy/css/pages/admin-payments.css') }}">
+<link rel="stylesheet" href="{{ asset('legacy/css/pages/admin-payments.css') }}?v={{ @filemtime(public_path('legacy/css/pages/admin-payments.css')) ?: time() }}">
 @endpush
 @section('content')
 <!-- Page Header -->
@@ -154,62 +154,59 @@
     @endif
 </div>
 
-<!-- Manual Payment Modal -->
-<div class="modal" id="manualPaymentModal" aria-hidden="true">
-    <div class="modal-overlay" onclick="closeManualPaymentModal()"></div>
-    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="manualPaymentTitle">
+<!-- Manual Payment Modal (same pattern as admin settings) -->
+<div class="modal-overlay" id="manualPaymentModal" aria-hidden="true" onclick="if(event.target===this)closeManualPaymentModal()">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="manualPaymentTitle">
         <div class="modal-header">
             <h2 class="modal-title" id="manualPaymentTitle">Record Manual Payment</h2>
             <button class="modal-close" type="button" onclick="closeManualPaymentModal()" aria-label="Close">&times;</button>
         </div>
-        <div class="modal-body">
-            <form method="POST" action="{{ route('admin.payments.store') }}" id="manualPaymentForm">
-                @csrf
-                <input type="hidden" name="action" value="create_manual">
-                <div class="form-group">
-                    <label class="form-label" for="manual_restaurant_id">Restaurant</label>
-                    <select id="manual_restaurant_id" name="restaurant_id" class="form-select" required>
-                        <option value="">Select restaurant</option>
-                        @foreach($restaurants as $r)
-                            <option value="{{ $r->id }}" @selected($restaurantFilter == $r->id)>{{ $r->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="current-sub-box" id="manualCurrentSub">
-                    Select a restaurant to see the current subscription.
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="manual_plan_id">New Plan</label>
-                    <select id="manual_plan_id" name="plan_id" class="form-select" required>
-                        <option value="">Select plan</option>
-                        @foreach($plans as $plan)
-                            <option value="{{ $plan['id'] }}">{{ $plan['name'] }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="manual_billing_cycle">Billing Cycle</label>
-                    <select id="manual_billing_cycle" name="billing_cycle" class="form-select" required>
-                        <option value="monthly">Monthly</option>
-                        <option value="annual">Annual</option>
-                    </select>
-                </div>
-                <div class="quote-box" id="manualQuoteBox">
-                    Choose restaurant, plan, and billing cycle to see the amount payable.
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="manual_status">Payment Status</label>
-                    <select id="manual_status" name="status" class="form-select">
-                        <option value="success">Success</option>
-                        <option value="pending">Pending</option>
-                    </select>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeManualPaymentModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="manualSubmitBtn" disabled>Record Payment</button>
-                </div>
-            </form>
-        </div>
+        <form method="POST" action="{{ route('admin.payments.store') }}" id="manualPaymentForm">
+            @csrf
+            <input type="hidden" name="action" value="create_manual">
+            <div class="form-group">
+                <label class="form-label" for="manual_restaurant_id">Restaurant</label>
+                <select id="manual_restaurant_id" name="restaurant_id" class="form-select" required>
+                    <option value="">Select restaurant</option>
+                    @foreach($restaurants as $r)
+                        <option value="{{ $r->id }}" @selected($restaurantFilter == $r->id)>{{ $r->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="current-sub-box" id="manualCurrentSub">
+                Select a restaurant to see the current subscription.
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="manual_plan_id">New Plan</label>
+                <select id="manual_plan_id" name="plan_id" class="form-select" required>
+                    <option value="">Select plan</option>
+                    @foreach($plans as $plan)
+                        <option value="{{ $plan['id'] }}">{{ $plan['name'] }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="manual_billing_cycle">Billing Cycle</label>
+                <select id="manual_billing_cycle" name="billing_cycle" class="form-select" required>
+                    <option value="monthly">Monthly</option>
+                    <option value="annual">Annual</option>
+                </select>
+            </div>
+            <div class="quote-box" id="manualQuoteBox">
+                Choose restaurant, plan, and billing cycle to see the amount payable.
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="manual_status">Payment Status</label>
+                <select id="manual_status" name="status" class="form-select">
+                    <option value="success">Success</option>
+                    <option value="pending">Pending</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeManualPaymentModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="manualSubmitBtn" disabled>Record Payment</button>
+            </div>
+        </form>
     </div>
 </div>
 @endsection
@@ -229,20 +226,12 @@
     const modal = document.getElementById('manualPaymentModal');
     let quoteTimer = null;
 
-    // Keep overlay on <body> so layout parents cannot pin it to the page bottom.
-    if (modal && modal.parentElement !== document.body) {
-        document.body.appendChild(modal);
-    }
-
     window.openManualPaymentModal = function openManualPaymentModal(restaurantId) {
         if (!modal) return;
-        if (modal.parentElement !== document.body) {
-            document.body.appendChild(modal);
-        }
         if (restaurantId) {
             restaurantSelect.value = String(restaurantId);
         }
-        modal.classList.add('is-open');
+        modal.classList.add('active');
         modal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
         refreshManualQuote();
@@ -250,7 +239,7 @@
 
     window.closeManualPaymentModal = function closeManualPaymentModal() {
         if (!modal) return;
-        modal.classList.remove('is-open');
+        modal.classList.remove('active');
         modal.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
     };
@@ -355,7 +344,7 @@
     cycleSelect.addEventListener('change', queueQuote);
 
     document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && modal && modal.classList.contains('is-open')) {
+        if (e.key === 'Escape' && modal && modal.classList.contains('active')) {
             closeManualPaymentModal();
         }
     });
