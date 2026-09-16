@@ -54,7 +54,7 @@
                             <div><img src="{{ $siteLogoUrl }}" alt="Logo" class="image-preview"></div>
                         @endif
                         <input type="file" name="site_logo" accept="image/jpeg,image/png,image/gif,image/webp" style="margin-top: 8px;">
-                        <small style="color: #6b7280; display: block; margin-top: 4px;">Leave empty to keep current. JPG, PNG, GIF, WebP. Max 5MB.</small>
+                        <small style="color: #6b7280; display: block; margin-top: 4px;">Leave empty to keep current. JPG, PNG, GIF, WebP. Max ~1MB. Images are optimized on upload (toward ~300–500KB).</small>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Favicon</label>

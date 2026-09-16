@@ -127,6 +127,29 @@ class UploadServiceImageOptimizeTest extends TestCase
         $this->assertFileExists($result['path']);
     }
 
+    public function test_whatsapp_style_multi_dot_filename_is_accepted_and_renamed(): void
+    {
+        $uploads = app(UploadService::class);
+        // 1×1 JPEG — no GD required; under soft target so store is passthrough.
+        $jpeg = base64_decode(
+            '/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIQAxAAAAGcP//Z'
+        );
+        $this->assertNotFalse($jpeg);
+        $path = $this->tempRoot.DIRECTORY_SEPARATOR.'wa_src.jpg';
+        file_put_contents($path, $jpeg);
+
+        $originalName = 'WhatsApp Image 2026-09-15 at 12.19.11 PM.jpeg';
+        $file = new UploadedFile($path, $originalName, 'image/jpeg', null, true);
+
+        $result = $uploads->storeImage($file, 'sections');
+
+        $this->assertTrue($result['success'] ?? false, $result['message'] ?? 'store failed');
+        $filename = (string) ($result['filename'] ?? '');
+        $this->assertNotSame($originalName, $filename);
+        $this->assertMatchesRegularExpression('/^[a-zA-Z0-9]+\.jpe?g$/i', $filename);
+        $this->assertFileExists($result['path']);
+    }
+
     public function test_logo_file_exists_requires_real_file(): void
     {
         $uploads = app(UploadService::class);

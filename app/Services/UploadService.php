@@ -105,9 +105,7 @@ class UploadService
             return ['success' => false, 'message' => 'Invalid image extension.'];
         }
 
-        if (preg_match('/\.[^.]+\./', $file->getClientOriginalName())) {
-            return ['success' => false, 'message' => 'Invalid filename.'];
-        }
+        // Client original names are discarded; storage always uses a random filename.
 
         $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         $detected = $file->getMimeType();
