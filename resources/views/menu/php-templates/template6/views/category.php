@@ -51,11 +51,11 @@ if (! empty($category['description'])) {
 ?>
 <article id="<?php echo t6_esc(t6_item_anchor($item)); ?>" class="t6-menu-item-card t6-category-box group flex flex-col rounded-xl border border-outline-variant/10 premium-shadow overflow-hidden bg-surface-container-high scroll-mt-28" data-t6-searchable data-t6-search-text="<?php echo t6_esc(($item['name'] ?? '').' '.($item['description'] ?? '')); ?>">
 <?php if ($img): ?>
-<div class="relative h-32 sm:h-36 md:h-40 overflow-hidden shrink-0 border-b border-outline-variant/10 bg-surface-container">
+<div class="relative h-44 md:h-52 lg:h-56 overflow-hidden shrink-0 border-b border-outline-variant/10 bg-surface-container">
 <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="<?php echo t6_esc($item['name'] ?? ''); ?>" src="<?php echo t6_esc($img); ?>" loading="lazy">
 </div>
 <?php else: ?>
-<div class="relative h-28 sm:h-32 md:h-36 shrink-0 flex items-center justify-center border-b border-primary/10 bg-gradient-to-br from-surface-container-high via-surface-container to-surface-container-low">
+<div class="relative h-44 md:h-52 lg:h-56 shrink-0 flex items-center justify-center border-b border-primary/10 bg-gradient-to-br from-surface-container-high via-surface-container to-surface-container-low">
 <span class="material-symbols-outlined text-primary/40 text-3xl md:text-4xl">restaurant</span>
 </div>
 <?php endif; ?>
