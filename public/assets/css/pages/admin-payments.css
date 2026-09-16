@@ -307,39 +307,53 @@
     letter-spacing: 0.5px;
 }
 
-/* Modal */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 3000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* Modal — viewport-centered overlay (must beat layout/shell rules) */
+#manualPaymentModal.modal,
+.modal#manualPaymentModal {
+    position: fixed !important;
+    inset: 0 !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 10050 !important;
+    display: none;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 16px;
+    margin: 0 !important;
+    box-sizing: border-box;
+    width: 100vw !important;
+    max-width: none !important;
+    height: 100vh !important;
+    max-height: none !important;
+    overflow: auto;
+    background: transparent;
 }
 
-.modal-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+#manualPaymentModal.modal.is-open {
+    display: flex !important;
+}
+
+#manualPaymentModal .modal-overlay {
+    position: fixed !important;
+    inset: 0 !important;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 3001;
+    z-index: 10051;
 }
 
-.modal-content {
-    position: relative;
+#manualPaymentModal .modal-content {
+    position: relative !important;
     background: #fff;
     border-radius: 8px;
     max-width: 560px;
-    width: 90%;
-    max-height: 90vh;
+    width: min(560px, 100%);
+    max-height: min(90vh, 900px);
     overflow-y: auto;
-    z-index: 3002;
+    z-index: 10052;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    margin: auto;
+    flex-shrink: 0;
 }
 
 .modal-header {
@@ -582,3 +596,4 @@
         left: 0;
     }
 }
+

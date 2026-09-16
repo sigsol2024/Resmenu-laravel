@@ -155,11 +155,11 @@
 </div>
 
 <!-- Manual Payment Modal -->
-<div class="modal" id="manualPaymentModal" style="display: none;">
+<div class="modal" id="manualPaymentModal" aria-hidden="true">
     <div class="modal-overlay" onclick="closeManualPaymentModal()"></div>
-    <div class="modal-content">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="manualPaymentTitle">
         <div class="modal-header">
-            <h2 class="modal-title">Record Manual Payment</h2>
+            <h2 class="modal-title" id="manualPaymentTitle">Record Manual Payment</h2>
             <button class="modal-close" type="button" onclick="closeManualPaymentModal()" aria-label="Close">&times;</button>
         </div>
         <div class="modal-body">
@@ -226,19 +226,33 @@
     const quoteBox = document.getElementById('manualQuoteBox');
     const currentBox = document.getElementById('manualCurrentSub');
     const submitBtn = document.getElementById('manualSubmitBtn');
+    const modal = document.getElementById('manualPaymentModal');
     let quoteTimer = null;
 
+    // Keep overlay on <body> so layout parents cannot pin it to the page bottom.
+    if (modal && modal.parentElement !== document.body) {
+        document.body.appendChild(modal);
+    }
+
     window.openManualPaymentModal = function openManualPaymentModal(restaurantId) {
-        const modal = document.getElementById('manualPaymentModal');
-        modal.style.display = 'flex';
+        if (!modal) return;
+        if (modal.parentElement !== document.body) {
+            document.body.appendChild(modal);
+        }
         if (restaurantId) {
             restaurantSelect.value = String(restaurantId);
         }
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
         refreshManualQuote();
     };
 
     window.closeManualPaymentModal = function closeManualPaymentModal() {
-        document.getElementById('manualPaymentModal').style.display = 'none';
+        if (!modal) return;
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
     };
 
     function setSubmitEnabled(enabled, label) {
@@ -339,6 +353,12 @@
     restaurantSelect.addEventListener('change', queueQuote);
     planSelect.addEventListener('change', queueQuote);
     cycleSelect.addEventListener('change', queueQuote);
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && modal && modal.classList.contains('is-open')) {
+            closeManualPaymentModal();
+        }
+    });
 
     if (openManual) {
         openManualPaymentModal(preselectRestaurantId);
