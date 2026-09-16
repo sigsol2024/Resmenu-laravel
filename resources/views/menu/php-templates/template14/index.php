@@ -17,6 +17,18 @@ $primaryColor = isset($customization['primary_color']) ? $customization['primary
 function ek_price($p, $s = '₦') {
     return formatPrice($p, $s);
 }
+/** True when category name/slug looks like drinks (not Food). */
+function ek_is_drinks_category(array $category): bool
+{
+    $hay = strtolower(trim(($category['name'] ?? '').' '.($category['slug'] ?? '')));
+
+    return $hay !== '' && str_contains($hay, 'drink');
+}
+/** Soft two-tone card class for drinks items (Art Fusion–style accent rhythm). */
+function ek_drink_item_card_class(int $itemIndex): string
+{
+    return ($itemIndex % 4 === 1) ? 'ek-card--sage' : 'ek-card--warm';
+}
 $activeCategories = [];
 if (!empty($sections) && is_array($sections)) {
     foreach ($sections as $sec) {
@@ -75,6 +87,29 @@ if (!empty($sections) && is_array($sections)) {
   }
   .ek-order-btn svg { width: 1rem; height: 1rem; }
 }
+/* Drinks categories only — soft two-tone cards (Art Fusion pattern, earth palette) */
+.ek-cat--drinks {
+  background: linear-gradient(165deg, #f3ebe3 0%, #faf7f2 48%, #eef2ea 100%);
+  border-color: rgba(135, 148, 125, 0.35);
+}
+.ek-cat--drinks > h3 {
+  border-color: #87947d;
+}
+.ek-card--warm {
+  background: #fffaf4;
+  border-color: rgba(194, 125, 99, 0.22);
+}
+.ek-card--sage {
+  background: #e7efe2;
+  border-color: rgba(135, 148, 125, 0.4);
+}
+.ek-card--sage .menu-item-title { color: #3d4638; }
+.ek-card--sage .price-tag { color: #6b7a5f; }
+.ek-card--sage .ek-order-btn {
+  color: #6b7a5f;
+  border-color: #87947d;
+}
+.ek-card--sage .ek-order-btn:hover { background: rgba(135, 148, 125, 0.12); }
 </style>
 </head>
 <body class="paper-texture text-earth font-sans min-h-screen p-3 md:p-12">
@@ -98,12 +133,20 @@ if (!empty($sections) && is_array($sections)) {
     $slug = isset($category['slug']) ? $category['slug'] : ('cat-'.$catIndex);
     $items = isset($category['menu_items']) ? $category['menu_items'] : [];
     if (empty($items)) continue;
+    $isDrinksCat = ek_is_drinks_category($category);
+    $catShellClass = $isDrinksCat
+        ? 'ek-cat--drinks mb-6 md:mb-10 border rounded-xl shadow-md p-4 md:p-8'
+        : 'mb-6 md:mb-10 bg-white/70 border border-sage/25 rounded-xl shadow-md p-4 md:p-8';
 ?>
-<section class="mb-6 md:mb-10 bg-white/70 border border-sage/25 rounded-xl shadow-md p-4 md:p-8" id="<?php echo htmlspecialchars($slug); ?>">
+<section class="<?php echo htmlspecialchars($catShellClass); ?>" id="<?php echo htmlspecialchars($slug); ?>">
 <h3 class="text-xl md:text-3xl font-serif font-bold text-earth border-b-2 border-terracotta pb-2 mb-5 md:mb-8"><?php echo htmlspecialchars($category['name']); ?></h3>
 <div class="space-y-4 md:space-y-5">
-<?php foreach ($items as $item): ?>
-<article class="ek-fade-up bg-cream border border-sage/15 rounded-lg shadow-md p-3.5 md:p-5">
+<?php foreach (array_values($items) as $itemIndex => $item):
+    $itemCardClass = $isDrinksCat
+        ? 'ek-fade-up border rounded-lg shadow-md p-3.5 md:p-5 '.ek_drink_item_card_class((int) $itemIndex)
+        : 'ek-fade-up bg-cream border border-sage/15 rounded-lg shadow-md p-3.5 md:p-5';
+?>
+<article class="<?php echo htmlspecialchars($itemCardClass); ?>">
 <?php if (!empty($item['image'])): ?><img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="w-full max-h-36 object-cover rounded border border-terracotta/30 mb-2"/><?php endif; ?>
 <div class="flex justify-between items-baseline gap-3 mb-1">
 <h3 class="text-base md:text-xl font-semibold text-earth menu-item-title"><?php echo htmlspecialchars($item['name']); ?></h3>
