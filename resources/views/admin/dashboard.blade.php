@@ -48,7 +48,7 @@
   </div>
 </section>
 
-<!-- HORIZONTAL STATS OVERVIEW -->
+<!-- BAR CHART -->
 @if(!empty($chartData))
 <section class="chart-card">
   <h2 class="chart-title">
@@ -57,16 +57,11 @@
     </svg>
     Statistics Overview
   </h2>
-  <div class="overview-bars">
+  <div class="simple-bar-chart gradient-bars">
     @foreach($chartData as $item)
-      <div class="overview-bar-row">
-        <div class="overview-bar-meta">
-          <span class="overview-bar-label">{{ $item['label'] }}</span>
-          <span class="overview-bar-value">{{ number_format($item['value']) }}</span>
-        </div>
-        <div class="overview-bar-track">
-          <div class="overview-bar-fill{{ $item['value'] > 0 ? ' is-filled' : '' }}" style="--clr: {{ $item['color'] }}; width: {{ round($item['percentage'], 1) }}%;"></div>
-        </div>
+      <div class="item{{ $item['value'] > 0 ? ' item-has-value' : '' }}" style="--clr: {{ $item['color'] }}; --val: {{ round($item['percentage'], 1) }}">
+        <div class="label">{{ $item['label'] }}</div>
+        <div class="value">{{ number_format($item['value']) }}</div>
       </div>
     @endforeach
   </div>

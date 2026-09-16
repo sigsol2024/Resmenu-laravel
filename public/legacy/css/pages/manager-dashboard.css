@@ -254,58 +254,6 @@
     margin-bottom: 4px;
 }
 
-/* ===== HORIZONTAL OVERVIEW BARS ===== */
-.overview-bars {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
-.overview-bar-row {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.overview-bar-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 12px;
-}
-
-.overview-bar-label {
-    font-size: 0.8125rem;
-    font-weight: 600;
-    color: #374151;
-}
-
-.overview-bar-value {
-    font-size: 0.8125rem;
-    font-weight: 700;
-    color: #111827;
-    font-variant-numeric: tabular-nums;
-}
-
-.overview-bar-track {
-    height: 10px;
-    border-radius: 999px;
-    background: #f3f4f6;
-    overflow: hidden;
-}
-
-.overview-bar-fill {
-    height: 100%;
-    width: 0;
-    border-radius: 999px;
-    background: linear-gradient(90deg, var(--clr), color-mix(in srgb, var(--clr) 65%, white));
-    transition: width 0.6s ease;
-}
-
-.overview-bar-fill.is-filled {
-    min-width: 8px;
-}
-
 /* ===== QUICK ACTIONS ===== */
 .quick-actions {
     background: #fff;
