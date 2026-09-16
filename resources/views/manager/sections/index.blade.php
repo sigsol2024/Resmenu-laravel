@@ -57,7 +57,7 @@
                 <div class="form-group">
                     <label class="form-label" for="image">Section Image</label>
                     <input type="file" id="image" name="image" class="form-input" accept="image/*">
-                    <p style="margin: 6px 0 0; font-size: 0.8rem; color: #6b7280;">Optional hero/cover image for this section on your menu (JPG, PNG, WebP, max ~1MB). Images are optimized on upload (toward ~300–500KB).</p>
+                    <p style="margin: 6px 0 0; font-size: 0.8rem; color: #6b7280;">Optional hero/cover image for this section on your menu (JPG, PNG, WebP, max ~1MB).</p>
                     @if($isEditing && $editSection->image)
                         <div class="sec-img-current">
                             <p class="sec-img-current-label">Current image:</p>

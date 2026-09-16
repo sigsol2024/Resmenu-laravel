@@ -33,20 +33,58 @@ if (!empty($sections) && is_array($sections)) {
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title><?php echo htmlspecialchars($restaurant['name']); ?><?php if (!empty($singleSectionView) && !empty($sections[0]['name'])): ?> - <?php echo htmlspecialchars($sections[0]['name']); ?><?php endif; ?></title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;family=Montserrat:wght@300;400;600&amp;family=Caveat:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;family=Montserrat:wght@300;400;600;700&amp;family=Caveat:wght@600&amp;display=swap" rel="stylesheet"/>
 <script>
     tailwind.config = { theme: { extend: { colors: { sage: '#87947d', terracotta: '#c27d63', cream: '#fdfaf5', earth: '#4a443f' }, fontFamily: { serif: ['Playfair Display', 'serif'], sans: ['Montserrat', 'sans-serif'], handwritten: ['Caveat', 'cursive'] } } } }
   </script>
-<style>.paper-texture { background-color: #fdfaf5; } .hand-drawn-line { height: 2px; background: linear-gradient(to right, transparent, #c27d63, transparent); margin: 1.5rem 0; } .price-tag { font-style: italic; color: #c27d63; }</style>
+<style>
+.paper-texture { background-color: #fdfaf5; }
+.hand-drawn-line { height: 2px; background: linear-gradient(to right, transparent, #c27d63, transparent); margin: 1.5rem 0; }
+.price-tag { font-style: italic; color: #c27d63; font-weight: 700; }
+.ek-fade-up {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.ek-fade-up.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.ek-order-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1.2;
+  font-weight: 600;
+  color: #c27d63;
+  border: 1px solid #c27d63;
+  border-radius: 0.375rem;
+  padding: 0.3rem 0.55rem;
+  background: transparent;
+  transition: background 0.2s ease;
+}
+.ek-order-btn:hover { background: rgba(194, 125, 99, 0.1); }
+.ek-order-btn svg { width: 0.85rem; height: 0.85rem; flex-shrink: 0; }
+@media (min-width: 768px) {
+  .ek-order-btn {
+    font-size: 0.875rem;
+    padding: 0.4rem 0.75rem;
+    gap: 0.35rem;
+  }
+  .ek-order-btn svg { width: 1rem; height: 1rem; }
+}
+</style>
 </head>
-<body class="paper-texture text-earth font-sans min-h-screen p-4 md:p-12">
-<div class="max-w-5xl mx-auto border-[12px] border-sage/20 p-6 md:p-16 relative overflow-hidden bg-white/40 shadow-xl">
-<header class="text-center mb-16 relative z-10" data-template-preview-hero>
+<body class="paper-texture text-earth font-sans min-h-screen p-3 md:p-12">
+<div class="max-w-5xl mx-auto relative">
+<header class="text-center mb-10 md:mb-16 relative z-10 bg-white/50 border border-sage/20 rounded-xl shadow-md p-5 md:p-10" data-template-preview-hero>
 <?php $t14BrandLogo = (!empty($isTemplatePreview)) ? null : resmenu_logo_url($uploadBaseUrl ?? '', $restaurant['logo'] ?? null); ?>
-<?php if ($t14BrandLogo): ?><div class="mb-4"><img src="<?php echo htmlspecialchars($t14BrandLogo); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="h-20 w-auto object-contain mx-auto"/></div><?php else: ?>
-<h1 class="font-serif text-5xl md:text-7xl font-bold text-earth mb-2"><?php echo htmlspecialchars($restaurant['name']); ?></h1>
+<?php if ($t14BrandLogo): ?><div class="mb-4"><img src="<?php echo htmlspecialchars($t14BrandLogo); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="h-16 md:h-20 w-auto object-contain mx-auto"/></div><?php else: ?>
+<h1 class="font-serif text-3xl sm:text-4xl md:text-7xl font-bold text-earth mb-2"><?php echo htmlspecialchars($restaurant['name']); ?></h1>
 <?php endif; ?>
-<p class="font-serif italic text-sage text-xl tracking-widest uppercase mb-4"><?php echo htmlspecialchars($restaurant['description'] ?? 'Sustainable &amp; Sourced'); ?></p>
+<p class="font-serif italic text-sage text-base md:text-xl tracking-widest uppercase mb-4"><?php echo htmlspecialchars($restaurant['description'] ?? 'Sustainable &amp; Sourced'); ?></p>
 <?php if (!empty($singleSectionView) && !empty($fullMenuUrl)): ?><p class="mt-2"><a href="<?php echo htmlspecialchars($fullMenuUrl); ?>" class="text-terracotta font-semibold hover:underline">Full menu</a></p><?php endif; ?>
 <?php if (!empty($supportsReservations)): ?><p class="mt-2"><a href="<?php echo htmlspecialchars($reservationUrl); ?>" class="text-terracotta font-semibold hover:underline">Reserve Table</a></p><?php endif; ?>
 <div class="hand-drawn-line w-1/3 mx-auto"></div>
@@ -54,33 +92,35 @@ if (!empty($sections) && is_array($sections)) {
 <?php foreach ($sections as $section): 
     if (empty($section['categories']) || !is_array($section['categories'])) continue;
 ?>
-<div id="section-<?php echo htmlspecialchars($section['slug']); ?>" class="mb-14">
-<h2 class="text-3xl md:text-4xl font-serif font-bold text-earth text-center pb-2 mb-8"><?php if (!empty($fullMenuUrl) && empty($singleSectionView)): ?><a href="<?php echo htmlspecialchars($fullMenuUrl . '/' . $section['slug']); ?>" class="hover:underline text-earth"><?php echo htmlspecialchars($section['name']); ?></a><?php else: ?><?php echo htmlspecialchars($section['name']); ?><?php endif; ?></h2>
+<div id="section-<?php echo htmlspecialchars($section['slug']); ?>" class="mb-10 md:mb-14">
+<h2 class="text-2xl md:text-4xl font-serif font-bold text-earth text-center pb-2 mb-6 md:mb-8"><?php if (!empty($fullMenuUrl) && empty($singleSectionView)): ?><a href="<?php echo htmlspecialchars($fullMenuUrl . '/' . $section['slug']); ?>" class="hover:underline text-earth"><?php echo htmlspecialchars($section['name']); ?></a><?php else: ?><?php echo htmlspecialchars($section['name']); ?><?php endif; ?></h2>
 <?php foreach ($section['categories'] as $catIndex => $category): 
     $slug = isset($category['slug']) ? $category['slug'] : ('cat-'.$catIndex);
     $items = isset($category['menu_items']) ? $category['menu_items'] : [];
     if (empty($items)) continue;
 ?>
-<section class="mb-16" id="<?php echo htmlspecialchars($slug); ?>">
-<h3 class="text-3xl font-serif font-bold text-earth border-b-2 border-terracotta pb-2 mb-8"><?php echo htmlspecialchars($category['name']); ?></h3>
-<div class="space-y-8">
+<section class="mb-6 md:mb-10 bg-white/70 border border-sage/25 rounded-xl shadow-md p-4 md:p-8" id="<?php echo htmlspecialchars($slug); ?>">
+<h3 class="text-xl md:text-3xl font-serif font-bold text-earth border-b-2 border-terracotta pb-2 mb-5 md:mb-8"><?php echo htmlspecialchars($category['name']); ?></h3>
+<div class="space-y-4 md:space-y-5">
 <?php foreach ($items as $item): ?>
-<div>
+<article class="ek-fade-up bg-cream border border-sage/15 rounded-lg shadow-md p-3.5 md:p-5">
 <?php if (!empty($item['image'])): ?><img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="w-full max-h-36 object-cover rounded border border-terracotta/30 mb-2"/><?php endif; ?>
-<div class="flex justify-between items-baseline mb-1">
-<h3 class="text-xl font-semibold text-earth menu-item-title"><?php echo htmlspecialchars($item['name']); ?></h3>
-<span class="price-tag font-serif"><?php echo ek_price($item['price']); ?></span>
+<div class="flex justify-between items-baseline gap-3 mb-1">
+<h3 class="text-base md:text-xl font-semibold text-earth menu-item-title"><?php echo htmlspecialchars($item['name']); ?></h3>
+<span class="price-tag font-serif text-base md:text-lg shrink-0"><?php echo ek_price($item['price']); ?></span>
 </div>
-<p class="text-sm text-earth/80"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p>
-<?php if (!empty($supportsOrdering) && !empty($item['is_available'])): ?><button type="button" class="add-to-bag-btn mt-2 text-terracotta border border-terracotta px-4 py-2 rounded hover:bg-terracotta/10" data-item-id="<?php echo (int)$item['id']; ?>" data-item-name="<?php echo htmlspecialchars($item['name']); ?>" data-item-price="<?php echo htmlspecialchars($item['price']); ?>" data-item-image="<?php echo !empty($item['image']) ? htmlspecialchars($item['image']) : ''; ?>">Add to bag</button><?php endif; ?>
-</div>
+<?php if (!empty($item['description'])): ?><p class="text-sm text-earth/80"><?php echo htmlspecialchars($item['description']); ?></p><?php endif; ?>
+<?php if (!empty($supportsOrdering) && !empty($item['is_available'])): ?>
+<button type="button" class="add-to-bag-btn ek-order-btn" data-item-id="<?php echo (int)$item['id']; ?>" data-item-name="<?php echo htmlspecialchars($item['name']); ?>" data-item-price="<?php echo htmlspecialchars($item['price']); ?>" data-item-image="<?php echo !empty($item['image']) ? htmlspecialchars($item['image']) : ''; ?>">Order<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+<?php endif; ?>
+</article>
 <?php endforeach; ?>
 </div>
 </section>
 <?php endforeach; ?>
 </div>
 <?php endforeach; ?>
-<footer class="mt-16 pt-8 border-t border-sage/30 text-center text-earth/60 text-sm"><?php if (!empty($restaurant['footer_content'])): ?><p class="mb-4"><?php echo nl2br(htmlspecialchars($restaurant['footer_content'])); ?></p><?php endif; ?><?php echo htmlspecialchars($restaurant['address'] ?? ''); ?></footer>
+<footer class="mt-10 md:mt-16 pt-6 md:pt-8 border-t border-sage/30 text-center text-earth/60 text-sm"><?php if (!empty($restaurant['footer_content'])): ?><p class="mb-4"><?php echo nl2br(htmlspecialchars($restaurant['footer_content'])); ?></p><?php endif; ?><?php echo htmlspecialchars($restaurant['address'] ?? ''); ?></footer>
 </div>
 <?php if (!empty($supportsOrdering)): ?>
 <link rel="stylesheet" href="<?php echo rtrim(defined('SITE_URL') ? SITE_URL : '', '/'); ?>/legacy/assets/css/cart-modal.css">
@@ -98,5 +138,22 @@ if (!empty($sections) && is_array($sections)) {
 </a>
 <script>
 (function(){var btn=document.getElementById('scrollToTop');if(btn){window.addEventListener('scroll',function(){var st=window.pageYOffset||document.documentElement.scrollTop;var dh=document.documentElement.scrollHeight-window.innerHeight;if(dh>0&&st>=dh*0.3){btn.style.opacity='1';btn.style.visibility='visible';btn.style.transform='translateY(0)';}else{btn.style.opacity='0';btn.style.visibility='hidden';btn.style.transform='translateY(10px)';}});btn.addEventListener('click',function(e){e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});});}})();
+(function(){
+  var els=document.querySelectorAll('.ek-fade-up');
+  if(!els.length)return;
+  if(!('IntersectionObserver' in window)){
+    els.forEach(function(el){el.classList.add('is-visible');});
+    return;
+  }
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.classList.add('is-visible');
+        io.unobserve(entry.target);
+      }
+    });
+  },{threshold:0.12,rootMargin:'0px 0px -8% 0px'});
+  els.forEach(function(el){io.observe(el);});
+})();
 </script>
 </body></html>
