@@ -14,8 +14,8 @@
 /* ===== STATS ===== */
 .stats {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
     margin-bottom: 30px;
 }
 
@@ -25,11 +25,21 @@
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.2s;
-    min-height: 80px;
+    min-height: 88px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+    border-left: 4px solid #e5e7eb;
 }
+
+.stat-card--green { border-left-color: #5EB344; background: linear-gradient(135deg, #fff 70%, #f3faf0); }
+.stat-card--amber { border-left-color: #FCB72A; background: linear-gradient(135deg, #fff 70%, #fff9eb); }
+.stat-card--orange { border-left-color: #F8821A; background: linear-gradient(135deg, #fff 70%, #fff5eb); }
+.stat-card--red { border-left-color: #E0393E; background: linear-gradient(135deg, #fff 70%, #fef2f2); }
+.stat-card--emerald { border-left-color: #10b981; background: linear-gradient(135deg, #fff 70%, #ecfdf5); }
+.stat-card--indigo { border-left-color: #4f46e5; background: linear-gradient(135deg, #fff 70%, #eef2ff); }
+.stat-card--blue { border-left-color: #069CDB; background: linear-gradient(135deg, #fff 70%, #eff9ff); }
+.stat-card--purple { border-left-color: #963D97; background: linear-gradient(135deg, #fff 70%, #faf0fb); }
 
 .stat-card:hover {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -56,6 +66,13 @@
     overflow: hidden;
     text-overflow: ellipsis;
     min-height: 1.5em;
+}
+
+.stat-hint {
+    margin-top: 4px;
+    font-size: 0.7rem;
+    color: #9ca3af;
+    line-height: 1.2;
 }
 
 /* ===== RESTAURANT LIST (ACCORDION) ===== */
@@ -247,7 +264,59 @@
     height: 16px;
 }
 
-/* ===== BAR CHART ===== */
+/* ===== OVERVIEW BARS ===== */
+.overview-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.overview-bar-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.overview-bar-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.overview-bar-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.overview-bar-value {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #111827;
+    font-variant-numeric: tabular-nums;
+}
+
+.overview-bar-track {
+    height: 10px;
+    border-radius: 999px;
+    background: #f3f4f6;
+    overflow: hidden;
+}
+
+.overview-bar-fill {
+    height: 100%;
+    width: 0;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--clr), color-mix(in srgb, var(--clr) 65%, white));
+    transition: width 0.6s ease;
+}
+
+.overview-bar-fill.is-filled {
+    min-width: 8px;
+}
+
+/* ===== BAR CHART (legacy) ===== */
 .chart-card {
     background: #fff;
     border-radius: 8px;

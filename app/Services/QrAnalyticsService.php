@@ -9,26 +9,34 @@ class QrAnalyticsService
 {
     public function trackScan(int $restaurantId, Request $request): void
     {
-        if (! DB::getSchemaBuilder()->hasTable('qr_code_scans')) {
+        if ($restaurantId <= 0) {
             return;
         }
 
-        $ua = (string) $request->userAgent();
-        $device = $this->parseDevice($ua);
+        try {
+            if (! DB::getSchemaBuilder()->hasTable('qr_code_scans')) {
+                return;
+            }
 
-        DB::table('qr_code_scans')->insert([
-            'restaurant_id' => $restaurantId,
-            'ip_address' => $request->ip(),
-            'user_agent' => $ua ?: null,
-            'device_type' => $device['device_type'],
-            'browser' => $device['browser'],
-            'os' => $device['os'],
-            'country' => null,
-            'city' => null,
-            'latitude' => null,
-            'longitude' => null,
-            'scanned_at' => now(),
-        ]);
+            $ua = (string) $request->userAgent();
+            $device = $this->parseDevice($ua);
+
+            DB::table('qr_code_scans')->insert([
+                'restaurant_id' => $restaurantId,
+                'ip_address' => $request->ip(),
+                'user_agent' => $ua !== '' ? mb_substr($ua, 0, 2000) : null,
+                'device_type' => $device['device_type'],
+                'browser' => $device['browser'],
+                'os' => $device['os'],
+                'country' => null,
+                'city' => null,
+                'latitude' => null,
+                'longitude' => null,
+                'scanned_at' => now(),
+            ]);
+        } catch (\Throwable $e) {
+            report($e);
+        }
     }
 
     /** @return array{device_type: string, browser: string, os: string} */
@@ -56,6 +64,11 @@ class QrAnalyticsService
                 $os = $o;
                 break;
             }
+        }
+
+        if (str_contains($ua, 'iphone') || str_contains($ua, 'ipod')) {
+            $device = 'mobile';
+            $os = 'ios';
         }
 
         return ['device_type' => $device, 'browser' => $browser, 'os' => $os];

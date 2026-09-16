@@ -132,19 +132,16 @@
     $uniqueDevices = count($qrAnalytics['scans_by_device'] ?? []);
     $uniqueLocations = count($qrAnalytics['scans_by_location'] ?? []);
     $analyticsChartData = [
-        ['label' => 'Total Scans', 'value' => $qrAnalytics['total_scans'] ?? 0, 'color' => '#5EB344'],
+        ['label' => 'Total Scans', 'value' => (int) ($qrAnalytics['total_scans'] ?? 0), 'color' => '#5EB344'],
         ['label' => 'Browsers', 'value' => $uniqueBrowsers, 'color' => '#FCB72A'],
         ['label' => 'Device Types', 'value' => $uniqueDevices, 'color' => '#F8821A'],
         ['label' => 'Locations', 'value' => $uniqueLocations, 'color' => '#963D97'],
-        ['label' => 'Total Orders', 'value' => $stats['total_orders'], 'color' => '#4f46e5'],
-        ['label' => 'Orders Revenue (₦)', 'value' => (int) $stats['total_orders_amount'], 'color' => '#10b981'],
+        ['label' => 'Total Orders', 'value' => (int) $stats['total_orders'], 'color' => '#4f46e5'],
     ];
-    $analyticsMax = max(array_column($analyticsChartData, 'value'));
-    if ($analyticsMax == 0) {
-        $analyticsMax = 1;
-    }
+    $analyticsMax = max(1, ...array_column($analyticsChartData, 'value'));
     foreach ($analyticsChartData as &$chartItem) {
-        $chartItem['percentage'] = ($chartItem['value'] / $analyticsMax) * 100;
+        $pct = ($chartItem['value'] / $analyticsMax) * 100;
+        $chartItem['percentage'] = $chartItem['value'] > 0 ? max($pct, 6) : 0;
     }
     unset($chartItem);
 @endphp
@@ -156,11 +153,16 @@
         </svg>
         Analytics Overview
     </h2>
-    <div class="simple-bar-chart gradient-bars">
+    <div class="overview-bars">
         @foreach($analyticsChartData as $item)
-            <div class="item" style="--clr: {{ $item['color'] }}; --val: {{ round($item['percentage'], 1) }}">
-                <div class="label">{{ $item['label'] }}</div>
-                <div class="value">{{ number_format($item['value']) }}</div>
+            <div class="overview-bar-row">
+                <div class="overview-bar-meta">
+                    <span class="overview-bar-label">{{ $item['label'] }}</span>
+                    <span class="overview-bar-value">{{ number_format($item['value']) }}</span>
+                </div>
+                <div class="overview-bar-track">
+                    <div class="overview-bar-fill{{ $item['value'] > 0 ? ' is-filled' : '' }}" style="--clr: {{ $item['color'] }}; width: {{ round($item['percentage'], 1) }}%;"></div>
+                </div>
             </div>
         @endforeach
     </div>

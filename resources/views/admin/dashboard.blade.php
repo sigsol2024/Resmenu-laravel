@@ -12,29 +12,43 @@
 
 <!-- STATS -->
 <section class="stats">
-  <div class="stat-card">
+  <div class="stat-card stat-card--green">
     <div class="stat-label">Restaurants</div>
-    <div class="stat-value">{{ $stats['restaurants'] }}</div>
+    <div class="stat-value">{{ number_format($stats['restaurants']) }}</div>
   </div>
-  <div class="stat-card">
+  <div class="stat-card stat-card--amber">
     <div class="stat-label">Categories</div>
-    <div class="stat-value">{{ $stats['categories'] }}</div>
+    <div class="stat-value">{{ number_format($stats['categories']) }}</div>
   </div>
-  <div class="stat-card">
+  <div class="stat-card stat-card--orange">
     <div class="stat-label">Menu Items</div>
-    <div class="stat-value">{{ $stats['menu_items'] }}</div>
+    <div class="stat-value">{{ number_format($stats['menu_items']) }}</div>
   </div>
-  <div class="stat-card">
+  <div class="stat-card stat-card--red">
     <div class="stat-label">Managers</div>
-    <div class="stat-value">{{ $stats['managers'] }}</div>
+    <div class="stat-value">{{ number_format($stats['managers']) }}</div>
   </div>
-  <div class="stat-card">
+  <div class="stat-card stat-card--emerald">
     <div class="stat-label">Total Revenue (All Restaurants)</div>
     <div class="stat-value">₦{{ number_format($stats['total_revenue'], 0) }}</div>
+    <div class="stat-hint">Successful subscription payments</div>
+  </div>
+  <div class="stat-card stat-card--indigo">
+    <div class="stat-label">Orders Revenue</div>
+    <div class="stat-value">₦{{ number_format($stats['orders_revenue'], 0) }}</div>
+    <div class="stat-hint">Paid / completed food orders</div>
+  </div>
+  <div class="stat-card stat-card--blue">
+    <div class="stat-label">QR Scans</div>
+    <div class="stat-value">{{ number_format($stats['total_scans']) }}</div>
+  </div>
+  <div class="stat-card stat-card--purple">
+    <div class="stat-label">Total Orders</div>
+    <div class="stat-value">{{ number_format($stats['total_orders']) }}</div>
   </div>
 </section>
 
-<!-- BAR CHART -->
+<!-- HORIZONTAL STATS OVERVIEW -->
 @if(!empty($chartData))
 <section class="chart-card">
   <h2 class="chart-title">
@@ -43,11 +57,16 @@
     </svg>
     Statistics Overview
   </h2>
-  <div class="simple-bar-chart gradient-bars">
+  <div class="overview-bars">
     @foreach($chartData as $item)
-      <div class="item{{ $item['value'] > 0 ? ' item-has-value' : '' }}" style="--clr: {{ $item['color'] }}; --val: {{ round($item['percentage'], 1) }}">
-        <div class="label">{{ $item['label'] }}</div>
-        <div class="value">{{ number_format($item['value']) }}</div>
+      <div class="overview-bar-row">
+        <div class="overview-bar-meta">
+          <span class="overview-bar-label">{{ $item['label'] }}</span>
+          <span class="overview-bar-value">{{ number_format($item['value']) }}</span>
+        </div>
+        <div class="overview-bar-track">
+          <div class="overview-bar-fill{{ $item['value'] > 0 ? ' is-filled' : '' }}" style="--clr: {{ $item['color'] }}; width: {{ round($item['percentage'], 1) }}%;"></div>
+        </div>
       </div>
     @endforeach
   </div>

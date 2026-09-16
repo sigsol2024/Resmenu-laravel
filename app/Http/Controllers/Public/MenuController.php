@@ -7,6 +7,7 @@ use App\Services\CustomizationService;
 use App\Services\ManagerFeatureAccess;
 use App\Services\MenuService;
 use App\Services\MenuTemplateRenderService;
+use App\Services\QrAnalyticsService;
 use App\Services\ReservationSlotService;
 use App\Services\SubscriptionService;
 use App\Services\UploadService;
@@ -32,6 +33,7 @@ class MenuController extends Controller
         private MenuTemplateRenderService $templateRenderer,
         private ReservationSlotService $reservationSlots,
         private ManagerFeatureAccess $features,
+        private QrAnalyticsService $qrAnalytics,
     ) {}
 
     public function show(Request $request, string $slug, ?string $section = null, ?string $category = null): Response|RedirectResponse
@@ -46,6 +48,18 @@ class MenuController extends Controller
 
         if (! $restaurant) {
             abort(404, 'Restaurant not found.');
+        }
+
+        // QR scan logging when landing from /qr/{slug} → ?src=qr (short dedupe window).
+        if ($request->query('src') === 'qr') {
+            $dedupeKey = 'qr_scan_recorded_'.(int) $restaurant->id;
+            $lastAt = (int) $request->session()->get($dedupeKey, 0);
+            if ($lastAt === 0 || (time() - $lastAt) > 90) {
+                $this->qrAnalytics->trackScan((int) $restaurant->id, $request);
+                $request->session()->put($dedupeKey, time());
+            }
+
+            return redirect()->to($request->url());
         }
 
         $access = $this->subscriptions->checkAccess((int) $restaurant->id);

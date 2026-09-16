@@ -42,7 +42,7 @@ class OrderService
     {
         return (float) Order::query()
             ->where('restaurant_id', $restaurantId)
-            ->whereIn('status', ['pending', 'confirmed', 'on_hold', 'completed'])
+            ->whereIn('status', ['confirmed', 'on_hold', 'completed'])
             ->sum('total');
     }
 
@@ -78,7 +78,7 @@ class OrderService
     {
         return (float) Order::query()
             ->where('restaurant_id', $restaurantId)
-            ->whereIn('status', ['pending', 'confirmed', 'on_hold', 'completed'])
+            ->whereIn('status', ['confirmed', 'on_hold', 'completed'])
             ->whereBetween('created_at', [$from, $to])
             ->sum('total');
     }
@@ -90,7 +90,7 @@ class OrderService
 
         $query = Order::query()
             ->where('restaurant_id', $restaurantId)
-            ->whereIn('status', ['pending', 'confirmed', 'on_hold', 'completed'])
+            ->whereIn('status', ['confirmed', 'on_hold', 'completed'])
             ->select(DB::raw('DATE(created_at) as date'), DB::raw('COALESCE(SUM(total), 0) as revenue'))
             ->groupBy(DB::raw('DATE(created_at)'))
             ->orderBy('date');

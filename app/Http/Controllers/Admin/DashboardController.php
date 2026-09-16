@@ -5,11 +5,29 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Restaurant;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class DashboardController extends Controller
 {
   public function __invoke()
   {
+    $ordersRevenue = (float) DB::table('orders')
+      ->whereIn('status', ['confirmed', 'on_hold', 'completed'])
+      ->sum('total');
+
+    $subscriptionRevenue = Schema::hasTable('payments')
+      ? (float) DB::table('payments')->where('status', 'success')->sum('amount')
+      : 0.0;
+
+    // Platform “Total Revenue” = successful subscription payments (what admin Payments uses).
+    $totalRevenue = $subscriptionRevenue;
+
+    $totalScans = Schema::hasTable('qr_code_scans')
+      ? (int) DB::table('qr_code_scans')->count()
+      : 0;
+
+    $totalOrders = (int) DB::table('orders')->count();
+
     $stats = [
       'restaurants' => (int) DB::table('restaurants')->count(),
       'categories' => (int) DB::table('categories')->count(),
@@ -17,26 +35,28 @@ class DashboardController extends Controller
       'managers' => (int) DB::table('managers')->count(),
       'active_restaurants' => (int) DB::table('restaurants')->where('is_active', 1)->count(),
       'active_categories' => (int) DB::table('categories')->where('is_active', 1)->count(),
-      'total_revenue' => (float) DB::table('orders')
-        ->whereIn('status', ['pending', 'confirmed', 'on_hold', 'completed'])
-        ->sum('total'),
+      'total_orders' => $totalOrders,
+      'total_scans' => $totalScans,
+      'total_revenue' => $totalRevenue,
+      'subscription_revenue' => $subscriptionRevenue,
+      'orders_revenue' => $ordersRevenue,
     ];
 
+    // Count-only chart — never mix ₦ amounts with counts (that made every bar look identical).
     $chartData = [
       ['label' => 'Restaurants', 'value' => $stats['restaurants'], 'color' => '#5EB344'],
+      ['label' => 'Active Restaurants', 'value' => $stats['active_restaurants'], 'color' => '#963D97'],
       ['label' => 'Categories', 'value' => $stats['categories'], 'color' => '#FCB72A'],
       ['label' => 'Menu Items', 'value' => $stats['menu_items'], 'color' => '#F8821A'],
       ['label' => 'Managers', 'value' => $stats['managers'], 'color' => '#E0393E'],
-      ['label' => 'Active Restaurants', 'value' => $stats['active_restaurants'], 'color' => '#963D97'],
-      ['label' => 'Active Categories', 'value' => $stats['active_categories'], 'color' => '#069CDB'],
-      ['label' => 'Total Revenue (₦)', 'value' => (int) $stats['total_revenue'], 'color' => '#10b981'],
+      ['label' => 'Orders', 'value' => $stats['total_orders'], 'color' => '#4f46e5'],
+      ['label' => 'QR Scans', 'value' => $stats['total_scans'], 'color' => '#069CDB'],
     ];
 
     $maxValue = max(array_column($chartData, 'value')) ?: 1;
     foreach ($chartData as &$item) {
       $pct = ($item['value'] / $maxValue) * 100;
-      // Keep a visible sliver for any non-zero stat so color always shows
-      $item['percentage'] = $item['value'] > 0 ? max($pct, 4) : 0;
+      $item['percentage'] = $item['value'] > 0 ? max($pct, 6) : 0;
     }
     unset($item);
 
