@@ -358,6 +358,80 @@
         padding: 20px;
     }
 
+    /* Vertical bar list — horizontal columns are unreadable on small screens */
+    .simple-bar-chart {
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        align-items: stretch;
+        padding: 4px 0 8px;
+        isolation: auto;
+    }
+
+    .simple-bar-chart::after {
+        display: none;
+    }
+
+    .simple-bar-chart > .item {
+        display: grid;
+        grid-template-columns: minmax(6.5rem, 36%) minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 10px;
+        height: auto !important;
+        min-height: 0 !important;
+        background: transparent !important;
+        animation: none;
+        border-radius: 0;
+        position: relative;
+    }
+
+    .simple-bar-chart > .item::before {
+        content: "";
+        grid-column: 2;
+        grid-row: 1;
+        height: 18px;
+        width: calc(1% * var(--val));
+        max-width: 100%;
+        background-color: var(--clr, var(--item-default-color));
+        border-radius: 4px;
+        justify-self: start;
+        animation: item-width 0.8s ease forwards;
+        transform-origin: left center;
+    }
+
+    .simple-bar-chart > .item.item-has-value::before {
+        min-width: 6px;
+    }
+
+    .simple-bar-chart > .item > .label {
+        position: static;
+        inset: auto;
+        grid-column: 1;
+        grid-row: 1;
+        text-align: left;
+        margin: 0;
+        font-size: 0.75rem;
+        line-height: 1.25;
+        word-break: break-word;
+    }
+
+    .simple-bar-chart > .item > .value {
+        position: static;
+        inset: auto;
+        grid-column: 3;
+        grid-row: 1;
+        text-align: right;
+        margin: 0;
+        font-size: 0.8125rem;
+        white-space: nowrap;
+    }
+
+    @keyframes item-width {
+        from { transform: scaleX(0); }
+        to { transform: scaleX(1); }
+    }
+
     .restaurant-list-head {
         display: none;
     }
