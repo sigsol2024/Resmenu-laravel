@@ -70,9 +70,7 @@ class AdminAccountService
 
             $this->assertActorMayManageAdmins($actor, alreadyLocked: true);
 
-            if (array_key_exists('username', $data)) {
-                $target->username = $data['username'];
-            }
+            // Username is immutable after create.
             if (array_key_exists('email', $data)) {
                 $target->email = $data['email'];
             }

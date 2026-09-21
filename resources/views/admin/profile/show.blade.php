@@ -5,7 +5,7 @@
 @section('content')
 <div class="page-header">
     <h1 class="page-title">Profile</h1>
-    <p class="page-subtitle">Update your username, email, and password</p>
+    <p class="page-subtitle">Update your email and password</p>
 </div>
 
 <div class="card" style="margin-bottom:16px;">
@@ -13,6 +13,11 @@
         <h2 class="card-title">Account Information</h2>
     </div>
     <div class="card-body">
+        <div class="form-group">
+            <label class="form-label">Username</label>
+            <div class="info-display">{{ $admin->username }}</div>
+            <small style="color:#6b7280;display:block;margin-top:4px;font-size:0.75rem;">Usernames cannot be changed after creation.</small>
+        </div>
         <div class="form-group">
             <label class="form-label">Role</label>
             <div class="info-display">{{ $admin->isSuperAdmin() ? 'Super Admin' : 'Administrator' }}</div>
@@ -26,7 +31,7 @@
 
 <div class="card" style="margin-bottom:16px;">
     <div class="card-header">
-        <h2 class="card-title">Update Profile</h2>
+        <h2 class="card-title">Update Email</h2>
     </div>
     <div class="card-body">
         <form method="post" action="{{ route('admin.profile.update') }}">
@@ -34,14 +39,10 @@
             @method('PUT')
             <input type="hidden" name="action" value="update_profile">
             <div class="form-group">
-                <label class="form-label" for="username">Username *</label>
-                <input type="text" id="username" name="username" class="form-input" required value="{{ old('username', $admin->username) }}">
-            </div>
-            <div class="form-group">
                 <label class="form-label" for="email">Email *</label>
                 <input type="email" id="email" name="email" class="form-input" required value="{{ old('email', $admin->email) }}">
             </div>
-            <button type="submit" class="btn btn-primary">Update Profile</button>
+            <button type="submit" class="btn btn-primary">Update Email</button>
         </form>
     </div>
 </div>

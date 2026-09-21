@@ -231,7 +231,7 @@ class AdminPermissionsTest extends TestCase
         $this->actingAs($regular, 'admin')
             ->put(route('admin.profile.update'), [
                 'action' => 'update_profile',
-                'username' => $regular->username,
+                'username' => 'hacked_'.uniqid(),
                 'email' => $regular->email,
                 'is_super_admin' => 1,
                 'is_active' => 1,
@@ -244,6 +244,7 @@ class AdminPermissionsTest extends TestCase
         $this->assertFalse($regular->isSuperAdmin());
         $this->assertFalse($regular->hasPermission('crm'));
         $this->assertFalse($regular->hasPermission('payments'));
+        $this->assertStringStartsWith('adm_', $regular->username);
     }
 
     public function test_mass_assignment_rejects_privileged_fields(): void
@@ -576,7 +577,6 @@ class AdminPermissionsTest extends TestCase
         $this->actingAs($a, 'admin')
             ->put(route('admin.profile.update'), [
                 'action' => 'update_profile',
-                'username' => $a->username,
                 'email' => $b->email,
             ])
             ->assertSessionHasErrors('email');

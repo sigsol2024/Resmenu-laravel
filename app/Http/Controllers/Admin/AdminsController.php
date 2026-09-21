@@ -24,6 +24,7 @@ class AdminsController extends Controller
             'primaryAdminId' => $primary?->id,
             'currentAdmin' => request()->user('admin'),
             'permissionKeys' => Admin::permissionKeys(),
+            'permissionLabels' => $this->permissionLabels(),
         ]);
     }
 
@@ -57,12 +58,8 @@ class AdminsController extends Controller
 
     public function edit(Admin $admin)
     {
-        return view('admin.admins.edit', [
-            'admin' => $admin,
-            'isPrimary' => $this->accounts->isPrimary($admin),
-            'permissionKeys' => Admin::permissionKeys(),
-            'permissionLabels' => $this->permissionLabels(),
-        ]);
+        // Edit is handled in a modal on the index page (faster UX).
+        return redirect()->route('admin.admins.index', ['edit' => $admin->id]);
     }
 
     public function update(Request $request, Admin $admin)
@@ -72,8 +69,8 @@ class AdminsController extends Controller
         $actor = $request->user('admin');
 
         try {
+            // Username is immutable after create — never pass it on update.
             $this->accounts->update($admin, [
-                'username' => $data['username'],
                 'email' => $data['email'],
                 'password' => $data['password'] ?: null,
                 'is_super_admin' => $data['role'] === 'super',
@@ -103,9 +100,9 @@ class AdminsController extends Controller
 
     /**
      * @return array{
-     *     username: string,
+     *     username?: string,
      *     email: string,
-     *     password?: string,
+     *     password?: string|null,
      *     role: string,
      *     is_active: bool,
      *     permissions: array<string, bool>
@@ -117,13 +114,7 @@ class AdminsController extends Controller
             ? ['nullable', 'string', Password::min(8)->letters()->numbers()]
             : ['required', 'string', Password::min(8)->letters()->numbers()];
 
-        $data = $request->validate([
-            'username' => [
-                'required',
-                'string',
-                'max:100',
-                Rule::unique('admins', 'username')->ignore($existing?->id),
-            ],
+        $rules = [
             'email' => [
                 'required',
                 'email',
@@ -135,21 +126,37 @@ class AdminsController extends Controller
             'is_active' => ['nullable', 'boolean'],
             'permissions' => ['nullable', 'array'],
             'permissions.*' => ['nullable'],
-        ]);
+        ];
+
+        if ($existing === null) {
+            $rules['username'] = [
+                'required',
+                'string',
+                'max:100',
+                Rule::unique('admins', 'username'),
+            ];
+        }
+
+        $data = $request->validate($rules);
 
         $permissions = [];
         foreach (Admin::permissionKeys() as $key) {
             $permissions[$key] = $request->boolean('permissions.'.$key);
         }
 
-        return [
-            'username' => $data['username'],
+        $payload = [
             'email' => $data['email'],
             'password' => $data['password'] ?? null,
             'role' => $data['role'],
             'is_active' => $request->boolean('is_active'),
             'permissions' => $permissions,
         ];
+
+        if ($existing === null) {
+            $payload['username'] = $data['username'];
+        }
+
+        return $payload;
     }
 
     /** @return array<string, string> */

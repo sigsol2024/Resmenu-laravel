@@ -32,14 +32,9 @@ class ProfileController extends Controller
             return $this->updatePassword($request, $admin);
         }
 
-        // Only explicitly allowed profile fields — ignore privilege payloads.
+        // Username is immutable — only email may change here.
+        // Ignore any username / privilege fields in the payload.
         $data = $request->validate([
-            'username' => [
-                'required',
-                'string',
-                'max:100',
-                Rule::unique('admins', 'username')->ignore($admin->id),
-            ],
             'email' => [
                 'required',
                 'email',
@@ -49,7 +44,6 @@ class ProfileController extends Controller
         ]);
 
         $admin->forceFill([
-            'username' => $data['username'],
             'email' => $data['email'],
         ])->save();
 
