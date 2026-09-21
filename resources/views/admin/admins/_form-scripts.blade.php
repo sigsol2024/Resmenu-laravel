@@ -17,6 +17,11 @@
         document.getElementById('full-access-note')
     );
     bindRoleUi(
+        document.getElementById('add_role'),
+        document.getElementById('add_permissions-panel'),
+        document.getElementById('add_full-access-note')
+    );
+    bindRoleUi(
         document.getElementById('edit_role'),
         document.getElementById('edit_permissions-panel'),
         document.getElementById('edit_full-access-note')

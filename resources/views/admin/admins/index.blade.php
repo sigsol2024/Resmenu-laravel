@@ -8,7 +8,7 @@
         <h1 class="page-title">Administrators</h1>
         <p class="page-subtitle">Manage Super Admins, Regular Admins, and module permissions</p>
     </div>
-    <a href="{{ route('admin.admins.create') }}" class="btn btn-primary">Add Administrator</a>
+    <button type="button" class="btn btn-primary" id="openAddAdminModal">Add Administrator</button>
 </div>
 
 <div class="card">
@@ -78,6 +78,29 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="addAdminModal" aria-hidden="true">
+    <div class="modal-box" role="dialog" aria-labelledby="addAdminModalTitle" style="max-height:90vh;overflow:auto;">
+        <div class="modal-header">
+            <h3 class="modal-title" id="addAdminModalTitle">Add Administrator</h3>
+            <button type="button" class="modal-close" id="closeAddAdminModal" aria-label="Close">&times;</button>
+        </div>
+        <form method="post" action="{{ route('admin.admins.store') }}" id="addAdminForm">
+            @csrf
+            @include('admin.admins._form', [
+                'admin' => null,
+                'isPrimary' => false,
+                'idPrefix' => 'add_',
+                'permissionKeys' => $permissionKeys,
+                'permissionLabels' => $permissionLabels,
+            ])
+            <div style="display:flex;gap:10px;margin-top:16px;">
+                <button type="submit" class="btn btn-primary">Create Administrator</button>
+                <button type="button" class="btn btn-secondary" id="cancelAddAdminModal">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="modal-overlay" id="editAdminModal" aria-hidden="true">
     <div class="modal-box" role="dialog" aria-labelledby="editAdminModalTitle" style="max-height:90vh;overflow:auto;">
         <div class="modal-header">
@@ -112,33 +135,60 @@
 @include('admin.admins._form-scripts')
 <script>
 (function () {
-    var modal = document.getElementById('editAdminModal');
+    function bindModal(overlayId, openBtnId, closeIds) {
+        var modal = document.getElementById(overlayId);
+        if (!modal) return null;
+        function open() {
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
+        }
+        function close() {
+            modal.classList.remove('active');
+            modal.setAttribute('aria-hidden', 'true');
+        }
+        var openBtn = openBtnId ? document.getElementById(openBtnId) : null;
+        if (openBtn) openBtn.addEventListener('click', open);
+        (closeIds || []).forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) el.addEventListener('click', close);
+        });
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) close();
+        });
+        return { modal: modal, open: open, close: close };
+    }
+
+    var addUi = bindModal('addAdminModal', 'openAddAdminModal', ['closeAddAdminModal', 'cancelAddAdminModal']);
+    var editUi = bindModal('editAdminModal', null, ['closeEditAdminModal', 'cancelEditAdminModal']);
+
+    var addForm = document.getElementById('addAdminForm');
+    if (addForm && addUi) {
+        document.getElementById('openAddAdminModal')?.addEventListener('click', function () {
+            addForm.reset();
+            var activeCb = document.getElementById('add_is_active');
+            if (activeCb) activeCb.checked = true;
+            var roleSelect = document.getElementById('add_role');
+            if (roleSelect) roleSelect.value = 'regular';
+            roleSelect?.dispatchEvent(new Event('change'));
+            document.getElementById('add_username')?.focus();
+        });
+    }
+
+    var editModal = editUi && editUi.modal;
     var form = document.getElementById('editAdminForm');
-    if (!modal || !form) return;
+    if (!editModal || !form) return;
 
     var roleSelect = document.getElementById('edit_role');
-    var roleHidden = form.querySelector('input[type="hidden"][name="role"]');
     var activeCheckbox = document.getElementById('edit_is_active');
     var usernameDisplay = document.getElementById('edit_username_display');
     var emailInput = document.getElementById('edit_email');
     var passwordInput = document.getElementById('edit_password');
     var panel = document.getElementById('edit_permissions-panel');
     var note = document.getElementById('edit_full-access-note');
-    var primaryHint = null;
-
-    function openModal() {
-        modal.classList.add('active');
-        modal.setAttribute('aria-hidden', 'false');
-    }
-    function closeModal() {
-        modal.classList.remove('active');
-        modal.setAttribute('aria-hidden', 'true');
-        if (passwordInput) passwordInput.value = '';
-    }
 
     function syncRoleUi() {
         if (!roleSelect || !panel || !note) return;
-        var isSuper = roleSelect.value === 'super' || (roleHidden && roleHidden.value === 'super' && roleSelect.disabled);
+        var isSuper = roleSelect.value === 'super' || roleSelect.disabled;
         panel.style.display = isSuper ? 'none' : '';
         note.style.display = isSuper ? '' : 'none';
     }
@@ -155,7 +205,6 @@
         if (emailInput) emailInput.value = btn.getAttribute('data-email') || '';
         if (passwordInput) passwordInput.value = '';
 
-        // Rebuild role control for primary vs non-primary
         var roleGroup = roleSelect ? roleSelect.closest('.form-group') : null;
         if (roleGroup) {
             var existingHidden = roleGroup.querySelector('input[type="hidden"][name="role"]');
@@ -223,7 +272,7 @@
             roleSelect._bound = true;
         }
         syncRoleUi();
-        openModal();
+        editUi.open();
         if (emailInput) emailInput.focus();
     }
 
@@ -231,16 +280,14 @@
         btn.addEventListener('click', function () { fillForm(btn); });
     });
 
-    document.getElementById('closeEditAdminModal')?.addEventListener('click', closeModal);
-    document.getElementById('cancelEditAdminModal')?.addEventListener('click', closeModal);
-    modal.addEventListener('click', function (e) {
-        if (e.target === modal) closeModal();
-    });
-
-    var editId = new URLSearchParams(window.location.search).get('edit');
+    var params = new URLSearchParams(window.location.search);
+    var editId = params.get('edit');
     if (editId) {
         var match = document.querySelector('.btn-edit-admin[data-id="' + editId + '"]');
         if (match) fillForm(match);
+    }
+    if (params.get('create') === '1' && addUi) {
+        document.getElementById('openAddAdminModal')?.click();
     }
 })();
 </script>

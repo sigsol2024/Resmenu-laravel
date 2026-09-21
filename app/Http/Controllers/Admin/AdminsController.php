@@ -30,10 +30,8 @@ class AdminsController extends Controller
 
     public function create()
     {
-        return view('admin.admins.create', [
-            'permissionKeys' => Admin::permissionKeys(),
-            'permissionLabels' => $this->permissionLabels(),
-        ]);
+        // Create is handled in a modal on the index page (faster UX).
+        return redirect()->route('admin.admins.index', ['create' => 1]);
     }
 
     public function store(Request $request)
