@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Manager;
 use App\Http\Controllers\Controller;
 use App\Models\Manager;
 use App\Models\Restaurant;
+use App\Services\ManagerEmailChangeService;
 use App\Services\UploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -78,7 +79,7 @@ class SettingsController extends Controller
 
         $emailTaken = Manager::query()
             ->where('id', '!=', $manager->id)
-            ->where('email', $data['email'])
+            ->where('email', strtolower(trim($data['email'])))
             ->exists();
         if ($emailTaken) {
             return redirect()->route('manager.settings.edit', ['tab' => $tab])
@@ -88,14 +89,23 @@ class SettingsController extends Controller
 
         $oldEmail = $manager->email;
         $manager->username = $data['username'];
-        $manager->email = $data['email'];
         $manager->save();
 
+        $result = app(ManagerEmailChangeService::class)->apply($manager, $data['email']);
+        $manager->refresh();
+
         if ($restaurant->manager_email === $oldEmail) {
-            $restaurant->update(['manager_email' => $data['email']]);
+            $restaurant->update(['manager_email' => $manager->email]);
         }
 
-        return $this->redirectToTab($tab, 'Account updated successfully');
+        $message = 'Account updated successfully';
+        if ($result['changed']) {
+            $message = $result['sent']
+                ? 'Account updated. Please verify your new email — a link was sent.'
+                : 'Account updated. Email verification is required; use Resend on the banner if no email arrived.';
+        }
+
+        return $this->redirectToTab($tab, $message);
     }
 
     private function updatePassword(Request $request, Manager $manager, string $tab)
@@ -121,6 +131,14 @@ class SettingsController extends Controller
 
     private function updateRestaurant(Request $request, Restaurant $restaurant, string $tab)
     {
+        /** @var Manager $manager */
+        $manager = Auth::guard('manager')->user();
+        if (! app(\App\Services\ManagerEmailVerificationService::class)->hasVerifiedEmail($manager)) {
+            return redirect()
+                ->route('manager.dashboard')
+                ->with('error', 'Verify your email to manage your menu. Use Resend on the banner if needed.');
+        }
+
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',

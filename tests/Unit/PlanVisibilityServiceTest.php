@@ -313,6 +313,8 @@ class PlanVisibilityServiceTest extends TestCase
         $this->assertTrue($result->isMenuItemVisibleOnPublicMenu($availableId));
         $this->assertSame(0, $result->summary['menu_items']['hidden_count']);
     }
+
+    public function test_forget_cache_allows_fresh_resolve(): void
     {
         if (! $this->dbAvailable()) {
             $this->markTestSkipped('Database schema not available.');

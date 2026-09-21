@@ -86,6 +86,8 @@
 
     <form id="registerForm" class="space-y-5" method="post" action="{{ route('register.submit') }}">
         @csrf
+        <input type="hidden" name="register_step" id="register_step" value="{{ old('register_step', 1) }}">
+        <input type="hidden" name="marketing_consent_text_version" value="{{ $marketingConsentTextVersion ?? 'v1' }}">
         @if(!empty($plan))<input type="hidden" name="plan_id" value="{{ $plan }}">@endif
 
         <div class="space-y-5" data-step="1">
@@ -101,12 +103,28 @@
             <div>
                 <label class="block text-sm font-semibold text-slate-700 mb-1.5" for="username">Username *</label>
                 <input class="block w-full rounded-lg border-slate-200 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:border-primary focus:ring-primary sm:text-sm shadow-sm" id="username" name="username" placeholder="manager" type="text" value="{{ old('username') }}" required>
+                <p class="mt-1 text-xs text-slate-500">Auto-filled from your restaurant name — you can edit it.</p>
             </div>
             <div>
                 <label class="block text-sm font-semibold text-slate-700 mb-1.5" for="email">Manager Email *</label>
                 <input class="block w-full rounded-lg border-slate-200 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:border-primary focus:ring-primary sm:text-sm shadow-sm" id="email" name="email" placeholder="manager@restaurant.com" type="email" value="{{ old('email') }}" required>
-                <p class="mt-1 text-xs text-slate-500">This email will be used for manager login.</p>
+                <p class="mt-1 text-xs text-slate-500">We will send a verification link to this address after signup.</p>
             </div>
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1.5" for="phone">Phone *</label>
+                <input class="block w-full rounded-lg border-slate-200 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:border-primary focus:ring-primary sm:text-sm shadow-sm" id="phone" name="phone" placeholder="+234 800 000 0000" type="tel" value="{{ old('phone') }}" required>
+            </div>
+            <div class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+                <label class="flex items-start gap-3 cursor-pointer">
+                    <input type="checkbox" name="marketing_consent" value="1" class="mt-1 rounded border-slate-300 text-primary focus:ring-primary" {{ old('marketing_consent') ? 'checked' : '' }}>
+                    <span class="text-sm text-slate-600">{{ $marketingConsentText ?? 'I would like to receive product updates and marketing emails from Resmenu. You can unsubscribe anytime.' }}</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="space-y-5 hidden" data-step="3">
+            <h3 class="text-lg font-bold text-slate-900">Secure your account</h3>
+            <p class="text-sm text-slate-600">Choose a password, complete the CAPTCHA, then create your account. We will email you a verification link.</p>
             <div>
                 <label class="block text-sm font-semibold text-slate-700 mb-1.5" for="password">Manager Password *</label>
                 <div class="relative">
@@ -124,16 +142,6 @@
                         @resmenuPasswordToggle(20, 'text-xl')
                     </button>
                 </div>
-            </div>
-        </div>
-
-        <div class="space-y-5 hidden" data-step="3">
-            <h3 class="text-lg font-bold text-slate-900">Verify your email</h3>
-            <p class="text-sm text-slate-600">We will send a 6-digit code to your manager email address.</p>
-            <button type="button" id="sendOtpBtn" class="w-full rounded-xl bg-slate-100 px-5 py-3 text-sm font-bold text-slate-900 hover:bg-slate-200 transition-colors">Send verification code</button>
-            <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-1.5" for="otp">6-digit code *</label>
-                <input class="block w-full rounded-lg border-slate-200 bg-white px-4 py-3 text-center tracking-[0.5em] font-extrabold text-slate-900 placeholder:text-slate-400 focus:border-primary focus:ring-primary sm:text-lg shadow-sm" id="otp" name="otp" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="••••••" required>
             </div>
             @if(!empty($recaptchaSiteKey))
                 <div class="pt-2 flex justify-center">
@@ -168,13 +176,31 @@
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
     const submitBtn = document.getElementById('submitBtn');
-    let currentStep = 1;
+    const registerStepInput = document.getElementById('register_step');
+    const restaurantName = document.getElementById('restaurant_name');
+    const username = document.getElementById('username');
+    let usernameTouched = {{ old('username') ? 'true' : 'false' }};
+    let currentStep = Math.min(3, Math.max(1, parseInt(@json((int) old('register_step', $errors->any() ? 3 : 1)), 10) || 1));
 
     const labels = {
         1: 'Step 1 of 3 - Restaurant Details',
         2: 'Step 2 of 3 - Manager Account',
-        3: 'Step 3 of 3 - Email Verification'
+        3: 'Step 3 of 3 - Password & Security'
     };
+
+    function slugifyUsername(value) {
+        return String(value || '')
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '_')
+            .replace(/^_+|_+$/g, '')
+            .slice(0, 80);
+    }
+
+    function syncUsernameFromRestaurant() {
+        if (usernameTouched || !username || !restaurantName) return;
+        const generated = slugifyUsername(restaurantName.value);
+        if (generated) username.value = generated;
+    }
 
     function updateStep() {
         steps.forEach((el, idx) => {
@@ -185,6 +211,7 @@
         prevBtn.classList.toggle('hidden', currentStep === 1);
         nextBtn.classList.toggle('hidden', currentStep === steps.length);
         submitBtn.classList.toggle('hidden', currentStep !== steps.length);
+        if (registerStepInput) registerStepInput.value = String(currentStep);
     }
 
     function validateCurrentStep() {
@@ -194,7 +221,7 @@
         for (const field of fields) {
             if (!field.reportValidity()) return false;
         }
-        if (currentStep === 2) {
+        if (currentStep === 3) {
             const pw = document.getElementById('password');
             const cpw = document.getElementById('password_confirm');
             if (pw && cpw && pw.value !== cpw.value) {
@@ -207,8 +234,17 @@
         return true;
     }
 
+    if (username) {
+        username.addEventListener('input', () => { usernameTouched = true; });
+    }
+    if (restaurantName) {
+        restaurantName.addEventListener('input', syncUsernameFromRestaurant);
+        restaurantName.addEventListener('blur', syncUsernameFromRestaurant);
+    }
+
     nextBtn.addEventListener('click', () => {
         if (!validateCurrentStep()) return;
+        if (currentStep === 1) syncUsernameFromRestaurant();
         currentStep = Math.min(steps.length, currentStep + 1);
         updateStep();
     });
@@ -218,43 +254,23 @@
         updateStep();
     });
 
-    function captchaResponse() {
-        return (typeof grecaptcha !== 'undefined' && grecaptcha.getResponse) ? grecaptcha.getResponse() : '';
-    }
-
-    document.getElementById('sendOtpBtn').addEventListener('click', async function () {
-        const email = document.getElementById('email').value;
-        if (!email) {
-            alert('Please enter your manager email first.');
-            return;
-        }
-        const btn = this;
-        btn.disabled = true;
-        try {
-            const r = await fetch(@json(route('register.otp')), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': @json(csrf_token()),
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({ email, 'g-recaptcha-response': captchaResponse() })
-            });
-            const data = await r.json().catch(() => ({}));
-            alert(r.ok ? (data.message || 'Code sent') : (data.message || 'Could not send code'));
-        } finally {
-            btn.disabled = false;
-        }
-    });
-
     document.getElementById('registerForm').addEventListener('submit', function(e) {
+        if (registerStepInput) registerStepInput.value = '3';
         @if(!empty($recaptchaSiteKey))
         if (typeof grecaptcha !== 'undefined' && grecaptcha.getResponse && !grecaptcha.getResponse()) {
             e.preventDefault();
             alert('Please complete the CAPTCHA to continue.');
+            return;
         }
         @endif
+        submitBtn.disabled = true;
     });
+
+    @if($errors->any() && !empty($recaptchaSiteKey))
+    if (typeof grecaptcha !== 'undefined' && grecaptcha.reset) {
+        window.addEventListener('load', () => { try { grecaptcha.reset(); } catch (_) {} });
+    }
+    @endif
 
     updateStep();
 })();

@@ -30,7 +30,7 @@
         <h2 class="section-title">Select Menu Design</h2>
     </div>
     <p style="margin-bottom: 20px; color: var(--muted); font-size: 0.875rem;">Choose a design for your restaurant's menu page.</p>
-    <form method="POST" action="{{ route('manager.customization') }}">
+    <form method="POST" action="{{ route('manager.customization.save') }}">
         @csrf
         <input type="hidden" name="action" value="save_template">
         <div class="form-group">
@@ -77,7 +77,7 @@
     </div>
     <div class="template-colors-body" id="template-colors-body" style="display: none; margin-top: 16px;">
         <p style="margin-bottom: 16px; color: var(--muted); font-size: 0.875rem;">Customize all colors and styles for the selected menu design. Each design remembers its own settings when you switch between them.</p>
-        <form method="POST" action="{{ route('manager.customization') }}">
+        <form method="POST" action="{{ route('manager.customization.save') }}">
             @csrf
             <input type="hidden" name="action" value="save_customization">
             <input type="hidden" name="template_id" value="{{ $currentTemplateId }}">
@@ -209,7 +209,7 @@
     <p style="margin-bottom: 16px; color: var(--muted); font-size: 0.875rem;">
         Turn food ordering and table reservations on or off for your menu page. These settings apply to any menu design you select.
     </p>
-    <form method="POST" action="{{ route('manager.customization') }}">
+    <form method="POST" action="{{ route('manager.customization.save') }}">
         @csrf
         <input type="hidden" name="action" value="save_feature_toggles">
 

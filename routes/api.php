@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\LeadCaptureController;
 use App\Http\Controllers\Api\BankTransferApiController;
 use App\Http\Controllers\Api\MenuApiController;
 use App\Http\Controllers\Api\OrderApiController;
@@ -9,13 +10,26 @@ use App\Http\Controllers\Api\RestaurantApiController;
 use App\Http\Controllers\Api\SubscriptionPlanApiController;
 use App\Http\Controllers\Api\TemplateApiController;
 use App\Http\Controllers\Api\WebhookController;
+use App\Support\ApiJsonResponse;
 use Illuminate\Support\Facades\Route;
+
+Route::options('/leads', function () {
+    return response('', 204)->withHeaders(ApiJsonResponse::corsHeaders());
+});
+Route::options('/crm/public-config', function () {
+    return response('', 204)->withHeaders(ApiJsonResponse::corsHeaders());
+});
 
 Route::middleware('throttle:120,1')->group(function () {
     Route::get('/subscription-plans', [SubscriptionPlanApiController::class, 'index']);
     Route::get('/restaurants', [RestaurantApiController::class, 'index']);
     Route::get('/templates', [TemplateApiController::class, 'index']);
     Route::get('/restaurants/{slug}/menu', [MenuApiController::class, 'show']);
+    Route::get('/crm/public-config', [LeadCaptureController::class, 'publicConfig']);
+});
+
+Route::middleware('throttle:20,1')->group(function () {
+    Route::post('/leads', [LeadCaptureController::class, 'store']);
 });
 
 Route::middleware('throttle:30,1')->prefix('bank-transfer')->group(function () {

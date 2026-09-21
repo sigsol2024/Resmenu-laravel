@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ApiJsonResponse
 {
@@ -24,15 +25,33 @@ class ApiJsonResponse
         ], $status)->withHeaders(self::corsHeaders());
     }
 
-    public static function corsHeaders(): array
+    public static function corsHeaders(?Request $request = null): array
     {
-        $origins = array_filter(array_map('trim', explode(',', (string) config('resmenu.cors_allowed_origins', '*'))));
-        $origin = $origins === [] || in_array('*', $origins, true) ? '*' : ($origins[0] ?? '*');
-
-        return [
-            'Access-Control-Allow-Origin' => $origin,
-            'Access-Control-Allow-Methods' => 'GET, POST, PATCH, OPTIONS',
-            'Access-Control-Allow-Headers' => 'Content-Type, Authorization, X-Webhook-Secret, x-paystack-signature, verif-hash',
+        $request ??= request();
+        $allowed = self::allowedOrigins();
+        $headers = [
+            'Access-Control-Allow-Methods' => 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers' => 'Content-Type, Accept, X-Requested-With',
+            'Vary' => 'Origin',
         ];
+
+        $origin = (string) $request->headers->get('Origin', '');
+        if ($origin !== '' && in_array($origin, $allowed, true)) {
+            $headers['Access-Control-Allow-Origin'] = $origin;
+        }
+
+        // Never emit * for lead/public-config when an allowlist is configured.
+        // If allowlist empty (misconfigured prod), omit Allow-Origin entirely.
+        return $headers;
+    }
+
+    /** @return list<string> */
+    public static function allowedOrigins(): array
+    {
+        $raw = (string) config('resmenu.cors_allowed_origins', '');
+        $parts = array_values(array_filter(array_map('trim', explode(',', $raw))));
+
+        // Strip accidental wildcards — explicit origins only.
+        return array_values(array_filter($parts, fn ($o) => $o !== '*' && $o !== ''));
     }
 }

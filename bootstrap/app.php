@@ -23,6 +23,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'manager.tenant' => \App\Http\Middleware\EnsureManagerRestaurant::class,
             'session.idle' => \App\Http\Middleware\SessionIdleTimeout::class,
             'subscription.active' => \App\Http\Middleware\EnsureActiveSubscription::class,
+            'manager.email.verified' => \App\Http\Middleware\EnsureManagerEmailVerified::class,
+            'super.admin' => \App\Http\Middleware\EnsureSuperAdmin::class,
         ]);
 
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);

@@ -44,6 +44,7 @@ body{font-family:Inter,sans-serif;background:var(--bg);color:var(--text)}
       @if(session('error'))
         <div class="message message-error">{{ session('error') }}</div>
       @endif
+      @include('partials.manager.email-verification-banner')
       @if($errors->any())
         <div class="message message-error">
           @foreach($errors->all() as $e)<div>{{ $e }}</div>@endforeach

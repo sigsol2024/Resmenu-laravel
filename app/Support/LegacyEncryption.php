@@ -58,4 +58,10 @@ class LegacyEncryption
 
         return $key;
     }
+
+    /** Exposed for CrmEncryption decrypt fallback only — payment settings still use resolveKey(). */
+    public static function resolveKeyForCrmFallback(): string
+    {
+        return self::resolveKey();
+    }
 }

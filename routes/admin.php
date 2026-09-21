@@ -75,5 +75,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/payment-settings', [PaymentSettingsController::class, 'update'])->name('payment-settings.update.put');
 
         Route::match(['get', 'post'], '/settings', [SettingsController::class, 'index'])->name('settings.index');
+
+        Route::middleware('super.admin')->group(function () {
+            Route::get('/integrations/crm', [\App\Http\Controllers\Admin\CrmSettingsController::class, 'index'])->name('crm.index');
+            Route::post('/integrations/crm', [\App\Http\Controllers\Admin\CrmSettingsController::class, 'update'])->name('crm.update');
+            Route::post('/integrations/crm/test', [\App\Http\Controllers\Admin\CrmSettingsController::class, 'test'])->name('crm.test');
+            Route::get('/integrations/crm/leads', [\App\Http\Controllers\Admin\CrmLeadsController::class, 'index'])->name('crm.leads');
+            Route::post('/integrations/crm/leads/{lead}/retry', [\App\Http\Controllers\Admin\CrmLeadsController::class, 'retry'])->name('crm.leads.retry');
+        });
     });
 });

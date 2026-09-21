@@ -18,8 +18,21 @@ class Admin extends Authenticatable
 
     protected $hidden = ['password_hash'];
 
+    protected $casts = [
+        'is_super_admin' => 'boolean',
+    ];
+
     public function getAuthPassword(): string
     {
         return (string) $this->password_hash;
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        if (! \Illuminate\Support\Facades\Schema::hasColumn('admins', 'is_super_admin')) {
+            return false;
+        }
+
+        return (bool) $this->is_super_admin;
     }
 }

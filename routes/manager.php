@@ -21,14 +21,26 @@ Route::middleware(['auth:manager', 'manager.tenant', 'subscription.active', 'ses
     ->group(function () {
         Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
-        Route::resource('categories', CategoryController::class)->except(['show']);
-        Route::resource('menu-items', MenuItemController::class)->except(['show']);
-        Route::resource('sections', SectionController::class)->except(['show']);
+        Route::post('/email/verification-notification', [\App\Http\Controllers\Auth\ManagerEmailVerificationController::class, 'resend'])
+            ->middleware('throttle:6,1')
+            ->name('verification.resend');
+
+        Route::middleware('manager.email.verified')->group(function () {
+            Route::resource('categories', CategoryController::class)->except(['show', 'index']);
+            Route::resource('menu-items', MenuItemController::class)->except(['show', 'index']);
+            Route::resource('sections', SectionController::class)->except(['show', 'index']);
+            // Presentation mutations only — GET customization stays open below.
+            Route::post('/customization', [CustomizationController::class, 'index'])->name('customization.save');
+        });
+
+        Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
+        Route::get('menu-items', [MenuItemController::class, 'index'])->name('menu-items.index');
+        Route::get('sections', [SectionController::class, 'index'])->name('sections.index');
 
         Route::get('/settings', [SettingsController::class, 'edit'])->name('settings.edit');
         Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
 
-        Route::match(['get', 'post'], '/customization', [CustomizationController::class, 'index'])->name('customization');
+        Route::get('/customization', [CustomizationController::class, 'index'])->name('customization');
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 

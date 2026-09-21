@@ -32,7 +32,11 @@ return [
     'auth_session_idle_seconds' => (int) env('AUTH_SESSION_IDLE_SECONDS', 3600),
     'app_hmac_secret' => env('APP_HMAC_SECRET', ''),
     'payment_encryption_key' => env('PAYMENT_ENCRYPTION_KEY', 'your-32-character-secret-key-here'),
+    /** Dedicated CRM token encryption; decrypt falls back to payment key for legacy ciphertext. */
+    'crm_encryption_key' => env('CRM_ENCRYPTION_KEY', ''),
     'trust_proxy_headers' => filter_var(env('TRUST_PROXY_HEADERS', false), FILTER_VALIDATE_BOOLEAN),
+    /** Admin username promoted on bootstrap migration / ops when set. Never hardcode identity in source. */
+    'super_admin_bootstrap_username' => env('SUPER_ADMIN_BOOTSTRAP_USERNAME', ''),
 
     'max_file_size' => (int) env('MAX_FILE_SIZE', 5 * 1024 * 1024),
     'image_max_bytes' => (int) env('IMAGE_MAX_BYTES', 512000),
@@ -80,9 +84,26 @@ return [
     'reg_otp_strict_local_part' => filter_var(env('REG_OTP_STRICT_LOCAL_PART', false), FILTER_VALIDATE_BOOLEAN),
     'reg_otp_bounce_webhook_secret' => env('REG_OTP_BOUNCE_WEBHOOK_SECRET', ''),
 
+    'email_verify_ttl_minutes' => (int) env('EMAIL_VERIFY_TTL_MINUTES', 60),
+    'email_verify_limit_per_email' => (int) env('EMAIL_VERIFY_LIMIT_PER_EMAIL', 5),
+    'email_verify_limit_per_ip' => (int) env('EMAIL_VERIFY_LIMIT_PER_IP', 10),
+    'email_verify_window_seconds' => (int) env('EMAIL_VERIFY_WINDOW_SECONDS', 3600),
+
+    'marketing_consent_text_version' => env('MARKETING_CONSENT_TEXT_VERSION', 'v1'),
+    'marketing_consent_text' => env(
+        'MARKETING_CONSENT_TEXT',
+        'I would like to receive product updates and marketing emails from Resmenu. You can unsubscribe anytime.'
+    ),
+
     'rate_limit_dir' => env('RATE_LIMIT_DIR', ''),
 
     'subscription_payment_pending_hours' => (int) env('SUBSCRIPTION_PAYMENT_PENDING_HOURS', 6),
 
-    'cors_allowed_origins' => env('CORS_ALLOWED_ORIGINS', '*'),
+    // Production: comma list, e.g. https://resmenu.net,https://www.resmenu.net — never rely on *
+    'cors_allowed_origins' => env('CORS_ALLOWED_ORIGINS', ''),
+
+    'crm_lead_dedup_minutes' => (int) env('CRM_LEAD_DEDUP_MINUTES', 15),
+    'crm_lead_limit_per_email' => (int) env('CRM_LEAD_LIMIT_PER_EMAIL', 10),
+    'crm_lead_limit_per_ip' => (int) env('CRM_LEAD_LIMIT_PER_IP', 30),
+    'crm_lead_limit_window_seconds' => (int) env('CRM_LEAD_LIMIT_WINDOW_SECONDS', 3600),
 ];
