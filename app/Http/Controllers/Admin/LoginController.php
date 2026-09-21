@@ -32,9 +32,17 @@ class LoginController extends Controller
             return back()->withErrors(['username' => 'Invalid credentials.'])->onlyInput('username');
         }
 
+        if (! $admin->isActive()) {
+            return back()->withErrors(['username' => 'This administrator account has been deactivated.'])->onlyInput('username');
+        }
+
         Auth::guard('admin')->login($admin);
         $request->session()->regenerate();
-        session(['last_activity' => time()]);
+        // Bookkeeping only — never used for authorization.
+        session([
+            'last_activity' => time(),
+            'user_role' => $admin->isSuperAdmin() ? 'super_admin' : 'admin',
+        ]);
 
         return redirect()->route('admin.dashboard');
     }

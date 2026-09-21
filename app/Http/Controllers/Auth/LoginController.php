@@ -61,9 +61,19 @@ class LoginController extends Controller
             })
             ->first();
         if ($admin && Hash::check($password, $admin->password_hash)) {
+            if (! $admin->isActive()) {
+                return back()->withErrors([
+                    'username' => 'This administrator account has been deactivated.',
+                ])->onlyInput('username');
+            }
+
             Auth::guard('admin')->login($admin);
             $request->session()->regenerate();
-            session(['last_activity' => time(), 'user_role' => 'super_admin']);
+            // Bookkeeping only — never used for authorization.
+            session([
+                'last_activity' => time(),
+                'user_role' => $admin->isSuperAdmin() ? 'super_admin' : 'admin',
+            ]);
 
             return redirect()->to($next ?: route('admin.dashboard'));
         }

@@ -30,6 +30,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'subscription.active' => \App\Http\Middleware\EnsureActiveSubscription::class,
             'manager.email.verified' => \App\Http\Middleware\EnsureManagerEmailVerified::class,
             'super.admin' => \App\Http\Middleware\EnsureSuperAdmin::class,
+            'admin.active' => \App\Http\Middleware\EnsureAdminActive::class,
+            'admin.permission' => \App\Http\Middleware\EnsureAdminPermission::class,
         ]);
 
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);

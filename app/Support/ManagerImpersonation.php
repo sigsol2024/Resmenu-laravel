@@ -45,12 +45,37 @@ final class ManagerImpersonation
                 ->withErrors(['impersonation' => 'Unable to restore administrator session.']);
         }
 
+        try {
+            $admin->refresh();
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException) {
+            Auth::guard('admin')->logout();
+            Auth::guard('manager')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()
+                ->route('login')
+                ->withErrors(['impersonation' => 'Unable to restore administrator session.']);
+        }
+
+        if (! $admin->isActive()) {
+            Auth::guard('admin')->logout();
+            Auth::guard('manager')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()
+                ->route('login')
+                ->withErrors(['impersonation' => 'This administrator account has been deactivated.']);
+        }
+
         Auth::guard('manager')->logout();
         Auth::guard('admin')->login($admin, false);
 
         $request->session()->forget(['impersonating', 'impersonator_admin_id', 'restaurant_id']);
+        // Bookkeeping only — authorization uses the Admin model, not this session value.
         $request->session()->put([
-            'user_role' => 'super_admin',
+            'user_role' => $admin->isSuperAdmin() ? 'super_admin' : 'admin',
             'last_activity' => time(),
         ]);
         $request->session()->regenerate();

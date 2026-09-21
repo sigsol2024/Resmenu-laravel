@@ -4,12 +4,11 @@ namespace App\Http\Middleware;
 
 use App\Models\Admin;
 use Closure;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class EnsureSuperAdmin
+class EnsureAdminActive
 {
     public function handle(Request $request, Closure $next): Response
     {
@@ -17,21 +16,28 @@ class EnsureSuperAdmin
         $admin = Auth::guard('admin')->user();
 
         if (! $admin) {
-            abort(403, 'Super Admin access required.');
+            return redirect()->route('admin.login');
         }
 
+        // Refresh so a mid-session deactivation takes effect on the next request.
         try {
             $admin->refresh();
-        } catch (ModelNotFoundException) {
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException) {
             Auth::guard('admin')->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
-            abort(403, 'Super Admin access required.');
+            return redirect()->route('login');
         }
 
-        if (! $admin->isActive() || ! $admin->isSuperAdmin()) {
-            abort(403, 'Super Admin access required.');
+        if (! $admin->isActive()) {
+            Auth::guard('admin')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()
+                ->route('login')
+                ->withErrors(['username' => 'This administrator account has been deactivated.']);
         }
 
         return $next($request);

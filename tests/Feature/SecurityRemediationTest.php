@@ -83,11 +83,22 @@ class SecurityRemediationTest extends TestCase
         ]);
 
         $admin = Admin::findOrFail($id);
-        $admin->fill(['is_super_admin' => 1, 'username' => $username]);
+        $admin->fill([
+            'is_super_admin' => 1,
+            'is_active' => 0,
+            'can_crm' => 1,
+            'username' => $username,
+        ]);
         $admin->save();
         $admin->refresh();
 
         $this->assertFalse((bool) $admin->is_super_admin);
+        if (Schema::hasColumn('admins', 'is_active')) {
+            $this->assertTrue((bool) $admin->is_active);
+        }
+        if (Schema::hasColumn('admins', 'can_crm')) {
+            $this->assertFalse((bool) $admin->can_crm);
+        }
 
         DB::table('admins')->where('id', $id)->delete();
     }
