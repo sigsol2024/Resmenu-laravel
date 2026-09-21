@@ -92,7 +92,7 @@ return [
     'marketing_consent_text_version' => env('MARKETING_CONSENT_TEXT_VERSION', 'v1'),
     'marketing_consent_text' => env(
         'MARKETING_CONSENT_TEXT',
-        'I would like to receive product updates and marketing emails from Resmenu. You can unsubscribe anytime.'
+        'Send me product updates and tips from Resmenu. Unsubscribe anytime.'
     ),
 
     'rate_limit_dir' => env('RATE_LIMIT_DIR', ''),

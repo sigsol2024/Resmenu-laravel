@@ -114,12 +114,6 @@
                 <label class="block text-sm font-semibold text-slate-700 mb-1.5" for="phone">Phone *</label>
                 <input class="block w-full rounded-lg border-slate-200 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:border-primary focus:ring-primary sm:text-sm shadow-sm" id="phone" name="phone" placeholder="+234 800 000 0000" type="tel" value="{{ old('phone') }}" required>
             </div>
-            <div class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
-                <label class="flex items-start gap-3 cursor-pointer">
-                    <input type="checkbox" name="marketing_consent" value="1" class="mt-1 rounded border-slate-300 text-primary focus:ring-primary" {{ old('marketing_consent') ? 'checked' : '' }}>
-                    <span class="text-sm text-slate-600">{{ $marketingConsentText ?? 'I would like to receive product updates and marketing emails from Resmenu. You can unsubscribe anytime.' }}</span>
-                </label>
-            </div>
         </div>
 
         <div class="space-y-5 hidden" data-step="3">
@@ -143,6 +137,10 @@
                     </button>
                 </div>
             </div>
+            <label class="flex items-start gap-2 cursor-pointer pt-1">
+                <input type="checkbox" name="marketing_consent" value="1" class="mt-0.5 h-3.5 w-3.5 shrink-0 rounded border-slate-300 text-primary focus:ring-primary" {{ old('marketing_consent') ? 'checked' : '' }}>
+                <span class="text-xs leading-snug text-slate-500">{{ $marketingConsentText ?? 'I would like to receive product updates and marketing emails from Resmenu. You can unsubscribe anytime.' }}</span>
+            </label>
             @if(!empty($recaptchaSiteKey))
                 <div class="pt-2 flex justify-center">
                     <div class="g-recaptcha" data-sitekey="{{ $recaptchaSiteKey }}"></div>

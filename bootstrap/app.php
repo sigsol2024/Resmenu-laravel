@@ -15,7 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
         // IMPORTANT: During bootstrap, the config repository is not yet bound.
         // Using config() here can crash with "Target class [config] does not exist."
         // Read directly from env instead.
-        if (filter_var(env('TRUST_PROXY_HEADERS', false), FILTER_VALIDATE_BOOLEAN)) {
+        // Trust proxies when explicitly enabled, or when APP_URL is HTTPS (common shared-host SSL).
+        // Without this, signed magic-link URLs fail with "Invalid signature" (http vs https mismatch).
+        $appUrl = (string) env('APP_URL', '');
+        $trustProxies = filter_var(env('TRUST_PROXY_HEADERS', false), FILTER_VALIDATE_BOOLEAN)
+            || str_starts_with($appUrl, 'https://');
+        if ($trustProxies) {
             $middleware->trustProxies(at: '*');
         }
 

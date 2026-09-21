@@ -39,7 +39,12 @@ class AppServiceProvider extends ServiceProvider
         \Illuminate\Support\Facades\View::composer('layouts.manager', \App\View\Composers\ManagerLayoutComposer::class);
         \Illuminate\Support\Facades\View::composer('layouts.admin', \App\View\Composers\AdminLayoutComposer::class);
 
-        if ($this->app->environment('production') && filter_var(env('TRUST_PROXY_HEADERS', false), FILTER_VALIDATE_BOOLEAN)) {
+        $appUrl = rtrim((string) config('app.url'), '/');
+        if ($appUrl !== '') {
+            \Illuminate\Support\Facades\URL::forceRootUrl($appUrl);
+        }
+        // Shared hosting / reverse proxy: signed magic links must match https APP_URL.
+        if (str_starts_with($appUrl, 'https://')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
 

@@ -27,10 +27,9 @@ Route::middleware('throttle:30,1')->group(function () {
     Route::get('/register', [RegisterController::class, 'show'])->name('register');
     Route::post('/register', [RegisterController::class, 'store'])->name('register.submit');
     Route::get('/email/verify/{id}/{hash}', [\App\Http\Controllers\Auth\ManagerEmailVerificationController::class, 'show'])
-        ->middleware('signed')
         ->name('manager.verification.verify');
     Route::post('/email/verify', [\App\Http\Controllers\Auth\ManagerEmailVerificationController::class, 'confirm'])
-        ->middleware(['signed', 'throttle:20,1'])
+        ->middleware('throttle:20,1')
         ->name('manager.verification.confirm');
     Route::get('/forgot-password', [PasswordResetController::class, 'showForgot'])->name('password.request');
     Route::post('/forgot-password', [PasswordResetController::class, 'sendReset'])->middleware('throttle:5,1')->name('password.email');
