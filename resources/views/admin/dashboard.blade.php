@@ -16,17 +16,34 @@
     <div class="stat-label">Restaurants</div>
     <div class="stat-value">{{ number_format($stats['restaurants']) }}</div>
   </div>
-  <div class="stat-card stat-card--amber">
-    <div class="stat-label">Categories</div>
-    <div class="stat-value">{{ number_format($stats['categories']) }}</div>
-  </div>
-  <div class="stat-card stat-card--orange">
-    <div class="stat-label">Menu Items</div>
-    <div class="stat-value">{{ number_format($stats['menu_items']) }}</div>
+  <div class="stat-card stat-card--purple">
+    <div class="stat-label">Active Subscriptions</div>
+    <div class="stat-value">{{ number_format($stats['active_subscriptions']) }}</div>
+    <div class="stat-hint">Paying / ongoing (not trials)</div>
   </div>
   <div class="stat-card stat-card--red">
     <div class="stat-label">Managers</div>
     <div class="stat-value">{{ number_format($stats['managers']) }}</div>
+  </div>
+  <div class="stat-card stat-card--amber">
+    <div class="stat-label">Active Trials</div>
+    <div class="stat-value">{{ number_format($stats['active_trials']) }}</div>
+  </div>
+  <div class="stat-card stat-card--orange">
+    <div class="stat-label">Categories</div>
+    <div class="stat-value">{{ number_format($stats['categories']) }}</div>
+  </div>
+  <div class="stat-card" style="--stat-accent:#069CDB;">
+    <div class="stat-label">Menu Items</div>
+    <div class="stat-value">{{ number_format($stats['menu_items']) }}</div>
+  </div>
+  <div class="stat-card" style="--stat-accent:#4f46e5;">
+    <div class="stat-label">Total Orders</div>
+    <div class="stat-value">{{ number_format($stats['total_orders']) }}</div>
+  </div>
+  <div class="stat-card stat-card--blue">
+    <div class="stat-label">QR Scans</div>
+    <div class="stat-value">{{ number_format($stats['total_scans']) }}</div>
   </div>
   <div class="stat-card stat-card--emerald">
     <div class="stat-label">Total Revenue (All Restaurants)</div>
@@ -37,14 +54,6 @@
     <div class="stat-label">Orders Revenue</div>
     <div class="stat-value">₦{{ number_format($stats['orders_revenue'], 0) }}</div>
     <div class="stat-hint">Paid / completed food orders</div>
-  </div>
-  <div class="stat-card stat-card--blue">
-    <div class="stat-label">QR Scans</div>
-    <div class="stat-value">{{ number_format($stats['total_scans']) }}</div>
-  </div>
-  <div class="stat-card stat-card--purple">
-    <div class="stat-label">Total Orders</div>
-    <div class="stat-value">{{ number_format($stats['total_orders']) }}</div>
   </div>
 </section>
 
