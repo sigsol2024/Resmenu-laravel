@@ -22,8 +22,8 @@
     <div class="stat-hint">Paying / ongoing (not trials)</div>
   </div>
   <div class="stat-card stat-card--red">
-    <div class="stat-label">Managers</div>
-    <div class="stat-value">{{ number_format($stats['managers']) }}</div>
+    <div class="stat-label">Expired Subscriptions</div>
+    <div class="stat-value">{{ number_format($stats['expired_subscriptions']) }}</div>
   </div>
   <div class="stat-card stat-card--amber">
     <div class="stat-label">Active Trials</div>

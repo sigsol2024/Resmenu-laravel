@@ -29,17 +29,19 @@ class DashboardController extends Controller
     $totalOrders = (int) DB::table('orders')->count();
 
     $activeSubscriptions = 0;
+    $expiredSubscriptions = 0;
     $activeTrials = 0;
     if (Schema::hasTable('subscriptions')) {
       // Paying / ongoing only — excludes trials.
       $activeSubscriptions = (int) DB::table('subscriptions')->where('status', 'active')->count();
+      $expiredSubscriptions = (int) DB::table('subscriptions')->where('status', 'expired')->count();
       $activeTrials = (int) DB::table('subscriptions')->where('status', 'trial')->count();
     }
 
     $stats = [
       'restaurants' => (int) DB::table('restaurants')->count(),
       'active_subscriptions' => $activeSubscriptions,
-      'managers' => (int) DB::table('managers')->count(),
+      'expired_subscriptions' => $expiredSubscriptions,
       'active_trials' => $activeTrials,
       'categories' => (int) DB::table('categories')->count(),
       'menu_items' => (int) DB::table('menu_items')->count(),
@@ -54,7 +56,7 @@ class DashboardController extends Controller
     $chartData = [
       ['label' => 'Restaurants', 'value' => $stats['restaurants'], 'color' => '#5EB344'],
       ['label' => 'Active Subscriptions', 'value' => $stats['active_subscriptions'], 'color' => '#963D97'],
-      ['label' => 'Managers', 'value' => $stats['managers'], 'color' => '#E0393E'],
+      ['label' => 'Expired Subscriptions', 'value' => $stats['expired_subscriptions'], 'color' => '#E0393E'],
       ['label' => 'Active Trials', 'value' => $stats['active_trials'], 'color' => '#FCB72A'],
       ['label' => 'Categories', 'value' => $stats['categories'], 'color' => '#F8821A'],
       ['label' => 'Menu Items', 'value' => $stats['menu_items'], 'color' => '#069CDB'],
