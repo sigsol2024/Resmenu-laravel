@@ -9,11 +9,12 @@
 @section('content')
 @php
     $enabled = (bool) old('enabled', $settings->enabled ?? false);
+    $provider = old('provider', $settings->provider ?? 'hubspot');
 @endphp
 
 <div class="page-header">
     <h1 class="page-title">CRM Integrations</h1>
-    <p class="page-subtitle">Connect HubSpot for contacts, consent, tracking, and live chat. Super Admin only.</p>
+    <p class="page-subtitle">Connect a CRM provider for contacts, consent, tracking, and live chat. Super Admin only.</p>
 </div>
 
 @include('partials.admin.flash-messages')
@@ -23,20 +24,18 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        HubSpot setup checklist
+        Provider setup
     </div>
     <div class="info-box-content">
         <ul>
-            <li>Create a Private App (contacts + communication preferences); paste the token below.</li>
-            <li>Copy Portal ID for website tracking on resmenu.net.</li>
-            <li>Create a marketing subscription type and paste its numeric ID.</li>
-            <li>Turn on a Live Chat chatflow targeted to resmenu.net (required for the widget).</li>
-            <li>Send newsletters from HubSpot — Resmenu only syncs contacts and consent.</li>
+            <li><strong>HubSpot:</strong> Private App token, Portal ID, subscription type ID, and an ON chatflow for live chat.</li>
+            <li><strong>Mailchimp:</strong> Coming soon — you can select it, but sync is not wired yet.</li>
+            <li>Marketing campaigns are sent from the CRM UI, not from Resmenu.</li>
         </ul>
     </div>
 </div>
 
-<form method="post" action="{{ route('admin.crm.update') }}">
+<form method="post" action="{{ route('admin.crm.update') }}" id="crm-settings-form">
     @csrf
 
     <div class="settings-card">
@@ -67,8 +66,8 @@
         <div class="form-group" style="margin-top:16px;">
             <label for="provider">Provider</label>
             <select id="provider" name="provider">
-                <option value="hubspot" @selected(old('provider', $settings->provider ?? 'hubspot') === 'hubspot')>HubSpot</option>
-                <option value="mailchimp" @selected(old('provider', $settings->provider ?? '') === 'mailchimp')>Mailchimp (coming soon)</option>
+                <option value="hubspot" @selected($provider === 'hubspot')>HubSpot</option>
+                <option value="mailchimp" @selected($provider === 'mailchimp')>Mailchimp (coming soon)</option>
             </select>
         </div>
 
@@ -94,7 +93,7 @@
             </label>
         </div>
 
-        <div class="toggle-row">
+        <div class="toggle-row" data-hubspot-only>
             <div class="toggle-info">
                 <div class="toggle-label">Website tracking</div>
                 <div class="toggle-description">Load HubSpot tracking on resmenu.net</div>
@@ -105,7 +104,7 @@
             </label>
         </div>
 
-        <div class="toggle-row">
+        <div class="toggle-row" data-hubspot-only>
             <div class="toggle-info">
                 <div class="toggle-label">Live chat</div>
                 <div class="toggle-description">Requires tracking + an ON chatflow in HubSpot</div>
@@ -117,7 +116,7 @@
         </div>
     </div>
 
-    <div class="settings-card">
+    <div class="settings-card provider-panel" id="panel-hubspot" @if($provider !== 'hubspot') hidden @endif>
         <div class="section-subtitle"><span>HubSpot credentials</span></div>
 
         <div class="form-group">
@@ -134,6 +133,17 @@
         <div class="form-group">
             <label for="hubspot_subscription_type_id">Marketing subscription type ID</label>
             <input type="text" id="hubspot_subscription_type_id" name="hubspot_subscription_type_id" value="{{ old('hubspot_subscription_type_id', $settings->hubspot_subscription_type_id ?? '') }}" placeholder="Numeric ID from HubSpot" autocomplete="off">
+        </div>
+    </div>
+
+    <div class="settings-card provider-panel" id="panel-mailchimp" @if($provider !== 'mailchimp') hidden @endif>
+        <div class="section-subtitle"><span>Mailchimp</span></div>
+        <div class="info-box" style="margin:0;">
+            <div class="info-box-title">Coming soon</div>
+            <div class="info-box-content">
+                Mailchimp is selectable so you can plan the switch, but contact sync and API credentials are not implemented yet.
+                Keep HubSpot enabled for production lead sync.
+            </div>
         </div>
     </div>
 
@@ -156,3 +166,27 @@
     <a href="{{ route('admin.crm.leads') }}">View leads &amp; sync monitor →</a>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+(function () {
+    var select = document.getElementById('provider');
+    var hubspotPanel = document.getElementById('panel-hubspot');
+    var mailchimpPanel = document.getElementById('panel-mailchimp');
+    var hubspotOnly = document.querySelectorAll('[data-hubspot-only]');
+    if (!select) return;
+
+    function syncProviderPanels() {
+        var value = select.value;
+        if (hubspotPanel) hubspotPanel.hidden = value !== 'hubspot';
+        if (mailchimpPanel) mailchimpPanel.hidden = value !== 'mailchimp';
+        hubspotOnly.forEach(function (row) {
+            row.style.display = value === 'hubspot' ? '' : 'none';
+        });
+    }
+
+    select.addEventListener('change', syncProviderPanels);
+    syncProviderPanels();
+})();
+</script>
+@endpush

@@ -55,10 +55,13 @@ class PasswordResetController extends Controller
             Cache::put('pwd_reset:'.$token, $manager->id, now()->addHour());
 
             $resetUrl = route('password.reset', ['token' => $token]);
-            $html = view('emails.password-reset', [
-                'name' => $manager->username ?: $manager->email,
-                'resetUrl' => $resetUrl,
-            ])->render();
+            $html = app(\App\Services\PlatformMailTemplate::class)->render(
+                'Reset your password',
+                view('emails.password-reset-body', [
+                    'name' => $manager->username ?: $manager->email,
+                    'resetUrl' => $resetUrl,
+                ])->render()
+            );
 
             $this->mail->send(
                 $manager->email,

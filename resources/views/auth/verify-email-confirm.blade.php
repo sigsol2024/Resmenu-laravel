@@ -20,7 +20,7 @@
         <p>This address is already verified. You can <a href="{{ route('login') }}">log in</a>.</p>
     @else
         <p>Click the button below to finish verifying your Resmenu manager account.</p>
-        <form method="post" action="{{ route('manager.verification.confirm') }}?expires={{ urlencode($expires) }}&signature={{ urlencode($signature) }}">
+        <form method="post" action="{{ route('manager.verification.confirm') }}">
             @csrf
             <input type="hidden" name="id" value="{{ $id }}">
             <input type="hidden" name="hash" value="{{ $hash }}">

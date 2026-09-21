@@ -60,7 +60,9 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     padding: 24px;
     margin-bottom: 24px;
-    max-width: 720px;
+    max-width: none;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .section-header {
@@ -252,7 +254,8 @@
     flex-wrap: wrap;
     gap: 10px;
     align-items: center;
-    max-width: 720px;
+    max-width: none;
+    width: 100%;
     margin-bottom: 8px;
 }
 
@@ -293,7 +296,8 @@
 }
 
 .crm-link-row {
-    max-width: 720px;
+    max-width: none;
+    width: 100%;
     margin-top: 8px;
     margin-bottom: 24px;
 }
@@ -384,6 +388,10 @@
 .crm-sync-pill.failed { background: #fee2e2; color: #991b1b; }
 .crm-sync-pill.pending { background: #ffedd5; color: #9a3412; }
 .crm-sync-pill.skipped { background: #f3f4f6; color: #4b5563; }
+
+.provider-panel[hidden] {
+    display: none !important;
+}
 
 @media (max-width: 640px) {
     .toggle-row {

@@ -3,13 +3,17 @@
 namespace App\Services;
 
 use App\Models\Manager;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 
 class ManagerEmailVerificationService
 {
-    public function __construct(private MailService $mail) {}
+    public function __construct(
+        private MailService $mail,
+        private PlatformMailTemplate $template,
+    ) {}
 
     public function hasVerifiedEmail(Manager $manager): bool
     {
@@ -23,11 +27,16 @@ class ManagerEmailVerificationService
         }
 
         $manager->forceFill(['email_verified_at' => now()])->save();
+        $manager->refresh();
+
+        // Keep the authenticated session in sync so the banner clears immediately.
+        if (Auth::guard('manager')->check() && (int) Auth::guard('manager')->id() === (int) $manager->id) {
+            Auth::guard('manager')->setUser($manager);
+        }
     }
 
     /**
-     * Send signed magic-link verification email.
-     * Reuses EmailSuppressionService via early check + MailService (no second suppression system).
+     * Send signed magic-link verification email (branded platform template).
      */
     public function send(Manager $manager): bool
     {
@@ -52,7 +61,7 @@ class ManagerEmailVerificationService
             return false;
         }
 
-        // Count against quota on accepted dispatch (before send) so queue/mail failures cannot bypass limits.
+        // Count against quota on accepted dispatch (before send).
         $window = (int) config('resmenu.email_verify_window_seconds', 3600);
         RateLimiter::hit($emailKey, $window);
         RateLimiter::hit($ipKey, $window);
@@ -69,10 +78,15 @@ class ManagerEmailVerificationService
 
         $name = e($manager->username);
         $safeUrl = e($url);
-        $html = '<p>Hi '.$name.',</p>'
-            .'<p>Please verify your email address for your Resmenu manager account by clicking the link below:</p>'
-            .'<p><a href="'.$safeUrl.'">Verify my email</a></p>'
-            .'<p>This link expires in '.$minutes.' minutes. If you did not create this account, you can ignore this email.</p>';
+        $body = '<h2 style="margin:0 0 12px;font-size:22px;color:#111827;">Verify your email</h2>'
+            .'<p style="margin:0 0 12px;">Hi '.$name.',</p>'
+            .'<p style="margin:0 0 20px;">Confirm this email for your Resmenu manager account to unlock full menu management.</p>'
+            .'<p style="margin:0 0 24px;text-align:center;">'
+            .'<a href="'.$safeUrl.'" style="display:inline-block;background:#f97415;color:#ffffff;text-decoration:none;padding:12px 22px;border-radius:8px;font-weight:700;">Verify my email</a>'
+            .'</p>'
+            .'<p style="margin:0;color:#6b7280;font-size:13px;">This link expires in '.$minutes.' minutes. If you did not create this account, you can ignore this email.</p>';
+
+        $html = $this->template->render('Verify your Resmenu email', $body);
 
         return $this->mail->send($email, (string) $manager->username, 'Verify your Resmenu email', $html);
     }

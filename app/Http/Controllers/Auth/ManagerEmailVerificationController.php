@@ -11,8 +11,12 @@ use Illuminate\Support\Facades\Auth;
 
 class ManagerEmailVerificationController extends Controller
 {
+    private const SESSION_KEY = 'manager_email_verify_pending';
+
     /**
      * GET signed link → confirmation page (avoids email-scanner auto-verify).
+     * Stores a short-lived session ticket so POST confirm does not reuse the GET signature
+     * (Laravel signatures are bound to the full URL path).
      */
     public function show(Request $request, int $id, string $hash, ManagerEmailVerificationService $verification, SiteSettingsService $siteSettings)
     {
@@ -31,18 +35,24 @@ class ManagerEmailVerificationController extends Controller
             ], 403);
         }
 
+        if ($request->hasSession()) {
+            $request->session()->put(self::SESSION_KEY, [
+                'id' => (int) $id,
+                'hash' => (string) $hash,
+                'until' => now()->addMinutes(30)->getTimestamp(),
+            ]);
+        }
+
         return view('auth.verify-email-confirm', [
             'siteName' => $siteSettings->siteName(),
             'id' => $id,
             'hash' => $hash,
-            'signature' => $request->query('signature'),
-            'expires' => $request->query('expires'),
             'alreadyVerified' => $verification->hasVerifiedEmail($manager),
         ]);
     }
 
     /**
-     * POST confirmation with signed query params.
+     * POST confirmation using the session ticket from a valid signed GET.
      */
     public function confirm(Request $request, ManagerEmailVerificationService $verification)
     {
@@ -51,35 +61,39 @@ class ManagerEmailVerificationController extends Controller
             'hash' => 'required|string',
         ]);
 
-        if (! $request->hasValidSignature()) {
+        $id = (int) $data['id'];
+        $hash = (string) $data['hash'];
+        $pending = $request->session()->get(self::SESSION_KEY);
+
+        $ticketOk = is_array($pending)
+            && (int) ($pending['id'] ?? 0) === $id
+            && hash_equals((string) ($pending['hash'] ?? ''), $hash)
+            && (int) ($pending['until'] ?? 0) >= now()->getTimestamp();
+
+        if (! $ticketOk) {
             return redirect()
                 ->route('login')
                 ->with('error', 'This verification link is invalid or has expired. Log in and use Resend on the banner.');
         }
 
-        $manager = Manager::findOrFail((int) $data['id']);
+        $manager = Manager::findOrFail($id);
 
-        if (! $verification->hashMatches($manager, (string) $data['hash'])) {
+        if (! $verification->hashMatches($manager, $hash)) {
             return redirect()
                 ->route('login')
                 ->with('error', 'This verification link is invalid.');
         }
 
         $verification->markVerified($manager);
+        $request->session()->forget(self::SESSION_KEY);
+        $manager->refresh();
 
-        if ($request->hasSession()) {
-            $request->session()->regenerate();
-        }
-
-        if (Auth::guard('manager')->check() && (int) Auth::guard('manager')->id() === (int) $manager->id) {
-            return redirect()
-                ->route('manager.dashboard')
-                ->with('success', 'Your email has been verified. You can now manage your menu.');
-        }
+        Auth::guard('manager')->login($manager);
+        $request->session()->regenerate();
 
         return redirect()
-            ->route('login')
-            ->with('success', 'Your email has been verified. Please log in.');
+            ->route('manager.dashboard')
+            ->with('success', 'Your email has been verified. You can now manage your menu.');
     }
 
     public function resend(Request $request, ManagerEmailVerificationService $verification)

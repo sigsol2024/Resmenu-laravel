@@ -1,7 +1,7 @@
 @php
     $manager = auth('manager')->user();
 @endphp
-@if($manager && empty($manager->email_verified_at))
+@if($manager && ! $manager->hasVerifiedEmail())
 <div class="message" style="background:#fff7ed;border:1px solid #fdba74;color:#9a3412;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0.75rem;">
     <div>
         <strong>Verify your email</strong> to unlock full menu management.

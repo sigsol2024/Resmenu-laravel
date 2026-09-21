@@ -20,7 +20,7 @@ class ManagerEmailChangeServiceTest extends TestCase
 
         $mail = Mockery::mock(MailService::class);
         $mail->shouldNotReceive('send');
-        $verification = new ManagerEmailVerificationService($mail);
+        $verification = new ManagerEmailVerificationService($mail, app(\App\Services\PlatformMailTemplate::class));
         $service = new ManagerEmailChangeService($verification);
 
         $result = $service->apply($manager, 'same@example.com');

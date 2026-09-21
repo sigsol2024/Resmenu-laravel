@@ -36,7 +36,7 @@ class ManagerEmailVerificationServiceTest extends TestCase
         $mail = Mockery::mock(MailService::class);
         $mail->shouldNotReceive('send');
 
-        $service = new ManagerEmailVerificationService($mail);
+        $service = new ManagerEmailVerificationService($mail, app(\App\Services\PlatformMailTemplate::class));
         $this->assertFalse($service->send($manager));
 
         DB::table('email_delivery_suppressions')
