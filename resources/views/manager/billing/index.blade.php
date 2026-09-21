@@ -190,10 +190,17 @@
                     <span class="popular-badge">Most Popular</span>
                 @endif
                 <div class="plan-option-name">{{ $plan['name'] }}</div>
-                <div class="plan-option-price">{{ $formatPrice($plan['monthly_price']) }}</div>
-                <div class="plan-option-period">per month ({{ $formatPrice($plan['annual_price']) }}/year)</div>
+                <div class="plan-option-price"
+                    data-price-monthly="{{ $formatPrice($plan['monthly_price']) }}"
+                    data-price-annual="{{ $formatPrice($plan['annual_price']) }}">{{ $formatPrice($defaultCycle === 'annual' ? $plan['annual_price'] : $plan['monthly_price']) }}</div>
+                <div class="plan-option-period"
+                    data-period-monthly="per month ({{ $formatPrice($plan['annual_price']) }}/year)"
+                    data-period-annual="per year ({{ $formatPrice($plan['monthly_price']) }}/month)">{{ $defaultCycle === 'annual' ? 'per year ('.$formatPrice($plan['monthly_price']).'/month)' : 'per month ('.$formatPrice($plan['annual_price']).'/year)' }}</div>
                 @if((int)($plan['yearly_discount_percent'] ?? 20) > 0)
-                    <div class="plan-option-save" style="font-size:0.85em;color:#16a34a;margin-top:2px;margin-bottom:8px;">Save {{ (int)$plan['yearly_discount_percent'] }}% off</div>
+                    <div class="plan-option-save"
+                        data-save-monthly="Save {{ (int)$plan['yearly_discount_percent'] }}% with yearly billing"
+                        data-save-annual="Yearly pricing — {{ (int)$plan['yearly_discount_percent'] }}% off"
+                        style="font-size:0.85em;color:#16a34a;margin-top:2px;margin-bottom:8px;">{{ $defaultCycle === 'annual' ? 'Yearly pricing — '.(int)$plan['yearly_discount_percent'].'% off' : 'Save '.(int)$plan['yearly_discount_percent'].'% with yearly billing' }}</div>
                 @endif
                 <ul class="plan-features">
                     <li>
@@ -274,10 +281,33 @@
         wrap.appendChild(btn);
     }
 
-    function updatePlanAction(form) {
+    function updatePlanCard(form) {
         var sel = form.querySelector('.plan-cycle-select');
         var wrap = form.querySelector('.plan-action-wrap');
-        if (!sel || !wrap) return;
+        var card = form.closest('.plan-option');
+        if (!sel || !card) return;
+
+        var cycle = sel.value === 'annual' ? 'annual' : 'monthly';
+
+        var priceEl = card.querySelector('.plan-option-price');
+        if (priceEl) {
+            var price = priceEl.getAttribute('data-price-' + cycle);
+            if (price) priceEl.textContent = price;
+        }
+
+        var periodEl = card.querySelector('.plan-option-period');
+        if (periodEl) {
+            var period = periodEl.getAttribute('data-period-' + cycle);
+            if (period) periodEl.textContent = period;
+        }
+
+        var saveEl = card.querySelector('.plan-option-save');
+        if (saveEl) {
+            var save = saveEl.getAttribute('data-save-' + cycle);
+            if (save) saveEl.textContent = save;
+        }
+
+        if (!wrap) return;
 
         var presentations = {};
         try {
@@ -286,12 +316,13 @@
             return;
         }
 
-        renderPlanAction(wrap, presentations[sel.value] || presentations.monthly);
+        renderPlanAction(wrap, presentations[cycle] || presentations.monthly);
     }
 
     document.querySelectorAll('.plan-select-form').forEach(function(form) {
         var sel = form.querySelector('.plan-cycle-select');
-        if (sel) sel.addEventListener('change', function() { updatePlanAction(form); });
+        if (sel) sel.addEventListener('change', function() { updatePlanCard(form); });
+        updatePlanCard(form);
     });
 })();
 </script>

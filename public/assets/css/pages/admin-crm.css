@@ -1,4 +1,19 @@
-/* Admin CRM settings + leads — matches payment-settings visual language */
+/* Admin CRM settings + leads — full-width cards matching Provider setup */
+
+.crm-page {
+    width: 100%;
+    max-width: 100%;
+    display: block;
+    box-sizing: border-box;
+}
+
+.crm-page .crm-settings-form,
+.crm-page form {
+    display: block;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+}
 
 .page-header {
     margin-bottom: 24px;
@@ -17,12 +32,16 @@
     margin-top: 4px;
 }
 
+.crm-page .info-box,
 .info-box {
     background: #f9fafb;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
     padding: 16px 18px;
     margin-bottom: 24px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .info-box-title {
@@ -54,14 +73,17 @@
     margin-bottom: 0;
 }
 
-.settings-card {
+.crm-page .settings-card,
+.crm-page .crm-card,
+.settings-card.crm-card {
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     padding: 24px;
     margin-bottom: 24px;
-    max-width: none;
-    width: 100%;
+    width: 100% !important;
+    max-width: 100% !important;
+    display: block !important;
     box-sizing: border-box;
 }
 
@@ -204,15 +226,17 @@
     transform: translateX(20px);
 }
 
-.form-group {
+.crm-page .form-group {
     margin-bottom: 16px;
+    width: 100%;
+    max-width: 100%;
 }
 
-.form-group:last-child {
+.crm-page .form-group:last-child {
     margin-bottom: 0;
 }
 
-.form-group label {
+.crm-page .form-group label {
     display: block;
     font-weight: 500;
     color: #374151;
@@ -220,9 +244,10 @@
     font-size: 0.875rem;
 }
 
-.form-group input,
-.form-group select {
-    width: 100%;
+.crm-page .form-group input,
+.crm-page .form-group select {
+    width: 100% !important;
+    max-width: 100% !important;
     padding: 10px 12px;
     border: 1px solid #d1d5db;
     border-radius: 6px;
@@ -230,15 +255,16 @@
     background: #fff;
     color: #111827;
     box-sizing: border-box;
+    display: block;
 }
 
-.form-group input:focus,
-.form-group select:focus {
+.crm-page .form-group input:focus,
+.crm-page .form-group select:focus {
     outline: none;
     border-color: #111827;
 }
 
-.form-group input[type="password"] {
+.crm-page .form-group input[type="password"] {
     letter-spacing: 1px;
     font-family: Consolas, Monaco, monospace;
 }
@@ -249,14 +275,15 @@
     margin-top: 4px;
 }
 
-.save-section {
+.crm-page .save-section {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     align-items: center;
-    max-width: none;
-    width: 100%;
+    width: 100% !important;
+    max-width: 100% !important;
     margin-bottom: 8px;
+    box-sizing: border-box;
 }
 
 .btn-save,
@@ -295,9 +322,9 @@
     height: 16px;
 }
 
-.crm-link-row {
-    max-width: none;
+.crm-page .crm-link-row {
     width: 100%;
+    max-width: 100%;
     margin-top: 8px;
     margin-bottom: 24px;
 }
@@ -320,6 +347,9 @@
     padding: 0;
     margin-bottom: 24px;
     overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .crm-table-card .table-responsive {
@@ -398,7 +428,8 @@
         align-items: flex-start;
     }
 
-    .settings-card {
+    .crm-page .settings-card,
+    .crm-page .crm-card {
         padding: 16px;
     }
 }

@@ -3,7 +3,7 @@
 @section('title', 'CRM Leads')
 
 @push('head')
-<link rel="stylesheet" href="{{ asset('legacy/css/pages/admin-crm.css') }}">
+<link rel="stylesheet" href="{{ resmenu_public_asset('css/pages/admin-crm.css') }}?v=2">
 @endpush
 
 @section('content')

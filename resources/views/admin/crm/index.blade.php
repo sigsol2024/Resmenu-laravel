@@ -3,7 +3,7 @@
 @section('title', 'CRM Integrations')
 
 @push('head')
-<link rel="stylesheet" href="{{ asset('legacy/css/pages/admin-crm.css') }}">
+<link rel="stylesheet" href="{{ resmenu_public_asset('css/pages/admin-crm.css') }}?v=2">
 @endpush
 
 @section('content')
@@ -12,6 +12,7 @@
     $provider = old('provider', $settings->provider ?? 'hubspot');
 @endphp
 
+<div class="crm-page">
 <div class="page-header">
     <h1 class="page-title">CRM Integrations</h1>
     <p class="page-subtitle">Connect a CRM provider for contacts, consent, tracking, and live chat. Super Admin only.</p>
@@ -35,10 +36,10 @@
     </div>
 </div>
 
-<form method="post" action="{{ route('admin.crm.update') }}" id="crm-settings-form">
+<form method="post" action="{{ route('admin.crm.update') }}" id="crm-settings-form" class="crm-settings-form">
     @csrf
 
-    <div class="settings-card">
+    <div class="settings-card crm-card">
         <div class="section-header">
             <div class="section-title">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -116,7 +117,7 @@
         </div>
     </div>
 
-    <div class="settings-card provider-panel" id="panel-hubspot" @if($provider !== 'hubspot') hidden @endif>
+    <div class="settings-card crm-card provider-panel" id="panel-hubspot" @if($provider !== 'hubspot') hidden @endif>
         <div class="section-subtitle"><span>HubSpot credentials</span></div>
 
         <div class="form-group">
@@ -136,7 +137,7 @@
         </div>
     </div>
 
-    <div class="settings-card provider-panel" id="panel-mailchimp" @if($provider !== 'mailchimp') hidden @endif>
+    <div class="settings-card crm-card provider-panel" id="panel-mailchimp" @if($provider !== 'mailchimp') hidden @endif>
         <div class="section-subtitle"><span>Mailchimp</span></div>
         <div class="info-box" style="margin:0;">
             <div class="info-box-title">Coming soon</div>
@@ -164,6 +165,7 @@
 
 <div class="crm-link-row">
     <a href="{{ route('admin.crm.leads') }}">View leads &amp; sync monitor →</a>
+</div>
 </div>
 @endsection
 
