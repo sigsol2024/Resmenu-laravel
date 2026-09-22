@@ -89,11 +89,17 @@ return [
     'email_verify_limit_per_ip' => (int) env('EMAIL_VERIFY_LIMIT_PER_IP', 10),
     'email_verify_window_seconds' => (int) env('EMAIL_VERIFY_WINDOW_SECONDS', 3600),
 
-    'marketing_consent_text_version' => env('MARKETING_CONSENT_TEXT_VERSION', 'v1'),
+    'marketing_consent_text_version' => env('MARKETING_CONSENT_TEXT_VERSION', 'v2'),
     'marketing_consent_text' => env(
         'MARKETING_CONSENT_TEXT',
-        'Send me product updates and tips from Resmenu. Unsubscribe anytime.'
+        "Yes, I'd like to receive product updates, news, offers and other marketing emails from Resmenu."
     ),
+
+    // Signed welcome-email → marketing subscribe confirm link
+    'marketing_subscribe_ttl_days' => (int) env('MARKETING_SUBSCRIBE_TTL_DAYS', 7),
+    'marketing_subscribe_limit_per_email' => (int) env('MARKETING_SUBSCRIBE_LIMIT_PER_EMAIL', 10),
+    'marketing_subscribe_limit_per_ip' => (int) env('MARKETING_SUBSCRIBE_LIMIT_PER_IP', 20),
+    'marketing_subscribe_window_seconds' => (int) env('MARKETING_SUBSCRIBE_WINDOW_SECONDS', 3600),
 
     'rate_limit_dir' => env('RATE_LIMIT_DIR', ''),
 

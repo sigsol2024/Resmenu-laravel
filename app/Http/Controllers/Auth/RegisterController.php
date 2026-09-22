@@ -10,6 +10,7 @@ use App\Services\CRM\ContactLeadService;
 use App\Services\DisposableEmailService;
 use App\Services\EmailDeliverabilityService;
 use App\Services\ManagerEmailVerificationService;
+use App\Services\ManagerWelcomeMailService;
 use App\Services\RecaptchaService;
 use App\Services\SiteSettingsService;
 use App\Services\SubscriptionService;
@@ -151,6 +152,8 @@ class RegisterController extends Controller
             Log::warning('Registration verification email failed: '.$e->getMessage());
         }
 
+        // CRM before welcome so HubSpot contact exists before any subscribe CTA is emailed,
+        // and consent-true welcome copy is not sent if sync is about to run second.
         try {
             app(ContactLeadService::class)->capture([
                 'email' => $manager->email,
@@ -163,6 +166,12 @@ class RegisterController extends Controller
             ], $request);
         } catch (\Throwable $e) {
             Log::warning('Registration CRM sync failed: '.$e->getMessage());
+        }
+
+        try {
+            app(ManagerWelcomeMailService::class)->send($manager, $marketingConsent);
+        } catch (\Throwable $e) {
+            Log::warning('Registration welcome email failed: '.$e->getMessage());
         }
 
         return redirect()->route('manager.billing.index', ['welcome' => 1]);

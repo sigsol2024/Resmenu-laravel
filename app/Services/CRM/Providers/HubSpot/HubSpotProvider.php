@@ -86,9 +86,11 @@ class HubSpotProvider implements CRMProviderInterface
         }
 
         // Subscribe only on fresh consent events (shouldSubscribe). Ordinary retries never set this.
+        $marketingSubscribed = null;
         if ($payload->shouldSubscribe && $settings && (bool) $settings->sync_marketing_consent) {
             $subResult = $this->subscribeMarketing($token, $payload->email, (string) ($settings->hubspot_subscription_type_id ?? ''));
-            if (! ($subResult['success'] ?? false)) {
+            $marketingSubscribed = (bool) ($subResult['success'] ?? false);
+            if (! $marketingSubscribed) {
                 Log::info('HubSpot contact synced but consent sync failed', [
                     'consent_event_id' => $payload->consentEventId,
                     'error' => $subResult['message'] ?? '',
@@ -100,6 +102,7 @@ class HubSpotProvider implements CRMProviderInterface
             'success' => true,
             'external_id' => $externalId,
             'message' => 'HubSpot contact synced',
+            'marketing_subscribed' => $marketingSubscribed,
         ];
     }
 

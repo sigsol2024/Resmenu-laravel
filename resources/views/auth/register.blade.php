@@ -137,10 +137,21 @@
                     </button>
                 </div>
             </div>
-            <label class="flex items-start gap-2 cursor-pointer pt-1">
-                <input type="checkbox" name="marketing_consent" value="1" class="mt-0.5 h-3.5 w-3.5 shrink-0 rounded border-slate-300 text-primary focus:ring-primary" {{ old('marketing_consent') ? 'checked' : '' }}>
-                <span class="text-xs leading-snug text-slate-500">{{ $marketingConsentText ?? 'I would like to receive product updates and marketing emails from Resmenu. You can unsubscribe anytime.' }}</span>
-            </label>
+            <div class="marketing-consent-panel rounded-xl border border-primary/25 bg-primary/[0.06] px-4 py-4 sm:px-5 sm:py-5" data-marketing-consent-panel>
+                <p class="text-sm font-semibold text-slate-800 mb-3">Optional — marketing emails</p>
+                <label for="marketing_consent" class="flex items-start gap-3 cursor-pointer">
+                    <input
+                        type="checkbox"
+                        name="marketing_consent"
+                        id="marketing_consent"
+                        value="1"
+                        class="marketing-consent-checkbox mt-0.5 h-5 w-5 shrink-0 rounded border-slate-400 text-primary focus:ring-2 focus:ring-primary focus:ring-offset-1"
+                        {{ old('marketing_consent') ? 'checked' : '' }}
+                    >
+                    <span class="marketing-consent-text text-sm sm:text-base leading-relaxed text-slate-700 font-medium">{{ $marketingConsentText ?? "Yes, I'd like to receive product updates, news, offers and other marketing emails from Resmenu." }}</span>
+                </label>
+                <p class="mt-2 text-xs text-slate-500 pl-8">Not required to create your account. You can unsubscribe anytime.</p>
+            </div>
             @if(!empty($recaptchaSiteKey))
                 <div class="pt-2 flex justify-center">
                     <div class="g-recaptcha" data-sitekey="{{ $recaptchaSiteKey }}"></div>
@@ -165,7 +176,58 @@
 </div>
 @endsection
 
+@push('head')
+<style>
+@keyframes marketing-consent-attention {
+    0% { box-shadow: 0 0 0 0 rgba(249, 116, 21, 0.35); }
+    40% { box-shadow: 0 0 0 6px rgba(249, 116, 21, 0.12); }
+    100% { box-shadow: 0 0 0 0 rgba(249, 116, 21, 0); }
+}
+@keyframes marketing-consent-text-glow {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+.marketing-consent-panel.is-attention {
+    animation: marketing-consent-attention 1.4s ease-out 1;
+}
+.marketing-consent-panel.is-attention .marketing-consent-text {
+    background-image: linear-gradient(90deg, #334155 0%, #f97415 45%, #334155 90%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: marketing-consent-text-glow 1.6s ease-in-out 1;
+}
+@media (prefers-reduced-motion: reduce) {
+    .marketing-consent-panel.is-attention,
+    .marketing-consent-panel.is-attention .marketing-consent-text {
+        animation: none;
+        color: inherit;
+        background: none;
+        -webkit-background-clip: unset;
+        background-clip: unset;
+    }
+}
+</style>
+@endpush
+
 @push('scripts')
+<script>
+(() => {
+    let consentAttentionDone = false;
+    window.__resmenuRunConsentAttention = function () {
+        if (consentAttentionDone) return;
+        const consentPanel = document.querySelector('[data-marketing-consent-panel]');
+        if (!consentPanel || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            consentAttentionDone = true;
+            return;
+        }
+        consentAttentionDone = true;
+        consentPanel.classList.add('is-attention');
+        window.setTimeout(() => consentPanel.classList.remove('is-attention'), 1800);
+    };
+})();
+</script>
 <script>
 (() => {
     const steps = Array.from(document.querySelectorAll('[data-step]'));
@@ -210,6 +272,9 @@
         nextBtn.classList.toggle('hidden', currentStep === steps.length);
         submitBtn.classList.toggle('hidden', currentStep !== steps.length);
         if (registerStepInput) registerStepInput.value = String(currentStep);
+        if (currentStep === 3 && typeof window.__resmenuRunConsentAttention === 'function') {
+            window.__resmenuRunConsentAttention();
+        }
     }
 
     function validateCurrentStep() {

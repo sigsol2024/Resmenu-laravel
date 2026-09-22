@@ -31,6 +31,11 @@ Route::middleware('throttle:30,1')->group(function () {
     Route::post('/email/verify', [\App\Http\Controllers\Auth\ManagerEmailVerificationController::class, 'confirm'])
         ->middleware('throttle:20,1')
         ->name('manager.verification.confirm');
+    Route::get('/email/marketing-subscribe/{id}/{hash}', [\App\Http\Controllers\Auth\ManagerMarketingSubscribeController::class, 'show'])
+        ->name('manager.marketing.subscribe.show');
+    Route::post('/email/marketing-subscribe', [\App\Http\Controllers\Auth\ManagerMarketingSubscribeController::class, 'confirm'])
+        ->middleware('throttle:20,1')
+        ->name('manager.marketing.subscribe.confirm');
     Route::get('/forgot-password', [PasswordResetController::class, 'showForgot'])->name('password.request');
     Route::post('/forgot-password', [PasswordResetController::class, 'sendReset'])->middleware('throttle:5,1')->name('password.email');
     Route::get('/reset-password/{token}', [PasswordResetController::class, 'showReset'])->name('password.reset');

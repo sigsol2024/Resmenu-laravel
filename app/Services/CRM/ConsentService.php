@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
  */
 class ConsentService
 {
-    public const SOURCES = ['registration', 'homepage_popup', 'newsletter', 'contact_form'];
+    public const SOURCES = ['registration', 'homepage_popup', 'newsletter', 'contact_form', 'welcome_email_subscribe'];
 
     public const PUBLIC_SOURCES = ['homepage_popup', 'newsletter', 'contact_form'];
 
