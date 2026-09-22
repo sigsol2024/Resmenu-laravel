@@ -187,6 +187,14 @@ class HubSpotProvider implements CRMProviderInterface
                 return ['success' => true];
             }
 
+            // Idempotent: already subscribed is a successful outcome for our purposes.
+            if (in_array($response->status(), [409, 400], true)) {
+                $body = strtolower((string) $response->body());
+                if (str_contains($body, 'already') || str_contains($body, 'subscribed')) {
+                    return ['success' => true, 'message' => 'Already subscribed'];
+                }
+            }
+
             $legacy = Http::withToken($token)->timeout(20)->post(
                 self::API_BASE.'/communication-preferences/v3/subscribe',
                 [
@@ -199,6 +207,13 @@ class HubSpotProvider implements CRMProviderInterface
 
             if ($legacy->successful()) {
                 return ['success' => true];
+            }
+
+            if (in_array($legacy->status(), [409, 400], true)) {
+                $legacyBody = strtolower((string) $legacy->body());
+                if (str_contains($legacyBody, 'already') || str_contains($legacyBody, 'subscribed')) {
+                    return ['success' => true, 'message' => 'Already subscribed'];
+                }
             }
 
             return ['success' => false, 'message' => 'Consent API HTTP '.$response->status()];

@@ -108,25 +108,32 @@ class MarketingSubscribeFromEmailService
 
     private function revertLocalConsent(Manager $manager, ?int $leadId = null): void
     {
-        if ($manager->exists) {
-            DB::table('managers')->where('id', $manager->id)->update([
-                'marketing_consent' => 0,
-                'marketing_consent_at' => null,
-                'marketing_consent_source' => null,
-                'marketing_consent_text_version' => null,
-                'updated_at' => now(),
-            ]);
-        }
+        try {
+            if ($manager->exists) {
+                DB::table('managers')->where('id', $manager->id)->update([
+                    'marketing_consent' => 0,
+                    'marketing_consent_at' => null,
+                    'marketing_consent_source' => null,
+                    'marketing_consent_text_version' => null,
+                    'updated_at' => now(),
+                ]);
+            }
 
-        if ($leadId && Schema::hasTable('crm_leads')) {
-            DB::table('crm_leads')->where('id', $leadId)->update([
-                'marketing_consent' => 0,
-                'marketing_consent_at' => null,
-                'marketing_consent_source' => null,
-                'marketing_consent_text_version' => null,
-                'sync_status' => 'failed',
-                'sync_error' => 'Marketing subscribe incomplete after welcome-email confirm',
-                'updated_at' => now(),
+            if ($leadId && Schema::hasTable('crm_leads')) {
+                DB::table('crm_leads')->where('id', $leadId)->update([
+                    'marketing_consent' => 0,
+                    'marketing_consent_at' => null,
+                    'marketing_consent_source' => null,
+                    'marketing_consent_text_version' => null,
+                    'sync_status' => 'failed',
+                    'sync_error' => 'Marketing subscribe incomplete after welcome-email confirm',
+                    'updated_at' => now(),
+                ]);
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Welcome-email marketing subscribe consent revert failed: '.$e->getMessage(), [
+                'manager_id' => $manager->id,
+                'lead_id' => $leadId,
             ]);
         }
     }
