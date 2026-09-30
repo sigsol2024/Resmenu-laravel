@@ -38,6 +38,26 @@ if (!empty($sections) && is_array($sections)) {
         }
     }
 }
+/* Cover sits below the logo/name, never in place of it — so no logo fallback here. */
+$ekCoverUrl = '';
+if (!empty($singleSectionView) && !empty($sections[0]['image'])) {
+    $ekCoverUrl = resmenu_media_url($uploadBaseUrl, 'sections', $sections[0]['image']);
+} elseif (!empty($restaurant['hero_image_url'])) {
+    $ekCoverUrl = (string) $restaurant['hero_image_url'];
+} elseif (!empty($restaurant['hero_image']) && empty($isTemplatePreview)) {
+    $ekCoverUrl = resmenu_media_url($uploadBaseUrl, 'heroes', $restaurant['hero_image']);
+}
+$ekSingle = !empty($singleSectionView);
+$ekFullUrl = (string) ($fullMenuUrl ?? '');
+$ekSingleSlug = ($ekSingle && !empty($sections[0]['slug'])) ? (string) $sections[0]['slug'] : '';
+$ekNavSections = ($ekSingle && !empty($sectionsForNav) && is_array($sectionsForNav)) ? $sectionsForNav : (is_array($sections ?? null) ? $sections : []);
+$ekSectionHref = function (array $sec) use ($ekSingle, $ekFullUrl) {
+    $anchor = '#section-' . ($sec['slug'] ?? '');
+    return ($ekSingle && $ekFullUrl !== '') ? $ekFullUrl . $anchor : $anchor;
+};
+$ekCategoryHref = function (string $catSlug) use ($ekSingle, $ekFullUrl, $ekSingleSlug) {
+    return ($ekSingle && $ekFullUrl !== '' && $ekSingleSlug !== '') ? $ekFullUrl . '/' . $ekSingleSlug . '#' . $catSlug : '#' . $catSlug;
+};
 ?>
 <!DOCTYPE html>
 <html lang="en"><head>
@@ -110,11 +130,58 @@ if (!empty($sections) && is_array($sections)) {
   border-color: #87947d;
 }
 .ek-card--sage .ek-order-btn:hover { background: rgba(135, 148, 125, 0.12); }
+.ek-cover {
+  width: 100%;
+  max-height: 26rem;
+  aspect-ratio: 16 / 7;
+  object-fit: cover;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(135, 148, 125, 0.3);
+  box-shadow: 0 6px 18px rgba(74, 68, 63, 0.12);
+}
+@media (max-width: 767px) { .ek-cover { aspect-ratio: 4 / 3; max-height: 16rem; } }
+#ek-menu-toggle:focus-visible,
+#ek-drawer-close:focus-visible { outline: 2px solid #c27d63; outline-offset: 2px; }
+#ek-drawer[aria-hidden="true"] { visibility: hidden; transition: transform 0.3s ease-out, visibility 0s linear 0.3s; }
+#ek-drawer[aria-hidden="false"] { visibility: visible; box-shadow: -12px 0 32px rgba(74, 68, 63, 0.25); transition: transform 0.3s ease-out; }
+#ek-drawer-overlay { transition: opacity 0.2s ease; }
 </style>
 </head>
 <body class="paper-texture text-earth font-sans min-h-screen p-3 md:p-12">
+<button type="button" id="ek-menu-toggle" class="md:hidden fixed right-3 top-3 z-40 flex h-11 w-11 items-center justify-center rounded-lg border border-terracotta/60 bg-cream/95 text-earth shadow-md backdrop-blur-sm" aria-label="Open menu" aria-expanded="false" aria-controls="ek-drawer">
+  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+</button>
+<div id="ek-drawer-overlay" class="md:hidden fixed inset-0 z-[55] bg-earth/50 opacity-0 invisible pointer-events-none" aria-hidden="true"></div>
+<aside id="ek-drawer" class="md:hidden fixed top-0 right-0 z-[60] flex h-full w-[min(100vw-3rem,20rem)] translate-x-full flex-col border-l border-terracotta/40 bg-cream" aria-label="Menu navigation" aria-hidden="true">
+  <div class="flex shrink-0 items-center justify-between border-b border-sage/30 px-4 py-4">
+    <span class="font-serif text-lg font-bold text-earth truncate pr-2"><?php echo htmlspecialchars($restaurant['name']); ?></span>
+    <button type="button" id="ek-drawer-close" class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-sage/40 text-earth hover:bg-sage/10" aria-label="Close menu">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <nav class="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-4 pb-8 text-sm">
+    <?php if ($ekSingle && $ekFullUrl !== ''): ?>
+      <a href="<?php echo htmlspecialchars($ekFullUrl); ?>" class="ek-drawer-link rounded-lg px-3 py-2.5 font-semibold text-terracotta hover:bg-terracotta/10">Full menu</a>
+    <?php endif; ?>
+    <?php if (count($ekNavSections) > 1 || $ekSingle): ?>
+      <p class="px-3 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-widest text-sage">Sections</p>
+      <?php foreach ($ekNavSections as $navSec): if (empty($navSec['slug'])) continue; ?>
+        <a href="<?php echo htmlspecialchars($ekSectionHref($navSec)); ?>" class="ek-drawer-link rounded-lg px-3 py-2.5 font-serif text-base font-bold text-earth hover:bg-sage/10"><?php echo htmlspecialchars($navSec['name'] ?? ''); ?></a>
+      <?php endforeach; ?>
+    <?php endif; ?>
+    <?php if (!empty($activeCategories)): ?>
+      <p class="px-3 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-widest text-sage">Categories</p>
+      <?php foreach ($activeCategories as $navIdx => $navCat): $navSlug = isset($navCat['slug']) ? (string) $navCat['slug'] : ('cat-' . $navIdx); ?>
+        <a href="<?php echo htmlspecialchars($ekCategoryHref($navSlug)); ?>" class="ek-drawer-link rounded-lg px-3 py-2 text-earth/85 hover:bg-sage/10 hover:text-earth"><?php echo htmlspecialchars($navCat['name'] ?? ''); ?></a>
+      <?php endforeach; ?>
+    <?php endif; ?>
+    <?php if (!empty($supportsReservations)): ?>
+      <a href="<?php echo htmlspecialchars($reservationUrl); ?>" class="ek-drawer-link mt-4 rounded-lg border border-terracotta px-3 py-2.5 text-center font-semibold text-terracotta hover:bg-terracotta/10">Reserve Table</a>
+    <?php endif; ?>
+  </nav>
+</aside>
 <div class="max-w-5xl mx-auto relative">
-<header class="text-center mb-10 md:mb-16 relative z-10" data-template-preview-hero>
+<header class="text-center pt-10 md:pt-0 mb-10 md:mb-16 relative z-10" data-template-preview-hero>
 <?php $t14BrandLogo = (!empty($isTemplatePreview)) ? null : resmenu_logo_url($uploadBaseUrl ?? '', $restaurant['logo'] ?? null); ?>
 <?php if ($t14BrandLogo): ?><div class="mb-4"><img src="<?php echo htmlspecialchars($t14BrandLogo); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="h-16 md:h-20 w-auto object-contain mx-auto"/></div><?php else: ?>
 <h1 class="font-serif text-3xl sm:text-4xl md:text-7xl font-bold text-earth mb-2"><?php echo htmlspecialchars($restaurant['name']); ?></h1>
@@ -123,6 +190,10 @@ if (!empty($sections) && is_array($sections)) {
 <?php if (!empty($singleSectionView) && !empty($fullMenuUrl)): ?><p class="mt-2"><a href="<?php echo htmlspecialchars($fullMenuUrl); ?>" class="text-terracotta font-semibold hover:underline">Full menu</a></p><?php endif; ?>
 <?php if (!empty($supportsReservations)): ?><p class="mt-2"><a href="<?php echo htmlspecialchars($reservationUrl); ?>" class="text-terracotta font-semibold hover:underline">Reserve Table</a></p><?php endif; ?>
 <div class="hand-drawn-line w-1/3 mx-auto"></div>
+<?php if ($ekCoverUrl !== ''): ?>
+<img src="<?php echo htmlspecialchars($ekCoverUrl); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?> cover" class="ek-cover mx-auto" fetchpriority="high" decoding="async"/>
+<div class="hand-drawn-line w-1/3 mx-auto"></div>
+<?php endif; ?>
 </header>
 <?php foreach ($sections as $section): 
     if (empty($section['categories']) || !is_array($section['categories'])) continue;
@@ -181,6 +252,32 @@ if (!empty($sections) && is_array($sections)) {
 </a>
 <script>
 (function(){var btn=document.getElementById('scrollToTop');if(btn){window.addEventListener('scroll',function(){var st=window.pageYOffset||document.documentElement.scrollTop;var dh=document.documentElement.scrollHeight-window.innerHeight;if(dh>0&&st>=dh*0.3){btn.style.opacity='1';btn.style.visibility='visible';btn.style.transform='translateY(0)';}else{btn.style.opacity='0';btn.style.visibility='hidden';btn.style.transform='translateY(10px)';}});btn.addEventListener('click',function(e){e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});});}})();
+(function(){
+  var openBtn=document.getElementById('ek-menu-toggle');
+  var closeBtn=document.getElementById('ek-drawer-close');
+  var drawer=document.getElementById('ek-drawer');
+  var overlay=document.getElementById('ek-drawer-overlay');
+  if(!openBtn||!drawer)return;
+  function openDrawer(){
+    drawer.classList.remove('translate-x-full');drawer.setAttribute('aria-hidden','false');
+    if(overlay){overlay.classList.remove('opacity-0','invisible','pointer-events-none');overlay.setAttribute('aria-hidden','false');}
+    openBtn.setAttribute('aria-expanded','true');
+    document.body.style.overflow='hidden';
+    if(closeBtn)closeBtn.focus();
+  }
+  function closeDrawer(){
+    drawer.classList.add('translate-x-full');drawer.setAttribute('aria-hidden','true');
+    if(overlay){overlay.classList.add('opacity-0','invisible','pointer-events-none');overlay.setAttribute('aria-hidden','true');}
+    openBtn.setAttribute('aria-expanded','false');
+    document.body.style.overflow='';
+  }
+  openBtn.addEventListener('click',function(e){e.stopPropagation();openDrawer();});
+  if(closeBtn)closeBtn.addEventListener('click',function(e){e.preventDefault();closeDrawer();});
+  if(overlay)overlay.addEventListener('click',closeDrawer);
+  drawer.querySelectorAll('.ek-drawer-link').forEach(function(l){l.addEventListener('click',closeDrawer);});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeDrawer();});
+  window.addEventListener('resize',function(){if(window.innerWidth>=768)closeDrawer();});
+})();
 (function(){
   var els=document.querySelectorAll('.ek-fade-up');
   if(!els.length)return;
