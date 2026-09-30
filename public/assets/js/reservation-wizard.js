@@ -350,6 +350,45 @@
         var digits = (val || '').replace(/\D/g, '');
         return digits.length >= 10 && digits.length <= 15;
     }
+
+    var guestFieldChecks = [
+        {
+            name: 'guest_name',
+            valid: function(v) { return (v || '').trim().length > 0; },
+            message: 'Please enter your full name.'
+        },
+        {
+            name: 'guest_email',
+            valid: isValidEmailClient,
+            message: 'Please enter a valid email address (e.g. name@example.com).'
+        },
+        {
+            name: 'guest_phone',
+            valid: isValidPhoneClient,
+            message: 'Please enter a valid phone number (digits only, 10-15 characters).'
+        }
+    ];
+
+    guestFieldChecks.forEach(function(check) {
+        var el = document.querySelector('input[name="' + check.name + '"]');
+        if (el) el.addEventListener('input', function() { el.setCustomValidity(''); });
+    });
+
+    // Returns the first invalid guest field (with its message shown) or null.
+    function firstInvalidGuestField() {
+        for (var i = 0; i < guestFieldChecks.length; i++) {
+            var check = guestFieldChecks[i];
+            var el = document.querySelector('input[name="' + check.name + '"]');
+            if (!el) continue;
+            if (!check.valid(el.value)) {
+                el.setCustomValidity(check.message);
+                return el;
+            }
+            el.setCustomValidity('');
+        }
+        return null;
+    }
+
     document.querySelectorAll('.res-next-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
             if (currentStep === 1) {
@@ -359,24 +398,12 @@
                 }
             }
             if (currentStep === 2) {
-                var emailEl = document.querySelector('input[name="guest_email"]');
-                var phoneEl = document.querySelector('input[name="guest_phone"]');
-                var ok = true;
-                if (emailEl) {
-                    if (!isValidEmailClient(emailEl.value)) {
-                        emailEl.setCustomValidity('Please enter a valid email address (e.g. name@example.com)');
-                        emailEl.reportValidity();
-                        ok = false;
-                    } else { emailEl.setCustomValidity(''); }
+                var invalid = firstInvalidGuestField();
+                if (invalid) {
+                    invalid.reportValidity();
+                    invalid.focus();
+                    return;
                 }
-                if (phoneEl && ok) {
-                    if (!isValidPhoneClient(phoneEl.value)) {
-                        phoneEl.setCustomValidity('Please enter a valid phone number (digits only, 10-15 characters)');
-                        phoneEl.reportValidity();
-                        ok = false;
-                    } else { phoneEl.setCustomValidity(''); }
-                }
-                if (!ok) return;
             }
             if (currentStep < 4) showStep(currentStep + 1);
         });
@@ -389,11 +416,31 @@
     var phoneInput = document.querySelector('input[name="guest_phone"]');
     if (phoneInput) phoneInput.addEventListener('input', function() { this.value = this.value.replace(/[^\d+\s\-]/g, ''); });
     var formEl = document.getElementById('reservation-form');
+    if (formEl) formEl.addEventListener('invalid', function(e) {
+        // Native required-check fires before submit; reveal the step so the browser can show its message.
+        var stepEl = e.target && e.target.closest ? e.target.closest('.res-step') : null;
+        if (!stepEl || !stepEl.classList.contains('hidden')) return;
+        var n = parseInt(stepEl.getAttribute('data-step'), 10);
+        if (n) showStep(n);
+        var field = e.target;
+        setTimeout(function() { if (field.reportValidity) field.reportValidity(); }, 0);
+    }, true);
     if (formEl) formEl.addEventListener('submit', function(e) {
-        var emailEl = document.querySelector('input[name="guest_email"]');
-        var phoneEl = document.querySelector('input[name="guest_phone"]');
-        if (emailEl && !isValidEmailClient(emailEl.value)) { e.preventDefault(); emailEl.setCustomValidity('Please enter a valid email address'); emailEl.reportValidity(); return false; }
-        if (phoneEl && !isValidPhoneClient(phoneEl.value)) { e.preventDefault(); phoneEl.setCustomValidity('Please enter a valid phone number (digits only)'); phoneEl.reportValidity(); return false; }
+        if (!dateInput.value || !timeInput.value) {
+            e.preventDefault();
+            showStep(1);
+            alert('Please select a date and time slot.');
+            return false;
+        }
+        var invalid = firstInvalidGuestField();
+        if (invalid) {
+            e.preventDefault();
+            // Validation bubbles cannot show on hidden steps, so return to Guest Info first.
+            showStep(2);
+            invalid.reportValidity();
+            invalid.focus();
+            return false;
+        }
     });
     updateParty();
     showStep(1);

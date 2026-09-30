@@ -120,10 +120,10 @@ Reservation confirmed! We look forward to seeing you.
 <div class="res-step hidden" data-step="2">
 <label class="font-label-md text-label-md uppercase text-on-surface-variant mb-3 block">Guest Information</label>
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-<input name="guest_name" type="text" placeholder="Full Name" required class="t6-res-input w-full px-4 py-3 bg-surface-container-low border-b border-outline-variant/30 text-on-surface font-body-md outline-none transition-colors" value="<?php echo t6_esc($t6Old('guest_name', '')); ?>">
-<input name="guest_email" type="email" placeholder="Email Address" required class="t6-res-input w-full px-4 py-3 bg-surface-container-low border-b border-outline-variant/30 text-on-surface font-body-md outline-none transition-colors" value="<?php echo t6_esc($t6Old('guest_email', '')); ?>">
+<input name="guest_name" type="text" placeholder="Full Name *" required aria-required="true" autocomplete="name" class="t6-res-input w-full px-4 py-3 bg-surface-container-low border-b border-outline-variant/30 text-on-surface font-body-md outline-none transition-colors" value="<?php echo t6_esc($t6Old('guest_name', '')); ?>">
+<input name="guest_email" type="email" placeholder="Email Address *" required aria-required="true" autocomplete="email" class="t6-res-input w-full px-4 py-3 bg-surface-container-low border-b border-outline-variant/30 text-on-surface font-body-md outline-none transition-colors" value="<?php echo t6_esc($t6Old('guest_email', '')); ?>">
 </div>
-<input name="guest_phone" type="tel" placeholder="Phone Number" required inputmode="numeric" class="t6-res-input w-full px-4 py-3 bg-surface-container-low border-b border-outline-variant/30 text-on-surface font-body-md outline-none transition-colors mb-6" value="<?php echo t6_esc($t6Old('guest_phone', '')); ?>">
+<input name="guest_phone" type="tel" placeholder="Phone Number *" required aria-required="true" autocomplete="tel" inputmode="numeric" class="t6-res-input w-full px-4 py-3 bg-surface-container-low border-b border-outline-variant/30 text-on-surface font-body-md outline-none transition-colors mb-6" value="<?php echo t6_esc($t6Old('guest_phone', '')); ?>">
 <div class="flex justify-between gap-3">
 <button type="button" class="res-back-btn t6-res-btn-ghost px-5 py-3 font-label-lg text-label-lg uppercase tracking-widest">Back</button>
 <button type="button" class="res-next-btn t6-res-btn-primary px-6 py-3 font-label-lg text-label-lg uppercase tracking-widest">Next</button>

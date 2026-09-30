@@ -161,14 +161,14 @@
                     <div class="res-step hidden" data-step="2">
                         <label class="block text-sm font-semibold uppercase tracking-wider mb-4 text-gray-700">Guest Information</label>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                            <input name="guest_name" type="text" placeholder="Full Name" required
+                            <input name="guest_name" type="text" placeholder="Full Name *" required aria-required="true" autocomplete="name"
                                 value="{{ old("guest_name") }}"
                                 class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-gray-900"/>
-                            <input name="guest_email" type="email" placeholder="Email Address" required
+                            <input name="guest_email" type="email" placeholder="Email Address *" required aria-required="true" autocomplete="email"
                                 value="{{ old("guest_email") }}"
                                 class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-gray-900"/>
                         </div>
-                        <input name="guest_phone" type="tel" placeholder="Phone Number (numbers only)" required inputmode="numeric"
+                        <input name="guest_phone" type="tel" placeholder="Phone Number * (numbers only)" required aria-required="true" autocomplete="tel" inputmode="numeric"
                             value="{{ old("guest_phone") }}"
                             class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 mb-8"/>
                         <div class="flex justify-between">
@@ -275,7 +275,7 @@
 window.RESERVATION_CONFIG = @json($reservationConfig);
 </script>
 <script src="{{ asset('assets/js/resmenu-icons.js') }}"></script>
-<script src="{{ asset('assets/js/reservation-wizard.js') }}"></script>
+<script src="{{ asset('assets/js/reservation-wizard.js') }}?v={{ @filemtime(public_path('assets/js/reservation-wizard.js')) ?: '1' }}"></script>
 @endif
 </body>
 </html>

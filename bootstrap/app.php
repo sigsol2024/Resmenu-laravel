@@ -37,5 +37,36 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        // Expired/missing session makes the CSRF token stale. Show a useful redirect instead of the bare "419 Page Expired".
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\HttpException $e, \Illuminate\Http\Request $request) {
+            if ($e->getStatusCode() !== 419 || ! ($e->getPrevious() instanceof \Illuminate\Session\TokenMismatchException)) {
+                return null;
+            }
+
+            $authArea = $request->is('manager', 'manager/*', 'admin', 'admin/*', 'logout', 'impersonation/*');
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Your session has expired. Please refresh the page and try again.',
+                    'redirect' => $authArea ? route('login') : null,
+                ], 419);
+            }
+
+            if ($authArea) {
+                foreach (['manager', 'admin'] as $guard) {
+                    \Illuminate\Support\Facades\Auth::guard($guard)->logout();
+                }
+                if ($request->hasSession()) {
+                    $request->session()->invalidate();
+                    $request->session()->regenerateToken();
+                }
+
+                return redirect()->route('login')
+                    ->with('error', 'Your session has expired. Please log in again.');
+            }
+
+            return redirect()->back()
+                ->withInput($request->except(['_token', 'password', 'password_confirm', 'password_confirmation', 'current_password']))
+                ->withErrors(['session' => 'This page expired. Please try again.']);
+        });
     })->create();

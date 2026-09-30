@@ -58,6 +58,7 @@ body{font-family:Inter,sans-serif;background:var(--bg);color:var(--text)}
 @include('partials.legacy.sidebar-scripts')
 <script src="{{ resmenu_public_asset('js/admin.js') }}"></script>
 @include('partials.legacy.password-toggle')
+@include('partials.session-idle-redirect')
 @stack('scripts')
 </body>
 </html>

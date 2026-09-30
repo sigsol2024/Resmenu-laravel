@@ -45,6 +45,7 @@
   </div>
 </div>
 @include('partials.legacy.admin-footer')
+@include('partials.session-idle-redirect')
 @stack('scripts')
 </body>
 </html>
