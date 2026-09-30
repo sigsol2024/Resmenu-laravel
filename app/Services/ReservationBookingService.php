@@ -4,8 +4,8 @@ namespace App\Services;
 
 use App\Models\Restaurant;
 use App\Models\TableReservation;
+use App\Support\ReservationConfirmationAccess;
 use App\Support\ReservationNumberGenerator;
-use App\Support\ReservationConfirmationToken;
 use Illuminate\Support\Facades\DB;
 
 class ReservationBookingService
@@ -18,7 +18,7 @@ class ReservationBookingService
 
     /**
      * @param  array<string, mixed>  $data
-     * @return array{success:bool, errors?:list<string>, message?:string, checkout_url?:string}
+     * @return array{success:bool, errors?:list<string>, message?:string, reservation_id?:int, checkout_url?:string, confirmation_url?:string}
      */
     public function create(int $restaurantId, array $data): array
     {
@@ -61,15 +61,10 @@ class ReservationBookingService
             'notes' => $data['notes'] ?? null,
         ]);
 
-        try {
-            $this->mail->sendReservationCreated($reservation->id, $restaurantId);
-        } catch (\Throwable $e) {
-            report($e);
-        }
-
         if ($deposit > 0) {
             return [
                 'success' => true,
+                'reservation_id' => (int) $reservation->id,
                 'checkout_url' => route('public.checkout', [
                     'slug' => $restaurant->slug,
                     'reservation_id' => $reservation->id,
@@ -77,12 +72,17 @@ class ReservationBookingService
             ];
         }
 
-        $confirmationUrl = ReservationConfirmationToken::confirmationUrl((int) $reservation->id, (string) $restaurant->slug);
+        try {
+            $this->mail->sendReservationCreated($reservation->id, $restaurantId);
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
         return [
             'success' => true,
-            'message' => 'Reservation request received. We will confirm shortly.',
-            'confirmation_url' => $confirmationUrl !== '' ? $confirmationUrl : null,
+            'reservation_id' => (int) $reservation->id,
+            'message' => "We've received your reservation and our team will get back to you.",
+            'confirmation_url' => ReservationConfirmationAccess::url((int) $reservation->id, (string) $restaurant->slug),
         ];
     }
 }

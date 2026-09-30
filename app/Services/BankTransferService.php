@@ -6,6 +6,7 @@ use App\Models\Manager;
 use App\Models\Restaurant;
 use App\Models\TableReservation;
 use App\Support\OrderConfirmationToken;
+use App\Support\ReservationConfirmationAccess;
 use App\Support\ReservationConfirmationToken;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +19,7 @@ class BankTransferService
     public function __construct(
         private OrderSubmissionService $orders,
         private MailService $mail,
+        private RestaurantTransactionalMailService $transactionalMail,
     ) {}
 
     /**
@@ -137,7 +139,11 @@ class BankTransferService
         }
 
         if (($draft->status ?? 'pending') === 'customer_claimed') {
-            return ['success' => true, 'message' => 'Payment claim already recorded. Awaiting restaurant approval.'];
+            return [
+                'success' => true,
+                'message' => 'Payment claim already recorded. Awaiting restaurant approval.',
+                'redirect' => $this->reservationConfirmationRedirect($draft),
+            ];
         }
 
         DB::table('pending_bank_transfers')->where('id', $draft->id)->update([
@@ -163,13 +169,25 @@ class BankTransferService
         return [
             'success' => true,
             'message' => 'Thank you. The restaurant will confirm your payment shortly.',
+            'redirect' => $this->reservationConfirmationRedirect($draft),
         ];
+    }
+
+    private function reservationConfirmationRedirect(object $draft): ?string
+    {
+        if (($draft->payment_type ?? 'order') !== 'reservation' || empty($draft->reservation_id)) {
+            return null;
+        }
+
+        $slug = (string) (Restaurant::find((int) $draft->restaurant_id)?->slug ?? '');
+
+        return ReservationConfirmationAccess::url((int) $draft->reservation_id, $slug);
     }
 
     /** @return array{success:bool, message?:string, redirect?:string} */
     public function managerApprove(int $draftId, int $managerId, int $restaurantId): array
     {
-        return DB::transaction(function () use ($draftId, $managerId, $restaurantId) {
+        $result = DB::transaction(function () use ($draftId, $managerId, $restaurantId) {
             $draft = DB::table('pending_bank_transfers')
                 ->where('id', $draftId)
                 ->where('restaurant_id', $restaurantId)
@@ -184,7 +202,7 @@ class BankTransferService
                 return ['success' => false, 'message' => 'This transfer cannot be approved.'];
             }
 
-            if ($this->isExpired($draft)) {
+            if (($draft->status ?? '') === 'pending' && $this->isExpired($draft)) {
                 DB::table('pending_bank_transfers')->where('id', $draft->id)->update(['status' => 'expired']);
 
                 return ['success' => false, 'message' => 'Payment window has expired.'];
@@ -193,6 +211,7 @@ class BankTransferService
             $restaurant = Restaurant::find($restaurantId);
             $slug = $restaurant?->slug ?? '';
             $redirect = '';
+            $approvedReservationId = null;
 
             if (($draft->payment_type ?? 'order') === 'reservation' && ! empty($draft->reservation_id)) {
                 TableReservation::query()
@@ -200,7 +219,8 @@ class BankTransferService
                     ->where('restaurant_id', $restaurantId)
                     ->update(['deposit_paid' => true, 'status' => 'confirmed', 'updated_at' => now()]);
 
-                $redirect = ReservationConfirmationToken::confirmationUrl((int) $draft->reservation_id, $slug);
+                $approvedReservationId = (int) $draft->reservation_id;
+                $redirect = ReservationConfirmationToken::confirmationUrl($approvedReservationId, $slug);
             } else {
                 $cart = json_decode((string) ($draft->cart_json ?? '[]'), true) ?: [];
                 $cartItems = array_map(fn ($line) => [
@@ -247,8 +267,20 @@ class BankTransferService
                 'success' => true,
                 'message' => 'Payment approved.',
                 'redirect' => $redirect !== '' ? $redirect : null,
+                'reservation_id' => $approvedReservationId,
             ];
         });
+
+        if (! empty($result['success']) && ! empty($result['reservation_id'])) {
+            try {
+                $this->transactionalMail->sendReservationCreated((int) $result['reservation_id'], $restaurantId, notifyManager: false);
+            } catch (\Throwable $e) {
+                report($e);
+            }
+            $result['message'] = 'Payment approved. The guest has been emailed their reservation confirmation.';
+        }
+
+        return $result;
     }
 
     public function managerReject(int $draftId, int $managerId, int $restaurantId): bool
@@ -265,6 +297,15 @@ class BankTransferService
                 'manager_id' => $managerId,
                 'restaurant_id' => $restaurantId,
             ]);
+
+            $draft = DB::table('pending_bank_transfers')->where('id', $draftId)->first(['payment_type', 'reservation_id']);
+            if (($draft->payment_type ?? 'order') === 'reservation' && ! empty($draft->reservation_id)) {
+                try {
+                    $this->transactionalMail->sendReservationDepositRejected((int) $draft->reservation_id, $restaurantId);
+                } catch (\Throwable $e) {
+                    report($e);
+                }
+            }
         }
 
         return $updated > 0;
@@ -284,7 +325,7 @@ class BankTransferService
     {
         return DB::table('pending_bank_transfers')
             ->where('token', trim($token))
-            ->whereIn('status', ['pending', 'customer_claimed'])
+            ->where('status', 'pending')
             ->update(['status' => 'expired']) > 0;
     }
 

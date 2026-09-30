@@ -49,7 +49,7 @@ class BankTransferController extends Controller
 
         return redirect()->route('manager.bank-transfers.index')->with(
             $rejected ? 'success' : 'error',
-            $rejected ? 'Transfer rejected.' : 'Unable to reject transfer.',
+            $rejected ? 'Transfer rejected. If it was a reservation deposit, the guest has been emailed a link to pay again.' : 'Unable to reject transfer.',
         );
     }
 }

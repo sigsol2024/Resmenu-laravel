@@ -15,6 +15,7 @@ class PendingOnlinePaymentService
 {
     public function __construct(
         private OrderSubmissionService $orders,
+        private RestaurantTransactionalMailService $mail,
     ) {}
 
     /**
@@ -80,7 +81,7 @@ class PendingOnlinePaymentService
                 return ['success' => true, 'already_processed' => true];
             }
 
-            return DB::transaction(function () use ($reference, $gateway, $cacheKey) {
+            $result = DB::transaction(function () use ($reference, $gateway, $cacheKey) {
                 $draft = DB::table('pending_online_payments')
                     ->where('reference', $reference)
                     ->where('gateway', $gateway)
@@ -93,6 +94,7 @@ class PendingOnlinePaymentService
 
                 if (($draft->payment_type ?? 'order') === 'reservation' && $draft->reservation_id) {
                     TableReservation::where('id', $draft->reservation_id)
+                        ->where('restaurant_id', $draft->restaurant_id)
                         ->update(['deposit_paid' => true, 'status' => 'confirmed', 'updated_at' => now()]);
                     DB::table('pending_online_payments')->where('reference', $reference)->delete();
 
@@ -111,6 +113,7 @@ class PendingOnlinePaymentService
                         'type' => 'reservation',
                         'slug' => $slug,
                         'reservation_id' => (int) $draft->reservation_id,
+                        'restaurant_id' => (int) $draft->restaurant_id,
                         'confirmation_url' => $confirmationUrl,
                     ];
                 }
@@ -165,6 +168,50 @@ class PendingOnlinePaymentService
 
             return ['success' => false, 'errors' => [$e->getMessage()]];
         }
+
+        if (($result['type'] ?? '') === 'reservation' && ! empty($result['reservation_id'])) {
+            try {
+                $this->mail->sendReservationCreated((int) $result['reservation_id'], (int) $result['restaurant_id']);
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Fulfilment result cached by whichever of webhook/callback processed the payment first.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function fulfilledPayload(string $gateway, string $reference): ?array
+    {
+        $payload = Cache::get('fulfilled_order_ref:'.$gateway.':'.$reference);
+
+        return is_array($payload) ? $payload : null;
+    }
+
+    public function reservationIdForReference(string $gateway, string $reference): ?int
+    {
+        $cached = $this->fulfilledPayload($gateway, $reference);
+        if (! empty($cached['reservation_id'])) {
+            return (int) $cached['reservation_id'];
+        }
+
+        try {
+            $draft = DB::table('pending_online_payments')
+                ->where('reference', $reference)
+                ->where('gateway', $gateway)
+                ->where('payment_type', 'reservation')
+                ->first(['reservation_id']);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return null;
+        }
+
+        return ! empty($draft?->reservation_id) ? (int) $draft->reservation_id : null;
     }
 
     public function discardFailed(string $reference, string $gateway): void

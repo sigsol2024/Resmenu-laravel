@@ -6,17 +6,25 @@ use App\Http\Controllers\Controller;
 use App\Services\PendingOnlinePaymentService;
 use App\Services\RestaurantPaymentVerificationService;
 use App\Support\OrderConfirmationToken;
+use App\Support\ReservationConfirmationAccess;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class OrderPaymentCallbackController extends Controller
 {
+    /** Gateway reports the charge as not successful (cancelled, failed, or still pending at the bank). */
+    private const PAYMENT_NOT_COMPLETED = ['payment_not_successful', 'missing_transaction_id'];
+
+    /** Could not reach a verdict yet; the webhook may still confirm the payment. */
+    private const TRANSIENT_ERRORS = ['replay_throttled', 'verify_http_failed'];
+
     public function __invoke(
         Request $request,
         RestaurantPaymentVerificationService $verification,
         PendingOnlinePaymentService $pending,
         string $gateway,
     ) {
+        $gateway = strtolower($gateway);
         $reference = $request->query('reference', $request->query('trxref', $request->query('tx_ref', '')));
         $slug = preg_replace('/[^a-z0-9-]/', '', strtolower((string) $request->query('slug', '')));
         $transactionId = $request->query('transaction_id', $request->query('id'));
@@ -32,11 +40,28 @@ class OrderPaymentCallbackController extends Controller
                 return $this->redirectAfterFulfillment($verified, $slug);
             }
 
+            $cached = $pending->fulfilledPayload($gateway, $reference);
+            if ($cached !== null) {
+                return $this->redirectAfterFulfillment($cached, $slug);
+            }
+
             Log::warning('Order payment callback rejected', [
                 'reference' => $reference,
                 'gateway' => $gateway,
                 'reason' => $error,
             ]);
+
+            if (in_array($error, self::PAYMENT_NOT_COMPLETED, true)) {
+                return $this->redirectReservationRetry($pending, $gateway, $reference, $slug)
+                    ?? $this->redirectMenu($slug, 'Payment was not completed. Please try again.');
+            }
+
+            if (in_array($error, self::TRANSIENT_ERRORS, true)) {
+                $pendingPage = $this->redirectPendingReservation($pending, $gateway, $reference, $slug);
+                if ($pendingPage !== null) {
+                    return $pendingPage;
+                }
+            }
 
             return $this->redirectMenu($slug, 'Payment could not be confirmed. Contact the restaurant if you were charged.');
         }
@@ -57,22 +82,17 @@ class OrderPaymentCallbackController extends Controller
         }
 
         if (($result['type'] ?? '') === 'reservation') {
-            $url = (string) ($result['confirmation_url'] ?? '');
-            if ($url !== '') {
-                return redirect()->to($url);
-            }
-
-            return redirect()->route('public.menu', $result['slug'] ?: $slug)
-                ->with('success', 'Reservation deposit paid successfully.');
+            return $this->redirectAfterFulfillment($result, $slug);
         }
 
         if (! empty($result['already_processed'])) {
-            $cached = $verification->verifyCallbackPayment($reference, $gateway, $transactionId);
-            if (($cached['already_fulfilled'] ?? false) === true) {
+            $cached = $pending->fulfilledPayload($gateway, $reference);
+            if ($cached !== null) {
                 return $this->redirectAfterFulfillment($cached, $slug);
             }
 
-            return $this->redirectMenu($slug, null, 'Payment already processed.');
+            return $this->redirectPendingReservation($pending, $gateway, $reference, $slug)
+                ?? $this->redirectMenu($slug, null, 'Payment already processed.');
         }
 
         if (! ($result['success'] ?? true)) {
@@ -83,27 +103,65 @@ class OrderPaymentCallbackController extends Controller
             ]);
         }
 
-        return $this->redirectMenu($slug, 'Payment is being confirmed. Refresh shortly or contact the restaurant if you were charged.');
+        return $this->redirectPendingReservation($pending, $gateway, $reference, $slug)
+            ?? $this->redirectMenu($slug, 'Payment is being confirmed. Refresh shortly or contact the restaurant if you were charged.');
     }
 
-    /** @param  array<string, mixed>  $verified */
-    private function redirectAfterFulfillment(array $verified, string $slug): \Illuminate\Http\RedirectResponse
+    /** @param  array<string, mixed>  $fulfilled */
+    private function redirectAfterFulfillment(array $fulfilled, string $slug): \Illuminate\Http\RedirectResponse
     {
-        if (! empty($verified['order_id'])) {
-            return $this->redirectOrderConfirmation((int) $verified['order_id'], (string) ($verified['slug'] ?? $slug));
+        if (! empty($fulfilled['order_id'])) {
+            return $this->redirectOrderConfirmation((int) $fulfilled['order_id'], (string) ($fulfilled['slug'] ?? $slug));
         }
 
-        if (($verified['type'] ?? '') === 'reservation') {
-            $url = (string) ($verified['confirmation_url'] ?? '');
+        if (($fulfilled['type'] ?? '') === 'reservation') {
+            $reservationSlug = (string) (($fulfilled['slug'] ?? '') ?: $slug);
+            if (! empty($fulfilled['reservation_id'])) {
+                return redirect()->to(ReservationConfirmationAccess::url((int) $fulfilled['reservation_id'], $reservationSlug));
+            }
+
+            $url = (string) ($fulfilled['confirmation_url'] ?? '');
             if ($url !== '') {
                 return redirect()->to($url);
             }
 
-            return redirect()->route('public.menu', $verified['slug'] ?? $slug)
-                ->with('success', 'Reservation deposit paid successfully.');
+            return $this->redirectMenu($reservationSlug, null, "We've received your reservation and our team will get back to you.");
         }
 
         return $this->redirectMenu($slug, null, 'Payment already processed.');
+    }
+
+    /**
+     * Payment not (yet) confirmed for a reservation deposit: show the "awaiting confirmation" page, but only
+     * to the browser that made the booking, since the reference alone must not reveal guest details.
+     */
+    private function redirectPendingReservation(
+        PendingOnlinePaymentService $pending,
+        string $gateway,
+        string $reference,
+        string $slug,
+    ): ?\Illuminate\Http\RedirectResponse {
+        $reservationId = $pending->reservationIdForReference($gateway, $reference);
+        if ($reservationId === null || ! ReservationConfirmationAccess::granted($reservationId)) {
+            return null;
+        }
+
+        return redirect()->route('public.reservation.confirmation', ['reservation' => $reservationId]);
+    }
+
+    private function redirectReservationRetry(
+        PendingOnlinePaymentService $pending,
+        string $gateway,
+        string $reference,
+        string $slug,
+    ): ?\Illuminate\Http\RedirectResponse {
+        $reservationId = $pending->reservationIdForReference($gateway, $reference);
+        if ($reservationId === null || $slug === '') {
+            return null;
+        }
+
+        return redirect()->route('public.checkout', ['slug' => $slug, 'reservation_id' => $reservationId])
+            ->withErrors(['payment' => 'Your deposit payment was not completed. If you did complete it, you will receive a confirmation email shortly; otherwise please try again.']);
     }
 
     private function redirectOrderConfirmation(int $orderId, string $slug): \Illuminate\Http\RedirectResponse
@@ -113,7 +171,7 @@ class OrderPaymentCallbackController extends Controller
             return redirect()->to($url);
         }
 
-        abort(404);
+        return $this->redirectMenu($slug, null, 'Payment received. Your order has been placed.');
     }
 
     private function redirectMenu(string $slug, ?string $error = null, ?string $success = null): \Illuminate\Http\RedirectResponse

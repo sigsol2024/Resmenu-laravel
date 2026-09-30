@@ -27,7 +27,7 @@ class CleanupStalePendingPayments extends Command
         if (Schema::hasTable('pending_bank_transfers')) {
             $bank = DB::table('pending_bank_transfers')
                 ->where('created_at', '<', $cutoff)
-                ->whereIn('status', ['pending', 'customer_claimed', 'expired', 'cancelled'])
+                ->whereIn('status', ['pending', 'expired', 'cancelled'])
                 ->delete();
         }
 

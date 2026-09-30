@@ -13,6 +13,7 @@ use App\Services\RestaurantPaymentService;
 use App\Services\SubscriptionService;
 use App\Services\UploadService;
 use App\Support\OrderConfirmationToken;
+use App\Support\ReservationConfirmationAccess;
 use Illuminate\Http\Request;
 
 class CheckoutController extends Controller
@@ -70,6 +71,11 @@ class CheckoutController extends Controller
                 ->first();
 
             if (! $reservation) {
+                if (ReservationConfirmationAccess::granted($reservationId)
+                    && TableReservation::where('id', $reservationId)->where('restaurant_id', $restaurant->id)->exists()) {
+                    return redirect()->to(ReservationConfirmationAccess::url($reservationId, $restaurant->slug));
+                }
+
                 return redirect()->route('public.menu', $slug)
                     ->withErrors(['checkout' => 'That reservation deposit is not available.']);
             }
@@ -97,6 +103,7 @@ class CheckoutController extends Controller
             'paymentMethods' => $this->payments->activeMethods($restaurant->id),
             'reservation' => $reservation,
             'isReservationCheckout' => $reservation !== null,
+            'prefillGuest' => $reservation !== null && ReservationConfirmationAccess::granted((int) $reservation->id),
             'cartJson' => $request->query('cart', '[]'),
             'primaryColor' => $custom['primary_color'] ?? '#f20d0d',
             'menuUrl' => route('public.menu', $restaurant->slug),
@@ -194,6 +201,8 @@ class CheckoutController extends Controller
             'payment_method' => 'required|string',
         ]);
 
+        ReservationConfirmationAccess::grant((int) $reservation->id);
+
         $paymentMethod = $request->input('payment_method');
         if ($paymentMethod === 'bank_transfer') {
             $customer = $request->only(['customer_name', 'customer_phone', 'customer_email']);
@@ -212,7 +221,8 @@ class CheckoutController extends Controller
             return redirect()->away($payment['redirect_url']);
         }
 
-        return redirect()->route('public.reservation', $restaurant->slug)
-            ->with('success', 'Deposit payment initiated.');
+        return back()->withErrors([
+            'checkout' => (string) ($payment['error'] ?? 'Unable to start the deposit payment. Please try another payment method or contact the restaurant.'),
+        ])->withInput();
     }
 }

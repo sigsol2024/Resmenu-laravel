@@ -22,20 +22,22 @@
 </div>
 <div class="card">
     <h2 style="margin:0 0 16px;font-size:1rem;">Recent scans</h2>
-    <table>
-        <thead><tr><th>When</th><th>Device</th><th>Section</th></tr></thead>
+    <div class="table-responsive">
+    <table class="table">
+        <thead><tr><th>When</th><th>Device / browser</th><th>Operating system</th></tr></thead>
         <tbody>
         @forelse($recentScans ?? [] as $scan)
             <tr>
                 <td>{{ $scan->scanned_at ?? '—' }}</td>
-                <td>{{ $scan->device_type ?? '—' }} / {{ $scan->browser ?? '' }}</td>
+                <td>{{ ucfirst($scan->device_type ?? '—') }}@if(!empty($scan->browser)) / {{ $scan->browser }}@endif</td>
                 <td>{{ $scan->os ?? '—' }}</td>
             </tr>
         @empty
-            <tr><td colspan="3">No scans recorded yet.</td></tr>
+            <tr><td colspan="3" class="table-empty">No scans recorded yet.</td></tr>
         @endforelse
         </tbody>
     </table>
+    </div>
 </div>
 <p style="margin-top:16px"><a href="{{ route('manager.qr.code') }}">← QR code</a></p>
 @endsection

@@ -26,34 +26,36 @@
 </form>
 </div>
 <div class="card">
-<table>
-    <thead><tr><th>Guest</th><th>Date</th><th>Time</th><th>Party</th><th>Deposit</th><th>Status</th><th></th></tr></thead>
+<div class="table-responsive">
+<table class="table">
+    <thead><tr><th>Guest</th><th>Date</th><th>Time</th><th>Party</th><th>Deposit</th><th>Status</th><th class="text-right">Change status</th></tr></thead>
     <tbody>
     @forelse($reservations as $r)
         <tr>
-            <td>{{ $r->guest_name }}<br><span style="color:#6b7280;font-size:0.8rem;">{{ $r->guest_phone }}</span></td>
+            <td>{{ $r->guest_name }}@if($r->guest_phone)<span class="cell-muted">{{ $r->guest_phone }}</span>@endif</td>
             <td>{{ $r->reservation_date?->format('M j, Y') }}</td>
             <td>{{ \Illuminate\Support\Str::of($r->reservation_time)->limit(5,'') }}</td>
             <td>{{ $r->party_size }}</td>
-            <td>{{ $r->deposit_paid ? 'Paid' : '—' }}</td>
-            <td>{{ $r->status }}</td>
-            <td>
+            <td>@include('manager.reservations.partials.deposit-cell', ['r' => $r])</td>
+            <td><span class="status-pill status-pill--{{ $r->status }}">{{ $r->status }}</span></td>
+            <td class="text-right">
                 <form method="post" action="{{ route('manager.reservations.status', $r) }}" style="display:inline;">
                     @csrf @method('PATCH')
                     <input type="hidden" name="return_to" value="list">
-                    <select name="status" onchange="this.form.submit()" style="max-width:130px;padding:4px;">
+                    <select name="status" onchange="this.form.submit()" style="max-width:140px;padding:6px 8px;border:1px solid #d1d5db;border-radius:8px;">
                         @foreach($statuses as $s)
-                            <option value="{{ $s }}" @selected($r->status === $s)>{{ $s }}</option>
+                            <option value="{{ $s }}" @selected($r->status === $s)>{{ ucfirst($s) }}</option>
                         @endforeach
                     </select>
                 </form>
             </td>
         </tr>
     @empty
-        <tr><td colspan="7">No reservations found.</td></tr>
+        <tr><td colspan="7" class="table-empty">No reservations found.</td></tr>
     @endforelse
     </tbody>
 </table>
+</div>
 {{ $reservations->links() }}
 </div>
 @endsection

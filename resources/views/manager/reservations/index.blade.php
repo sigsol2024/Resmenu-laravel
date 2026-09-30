@@ -42,22 +42,25 @@
 </div>
 <div class="card">
     <h2 style="margin:0 0 16px;font-size:1rem;">Recent reservations</h2>
-    <table>
-        <thead><tr><th>Guest</th><th>Date</th><th>Time</th><th>Party</th><th>Status</th></tr></thead>
+    <div class="table-responsive">
+    <table class="table">
+        <thead><tr><th>Guest</th><th>Date</th><th>Time</th><th>Party</th><th>Deposit</th><th>Status</th></tr></thead>
         <tbody>
         @forelse($recent as $r)
             <tr>
-                <td>{{ $r->guest_name }}</td>
+                <td>{{ $r->guest_name }}@if($r->guest_phone)<span class="cell-muted">{{ $r->guest_phone }}</span>@endif</td>
                 <td>{{ $r->reservation_date?->format('M j, Y') }}</td>
                 <td>{{ \Illuminate\Support\Str::of($r->reservation_time)->limit(5,'') }}</td>
                 <td>{{ $r->party_size }}</td>
-                <td>{{ $r->status }}</td>
+                <td>@include('manager.reservations.partials.deposit-cell', ['r' => $r])</td>
+                <td><span class="status-pill status-pill--{{ $r->status }}">{{ $r->status }}</span></td>
             </tr>
         @empty
-            <tr><td colspan="5">No reservations yet.</td></tr>
+            <tr><td colspan="6" class="table-empty">No reservations yet.</td></tr>
         @endforelse
         </tbody>
     </table>
+    </div>
 </div>
 @if(!empty($showUpgradeOverlay))</div>@endif
 @endsection

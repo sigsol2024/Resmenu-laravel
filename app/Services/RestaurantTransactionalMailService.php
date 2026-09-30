@@ -70,7 +70,11 @@ class RestaurantTransactionalMailService
         ]);
     }
 
-    public function sendReservationCreated(int $reservationId, int $restaurantId): void
+    /**
+     * Guest "reservation received" email plus manager notification. Callers must only invoke this
+     * once the booking is final: no deposit due, gateway payment verified, or bank transfer approved.
+     */
+    public function sendReservationCreated(int $reservationId, int $restaurantId, bool $notifyManager = true): void
     {
         $reservation = TableReservation::where('id', $reservationId)->where('restaurant_id', $restaurantId)->first();
         $restaurant = Restaurant::find($restaurantId);
@@ -78,21 +82,55 @@ class RestaurantTransactionalMailService
             return;
         }
 
+        $depositOutstanding = (float) ($reservation->deposit_amount ?? 0) > 0 && ! $reservation->deposit_paid;
+
         $guestEmail = trim((string) $reservation->guest_email);
-        if ($guestEmail && filter_var($guestEmail, FILTER_VALIDATE_EMAIL)) {
+        if (! $depositOutstanding && $guestEmail && filter_var($guestEmail, FILTER_VALIDATE_EMAIL)) {
             $html = $this->wrap($restaurant, 'Reservation Received', $this->reservationGuestBody($reservation, $restaurant));
             $this->mail->send($guestEmail, (string) $reservation->guest_name, 'Reservation Received - '.$restaurant->name, $html, [
                 'from_name' => $restaurant->name,
             ]);
         }
 
-        $managerEmail = $this->managerEmail($restaurantId);
+        $managerEmail = $notifyManager ? $this->managerEmail($restaurantId) : null;
         if ($managerEmail) {
             $html = $this->wrap($restaurant, 'New Reservation', $this->reservationManagerBody($reservation, $restaurant));
             $this->mail->send($managerEmail, '', 'New Reservation #'.$this->reservationNumber($reservation).' - '.$restaurant->name, $html, [
                 'from_name' => $restaurant->name,
             ]);
         }
+    }
+
+    /** Guest notice that the restaurant could not match their bank transfer; the reservation stays pending. */
+    public function sendReservationDepositRejected(int $reservationId, int $restaurantId): void
+    {
+        $reservation = TableReservation::where('id', $reservationId)->where('restaurant_id', $restaurantId)->first();
+        $restaurant = Restaurant::find($restaurantId);
+        $guestEmail = trim((string) ($reservation->guest_email ?? ''));
+        if (! $reservation || ! $restaurant || ! $guestEmail || ! filter_var($guestEmail, FILTER_VALIDATE_EMAIL)) {
+            return;
+        }
+
+        if ($reservation->deposit_paid || in_array((string) $reservation->status, ['rejected', 'cancelled', 'completed'], true)) {
+            return;
+        }
+
+        $custom = $this->customization->forRestaurant($restaurant);
+        $primary = $custom['primary_color'] ?? '#111827';
+        $payUrl = ReservationConfirmationToken::confirmationUrl((int) $reservation->id, (string) $restaurant->slug)
+            ?: route('public.checkout', ['slug' => $restaurant->slug, 'reservation_id' => $reservation->id]);
+
+        $body = '<h2 style="margin:0 0 16px;font-size:22px;color:#111827;">We couldn\'t confirm your deposit</h2>'
+            .'<p>Hello '.e($reservation->guest_name).', '.e($restaurant->name).' was unable to confirm the bank transfer for your reservation <strong>#'.e($this->reservationNumber($reservation)).'</strong>.</p>'
+            .$this->reservationDetailsList($reservation)
+            .'<p>Your reservation has not been cancelled, but your table is only secured once the ₦'.number_format((float) $reservation->deposit_amount, 2).' deposit is received.</p>'
+            .'<p style="margin:24px 0;"><a href="'.e($payUrl).'" style="display:inline-block;background:'.e($primary).';color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;">Pay deposit</a></p>'
+            .'<p>If you believe you have already paid, please reply to this email or contact the restaurant with your transfer receipt.</p>';
+
+        $html = $this->wrap($restaurant, 'Deposit not confirmed', $body);
+        $this->mail->send($guestEmail, (string) $reservation->guest_name, 'Action needed: reservation deposit - '.$restaurant->name, $html, [
+            'from_name' => $restaurant->name,
+        ]);
     }
 
     public function sendReservationStatusChange(int $reservationId, int $restaurantId, string $newStatus): void
@@ -233,19 +271,20 @@ class RestaurantTransactionalMailService
 
     private function reservationGuestBody(TableReservation $reservation, Restaurant $restaurant): string
     {
+        $deposit = (float) ($reservation->deposit_amount ?? 0);
+
         $body = '<h2 style="margin:0 0 8px;font-size:26px;color:#111827;">Reservation received</h2>'
-            .'<p>Hello '.e($reservation->guest_name).', we have received your table reservation request.</p>'
+            .'<p>Hello '.e($reservation->guest_name).', we\'ve received your reservation and our team will get back to you shortly.</p>'
+            .'<p><strong>Reservation #'.e($this->reservationNumber($reservation)).'</strong></p>'
             .$this->reservationDetailsList($reservation);
 
-        if ((float) ($reservation->deposit_amount ?? 0) <= 0) {
-            $confirmUrl = ReservationConfirmationToken::confirmationUrl((int) $reservation->id, (string) $restaurant->slug);
-            if ($confirmUrl !== '') {
-                $body .= '<p style="margin-top:16px;"><a href="'.e($confirmUrl).'">View your reservation</a></p>';
-            } else {
-                $body .= '<p>We will confirm your booking shortly.</p>';
-            }
-        } else {
-            $body .= '<p>Please complete your deposit to confirm this reservation.</p>';
+        if ($deposit > 0 && $reservation->deposit_paid) {
+            $body .= '<p>Your deposit of ₦'.number_format($deposit, 2).' has been received.</p>';
+        }
+
+        $confirmUrl = ReservationConfirmationToken::confirmationUrl((int) $reservation->id, (string) $restaurant->slug);
+        if ($confirmUrl !== '') {
+            $body .= '<p style="margin-top:16px;"><a href="'.e($confirmUrl).'">View your reservation</a></p>';
         }
 
         return $body;
@@ -255,7 +294,11 @@ class RestaurantTransactionalMailService
     {
         return '<h2 style="margin:0 0 8px;font-size:22px;">New reservation</h2>'
             .'<p>Reference #'.e($this->reservationNumber($reservation)).'</p>'
-            .$this->reservationDetailsList($reservation);
+            .'<p>Guest: '.e($reservation->guest_name).' &middot; '.e($reservation->guest_phone).' &middot; '.e($reservation->guest_email).'</p>'
+            .$this->reservationDetailsList($reservation)
+            .((float) ($reservation->deposit_amount ?? 0) > 0 && $reservation->deposit_paid
+                ? '<p>Deposit of ₦'.number_format((float) $reservation->deposit_amount, 2).' has been paid.</p>'
+                : '');
     }
 
     private function reservationDetailsList(TableReservation $reservation): string

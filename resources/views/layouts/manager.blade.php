@@ -7,7 +7,7 @@
 @include('partials.favicon')
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ resmenu_public_asset('css/admin.css') }}">
-<link rel="stylesheet" href="{{ resmenu_public_asset('css/manager-shell.css') }}">
+<link rel="stylesheet" href="{{ resmenu_public_asset('css/manager-shell.css') }}?v={{ is_file(public_path('assets/css/manager-shell.css')) ? filemtime(public_path('assets/css/manager-shell.css')) : '1' }}">
 <style>
 :root{--bg:#f2f4f7;--sidebar:#0f172a;--primary:#1e3a5f;--primary-dark:#0f172a;--danger:#dc2626;--text:#111827;--muted:#6b7280;--card:#ffffff;--radius:14px;--impersonation-banner-height:0px;}
 *{box-sizing:border-box;margin:0;padding:0}

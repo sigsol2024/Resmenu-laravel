@@ -116,7 +116,7 @@
                 @resmenuIcon('check_circle', ['size' => 40, 'class' => 'text-4xl'])
             </div>
             <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">Thank you!</h1>
-            <p class="text-gray-600">{{ $isReservation ? 'Your reservation deposit has been recorded. We look forward to seeing you!' : 'Your order has been recorded. It will be approved once payment is confirmed.' }}</p>
+            <p class="text-gray-600">{{ $isReservation ? "We've received your reservation. Once the restaurant confirms your transfer, we'll email your confirmation and our team will get back to you." : 'Your order has been recorded. It will be approved once payment is confirmed.' }}</p>
         </div>
         <div class="text-center">
             <a href="{{ $isReservation ? $reservationUrl : $menuUrl }}" class="inline-flex items-center justify-center gap-2 w-full sm:w-auto h-14 px-8 rounded-lg text-white font-bold text-base shadow-lg transition-all hover:opacity-90" style="background-color:{{ $primaryColor }}">
@@ -148,8 +148,19 @@
     var slug = @json($slug);
     var orderCreatedAtUnix = @json((int) $orderCreatedAtUnix);
     var endTime = new Date(orderCreatedAtUnix * 1000 + 15 * 60 * 1000);
+    var claimed = @json(($draft->status ?? 'pending') === 'customer_claimed');
+
+    function showThankYou() {
+        document.getElementById('order-details-view').classList.add('hidden');
+        document.getElementById('thank-you-view').classList.remove('hidden');
+    }
+
+    if (claimed) {
+        showThankYou();
+    }
 
     function updateCountdown() {
+        if (claimed) return;
         var now = new Date();
         var diff = Math.max(0, Math.floor((endTime - now) / 1000));
         var mins = Math.floor(diff / 60);
@@ -193,11 +204,13 @@
         .then(function(r) { return r.json(); })
         .then(function(data) {
             var redirect = data.redirect || (data.data && data.data.redirect);
+            if (data.success) {
+                claimed = true;
+            }
             if (data.success && redirect) {
                 window.location.href = redirect;
             } else if (data.success) {
-                document.getElementById('order-details-view').classList.add('hidden');
-                document.getElementById('thank-you-view').classList.remove('hidden');
+                showThankYou();
             } else {
                 btn.disabled = false;
                 alert(data.message || 'Something went wrong. Please try again.');

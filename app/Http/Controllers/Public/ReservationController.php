@@ -10,6 +10,7 @@ use App\Services\ReservationBookingService;
 use App\Services\ReservationSlotService;
 use App\Services\SubscriptionService;
 use App\Services\UploadService;
+use App\Support\ReservationConfirmationAccess;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -84,8 +85,16 @@ class ReservationController extends Controller
                     ->withInput();
             }
 
+            if (! empty($result['reservation_id'])) {
+                ReservationConfirmationAccess::grant((int) $result['reservation_id']);
+            }
+
             if (! empty($result['checkout_url'])) {
                 return redirect($result['checkout_url']);
+            }
+
+            if (! empty($result['confirmation_url'])) {
+                return redirect()->to($result['confirmation_url']);
             }
 
             if ($returnUrl) {

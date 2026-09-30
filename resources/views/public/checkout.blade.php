@@ -94,7 +94,7 @@
                         <label class="text-sm font-medium text-gray-700">Full Name</label>
                         <input name="customer_name" type="text" placeholder="e.g. Jonathan Doe" required
                             class="w-full h-12 px-4 rounded-lg border border-gray-200 bg-white text-gray-900 focus:border-primary focus:ring-1 focus:ring-primary placeholder-gray-400"
-                            value="{{ old('customer_name', $reservation->guest_name ?? '') }}">
+                            value="{{ old('customer_name', ($prefillGuest ?? false) ? ($reservation->guest_name ?? '') : '') }}">
                     </div>
                     <div class="flex flex-col gap-2">
                         <label class="text-sm font-medium text-gray-700">Phone Number</label>
@@ -102,7 +102,7 @@
                             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">@resmenuIcon('call', ['size' => 20])</span>
                             <input name="customer_phone" type="tel" placeholder="(555) 000-0000" required
                                 class="w-full h-12 pl-12 pr-4 rounded-lg border border-gray-200 bg-white text-gray-900 focus:border-primary focus:ring-1 focus:ring-primary placeholder-gray-400"
-                                value="{{ old('customer_phone', $reservation->guest_phone ?? '') }}">
+                                value="{{ old('customer_phone', ($prefillGuest ?? false) ? ($reservation->guest_phone ?? '') : '') }}">
                         </div>
                     </div>
                     <div class="flex flex-col gap-2">
@@ -111,7 +111,7 @@
                             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">@resmenuIcon('email', ['size' => 20])</span>
                             <input name="customer_email" type="email" placeholder="you@example.com" required
                                 class="w-full h-12 pl-12 pr-4 rounded-lg border border-gray-200 bg-white text-gray-900 focus:border-primary focus:ring-1 focus:ring-primary placeholder-gray-400"
-                                value="{{ old('customer_email', $reservation->guest_email ?? '') }}">
+                                value="{{ old('customer_email', ($prefillGuest ?? false) ? ($reservation->guest_email ?? '') : '') }}">
                         </div>
                     </div>
                 </div>

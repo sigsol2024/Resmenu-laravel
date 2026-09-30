@@ -787,6 +787,63 @@ main{
   background:#f9fafb;
 }
 
+.table-responsive{
+  width:100%;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+.table .text-right{
+  text-align:right;
+}
+
+.table .cell-muted{
+  display:block;
+  color:var(--muted);
+  font-size:.8rem;
+}
+
+.table-actions{
+  display:inline-flex;
+  gap:8px;
+  justify-content:flex-end;
+}
+
+.table-actions form{
+  display:inline;
+}
+
+.table-empty{
+  text-align:center;
+  color:var(--muted);
+  padding:24px 12px;
+}
+
+.status-pill{
+  display:inline-block;
+  padding:3px 10px;
+  border-radius:999px;
+  font-size:.75rem;
+  font-weight:600;
+  text-transform:capitalize;
+  background:#f3f4f6;
+  color:#374151;
+  white-space:nowrap;
+}
+
+.status-pill--pending,
+.status-pill--customer_claimed{background:#fef3c7;color:#92400e}
+.status-pill--confirmed,
+.status-pill--completed,
+.status-pill--paid,
+.status-pill--delivered,
+.status-pill--ready{background:#d1fae5;color:#065f46}
+.status-pill--preparing,
+.status-pill--processing{background:#dbeafe;color:#1e40af}
+.status-pill--rejected,
+.status-pill--cancelled,
+.status-pill--failed{background:#fee2e2;color:#991b1b}
+
 /* ===== MESSAGES ===== */
 .message{
   padding:14px 16px;

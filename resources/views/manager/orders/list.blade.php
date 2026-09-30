@@ -34,8 +34,9 @@
 </form>
 </div>
 <div class="card">
-<table>
-    <thead><tr><th>Order</th><th>Customer</th><th>Phone</th><th>Total</th><th>Status</th><th>Date</th><th></th></tr></thead>
+<div class="table-responsive">
+<table class="table">
+    <thead><tr><th>Order</th><th>Customer</th><th>Phone</th><th>Total</th><th>Status</th><th>Date</th><th class="text-right">Change status</th></tr></thead>
     <tbody>
     @forelse($orders as $order)
         <tr>
@@ -43,25 +44,26 @@
             <td>{{ $order->customer_name }}</td>
             <td>{{ $order->customer_phone }}</td>
             <td>{{ $price::format($order->total) }}</td>
-            <td>{{ $order->status }}</td>
+            <td><span class="status-pill status-pill--{{ $order->status }}">{{ str_replace('_', ' ', $order->status) }}</span></td>
             <td>{{ $order->created_at?->format('M j, Y H:i') }}</td>
-            <td>
+            <td class="text-right">
                 <form method="post" action="{{ route('manager.orders.status', $order) }}" style="display:inline;">
                     @csrf @method('PATCH')
                     <input type="hidden" name="return_to" value="list">
-                    <select name="status" onchange="this.form.submit()" style="max-width:130px;padding:4px;">
+                    <select name="status" onchange="this.form.submit()" style="max-width:140px;padding:6px 8px;border:1px solid #d1d5db;border-radius:8px;">
                         @foreach($statuses as $s)
-                            <option value="{{ $s }}" @selected($order->status === $s)>{{ $s }}</option>
+                            <option value="{{ $s }}" @selected($order->status === $s)>{{ ucfirst(str_replace('_', ' ', $s)) }}</option>
                         @endforeach
                     </select>
                 </form>
             </td>
         </tr>
     @empty
-        <tr><td colspan="7">No orders match your filters.</td></tr>
+        <tr><td colspan="7" class="table-empty">No orders match your filters.</td></tr>
     @endforelse
     </tbody>
 </table>
+</div>
 {{ $orders->links() }}
 </div>
 @endsection

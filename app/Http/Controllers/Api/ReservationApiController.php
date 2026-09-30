@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Restaurant;
 use App\Models\TableReservation;
 use App\Services\MenuService;
 use App\Services\ManagerFeatureAccess;
@@ -10,6 +11,7 @@ use App\Services\ReservationBookingService;
 use App\Services\ReservationSlotService;
 use App\Services\TableInventoryService;
 use App\Support\ApiJsonResponse;
+use App\Support\ReservationConfirmationToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -90,6 +92,10 @@ class ReservationApiController extends Controller
 
         return ApiJsonResponse::success($result['message'] ?? 'Reservation created', [
             'checkout_url' => $result['checkout_url'] ?? null,
+            'confirmation_url' => empty($result['confirmation_url']) ? null : (ReservationConfirmationToken::confirmationUrl(
+                (int) $result['reservation_id'],
+                (string) (Restaurant::find((int) $data['restaurant_id'])?->slug ?? ''),
+            ) ?: null),
         ]);
     }
 
