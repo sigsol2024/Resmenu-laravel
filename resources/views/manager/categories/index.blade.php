@@ -195,6 +195,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
                 Manage Sections
             </a>
+            <button type="button" class="btn btn-secondary" onclick="openMenuImportModal()">Import Menu</button>
             @if(! $isEditing)
                 <button type="button" class="btn btn-primary" onclick="openCategoryModal()">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -262,7 +263,14 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" style="text-align:center;padding:40px;color:#6b7280;">No categories found.</td>
+                        <td colspan="7" style="text-align:center;padding:40px;color:#6b7280;">
+                            No categories found.
+                            <div class="mimp-empty-links">
+                                <button type="button" onclick="openCategoryModal()">Create a category</button>
+                                or
+                                <button type="button" onclick="openMenuImportModal()">import your menu from a CSV</button>
+                            </div>
+                        </td>
                     </tr>
                 @endforelse
             </tbody>
@@ -314,10 +322,19 @@
                 </div>
             </details>
         @empty
-            <p style="text-align:center;padding:18px;color:#6b7280;">No categories found.</p>
+            <div style="text-align:center;padding:18px;color:#6b7280;">
+                No categories found.
+                <div class="mimp-empty-links">
+                    <button type="button" onclick="openCategoryModal()">Create a category</button>
+                    or
+                    <button type="button" onclick="openMenuImportModal()">import your menu from a CSV</button>
+                </div>
+            </div>
         @endforelse
     </div>
 </div>
+
+@include('manager.menu-import.partials.modal')
 
 @push('scripts')
 <script>

@@ -4,6 +4,7 @@ use App\Http\Controllers\Manager\BillingController;
 use App\Http\Controllers\Manager\CategoryController;
 use App\Http\Controllers\Manager\CustomizationController;
 use App\Http\Controllers\Manager\DashboardController;
+use App\Http\Controllers\Manager\MenuImportController;
 use App\Http\Controllers\Manager\MenuItemController;
 use App\Http\Controllers\Manager\OrderController;
 use App\Http\Controllers\Manager\ProfileController;
@@ -31,6 +32,22 @@ Route::middleware(['auth:manager', 'manager.tenant', 'subscription.active', 'ses
             Route::resource('sections', SectionController::class)->except(['show', 'index']);
             // Presentation mutations only — GET customization stays open below.
             Route::post('/customization', [CustomizationController::class, 'index'])->name('customization.save');
+
+            // The third throttle argument is a key prefix; without it every throttle a manager hits shares one counter.
+            Route::middleware('throttle:30,1,menu-import')->group(function () {
+                Route::get('menu-import/template', [MenuImportController::class, 'template'])->name('menu-import.template');
+                Route::get('menu-import/sample', [MenuImportController::class, 'sample'])->name('menu-import.sample');
+                Route::post('menu-import', [MenuImportController::class, 'upload'])->name('menu-import.upload');
+                Route::get('menu-import/{token}', [MenuImportController::class, 'preview'])->where('token', '[A-Za-z0-9]{40}')->name('menu-import.preview');
+                Route::post('menu-import/{token}/import', [MenuImportController::class, 'import'])->where('token', '[A-Za-z0-9]{40}')->name('menu-import.import');
+                Route::delete('menu-import/{token}', [MenuImportController::class, 'cancel'])->where('token', '[A-Za-z0-9]{40}')->name('menu-import.cancel');
+                Route::get('menu-import-result', [MenuImportController::class, 'result'])->name('menu-import.result');
+            });
+            // Every preview edit is re-analysed on the server (debounced), so this needs more headroom.
+            Route::post('menu-import/{token}/analyze', [MenuImportController::class, 'analyze'])
+                ->where('token', '[A-Za-z0-9]{40}')
+                ->middleware('throttle:120,1,menu-import-analyze')
+                ->name('menu-import.analyze');
         });
 
         Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');

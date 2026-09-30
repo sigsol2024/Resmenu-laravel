@@ -206,14 +206,17 @@
 <div class="settings-card">
     <div class="section-header">
         <h2 class="section-title">All Menu Items</h2>
-        @if(! $isEditing)
-            <button type="button" class="btn btn-primary" onclick="openMenuItemModal()">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-                New Item
-            </button>
-        @endif
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-secondary" onclick="openMenuImportModal()">Import Menu</button>
+            @if(! $isEditing)
+                <button type="button" class="btn btn-primary" onclick="openMenuItemModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    New Item
+                </button>
+            @endif
+        </div>
     </div>
 
     <div class="table-wrapper menu-items-table-desktop">
@@ -267,7 +270,14 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" style="text-align:center;padding:40px;color:#6b7280;">No menu items found.</td>
+                        <td colspan="7" style="text-align:center;padding:40px;color:#6b7280;">
+                            No menu items found.
+                            <div class="mimp-empty-links">
+                                <button type="button" onclick="openMenuItemModal()">Add an item</button>
+                                or
+                                <button type="button" onclick="openMenuImportModal()">import your menu from a CSV</button>
+                            </div>
+                        </td>
                     </tr>
                 @endforelse
             </tbody>
@@ -314,7 +324,14 @@
                 </div>
             </details>
         @empty
-            <p style="text-align:center;padding:18px;color:#6b7280;">No menu items found.</p>
+            <div style="text-align:center;padding:18px;color:#6b7280;">
+                No menu items found.
+                <div class="mimp-empty-links">
+                    <button type="button" onclick="openMenuItemModal()">Add an item</button>
+                    or
+                    <button type="button" onclick="openMenuImportModal()">import your menu from a CSV</button>
+                </div>
+            </div>
         @endforelse
     </div>
 
@@ -322,6 +339,8 @@
         <div style="padding:16px 0 0;">{{ $items->links() }}</div>
     @endif
 </div>
+
+@include('manager.menu-import.partials.modal')
 
 @push('scripts')
 <script>

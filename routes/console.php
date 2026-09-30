@@ -37,3 +37,8 @@ Schedule::command('restaurants:lifecycle')
     ->dailyAt('01:00')
     ->withoutOverlapping(30)
     ->onOneServer();
+
+Schedule::command('menu-import:prune-drafts')
+    ->hourly()
+    ->withoutOverlapping(30)
+    ->onOneServer();

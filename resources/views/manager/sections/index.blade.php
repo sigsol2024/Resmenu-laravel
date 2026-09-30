@@ -119,14 +119,17 @@
 <div class="settings-card">
     <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
         <h2 class="section-title">All Sections</h2>
-        @if(! $isEditing)
-            <button type="button" class="btn btn-primary" onclick="openSectionModal()">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-                New Section
-            </button>
-        @endif
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-secondary" onclick="openMenuImportModal()">Import Menu</button>
+            @if(! $isEditing)
+                <button type="button" class="btn btn-primary" onclick="openSectionModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    New Section
+                </button>
+            @endif
+        </div>
     </div>
 
     <div class="table-wrapper sections-table-desktop">
@@ -182,8 +185,8 @@
                 @empty
                     <tr>
                         <td colspan="7" style="text-align:center;padding:40px;color:#6b7280;">
-                            No sections yet.
-                            <button type="button" class="btn btn-primary btn-small" style="margin-top:12px;" onclick="openSectionModal()">Create your first section</button>
+                            <p style="margin:0 0 16px;">No sections yet. How would you like to build your menu?</p>
+                            @include('manager.menu-import.partials.empty-options', ['manualAction' => 'openSectionModal()', 'manualLabel' => 'Create your first section'])
                         </td>
                     </tr>
                 @endforelse
@@ -228,10 +231,15 @@
                 </div>
             </details>
         @empty
-            <p style="text-align:center;padding:18px;color:#6b7280;">No sections yet.</p>
+            <div style="padding:18px 0;color:#6b7280;">
+                <p style="text-align:center;margin:0 0 14px;">No sections yet. How would you like to build your menu?</p>
+                @include('manager.menu-import.partials.empty-options', ['manualAction' => 'openSectionModal()', 'manualLabel' => 'Create your first section'])
+            </div>
         @endforelse
     </div>
 </div>
+
+@include('manager.menu-import.partials.modal')
 
 @push('scripts')
 <script>

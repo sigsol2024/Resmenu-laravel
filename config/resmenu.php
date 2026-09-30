@@ -112,4 +112,10 @@ return [
     'crm_lead_limit_per_email' => (int) env('CRM_LEAD_LIMIT_PER_EMAIL', 10),
     'crm_lead_limit_per_ip' => (int) env('CRM_LEAD_LIMIT_PER_IP', 30),
     'crm_lead_limit_window_seconds' => (int) env('CRM_LEAD_LIMIT_WINDOW_SECONDS', 3600),
+
+    'menu_import' => [
+        'max_file_kb' => (int) env('MENU_IMPORT_MAX_FILE_KB', 2048),
+        'max_rows' => (int) env('MENU_IMPORT_MAX_ROWS', 1000),
+        'draft_ttl_minutes' => (int) env('MENU_IMPORT_DRAFT_TTL_MINUTES', 120),
+    ],
 ];
