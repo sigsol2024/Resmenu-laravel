@@ -13,6 +13,7 @@ use App\Services\SubscriptionService;
 use App\Support\TenantScope;
 use App\Services\UploadService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class CategoryController extends Controller
@@ -33,7 +34,10 @@ class CategoryController extends Controller
             ->where('restaurant_id', $restaurantId)
             ->with('section')
             ->withCount('menuItems')
+            ->orderBy(Section::select('sections.display_order')->whereColumn('sections.id', 'categories.section_id'))
+            ->orderBy('section_id')
             ->orderBy('display_order')
+            ->orderBy('id')
             ->get();
 
         $editCategory = null;
@@ -95,8 +99,11 @@ class CategoryController extends Controller
             $data['image'] = $upload['filename'];
         }
 
-        $category = Category::create($data);
-        $this->syncSecondarySections($request, $category->id, (int) $data['section_id']);
+        DB::transaction(function () use ($data, $request) {
+            $category = Category::create($data);
+            $this->syncSecondarySections($request, $category->id, (int) $data['section_id']);
+            $this->displayOrders->placeCategory($category, $this->displayOrders->requestedPosition($request->input('display_order')), true);
+        });
 
         $this->planVisibility->forgetCache($restaurantId);
 
@@ -125,8 +132,17 @@ class CategoryController extends Controller
             $data['image'] = $upload['filename'];
         }
 
-        $category->update($data);
-        $this->syncSecondarySections($request, $category->id, (int) $data['section_id']);
+        DB::transaction(function () use ($category, $data, $request, $restaurantId) {
+            $previousSectionId = (int) $category->section_id;
+            $category->update($data);
+            $this->syncSecondarySections($request, $category->id, (int) $data['section_id']);
+
+            $moved = $previousSectionId !== (int) $category->section_id;
+            $this->displayOrders->placeCategory($category, $this->displayOrders->requestedPosition($request->input('display_order')), $moved);
+            if ($moved) {
+                $this->displayOrders->resequenceCategories($restaurantId, $previousSectionId);
+            }
+        });
 
         $this->planVisibility->forgetCache($restaurantId);
 
@@ -140,8 +156,10 @@ class CategoryController extends Controller
         $this->authorizeRestaurant($request, $category);
         $restaurantId = (int) $category->restaurant_id;
         $this->uploads->delete('categories', $category->image);
+        $sectionId = (int) $category->section_id;
         $category->menuItems()->delete();
         $category->delete();
+        $this->displayOrders->resequenceCategories($restaurantId, $sectionId);
 
         $this->planVisibility->forgetCache($restaurantId);
 

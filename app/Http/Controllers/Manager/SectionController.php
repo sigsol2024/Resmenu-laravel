@@ -82,7 +82,10 @@ class SectionController extends Controller
             $data['image'] = $upload['filename'];
         }
 
-        Section::create($data);
+        DB::transaction(function () use ($data, $request) {
+            $section = Section::create($data);
+            $this->displayOrders->placeSection($section, $this->displayOrders->requestedPosition($request->input('display_order')), true);
+        });
 
         return redirect()->route('manager.sections.index')->with('success', 'Section created.');
     }
@@ -111,7 +114,10 @@ class SectionController extends Controller
             $data['image'] = null;
         }
 
-        $section->update($data);
+        DB::transaction(function () use ($section, $data, $request) {
+            $section->update($data);
+            $this->displayOrders->placeSection($section, $this->displayOrders->requestedPosition($request->input('display_order')));
+        });
 
         return redirect()->route('manager.sections.index')->with('success', 'Section updated.');
     }
@@ -132,7 +138,9 @@ class SectionController extends Controller
         }
 
         $this->uploads->delete('sections', $section->image);
+        $restaurantId = (int) $section->restaurant_id;
         $section->delete();
+        $this->displayOrders->resequenceSections($restaurantId);
 
         return redirect()->route('manager.sections.index')->with('success', 'Section deleted.');
     }

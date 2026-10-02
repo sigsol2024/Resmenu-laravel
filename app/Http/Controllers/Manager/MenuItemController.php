@@ -6,12 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\MenuItem;
 use App\Models\Restaurant;
+use App\Models\Section;
 use App\Support\TenantScope;
 use App\Services\DisplayOrderService;
 use App\Services\PlanVisibilityService;
 use App\Services\SubscriptionService;
 use App\Services\UploadService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class MenuItemController extends Controller
@@ -31,7 +33,13 @@ class MenuItemController extends Controller
         $query = MenuItem::query()
             ->where('restaurant_id', $restaurantId)
             ->with('category')
-            ->orderBy('display_order');
+            ->orderBy(Section::select('sections.display_order')
+                ->join('categories', 'categories.section_id', '=', 'sections.id')
+                ->whereColumn('categories.id', 'menu_items.category_id'))
+            ->orderBy(Category::select('categories.display_order')->whereColumn('categories.id', 'menu_items.category_id'))
+            ->orderBy('category_id')
+            ->orderBy('display_order')
+            ->orderBy('id');
 
         if ($categoryId) {
             $query->where('category_id', $categoryId);
@@ -94,7 +102,10 @@ class MenuItemController extends Controller
             $data['image'] = $upload['filename'];
         }
 
-        MenuItem::create($data);
+        DB::transaction(function () use ($data, $request) {
+            $item = MenuItem::create($data);
+            $this->displayOrders->placeMenuItem($item, $this->displayOrders->requestedPosition($request->input('display_order')), true);
+        });
 
         $this->planVisibility->forgetCache($restaurantId);
 
@@ -124,7 +135,16 @@ class MenuItemController extends Controller
             $data['image'] = $upload['filename'];
         }
 
-        $menuItem->update($data);
+        DB::transaction(function () use ($menuItem, $data, $request, $restaurantId) {
+            $previousCategoryId = (int) $menuItem->category_id;
+            $menuItem->update($data);
+
+            $moved = $previousCategoryId !== (int) $menuItem->category_id;
+            $this->displayOrders->placeMenuItem($menuItem, $this->displayOrders->requestedPosition($request->input('display_order')), $moved);
+            if ($moved) {
+                $this->displayOrders->resequenceMenuItems($restaurantId, $previousCategoryId);
+            }
+        });
 
         $this->planVisibility->forgetCache($restaurantId);
 
@@ -137,7 +157,9 @@ class MenuItemController extends Controller
         $this->authorizeRestaurant($request, $menuItem);
         $restaurantId = (int) $menuItem->restaurant_id;
         $this->uploads->delete('menu-items', $menuItem->image);
+        $categoryId = (int) $menuItem->category_id;
         $menuItem->delete();
+        $this->displayOrders->resequenceMenuItems($restaurantId, $categoryId);
 
         $this->planVisibility->forgetCache($restaurantId);
 
