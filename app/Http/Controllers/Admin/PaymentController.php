@@ -81,6 +81,7 @@ class PaymentController extends Controller
       (int) $data['restaurant_id'],
       (int) $data['plan_id'],
       $data['billing_cycle'],
+      true,
     );
 
     $current = $quote['current_subscription'] ?? null;
@@ -103,6 +104,9 @@ class PaymentController extends Controller
         'status_label' => $statusInfo['label'] ?? null,
         'period_end' => ! empty($current['current_period_end'])
           ? \Illuminate\Support\Carbon::parse($current['current_period_end'])->format('M j, Y')
+          : null,
+        'trial_end' => ! empty($current['trial_ends_at'])
+          ? \Illuminate\Support\Carbon::parse($current['trial_ends_at'])->format('M j, Y')
           : null,
       ] : null,
     ]);
@@ -168,7 +172,7 @@ class PaymentController extends Controller
       $cycle = $data['billing_cycle'] === 'annual' ? 'annual' : 'monthly';
       $status = $data['status'];
 
-      $quote = $subscriptions->quotePlanChange($restaurantId, $planId, $cycle);
+      $quote = $subscriptions->quotePlanChange($restaurantId, $planId, $cycle, true);
       $outcome = (string) ($quote['outcome'] ?? '');
 
       if ($outcome === 'already_on_plan' || $outcome === 'blocked') {
@@ -223,6 +227,7 @@ class PaymentController extends Controller
             $amount,
             (string) ($quote['pricing_mode'] ?? ''),
             (string) ($quote['apply_mode'] ?? ''),
+            isset($quote['renew_from']) ? (string) $quote['renew_from'] : null,
           );
 
           return $payments->createPayment([

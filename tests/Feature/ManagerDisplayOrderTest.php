@@ -187,6 +187,32 @@ class ManagerDisplayOrderTest extends TestCase
         $this->artisan('menu:resequence-display-orders')->assertFailed();
     }
 
+    public function test_saving_with_an_unchanged_legacy_position_keeps_the_slot(): void
+    {
+        $food = $this->makeSection('Food');
+        $this->makeCategory($food, 'Soft drinks', 1, ['display_order' => 16]);
+        $appetizers = $this->makeCategory($food, 'Appetizers', 1, ['display_order' => 16]);
+        $this->makeCategory($food, 'Whiskey', 1, ['display_order' => 19]);
+
+        $this->asManager()->put(route('manager.categories.update', $appetizers), $this->categoryForm('Starters', $food, 16))
+            ->assertRedirect(route('manager.categories.index'));
+
+        $this->assertSame(['Soft drinks' => 1, 'Starters' => 2, 'Whiskey' => 3], $this->order('categories', ['section_id' => $food]));
+    }
+
+    public function test_resequence_command_clears_plan_visibility_cache(): void
+    {
+        $visibility = Mockery::mock(PlanVisibilityService::class);
+        $visibility->shouldReceive('forgetCache')->once()->with(1);
+        $this->app->instance(PlanVisibilityService::class, $visibility);
+
+        $food = $this->makeSection('Food');
+        $this->makeCategory($food, 'Soft drinks', 1, ['display_order' => 16]);
+
+        $this->artisan('menu:resequence-display-orders', ['restaurant' => 1, '--dry-run' => true])->assertSuccessful();
+        $this->artisan('menu:resequence-display-orders', ['restaurant' => 1])->assertSuccessful();
+    }
+
     private function asManager(): static
     {
         return $this->actingAs(Manager::findOrFail(1), 'manager');

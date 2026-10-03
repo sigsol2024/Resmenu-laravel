@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Restaurant;
 use App\Services\DisplayOrderService;
+use App\Services\PlanVisibilityService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -21,7 +22,7 @@ class ResequenceDisplayOrders extends Command
 
     protected $description = 'Renumber section, category and menu item positions to 1, 2, 3 within each group';
 
-    public function handle(DisplayOrderService $displayOrders): int
+    public function handle(DisplayOrderService $displayOrders, PlanVisibilityService $planVisibility): int
     {
         $restaurantId = $this->argument('restaurant');
         if (! $this->option('all') && ($restaurantId === null || ! ctype_digit((string) $restaurantId))) {
@@ -47,6 +48,10 @@ class ResequenceDisplayOrders extends Command
                 throw $e;
             }
 
+            if ($changed > 0 && ! $dryRun) {
+                // Plan-limit visibility is cached and depends on display order.
+                $planVisibility->forgetCache($id);
+            }
             if ($changed > 0) {
                 $this->line("Restaurant {$id}: {$changed} row(s) ".($dryRun ? 'would change' : 'renumbered'));
             }

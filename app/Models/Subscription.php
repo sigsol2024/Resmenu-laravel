@@ -25,6 +25,28 @@ class Subscription extends Model
         'current_period_end' => 'datetime',
     ];
 
+    /** The only extension an admin may grant without a payment. */
+    public const TRIAL_EXTENSION_DAYS = 7;
+
+    /** A trial (running or lapsed) that has never had a paid period. */
+    public function isTrialLike(): bool
+    {
+        if ($this->current_period_end !== null) {
+            return false;
+        }
+
+        return $this->status === 'trial'
+            || ($this->status === 'expired' && $this->trial_ends_at !== null);
+    }
+
+    /** True when the trial ends later than the standard extension from today. */
+    public function trialCanBeShortened(): bool
+    {
+        return $this->isTrialLike()
+            && $this->trial_ends_at !== null
+            && $this->trial_ends_at->greaterThan(now()->addDays(self::TRIAL_EXTENSION_DAYS));
+    }
+
     public function restaurant(): BelongsTo
     {
         return $this->belongsTo(Restaurant::class);

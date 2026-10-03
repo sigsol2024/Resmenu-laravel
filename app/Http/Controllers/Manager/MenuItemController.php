@@ -137,10 +137,11 @@ class MenuItemController extends Controller
 
         DB::transaction(function () use ($menuItem, $data, $request, $restaurantId) {
             $previousCategoryId = (int) $menuItem->category_id;
+            $previousOrder = $menuItem->display_order === null ? null : (int) $menuItem->display_order;
             $menuItem->update($data);
 
             $moved = $previousCategoryId !== (int) $menuItem->category_id;
-            $this->displayOrders->placeMenuItem($menuItem, $this->displayOrders->requestedPosition($request->input('display_order')), $moved);
+            $this->displayOrders->placeMenuItem($menuItem, $this->displayOrders->positionForUpdate($request->input('display_order'), $previousOrder, $moved), $moved);
             if ($moved) {
                 $this->displayOrders->resequenceMenuItems($restaurantId, $previousCategoryId);
             }

@@ -103,17 +103,28 @@ class PlanVisibilityService
         $maxCategories = (int) ($plan['max_categories'] ?? -1);
         $maxMenuItems = (int) ($plan['max_menu_items'] ?? -1);
 
+        // Menu order (section, then category, then item) so the extras hidden are the last
+        // entries on the menu; positions are only numbered within their own group.
         $categories = DB::table('categories')
-            ->where('restaurant_id', $restaurantId)
-            ->orderByRaw('COALESCE(display_order, 999999) ASC')
-            ->orderBy('id')
-            ->get(['id', 'is_active']);
+            ->leftJoin('sections', 'sections.id', '=', 'categories.section_id')
+            ->where('categories.restaurant_id', $restaurantId)
+            ->orderByRaw('COALESCE(sections.display_order, 999999) ASC')
+            ->orderBy('categories.section_id')
+            ->orderByRaw('COALESCE(categories.display_order, 999999) ASC')
+            ->orderBy('categories.id')
+            ->get(['categories.id', 'categories.is_active']);
 
         $items = DB::table('menu_items')
-            ->where('restaurant_id', $restaurantId)
-            ->orderByRaw('COALESCE(display_order, 999999) ASC')
-            ->orderBy('id')
-            ->get(['id', 'category_id', 'is_available']);
+            ->leftJoin('categories', 'categories.id', '=', 'menu_items.category_id')
+            ->leftJoin('sections', 'sections.id', '=', 'categories.section_id')
+            ->where('menu_items.restaurant_id', $restaurantId)
+            ->orderByRaw('COALESCE(sections.display_order, 999999) ASC')
+            ->orderBy('categories.section_id')
+            ->orderByRaw('COALESCE(categories.display_order, 999999) ASC')
+            ->orderBy('menu_items.category_id')
+            ->orderByRaw('COALESCE(menu_items.display_order, 999999) ASC')
+            ->orderBy('menu_items.id')
+            ->get(['menu_items.id', 'menu_items.category_id', 'menu_items.is_available']);
 
         if ($maxCategories === -1 && $maxMenuItems === -1) {
             return PlanVisibilityResult::allVisible(

@@ -134,11 +134,12 @@ class CategoryController extends Controller
 
         DB::transaction(function () use ($category, $data, $request, $restaurantId) {
             $previousSectionId = (int) $category->section_id;
+            $previousOrder = $category->display_order === null ? null : (int) $category->display_order;
             $category->update($data);
             $this->syncSecondarySections($request, $category->id, (int) $data['section_id']);
 
             $moved = $previousSectionId !== (int) $category->section_id;
-            $this->displayOrders->placeCategory($category, $this->displayOrders->requestedPosition($request->input('display_order')), $moved);
+            $this->displayOrders->placeCategory($category, $this->displayOrders->positionForUpdate($request->input('display_order'), $previousOrder, $moved), $moved);
             if ($moved) {
                 $this->displayOrders->resequenceCategories($restaurantId, $previousSectionId);
             }

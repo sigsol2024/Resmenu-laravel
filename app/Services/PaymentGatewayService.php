@@ -396,7 +396,8 @@ class PaymentGatewayService
             );
         }
 
-        $quote = $this->subscriptions->quotePlanChange($restaurantId, $planId, $cycle);
+        $isRenewal = ($intent['apply_mode'] ?? null) === 'renew';
+        $quote = $this->subscriptions->quotePlanChange($restaurantId, $planId, $cycle, $isRenewal);
         $outcome = (string) ($quote['outcome'] ?? '');
 
         if ($outcome === 'already_on_plan') {
@@ -424,6 +425,12 @@ class PaymentGatewayService
             $this->paymentLifecycle->logPaymentReconciliation('intent_mismatch', $payment, $quote, $intent);
 
             return true; // keep payment success; do not under-apply or force activate
+        }
+
+        if ($isRenewal && ! $this->paymentLifecycle->renewalStillApplies($quote, $intent)) {
+            $this->paymentLifecycle->logPaymentReconciliation('renewal_already_applied_or_period_changed', $payment, $quote, $intent);
+
+            return true;
         }
 
         $quote['subscription_id'] = (int) ($intent['subscription_id'] ?? $payment->subscription_id ?: ($quote['subscription_id'] ?? 0));

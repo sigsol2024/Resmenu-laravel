@@ -22,6 +22,17 @@ class DisplayOrderService
         return ($value === null || $value === '') ? null : (int) $value;
     }
 
+    /**
+     * Edit forms post the stored number back even when only other fields changed; treat an
+     * unchanged number as "stay put" so legacy, non-dense numbers do not move the record.
+     */
+    public function positionForUpdate(mixed $value, ?int $previousOrder, bool $movedGroup): ?int
+    {
+        $position = $this->requestedPosition($value);
+
+        return (! $movedGroup && $position !== null && $position === $previousOrder) ? null : $position;
+    }
+
     /** Null position keeps the current slot (or appends when the record is new to the group). */
     public function placeSection(Section $section, ?int $position, bool $newToGroup = false): void
     {

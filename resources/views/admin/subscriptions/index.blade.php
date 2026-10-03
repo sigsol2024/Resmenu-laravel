@@ -172,7 +172,11 @@
             <td>
               @php
                 $subItems = [['type' => 'title', 'label' => 'Change Status']];
-                foreach (['trial', 'active', 'expired', 'cancelled', 'pending'] as $st) {
+                // "Active" is reached only by recording a payment; "Trial" only before any paid period.
+                foreach (['trial', 'expired', 'cancelled', 'pending'] as $st) {
+                  if ($st === 'trial' && $s->current_period_end) {
+                    continue;
+                  }
                   if ($st !== $s->status) {
                     $subItems[] = [
                       'type' => 'form',
@@ -183,21 +187,31 @@
                     ];
                   }
                 }
-                $subItems[] = ['type' => 'divider'];
-                $subItems[] = ['type' => 'title', 'label' => 'Extend Period'];
-                foreach ([7, 30, 90, 365] as $days) {
+                if ($s->isTrialLike()) {
+                  $trialDays = \App\Models\Subscription::TRIAL_EXTENSION_DAYS;
+                  $subItems[] = ['type' => 'divider'];
+                  $subItems[] = ['type' => 'title', 'label' => 'Trial'];
                   $subItems[] = [
                     'type' => 'form',
-                    'label' => '+ '.$days.' days',
+                    'label' => '+ '.$trialDays.' days',
                     'action' => route('admin.subscriptions.update', $s),
                     'method' => 'PATCH',
-                    'hidden' => ['action' => 'extend_period', 'days' => $days],
+                    'hidden' => ['action' => 'extend_period', 'days' => $trialDays],
                   ];
+                  if ($s->trialCanBeShortened()) {
+                    $subItems[] = [
+                      'type' => 'form',
+                      'label' => 'Shorten to end '.$trialDays.' days from today',
+                      'action' => route('admin.subscriptions.update', $s),
+                      'method' => 'PATCH',
+                      'hidden' => ['action' => 'reset_trial'],
+                    ];
+                  }
                 }
                 $subItems[] = ['type' => 'divider'];
                 if ($s->restaurant) {
                   $subItems[] = [
-                    'label' => 'Record Payment',
+                    'label' => 'Record Payment (renew / change plan)',
                     'url' => route('admin.payments.index', ['manual' => 1, 'restaurant_id' => $s->restaurant_id]),
                   ];
                   $subItems[] = [

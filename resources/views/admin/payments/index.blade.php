@@ -177,7 +177,7 @@
                 Select a restaurant to see the current subscription.
             </div>
             <div class="form-group">
-                <label class="form-label" for="manual_plan_id">New Plan</label>
+                <label class="form-label" for="manual_plan_id">Plan</label>
                 <select id="manual_plan_id" name="plan_id" class="form-select" required>
                     <option value="">Select plan</option>
                     @foreach($plans as $plan)
@@ -186,15 +186,16 @@
                 </select>
             </div>
             <div class="form-group">
-                <label class="form-label" for="manual_billing_cycle">Billing Cycle</label>
+                <label class="form-label" for="manual_billing_cycle">Duration</label>
                 <select id="manual_billing_cycle" name="billing_cycle" class="form-select" required>
-                    <option value="monthly">Monthly</option>
-                    <option value="annual">Annual</option>
+                    <option value="monthly">1 month (monthly)</option>
+                    <option value="annual">1 year (annual)</option>
                 </select>
             </div>
             <div class="quote-box" id="manualQuoteBox">
-                Choose restaurant, plan, and billing cycle to see the amount payable.
+                Choose restaurant, plan, and duration to see the amount payable.
             </div>
+            <p style="margin:-4px 0 12px;font-size:12px;color:#6b7280;">A <strong>Success</strong> payment updates the subscription immediately: trials and expired plans start a new period, and the same active plan is renewed from its current end date.</p>
             <div class="form-group">
                 <label class="form-label" for="manual_status">Payment Status</label>
                 <select id="manual_status" name="status" class="form-select">
@@ -266,7 +267,7 @@
 
         if (!planId || !cycle) {
             quoteBox.className = 'quote-box';
-            quoteBox.textContent = 'Choose a plan and billing cycle to see the amount payable.';
+            quoteBox.textContent = 'Choose a plan and duration to see the amount payable.';
             currentBox.textContent = 'Select a plan to load subscription details.';
             setSubmitEnabled(false, 'Record Payment');
             return;
@@ -330,6 +331,8 @@
         ];
         if (current.period_end) {
             parts.push('Period ends ' + current.period_end);
+        } else if (current.trial_end) {
+            parts.push('Trial ends ' + current.trial_end);
         }
         currentBox.textContent = parts.filter(Boolean).join(' · ');
     }

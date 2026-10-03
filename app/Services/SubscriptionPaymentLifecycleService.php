@@ -213,8 +213,9 @@ class SubscriptionPaymentLifecycleService
         float $amount,
         ?string $pricingMode,
         ?string $applyMode,
+        ?string $renewFrom = null,
     ): array {
-        return [
+        $intent = [
             'restaurant_id' => $restaurantId,
             'subscription_id' => $subscriptionId,
             'plan_id' => $planId,
@@ -224,6 +225,29 @@ class SubscriptionPaymentLifecycleService
             'apply_mode' => $applyMode,
             'quoted_at' => now()->toIso8601String(),
         ];
+
+        if ($applyMode === 'renew') {
+            // Period end the renewal was quoted against; fulfilment applies only while it is unchanged.
+            $intent['renew_from'] = $renewFrom;
+        }
+
+        return $intent;
+    }
+
+    /**
+     * @param  array<string, mixed>  $quote
+     * @param  array<string, mixed>  $intent
+     */
+    public function renewalStillApplies(array $quote, array $intent): bool
+    {
+        $liveEnd = $quote['current_subscription']['current_period_end'] ?? null;
+        $quotedEnd = $intent['renew_from'] ?? null;
+
+        if ($liveEnd === null || $quotedEnd === null) {
+            return $liveEnd === null && $quotedEnd === null;
+        }
+
+        return \Illuminate\Support\Carbon::parse($liveEnd)->equalTo(\Illuminate\Support\Carbon::parse($quotedEnd));
     }
 
     /** @param  array<string, mixed>|object  $payment */

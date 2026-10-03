@@ -115,8 +115,9 @@ class SectionController extends Controller
         }
 
         DB::transaction(function () use ($section, $data, $request) {
+            $previousOrder = $section->display_order === null ? null : (int) $section->display_order;
             $section->update($data);
-            $this->displayOrders->placeSection($section, $this->displayOrders->requestedPosition($request->input('display_order')));
+            $this->displayOrders->placeSection($section, $this->displayOrders->positionForUpdate($request->input('display_order'), $previousOrder, false));
         });
 
         return redirect()->route('manager.sections.index')->with('success', 'Section updated.');

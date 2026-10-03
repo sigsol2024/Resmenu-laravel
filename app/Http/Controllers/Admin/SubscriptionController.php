@@ -108,17 +108,31 @@ class SubscriptionController extends Controller
       $data = $request->validate([
         'new_status' => 'required|in:trial,active,expired,cancelled,pending',
       ]);
+      $newStatus = $data['new_status'];
 
-      $oldStatus = $subscription->status;
-      $this->forceUpdate($subscription, ['status' => $data['new_status']]);
+      if ($newStatus === 'active') {
+        return back()->with('error', 'Paid time is only added by recording a payment under Payments → Record Payment.');
+      }
+      if ($newStatus === 'trial' && $subscription->current_period_end !== null) {
+        return back()->with('error', 'This restaurant has had a paid period, so it cannot go back to a trial. Record a payment to renew it.');
+      }
 
-      if ($data['new_status'] === 'active') {
-        $service->activateSubscription($subscription->id, $subscription->billing_cycle ?? 'monthly');
-      } elseif ($data['new_status'] === 'cancelled') {
+      $oldValues = ['status' => $subscription->status, 'trial_ends_at' => $subscription->trial_ends_at?->toIso8601String()];
+      $attributes = ['status' => $newStatus];
+      if ($newStatus === 'trial' && ! $subscription->trial_ends_at?->isFuture()) {
+        // A lapsed trial reopens for the standard extension only.
+        $attributes['trial_ends_at'] = now()->addDays(Subscription::TRIAL_EXTENSION_DAYS);
+      }
+      $this->forceUpdate($subscription, $attributes);
+
+      if ($newStatus === 'cancelled') {
         $service->deactivateSubscription($subscription->id);
       }
 
-      $activityLog->record('admin', $adminId, 'subscription.status_changed', (int) $subscription->restaurant_id, 'subscription', (int) $subscription->id, ['status' => $oldStatus], ['status' => $data['new_status']], $request->ip(), $request->userAgent());
+      $activityLog->record('admin', $adminId, 'subscription.status_changed', (int) $subscription->restaurant_id, 'subscription', (int) $subscription->id, $oldValues, [
+        'status' => $newStatus,
+        'trial_ends_at' => $subscription->trial_ends_at?->toIso8601String(),
+      ], $request->ip(), $request->userAgent());
 
       $planVisibility->forgetCache($restaurantId);
 
@@ -129,83 +143,41 @@ class SubscriptionController extends Controller
       return back()->with('error', 'Plan changes require a recorded payment. Use Record Payment from the subscription actions.');
     }
 
-    if ($action === 'extend_period') {
-      $data = $request->validate([
-        'days' => 'required|integer|min:1|max:365',
-      ]);
-      $days = (int) $data['days'];
+    // Paid time is only added by recording a payment; admins may only nudge trials.
+    if ($action === 'extend_period' || $action === 'reset_trial') {
       $sub = $subscription->fresh();
-      $oldValues = [
-        'status' => $sub->status,
-        'trial_ends_at' => $sub->trial_ends_at?->toIso8601String(),
-        'current_period_end' => $sub->current_period_end?->toIso8601String(),
-      ];
-
-      if ($sub->status === 'trial') {
-        $base = $sub->trial_ends_at && $sub->trial_ends_at->isFuture() ? $sub->trial_ends_at : now();
-        $this->forceUpdate($sub, ['trial_ends_at' => $base->copy()->addDays($days)]);
-      } elseif ($sub->status === 'expired' && $sub->trial_ends_at && ! $sub->current_period_end) {
-        $base = $sub->trial_ends_at ?? now();
-        $this->forceUpdate($sub, [
-          'status' => 'trial',
-          'trial_ends_at' => ($base->isFuture() ? $base : now())->copy()->addDays($days),
-        ]);
-      } else {
-        $base = $sub->current_period_end && $sub->current_period_end->isFuture() ? $sub->current_period_end : now();
-        $newEnd = $base->copy()->addDays($days);
-        $payload = ['current_period_end' => $newEnd];
-        if ($sub->status === 'expired' && $newEnd->isFuture()) {
-          $payload['status'] = 'active';
-        }
-        $this->forceUpdate($sub, $payload);
+      if (! $sub->isTrialLike()) {
+        return back()->with('error', 'Only trials can be extended here. For a paid plan, record the payment under Payments → Record Payment; that renews or changes the subscription.');
       }
 
-      $sub = $sub->fresh();
-      $activityLog->record('admin', $adminId, 'subscription.extended', (int) $subscription->restaurant_id, 'subscription', (int) $subscription->id, $oldValues, [
-        'status' => $sub->status,
-        'trial_ends_at' => $sub->trial_ends_at?->toIso8601String(),
-        'current_period_end' => $sub->current_period_end?->toIso8601String(),
-        'days' => $days,
+      if ($action === 'extend_period') {
+        $request->validate(['days' => 'required|integer|in:'.Subscription::TRIAL_EXTENSION_DAYS]);
+        $base = $sub->trial_ends_at && $sub->trial_ends_at->isFuture() ? $sub->trial_ends_at : now();
+        $newEnd = $base->copy()->addDays(Subscription::TRIAL_EXTENSION_DAYS);
+        $message = 'Trial extended by '.Subscription::TRIAL_EXTENSION_DAYS.' days.';
+      } else {
+        if (! $sub->trialCanBeShortened()) {
+          return back()->with('error', 'This trial already ends within '.Subscription::TRIAL_EXTENSION_DAYS.' days. Use "+ '.Subscription::TRIAL_EXTENSION_DAYS.' days" to extend it.');
+        }
+        $newEnd = now()->addDays(Subscription::TRIAL_EXTENSION_DAYS);
+        $message = 'Trial now ends '.Subscription::TRIAL_EXTENSION_DAYS.' days from today ('.$newEnd->format('M j, Y').').';
+      }
+
+      $oldValues = ['status' => $sub->status, 'trial_ends_at' => $sub->trial_ends_at?->toIso8601String()];
+      $this->forceUpdate($sub, ['status' => 'trial', 'trial_ends_at' => $newEnd]);
+
+      $activityLog->record('admin', $adminId, $action === 'reset_trial' ? 'subscription.trial_reset' : 'subscription.trial_extended', $restaurantId, 'subscription', (int) $subscription->id, $oldValues, [
+        'status' => 'trial',
+        'trial_ends_at' => $newEnd->toIso8601String(),
       ], $request->ip(), $request->userAgent());
 
       $planVisibility->forgetCache($restaurantId);
 
-      return back()->with('success', "Subscription extended by {$days} days.");
+      return back()->with('success', $message);
     }
 
-    $data = $request->validate([
-      'status' => 'required|in:trial,active,expired,cancelled,pending',
-      'plan_id' => 'required|integer|exists:subscription_plans,id',
-      'billing_cycle' => 'nullable|in:monthly,annual',
-    ]);
-
-    $oldValues = [
-      'status' => $subscription->status,
-      'plan_id' => (int) $subscription->plan_id,
-      'billing_cycle' => $subscription->billing_cycle,
-    ];
-
-    $this->forceUpdate($subscription, [
-      'status' => $data['status'],
-      'plan_id' => $data['plan_id'],
-      'billing_cycle' => $data['billing_cycle'] ?? $subscription->billing_cycle ?? 'monthly',
-    ]);
-
-    if ($data['status'] === 'active') {
-      $service->activateSubscription($subscription->id, $data['billing_cycle'] ?? 'monthly');
-    } elseif ($data['status'] === 'cancelled') {
-      $service->deactivateSubscription($subscription->id);
-    }
-
-    $activityLog->record('admin', $adminId, 'subscription.updated', (int) $subscription->restaurant_id, 'subscription', (int) $subscription->id, $oldValues, [
-      'status' => $data['status'],
-      'plan_id' => (int) $data['plan_id'],
-      'billing_cycle' => $data['billing_cycle'] ?? $subscription->billing_cycle ?? 'monthly',
-    ], $request->ip(), $request->userAgent());
-
-    $planVisibility->forgetCache($restaurantId);
-
-    return back()->with('success', 'Subscription updated.');
+    // Plan / cycle changes go through Record Payment; there is no free-form edit.
+    return back()->with('error', 'Invalid action.');
   }
 
   /** @param  array<string, mixed>  $attributes */

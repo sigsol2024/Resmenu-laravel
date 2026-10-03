@@ -569,7 +569,7 @@ class SubscriptionService
      *
      * @return array<string, mixed>
      */
-    public function quotePlanChange(int $restaurantId, int $planId, string $billingCycle): array
+    public function quotePlanChange(int $restaurantId, int $planId, string $billingCycle, bool $allowRenewal = false): array
     {
         $targetCycle = $billingCycle === 'annual' ? 'annual' : 'monthly';
         $targetPlan = $this->getPlanById($planId);
@@ -604,6 +604,18 @@ class SubscriptionService
         ];
 
         if (($decision['mode'] ?? '') === 'none') {
+            // Admin offline payments only: the manager checkout still treats this as "already on plan".
+            if ($allowRenewal && $current !== null && (int) ($current['plan_id'] ?? 0) === (int) $targetPlan['id'] && $listPrice > 0) {
+                return array_merge($base, [
+                    'outcome' => 'charge',
+                    'message' => 'Renewal: adds one '.($targetCycle === 'annual' ? 'year' : 'month').' after the current period ends.',
+                    'amount' => round($listPrice, 2),
+                    'pricing_mode' => 'full',
+                    'apply_mode' => 'renew',
+                    'renew_from' => $current['current_period_end'] ?? null,
+                ]);
+            }
+
             return array_merge($base, [
                 'outcome' => 'already_on_plan',
                 'message' => 'Already on this plan.',
@@ -759,6 +771,29 @@ class SubscriptionService
 
             $subscriptionId = (int) $subscription->id;
             $this->cancelScheduledSubscriptionChange($subscriptionId);
+
+            if ($applyMode === 'renew') {
+                $currentEnd = $subscription->current_period_end;
+                $continues = $currentEnd !== null && $currentEnd->isFuture();
+                $base = $continues ? $currentEnd->copy() : now();
+
+                $updated = Subscription::query()->where('id', $subscriptionId)->where('restaurant_id', $restaurantId)->update([
+                    'plan_id' => $planId,
+                    'billing_cycle' => $cycle,
+                    'status' => 'active',
+                    'current_period_start' => $continues ? ($subscription->current_period_start ?? now()) : now(),
+                    'current_period_end' => $cycle === 'annual' ? $base->copy()->addYear() : $base->copy()->addMonth(),
+                    'trial_ends_at' => null,
+                    'cancelled_at' => null,
+                    'updated_at' => now(),
+                ]) > 0;
+
+                if ($updated) {
+                    app(PlanVisibilityService::class)->forgetCache($restaurantId);
+                }
+
+                return $updated;
+            }
 
             if ($applyMode === 'preserve_period') {
                 $updated = Subscription::query()->where('id', $subscriptionId)->where('restaurant_id', $restaurantId)->update([
