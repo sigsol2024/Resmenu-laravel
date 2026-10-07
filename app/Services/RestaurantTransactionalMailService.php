@@ -133,6 +133,45 @@ class RestaurantTransactionalMailService
         ]);
     }
 
+    /** Manager notice that a customer says they sent a bank transfer; the order/deposit waits for approval. */
+    public function sendBankTransferClaimed(object $draft): void
+    {
+        $restaurantId = (int) $draft->restaurant_id;
+        $restaurant = Restaurant::find($restaurantId);
+        $managerEmail = $this->managerEmail($restaurantId);
+        if (! $restaurant || ! $managerEmail || ! filter_var($managerEmail, FILTER_VALIDATE_EMAIL)) {
+            return;
+        }
+
+        $custom = $this->customization->forRestaurant($restaurant);
+        $primary = $custom['primary_color'] ?? '#111827';
+        $isReservation = ($draft->payment_type ?? 'order') === 'reservation';
+        $reference = 'BT-'.strtoupper(substr(preg_replace('/[^a-zA-Z0-9]/', '', (string) $draft->token), 0, 8));
+        $lines = json_decode((string) ($draft->cart_json ?? '[]'), true);
+        $items = collect(is_array($lines) ? $lines : [])->map(fn ($line) => (object) $line);
+
+        $body = '<h2 style="margin:0 0 16px;font-size:22px;color:#111827;">Bank transfer awaiting your approval</h2>'
+            .'<p>'.e($draft->customer_name).' says they have sent a bank transfer for '
+            .($isReservation ? 'a reservation deposit' : 'an order').' (<strong>#'.e($reference).'</strong>). '
+            .'Check that the money has arrived in your account, then approve or reject it.</p>'
+            .'<p style="margin:16px 0 0;"><strong>Customer:</strong> '.e($draft->customer_name)
+            .'<br><strong>Phone:</strong> '.e($draft->customer_phone)
+            .'<br><strong>Email:</strong> '.e($draft->customer_email)
+            .(! $isReservation && trim((string) $draft->delivery_address) !== '' ? '<br><strong>Delivery address:</strong> '.e($draft->delivery_address) : '')
+            .'</p>'
+            .(! $isReservation && $items->isNotEmpty() ? $this->orderItemsTable($items) : '')
+            .'<p style="margin-top:16px;font-size:18px;font-weight:700;">Amount to confirm: ₦'.number_format((float) $draft->total, 2).'</p>'
+            .'<p style="margin:24px 0;"><a href="'.e(route('manager.bank-transfers.index')).'" style="display:inline-block;background:'.e($primary).';color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;">Review &amp; approve payment</a></p>'
+            .'<p style="font-size:13px;color:#6b7280;">'.($isReservation
+                ? 'The reservation deposit is only marked paid after you approve.'
+                : 'The order appears under Orders and the customer is emailed only after you approve.').'</p>';
+
+        $html = $this->wrap($restaurant, 'Bank transfer awaiting approval', $body);
+        $this->mail->send($managerEmail, '', 'Bank transfer awaiting approval #'.$reference.' - '.$restaurant->name, $html, [
+            'from_name' => $restaurant->name,
+        ]);
+    }
+
     public function sendReservationStatusChange(int $reservationId, int $restaurantId, string $newStatus): void
     {
         $reservation = TableReservation::where('id', $reservationId)->where('restaurant_id', $restaurantId)->first();

@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Manager;
 use App\Models\Restaurant;
 use App\Models\TableReservation;
 use App\Support\OrderConfirmationToken;
@@ -18,7 +17,6 @@ class BankTransferService
 
     public function __construct(
         private OrderSubmissionService $orders,
-        private MailService $mail,
         private RestaurantTransactionalMailService $transactionalMail,
     ) {}
 
@@ -383,19 +381,6 @@ class BankTransferService
 
     private function notifyManagerOfClaim(object $draft): void
     {
-        // managers table has no is_active column — look up by restaurant only
-        $manager = Manager::where('restaurant_id', (int) $draft->restaurant_id)->first();
-        if (! $manager || ! filter_var($manager->email, FILTER_VALIDATE_EMAIL)) {
-            return;
-        }
-
-        $restaurant = Restaurant::find((int) $draft->restaurant_id);
-        $name = $restaurant?->name ?? 'Restaurant';
-        $url = route('manager.bank-transfers.index');
-        $html = '<p>A customer marked a bank transfer as sent for <strong>'.e($name).'</strong>.</p>'
-            .'<p>Customer: '.e($draft->customer_name).'<br>Amount: ₦'.number_format((float) $draft->total, 2).'</p>'
-            .'<p><a href="'.e($url).'">Review pending bank transfers</a></p>';
-
-        $this->mail->send($manager->email, $manager->username ?: $manager->email, 'Bank transfer awaiting approval - '.$name, $html);
+        $this->transactionalMail->sendBankTransferClaimed($draft);
     }
 }

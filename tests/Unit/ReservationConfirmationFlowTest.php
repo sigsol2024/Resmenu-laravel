@@ -135,10 +135,10 @@ class ReservationConfirmationFlowTest extends TestCase
 
         $transactional = Mockery::mock(RestaurantTransactionalMailService::class);
         $transactional->shouldNotReceive('sendReservationCreated');
-        $platformMail = Mockery::mock(MailService::class);
-        $platformMail->shouldReceive('send')->once()->with('manager@example.com', Mockery::any(), Mockery::pattern('/awaiting approval/'), Mockery::any())->andReturn(true);
+        $transactional->shouldReceive('sendBankTransferClaimed')->once()
+            ->with(Mockery::on(fn ($draft) => $draft->token === 'tok123'));
 
-        $service = new BankTransferService(Mockery::mock(OrderSubmissionService::class), $platformMail, $transactional);
+        $service = new BankTransferService(Mockery::mock(OrderSubmissionService::class), $transactional);
         $result = $service->customerClaimPayment('tok123');
 
         $this->assertTrue($result['success']);
@@ -158,7 +158,7 @@ class ReservationConfirmationFlowTest extends TestCase
                 $this->assertTrue((bool) TableReservation::find($id)->deposit_paid);
             });
 
-        $service = new BankTransferService(Mockery::mock(OrderSubmissionService::class), Mockery::mock(MailService::class), $transactional);
+        $service = new BankTransferService(Mockery::mock(OrderSubmissionService::class), $transactional);
         $result = $service->managerApprove($draftId, 1, 1);
 
         $this->assertTrue($result['success']);
@@ -236,7 +236,7 @@ class ReservationConfirmationFlowTest extends TestCase
 
         $transactional = Mockery::mock(RestaurantTransactionalMailService::class);
         $transactional->shouldReceive('sendReservationCreated')->once();
-        $service = new BankTransferService(Mockery::mock(OrderSubmissionService::class), Mockery::mock(MailService::class), $transactional);
+        $service = new BankTransferService(Mockery::mock(OrderSubmissionService::class), $transactional);
 
         $this->assertFalse($service->expireDraft('tok789'), 'A claimed transfer must not be expired by the guest countdown');
         $this->assertTrue($service->managerApprove($draftId, 1, 1)['success']);
@@ -251,7 +251,7 @@ class ReservationConfirmationFlowTest extends TestCase
 
         $transactional = Mockery::mock(RestaurantTransactionalMailService::class);
         $transactional->shouldNotReceive('sendReservationCreated');
-        $service = new BankTransferService(Mockery::mock(OrderSubmissionService::class), Mockery::mock(MailService::class), $transactional);
+        $service = new BankTransferService(Mockery::mock(OrderSubmissionService::class), $transactional);
 
         $this->assertFalse($service->managerApprove($draftId, 1, 1)['success']);
         $this->assertFalse((bool) TableReservation::find($id)->deposit_paid);
@@ -265,7 +265,7 @@ class ReservationConfirmationFlowTest extends TestCase
 
         $transactional = Mockery::mock(RestaurantTransactionalMailService::class);
         $transactional->shouldReceive('sendReservationDepositRejected')->once()->with($id, 1);
-        $service = new BankTransferService(Mockery::mock(OrderSubmissionService::class), Mockery::mock(MailService::class), $transactional);
+        $service = new BankTransferService(Mockery::mock(OrderSubmissionService::class), $transactional);
 
         $this->assertTrue($service->managerReject($draftId, 1, 1));
         $this->assertSame('pending', TableReservation::find($id)->status);
