@@ -38,19 +38,21 @@ Route::middleware('throttle:30,1')->prefix('bank-transfer')->group(function () {
     Route::post('/cancel-order', [BankTransferApiController::class, 'cancelOrder']);
 });
 
+// IDs are numeric so these never swallow named paths such as /orders/analytics registered below.
+// manager.tenant sets the restaurant_id the controllers authorise against; without it every lookup is a 403.
 Route::middleware('throttle:60,1')->prefix('orders')->group(function () {
     Route::post('/', [OrderApiController::class, 'store']);
-    Route::post('/{order}/cancel', [OrderApiController::class, 'cancel']);
-    Route::get('/{order}', [OrderApiController::class, 'show'])->middleware(['web', 'auth:manager']);
-    Route::patch('/{order}/status', [OrderApiController::class, 'updateStatus'])->middleware(['web', 'auth:manager', 'manager.tenant']);
+    Route::post('/{order}/cancel', [OrderApiController::class, 'cancel'])->whereNumber('order');
+    Route::get('/{order}', [OrderApiController::class, 'show'])->whereNumber('order')->middleware(['web', 'auth:manager', 'manager.tenant']);
+    Route::patch('/{order}/status', [OrderApiController::class, 'updateStatus'])->whereNumber('order')->middleware(['web', 'auth:manager', 'manager.tenant']);
 });
 
 Route::middleware('throttle:60,1')->prefix('reservations')->group(function () {
     Route::get('/slots', [ReservationApiController::class, 'slots']);
     Route::get('/availability', [ReservationApiController::class, 'availability']);
     Route::post('/', [ReservationApiController::class, 'store']);
-    Route::get('/{reservation}', [ReservationApiController::class, 'show'])->middleware(['web', 'auth:manager']);
-    Route::patch('/{reservation}/status', [ReservationApiController::class, 'updateStatus'])->middleware(['web', 'auth:manager', 'manager.tenant']);
+    Route::get('/{reservation}', [ReservationApiController::class, 'show'])->whereNumber('reservation')->middleware(['web', 'auth:manager', 'manager.tenant']);
+    Route::patch('/{reservation}/status', [ReservationApiController::class, 'updateStatus'])->whereNumber('reservation')->middleware(['web', 'auth:manager', 'manager.tenant']);
 });
 
 // Manager session auth needs the web stack (cookies + session). API routes alone do not start a session,
