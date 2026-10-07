@@ -69,7 +69,10 @@ class WebhookController extends Controller
         if ($request->input('event') === 'charge.success' && $reference !== '') {
             $verified = $verification->verifyWebhookPayment($reference, 'paystack', $request->input('data', []));
             if ($verified['ok'] ?? false) {
-                $pending->fulfillFromWebhook($reference, 'paystack');
+                // A non-2xx makes the gateway retry; acknowledging a failed fulfilment loses the paid order.
+                if (! ($pending->fulfillFromWebhook($reference, 'paystack')['success'] ?? false)) {
+                    return ApiJsonResponse::error('Fulfilment failed', null, 500);
+                }
             } else {
                 Log::warning('Restaurant Paystack webhook verification failed', [
                     'reference' => $reference,
@@ -108,7 +111,9 @@ class WebhookController extends Controller
         if (in_array($request->input('event'), ['charge.completed', 'complete'], true) && $reference !== '') {
             $verified = $verification->verifyWebhookPayment($reference, 'flutterwave', $request->input('data', []));
             if ($verified['ok'] ?? false) {
-                $pending->fulfillFromWebhook($reference, 'flutterwave');
+                if (! ($pending->fulfillFromWebhook($reference, 'flutterwave')['success'] ?? false)) {
+                    return ApiJsonResponse::error('Fulfilment failed', null, 500);
+                }
             } else {
                 Log::warning('Restaurant Flutterwave webhook verification failed', [
                     'reference' => $reference,

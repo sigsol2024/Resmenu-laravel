@@ -85,7 +85,15 @@ class OrderSubmissionService
                 return (int) $order->id;
             });
 
-            $this->mail->sendOrderCreated($orderId, $restaurantId);
+            // Callers (payment fulfilment, bank-transfer approval) wrap this in their own transaction;
+            // emailing before that commits announces orders that a later failure or timeout rolls back.
+            DB::afterCommit(function () use ($orderId, $restaurantId) {
+                try {
+                    $this->mail->sendOrderCreated($orderId, $restaurantId);
+                } catch (\Throwable $e) {
+                    report($e);
+                }
+            });
 
             return ['success' => true, 'order_id' => $orderId, 'errors' => []];
         } catch (\Throwable $e) {

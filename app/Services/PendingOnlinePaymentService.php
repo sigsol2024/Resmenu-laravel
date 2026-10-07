@@ -69,19 +69,10 @@ class PendingOnlinePaymentService
 
     public function fulfillFromWebhook(string $reference, string $gateway): array
     {
-        $cacheKey = 'webhook_fulfilled:'.$gateway.':'.$reference;
-        if (! Cache::add($cacheKey, 1, now()->addDays(7))) {
-            return ['success' => true, 'already_processed' => true];
-        }
-
+        // Everything below commits or rolls back together. A guard stored outside the transaction
+        // survives a crash/timeout mid-fulfilment and makes every gateway retry skip the paid order.
         try {
-            if (! $this->claimFulfillmentReceipt($gateway, $reference)) {
-                Cache::forget($cacheKey);
-
-                return ['success' => true, 'already_processed' => true];
-            }
-
-            $result = DB::transaction(function () use ($reference, $gateway, $cacheKey) {
+            $result = DB::transaction(function () use ($reference, $gateway) {
                 $draft = DB::table('pending_online_payments')
                     ->where('reference', $reference)
                     ->where('gateway', $gateway)
@@ -91,6 +82,9 @@ class PendingOnlinePaymentService
                 if (! $draft) {
                     return ['success' => true, 'already_processed' => true];
                 }
+                // The draft is deleted in this same transaction once fulfilled, so a surviving draft means
+                // no order exists yet, even if an older run left a receipt behind.
+                $this->recordFulfillmentReceipt($gateway, $reference);
 
                 if (($draft->payment_type ?? 'order') === 'reservation' && $draft->reservation_id) {
                     TableReservation::where('id', $draft->reservation_id)
@@ -162,8 +156,6 @@ class PendingOnlinePaymentService
                 ];
             });
         } catch (\Throwable $e) {
-            Cache::forget($cacheKey);
-            $this->releaseFulfillmentReceipt($gateway, $reference);
             report($e);
 
             return ['success' => false, 'errors' => [$e->getMessage()]];
@@ -228,30 +220,16 @@ class PendingOnlinePaymentService
         Cache::put('fulfilled_order_ref:'.$gateway.':'.$reference, $payload, now()->addDays(7));
     }
 
-    private function claimFulfillmentReceipt(string $gateway, string $reference): bool
-    {
-        if (! Schema::hasTable('payment_fulfillment_receipts')) {
-            return true;
-        }
-
-        $inserted = DB::table('payment_fulfillment_receipts')->insertOrIgnore([
-            'gateway' => $gateway,
-            'reference' => $reference,
-            'created_at' => now(),
-        ]);
-
-        return $inserted > 0;
-    }
-
-    private function releaseFulfillmentReceipt(string $gateway, string $reference): void
+    private function recordFulfillmentReceipt(string $gateway, string $reference): void
     {
         if (! Schema::hasTable('payment_fulfillment_receipts')) {
             return;
         }
 
-        DB::table('payment_fulfillment_receipts')
-            ->where('gateway', $gateway)
-            ->where('reference', $reference)
-            ->delete();
+        DB::table('payment_fulfillment_receipts')->insertOrIgnore([
+            'gateway' => $gateway,
+            'reference' => $reference,
+            'created_at' => now(),
+        ]);
     }
 }
