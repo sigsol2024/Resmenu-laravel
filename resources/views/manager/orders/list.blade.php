@@ -11,6 +11,7 @@
 <p style="margin-bottom:20px;">
     <a href="{{ route('manager.orders.index') }}" class="btn btn-secondary">Back to Orders Overview</a>
 </p>
+@include('manager.orders.partials.awaiting-payment-notice')
 <div class="card" style="margin-bottom:20px;">
 <form method="get" style="display:flex;flex-wrap:wrap;gap:12px;align-items:end;">
     <div class="form-group" style="margin:0;">

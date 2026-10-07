@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\Restaurant;
+use App\Services\BankTransferService;
 use App\Services\ManagerFeatureAccess;
 use App\Services\OrderService;
 use App\Services\PlanVisibilityService;
@@ -24,6 +25,7 @@ class DashboardController extends Controller
         QrAnalyticsService $qr,
         ManagerFeatureAccess $features,
         PlanVisibilityService $planVisibility,
+        BankTransferService $bankTransfers,
     ) {
         $restaurantId = (int) $request->attributes->get('restaurant_id');
         $restaurant = Restaurant::findOrFail($restaurantId);
@@ -48,8 +50,12 @@ class DashboardController extends Controller
             }
         }
 
+        $usesBankTransfers = $features->foodOrderingUsable($restaurantId) || $features->tableReservationsUsable($restaurantId);
+
         return view('manager.dashboard', [
             'restaurant' => $restaurant,
+            'pendingTransfers' => $usesBankTransfers ? $bankTransfers->countAwaitingApproval($restaurantId) : 0,
+            'pendingTransferOrders' => $usesBankTransfers ? $bankTransfers->countAwaitingApproval($restaurantId, 'order') : 0,
             'access' => $access,
             'subscription' => $subscription,
             'trialDaysRemaining' => $trialDaysRemaining,

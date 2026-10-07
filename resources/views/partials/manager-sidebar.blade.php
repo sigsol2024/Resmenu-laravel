@@ -65,7 +65,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}" />
                             </svg>
                         </div>
-                        <span class="nav-text">{{ $item['name'] }}</span>
+                        <span class="nav-text">{{ $item['name'] }}@if(!empty($item['badge']))<span class="nav-badge" style="margin-left:8px;display:inline-block;min-width:20px;padding:1px 6px;border-radius:999px;background:#dc2626;color:#fff;font-size:0.7rem;font-weight:700;line-height:1.5;text-align:center;">{{ $item['badge'] }}</span>@endif</span>
                     </a>
                 </li>
             @endforeach

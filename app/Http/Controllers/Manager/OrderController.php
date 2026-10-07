@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Manager;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Restaurant;
+use App\Services\BankTransferService;
 use App\Services\ManagerFeatureAccess;
 use App\Services\OrderService;
 use App\Support\PriceFormatter;
@@ -15,6 +16,7 @@ class OrderController extends Controller
     public function __construct(
         private OrderService $orders,
         private ManagerFeatureAccess $features,
+        private BankTransferService $bankTransfers,
     ) {}
 
     public function index(Request $request)
@@ -23,6 +25,10 @@ class OrderController extends Controller
         $restaurant = Restaurant::findOrFail($restaurantId);
         $overlay = $this->features->ordersPageContext($restaurantId);
         $stats = $this->orders->countByStatus($restaurantId);
+        // Bank-transfer orders only become order rows once the payment is approved; until then they
+        // are still pending orders from the manager's point of view.
+        $awaitingPayment = $this->bankTransfers->countAwaitingApproval($restaurantId, 'order');
+        $stats['pending'] += $awaitingPayment;
         $lastMonthStart = now()->subMonth()->startOfMonth();
         $lastMonthEnd = now()->subMonth()->endOfMonth();
 
@@ -35,6 +41,7 @@ class OrderController extends Controller
             'revenueLastMonth' => $this->orders->revenueBetween($restaurantId, $lastMonthStart, $lastMonthEnd),
             'recent' => $this->orders->recent($restaurantId),
             'statuses' => Order::STATUSES,
+            'awaitingPayment' => $awaitingPayment,
             'price' => PriceFormatter::class,
             'currencySymbol' => '₦',
             'showUpgradeOverlay' => $overlay['show_overlay'],
@@ -64,6 +71,7 @@ class OrderController extends Controller
 
         return view('manager.orders.list', [
             'restaurant' => $restaurant,
+            'awaitingPayment' => $this->bankTransfers->countAwaitingApproval($restaurantId, 'order'),
             'orders' => $query->paginate(30)->withQueryString(),
             'statuses' => Order::STATUSES,
             'filters' => $request->only(['status', 'start_date', 'end_date']),

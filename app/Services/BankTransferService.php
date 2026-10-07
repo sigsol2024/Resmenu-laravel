@@ -265,7 +265,9 @@ class BankTransferService
 
             return [
                 'success' => true,
-                'message' => 'Payment approved.',
+                'message' => $approvedReservationId === null
+                    ? 'Payment approved. The order is now under Orders as Confirmed and the customer has been emailed.'
+                    : 'Payment approved.',
                 'redirect' => $redirect !== '' ? $redirect : null,
                 'reservation_id' => $approvedReservationId,
             ];
@@ -311,14 +313,45 @@ class BankTransferService
         return $updated > 0;
     }
 
-    /** @return Collection<int, object> */
-    public function listPendingForRestaurant(int $restaurantId): Collection
+    /**
+     * Transfers the manager can still approve: claimed by the customer, or unclaimed but inside the
+     * payment window. Abandoned unclaimed drafts cannot be approved, so they are left out.
+     *
+     * @return Collection<int, object>
+     */
+    public function listPendingForRestaurant(int $restaurantId, ?string $paymentType = null): Collection
+    {
+        return $this->awaitingApprovalQuery($restaurantId, $paymentType)
+            ->orderByDesc('created_at')
+            ->get();
+    }
+
+    public function countAwaitingApproval(int $restaurantId, ?string $paymentType = null): int
+    {
+        return $this->awaitingApprovalQuery($restaurantId, $paymentType)->count();
+    }
+
+    /** @return list<array{name:string, price:float, quantity:int}> */
+    public function cartLines(object $draft): array
+    {
+        $lines = json_decode((string) ($draft->cart_json ?? '[]'), true);
+
+        return array_values(array_map(fn ($line) => [
+            'name' => (string) ($line['name'] ?? 'Item'),
+            'price' => (float) ($line['price'] ?? 0),
+            'quantity' => max(1, (int) ($line['quantity'] ?? 1)),
+        ], is_array($lines) ? $lines : []));
+    }
+
+    private function awaitingApprovalQuery(int $restaurantId, ?string $paymentType): \Illuminate\Database\Query\Builder
     {
         return DB::table('pending_bank_transfers')
             ->where('restaurant_id', $restaurantId)
-            ->whereIn('status', ['pending', 'customer_claimed'])
-            ->orderByDesc('created_at')
-            ->get();
+            ->when($paymentType !== null, fn ($q) => $q->where('payment_type', $paymentType))
+            ->where(function ($q) {
+                $q->where('status', 'customer_claimed')
+                    ->orWhere(fn ($q) => $q->where('status', 'pending')->where('created_at', '>=', now()->subSeconds(self::WINDOW_SECONDS)));
+            });
     }
 
     public function expireDraft(string $token): bool

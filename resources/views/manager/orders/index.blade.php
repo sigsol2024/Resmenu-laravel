@@ -45,6 +45,9 @@
             <div class="stat-card" style="background:#fff;padding:16px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.1);border-left:3px solid {{ $statusColors[$s] ?? '#e5e7eb' }};">
                 <div class="stat-label" style="font-size:0.7rem;color:{{ $statusColors[$s] ?? '#6b7280' }};text-transform:uppercase;margin-bottom:4px;font-weight:600;">{{ $statusLabels[$s] }}</div>
                 <div class="stat-value" style="font-size:1.5rem;font-weight:700;color:#111827;">{{ $curr }}</div>
+                @if($s === 'pending' && $awaitingPayment > 0)
+                    <a href="{{ route('manager.bank-transfers.index') }}" style="font-size:0.7rem;color:#92400e;margin-top:4px;text-decoration:underline;">incl. {{ $awaitingPayment }} awaiting payment approval</a>
+                @endif
                 @if($showTrend && $diff != 0)
                     <div class="stat-trend" style="font-size:0.7rem;margin-top:4px;display:flex;align-items:center;gap:4px;">
                         <span style="color:{{ $isUp ? '#059669' : '#dc2626' }};">
@@ -122,13 +125,20 @@
 <section class="orders-list">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
         <h2 class="section-title" style="font-size:1.125rem;font-weight:600;color:#111827;">Recent Orders</h2>
-        @if($totalCount > 0)
-            <a href="{{ route('manager.orders.list') }}" class="btn btn-primary" style="padding:8px 16px;font-size:0.875rem;">View All Orders</a>
-        @endif
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <a href="{{ route('manager.bank-transfers.index') }}" class="btn btn-secondary" style="padding:8px 16px;font-size:0.875rem;">View Pending Payments{{ $awaitingPayment > 0 ? ' ('.$awaitingPayment.')' : '' }}</a>
+            @if($totalCount > 0)
+                <a href="{{ route('manager.orders.list') }}" class="btn btn-primary" style="padding:8px 16px;font-size:0.875rem;">View All Orders</a>
+            @endif
+        </div>
     </div>
 
+    @include('manager.orders.partials.awaiting-payment-notice')
+
     @if($recent->isEmpty())
-        <p style="color:#6b7280;padding:24px;text-align:center;">No orders yet.</p>
+        @if($awaitingPayment === 0)
+            <p style="color:#6b7280;padding:24px;text-align:center;">No orders yet.</p>
+        @endif
     @else
         <div class="table-wrapper">
             <table class="orders-table" style="width:100%;border-collapse:collapse;">

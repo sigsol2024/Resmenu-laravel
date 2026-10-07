@@ -16,6 +16,7 @@ class BankTransferController extends Controller
 
         return view('manager.bank-transfers.index', [
             'drafts' => $drafts,
+            'draftLines' => $drafts->mapWithKeys(fn ($draft) => [$draft->id => $bankTransfers->cartLines($draft)])->all(),
         ]);
     }
 

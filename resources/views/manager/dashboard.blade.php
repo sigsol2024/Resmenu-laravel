@@ -16,6 +16,16 @@
     <p class="page-subtitle">Overview of your restaurant menu and orders</p>
 </div>
 
+@if($pendingTransfers > 0)
+    <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;margin-bottom:24px;border-radius:10px;background:#fffbeb;border:1px solid #fcd34d;border-left:4px solid #f59e0b;">
+        <div style="color:#92400e;">
+            <strong style="display:block;font-size:1rem;margin-bottom:2px;">{{ $pendingTransfers }} bank transfer {{ $pendingTransfers === 1 ? 'payment is' : 'payments are' }} waiting for your approval</strong>
+            <span style="font-size:0.875rem;">Check your account for the money, then approve to create the order (or confirm the reservation deposit).</span>
+        </div>
+        <a href="{{ route('manager.bank-transfers.index') }}" class="btn btn-primary" style="white-space:nowrap;text-decoration:none;">Review payments</a>
+    </div>
+@endif
+
 @if(isset($planVisibility) && $planVisibility->hasHiddenContent())
     <div class="settings-card plan-compliance-card" style="margin-bottom:24px;padding:20px;border-left:4px solid #dc2626;">
         <h2 style="font-size:1.125rem;font-weight:700;margin:0 0 12px;">Plan Compliance</h2>
@@ -119,7 +129,10 @@
     </div>
     <div class="stat-card">
         <div class="stat-label">Total Orders</div>
-        <div class="stat-value">{{ $stats['total_orders'] }}</div>
+        <div class="stat-value">{{ $stats['total_orders'] + $pendingTransferOrders }}</div>
+        @if($pendingTransferOrders > 0)
+            <a href="{{ route('manager.bank-transfers.index') }}" style="font-size:0.75rem;color:#92400e;text-decoration:underline;">incl. {{ $pendingTransferOrders }} awaiting payment approval</a>
+        @endif
     </div>
     <div class="stat-card">
         <div class="stat-label">Orders Revenue</div>
