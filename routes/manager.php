@@ -35,8 +35,6 @@ Route::middleware(['auth:manager', 'manager.tenant', 'subscription.active', 'ses
 
             // The third throttle argument is a key prefix; without it every throttle a manager hits shares one counter.
             Route::middleware('throttle:30,1,menu-import')->group(function () {
-                Route::get('menu-import/template', [MenuImportController::class, 'template'])->name('menu-import.template');
-                Route::get('menu-import/sample', [MenuImportController::class, 'sample'])->name('menu-import.sample');
                 Route::post('menu-import', [MenuImportController::class, 'upload'])->name('menu-import.upload');
                 Route::get('menu-import/{token}', [MenuImportController::class, 'preview'])->where('token', '[A-Za-z0-9]{40}')->name('menu-import.preview');
                 Route::post('menu-import/{token}/import', [MenuImportController::class, 'import'])->where('token', '[A-Za-z0-9]{40}')->name('menu-import.import');
@@ -48,6 +46,13 @@ Route::middleware(['auth:manager', 'manager.tenant', 'subscription.active', 'ses
                 ->where('token', '[A-Za-z0-9]{40}')
                 ->middleware('throttle:120,1,menu-import-analyze')
                 ->name('menu-import.analyze');
+        });
+
+        // Blank template and sample are static reads, so they sit outside the email-verified write gate;
+        // behind it, unverified managers were redirected and the browser saved the dashboard as the "CSV".
+        Route::middleware('throttle:30,1,menu-import-download')->group(function () {
+            Route::get('menu-import/template', [MenuImportController::class, 'template'])->name('menu-import.template');
+            Route::get('menu-import/sample', [MenuImportController::class, 'sample'])->name('menu-import.sample');
         });
 
         Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');

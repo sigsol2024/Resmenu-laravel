@@ -37,8 +37,8 @@
                 @include('manager.menu-import.partials.sample-table')
 
                 <div class="mimp-downloads">
-                    <a href="{{ route('manager.menu-import.sample') }}" class="btn btn-primary btn-small" download>Download sample CSV</a>
-                    <a href="{{ route('manager.menu-import.template') }}" class="mimp-link" download>Download blank template</a>
+                    <a href="{{ route('manager.menu-import.sample') }}" class="btn btn-primary btn-small">Download sample CSV</a>
+                    <a href="{{ route('manager.menu-import.template') }}" class="mimp-link">Download blank template</a>
                 </div>
 
                 <label class="mimp-file-label" for="menuImportFile">Your menu file</label>

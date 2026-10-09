@@ -20,7 +20,7 @@
     <summary>Expected format</summary>
     <p class="mimp-intro">Your file needs these 5 columns in the first row. Each row is one menu item.</p>
     @include('manager.menu-import.partials.sample-table')
-    <a href="{{ route('manager.menu-import.sample') }}" class="mimp-link" download>Download sample CSV</a>
+    <a href="{{ route('manager.menu-import.sample') }}" class="mimp-link">Download sample CSV</a>
 </details>
 
 <noscript>

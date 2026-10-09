@@ -90,6 +90,12 @@ class ManagerMenuImportTest extends TestCase
             ->assertForbidden();
 
         $this->assertSame(0, DB::table('sections')->count());
+
+        // Reading the blank template is not a menu write; it must still download as CSV.
+        $this->actingAs($this->manager(3), 'manager')
+            ->get(route('manager.menu-import.template'))
+            ->assertOk()
+            ->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
     }
 
     public function test_sample_and_template_downloads(): void
@@ -294,7 +300,7 @@ class ManagerMenuImportTest extends TestCase
     public function test_import_routes_keep_their_own_rate_limit(): void
     {
         $token = $this->upload();
-        for ($i = 0; $i < 29; $i++) {
+        for ($i = 0; $i < 30; $i++) {
             $this->actingAs($this->manager(), 'manager')->get(route('manager.menu-import.template'))->assertOk();
         }
 
