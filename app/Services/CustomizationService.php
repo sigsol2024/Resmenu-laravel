@@ -31,6 +31,37 @@ class CustomizationService
         return $merged;
     }
 
+    /**
+     * Primary/price colours the manager changed from the template defaults.
+     * Saving the form unchanged stores the defaults, which must not repaint the design.
+     *
+     * @return array<string, string>
+     */
+    public function brandOverrides(Restaurant $restaurant): array
+    {
+        $templateId = (int) ($restaurant->template_id ?? 1);
+
+        $row = DB::table('customization_settings')
+            ->where('restaurant_id', $restaurant->id)
+            ->where('template_id', $templateId)
+            ->first();
+
+        if (! $row) {
+            return [];
+        }
+
+        $defaults = $this->templateDefaults($templateId);
+        $overrides = [];
+        foreach (['primary_color', 'price_color'] as $key) {
+            $value = trim((string) ($row->{$key} ?? ''));
+            if ($value !== '' && strcasecmp($value, (string) ($defaults[$key] ?? '')) !== 0) {
+                $overrides[$key] = $value;
+            }
+        }
+
+        return $overrides;
+    }
+
     /** Defaults for marketing template preview pages. */
     public function templateDefaultsForPreview(int $templateId): array
     {

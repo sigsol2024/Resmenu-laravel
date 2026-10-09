@@ -351,6 +351,7 @@ class MenuController extends Controller
             'sections' => $sections,
             'categories' => $categories,
             'customization' => $this->customization->forRestaurant($restaurant),
+            'brandColors' => $this->customization->brandOverrides($restaurant),
             'headerMenuItems' => $restaurant->header_menu_items ?? [],
             'fullMenuUrl' => url('/restaurant/'.$slug),
             'sectionsForNav' => $sectionsForNav,

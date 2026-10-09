@@ -341,7 +341,7 @@ foreach ($sections as $section):
                     <?php endif; ?>
                   </div>
                   <?php if ((float)$item['price'] > 0): ?>
-                    <div class="item-price"><?php echo 'N' . number_format($item['price'], 0, '.', ','); ?></div>
+                    <div class="rm-price item-price"><?php echo 'N' . number_format($item['price'], 0, '.', ','); ?></div>
                   <?php endif; ?>
                   <?php if ($item['description']): ?>
                     <div class="item-description"><?php echo htmlspecialchars($item['description']); ?></div>

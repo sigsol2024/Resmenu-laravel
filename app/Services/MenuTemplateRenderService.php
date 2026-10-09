@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Support\LegacyMenuViewData;
+use App\Support\MenuBrandColors;
 use App\Support\MenuViewHelpers;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -37,6 +38,7 @@ class MenuTemplateRenderService
             include $path;
             $html = ob_get_clean() ?: '';
             $html = $this->normalizeUploadUrls($html, $uploadBaseUrl);
+            $html = MenuBrandColors::apply($templateId, $html, (array) ($viewData['brandColors'] ?? []));
         } catch (\Throwable $e) {
             if (ob_get_level() > 0) {
                 ob_end_clean();

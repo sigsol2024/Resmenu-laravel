@@ -156,7 +156,7 @@ body.sfh-body .sfh-bg { position: absolute; inset: 0; pointer-events: none; back
         $itemAvailable = !isset($item['is_available']) || $item['is_available'];
 ?>
 <article class="<?php echo $masonry; ?> sfh-card bg-white comic-border shadow-brutal flex flex-col relative overflow-hidden group <?php echo $imgUrl ? '' : 'sfh-no-img'; ?>" data-purpose="menu-item">
-<div class="absolute -top-1 -right-1 sfh-price bg-brandBlack text-white font-chunky comic-border z-10 <?php echo $itemIndex === 0 ? 'animate-wiggle' : ''; ?>"><?php echo sfh_price($item['price']); ?></div>
+<div class="rm-price absolute -top-1 -right-1 sfh-price bg-brandBlack text-white font-chunky comic-border z-10 <?php echo $itemIndex === 0 ? 'animate-wiggle' : ''; ?>"><?php echo sfh_price($item['price']); ?></div>
 <?php if ($imgUrl): ?><img alt="<?php echo htmlspecialchars($item['name']); ?>" class="w-full sfh-img object-cover comic-border group-hover:grayscale transition-all duration-300" src="<?php echo $imgUrl; ?>"/><?php endif; ?>
 <h3 class="font-chunky sfh-title"><?php echo htmlspecialchars($item['name']); ?></h3>
 <p class="sfh-desc font-bold flex-grow min-h-0"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p>

@@ -72,7 +72,7 @@ if (!empty($sections) && is_array($sections)) {
 <?php if (!empty($item['image'])): ?><img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="w-full max-h-36 object-cover rounded border border-lemonYellow/30 mb-2"/><?php endif; ?>
 <div class="flex justify-between items-baseline mb-1">
 <h3 class="text-xl font-bold text-medBlue group-hover:text-lemonYellow transition-colors"><?php echo htmlspecialchars($item['name']); ?></h3>
-<span class="font-bold text-medBlue"><?php echo mf_price($item['price']); ?></span>
+<span class="rm-price font-bold text-medBlue"><?php echo mf_price($item['price']); ?></span>
 </div>
 <p class="text-sm text-slate-600 italic"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p>
 <?php if (!empty($supportsOrdering) && !empty($item['is_available'])): ?><button type="button" class="add-to-bag-btn mt-2 text-medBlue border border-medBlue px-4 py-2 rounded hover:bg-medBlue hover:text-white" data-item-id="<?php echo (int)$item['id']; ?>" data-item-name="<?php echo htmlspecialchars($item['name']); ?>" data-item-price="<?php echo htmlspecialchars($item['price']); ?>" data-item-image="<?php echo !empty($item['image']) ? htmlspecialchars($item['image']) : ''; ?>">Add to bag</button><?php endif; ?>

@@ -276,7 +276,7 @@ body.nfm-body {
 <span class="line-clamp-2 min-w-0 shrink text-left text-base font-semibold leading-snug text-white"><?php echo htmlspecialchars($item['name']); ?></span>
 <span class="nfm-dot-leader mt-[0.55em] min-h-0 min-w-[8px]" aria-hidden="true"></span>
 </div>
-<span class="shrink-0 rounded-sm bg-white px-2 py-0.5 text-right font-sans text-xs font-semibold tabular-nums leading-none text-black"><?php echo nfm_price($item['price']); ?></span>
+<span class="rm-price shrink-0 rounded-sm bg-white px-2 py-0.5 text-right font-sans text-xs font-semibold tabular-nums leading-none text-black"><?php echo nfm_price($item['price']); ?></span>
 </div>
 <?php if (!empty($item['description'])): ?><p class="text-xs leading-relaxed text-gray-300 sm:text-sm md:text-[11px] md:leading-snug"><?php echo htmlspecialchars($item['description']); ?></p><?php endif; ?>
 <?php if (!empty($supportsOrdering) && !empty($item['is_available'])): ?><button type="button" class="add-to-bag-btn self-start rounded border border-white/50 px-2.5 py-1 text-xs text-white hover:bg-white/10 md:px-2 md:py-0.5 md:text-[10px]" data-item-id="<?php echo (int)$item['id']; ?>" data-item-name="<?php echo htmlspecialchars($item['name']); ?>" data-item-price="<?php echo htmlspecialchars($item['price']); ?>" data-item-image="<?php echo !empty($item['image']) ? htmlspecialchars($item['image']) : ''; ?>">Add to bag</button><?php endif; ?>

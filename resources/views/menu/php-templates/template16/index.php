@@ -729,7 +729,7 @@ if (empty($singleSectionView) && !empty($sectionsForNav) && is_array($sectionsFo
 <div class="nmc-menu-item__text min-w-0<?php echo $nmcItemHasImage ? ' w-full' : ' flex-1'; ?>">
 <div class="flex min-w-0 items-baseline justify-between gap-3">
 <h4 class="nmc-item-title min-w-0 flex-1 text-left font-semibold text-slate-100"><?php echo htmlspecialchars($item['name']); ?></h4>
-<?php if ($nmcItemPrice !== ''): ?><span class="shrink-0 font-mono text-sm tabular-nums leading-snug text-red-500 sm:text-base"><?php echo $nmcItemPrice; ?></span><?php endif; ?>
+<?php if ($nmcItemPrice !== ''): ?><span class="rm-price shrink-0 font-mono text-sm tabular-nums leading-snug text-red-500 sm:text-base"><?php echo $nmcItemPrice; ?></span><?php endif; ?>
 </div>
 <?php if (!empty($item['description'])): ?><p class="mt-1.5 w-full text-left text-sm leading-relaxed text-slate-400"><?php echo htmlspecialchars($item['description']); ?></p><?php endif; ?>
 <?php if (!empty($supportsOrdering) && !empty($item['is_available'])): ?><button type="button" class="add-to-bag-btn nmc-order-btn" data-item-id="<?php echo (int)$item['id']; ?>" data-item-name="<?php echo htmlspecialchars($item['name']); ?>" data-item-price="<?php echo htmlspecialchars($item['price']); ?>" data-item-image="<?php echo !empty($item['image']) ? htmlspecialchars($item['image']) : ''; ?>">Order</button><?php endif; ?>

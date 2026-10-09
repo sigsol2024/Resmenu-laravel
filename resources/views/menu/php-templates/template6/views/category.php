@@ -62,7 +62,7 @@ if (! empty($category['description'])) {
 <div class="p-4 md:p-5 flex flex-col flex-1">
 <div class="flex justify-between items-start gap-3 mb-2">
 <h3 class="font-headline-md text-headline-md serif text-on-surface group-hover:text-primary transition-colors leading-tight min-w-0 flex-1"><?php echo t6_esc($item['name'] ?? ''); ?></h3>
-<span class="font-label-lg text-label-lg text-primary shrink-0 pt-0.5"><?php echo t6_price($item['price'] ?? 0); ?></span>
+<span class="rm-price font-label-lg text-label-lg text-primary shrink-0 pt-0.5"><?php echo t6_price($item['price'] ?? 0); ?></span>
 </div>
 <?php if (! empty($item['description'])): ?>
 <p class="font-body-sm text-body-sm text-on-surface-variant text-justify leading-relaxed"><?php echo t6_esc($item['description']); ?></p>

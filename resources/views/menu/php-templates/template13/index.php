@@ -74,7 +74,7 @@ foreach ($sections as $section):
 <p class="text-sm text-gray-400 italic"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p>
 <?php if (!empty($supportsOrdering) && !empty($item['is_available'])): ?><button type="button" class="add-to-bag-btn mt-2 text-amber-glow border border-copper px-3 py-1.5 rounded hover:bg-copper/20" data-item-id="<?php echo (int)$item['id']; ?>" data-item-name="<?php echo htmlspecialchars($item['name']); ?>" data-item-price="<?php echo htmlspecialchars($item['price']); ?>" data-item-image="<?php echo !empty($item['image']) ? htmlspecialchars($item['image']) : ''; ?>">Add to bag</button><?php endif; ?>
 </div>
-<span class="text-amber-glow font-art-deco flex-shrink-0"><?php echo fis_price($item['price']); ?></span>
+<span class="rm-price text-amber-glow font-art-deco flex-shrink-0"><?php echo fis_price($item['price']); ?></span>
 </div>
 <?php endforeach; ?>
 </div>

@@ -68,7 +68,7 @@ if (!empty($sections) && is_array($sections)) {
 <div class="item-row">
 <span class="font-bold"><?php echo htmlspecialchars($item['name']); ?></span>
 <span class="item-dots"></span>
-<span class="font-semibold text-accent"><?php echo snsc_price($item['price']); ?></span>
+<span class="rm-price font-semibold text-accent"><?php echo snsc_price($item['price']); ?></span>
 </div>
 <p class="text-sm text-gray-600 mb-4"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p>
 <?php if (!empty($supportsOrdering) && !empty($item['is_available'])): ?><button type="button" class="add-to-bag-btn mb-4 text-accent border border-accent px-4 py-2 rounded hover:bg-accent hover:text-white" data-item-id="<?php echo (int)$item['id']; ?>" data-item-name="<?php echo htmlspecialchars($item['name']); ?>" data-item-price="<?php echo htmlspecialchars($item['price']); ?>" data-item-image="<?php echo !empty($item['image']) ? htmlspecialchars($item['image']) : ''; ?>">Add to bag</button><?php endif; ?>

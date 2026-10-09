@@ -93,7 +93,7 @@ if (!empty($sections) && is_array($sections)) {
 <?php if (!empty($item['image'])): ?><img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="w-full h-40 object-cover rounded mb-4"/><?php endif; ?>
 <div class="flex justify-between items-baseline mb-2">
 <h4 class="text-xl font-bold"><?php echo htmlspecialchars($item['name']); ?></h4>
-<span class="text-neonBlue font-mono"><?php echo bf_price($item['price']); ?></span>
+<span class="rm-price text-neonBlue font-mono"><?php echo bf_price($item['price']); ?></span>
 </div>
 <p class="text-sm text-gray-400"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p>
 </div>

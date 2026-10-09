@@ -309,7 +309,7 @@ if ($sidebarHasMenu):
 <?php endif; ?>
 </div>
 <div class="flex flex-wrap gap-4 justify-center z-10 mt-4">
-<?php if (!empty($fullMenuUrl)): ?><a href="<?php echo htmlspecialchars($fullMenuUrl); ?>#menu" class="flex min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-8 bg-primary text-white text-base font-bold shadow-lg shadow-primary/40 transition-all hover:bg-red-600 hover:scale-105"><span class="truncate">View Menu</span></a><?php endif; ?>
+<?php if (!empty($fullMenuUrl)): ?><a href="<?php echo htmlspecialchars($fullMenuUrl); ?>#menu" class="flex min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-8 bg-primary text-white text-base font-bold shadow-lg shadow-primary/40 transition-all hover:bg-primary/90 hover:scale-105"><span class="truncate">View Menu</span></a><?php endif; ?>
 <?php if (!empty($supportsReservations)): ?>
 <a href="<?php echo htmlspecialchars($reservationUrl); ?>" class="flex min-w-[140px] items-center justify-center overflow-hidden rounded-full h-12 px-8 border-2 border-white/80 text-white text-base font-bold transition-all hover:bg-white/20 hover:scale-105">
 <span class="truncate">Reserve Table</span>
@@ -331,7 +331,7 @@ if ($sidebarHasMenu):
 <?php if (empty($section['categories']) || !is_array($section['categories'])) continue; ?>
 <div class="px-4 md:px-40 flex justify-center pt-16 pb-2" id="section-<?php echo htmlspecialchars($section['slug']); ?>">
 <div class="w-full max-w-[960px] text-center">
-<h2 class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-700 text-xl md:text-2xl font-black uppercase tracking-widest mb-8"><?php if (!empty($fullMenuUrl) && empty($singleSectionView)): ?><a href="<?php echo htmlspecialchars($fullMenuUrl . '/' . $section['slug']); ?>" class="hover:underline"><?php echo htmlspecialchars($section['name']); ?></a><?php else: ?><?php echo htmlspecialchars($section['name']); ?><?php endif; ?></h2>
+<h2 class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/70 text-xl md:text-2xl font-black uppercase tracking-widest mb-8"><?php if (!empty($fullMenuUrl) && empty($singleSectionView)): ?><a href="<?php echo htmlspecialchars($fullMenuUrl . '/' . $section['slug']); ?>" class="hover:underline"><?php echo htmlspecialchars($section['name']); ?></a><?php else: ?><?php echo htmlspecialchars($section['name']); ?><?php endif; ?></h2>
 </div>
 </div>
 <?php foreach ($section['categories'] as $category): ?>
@@ -340,8 +340,8 @@ if ($sidebarHasMenu):
 <div id="<?php echo htmlspecialchars($category['slug']); ?>" class="px-4 md:px-40 flex justify-center <?php echo $categoryIndex === 1 ? 'pt-4' : 'pt-20'; ?> pb-5">
 <div class="w-full max-w-[960px]">
 <div class="flex items-center gap-3 mb-6">
-<span class="h-px w-8 bg-gradient-to-r from-red-500 to-red-600"></span>
-<span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-700 text-base md:text-lg font-black uppercase tracking-widest"><?php echo htmlspecialchars($category['name']); ?></span>
+<span class="h-px w-8 bg-gradient-to-r from-primary to-primary/80"></span>
+<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/70 text-base md:text-lg font-black uppercase tracking-widest"><?php echo htmlspecialchars($category['name']); ?></span>
 </div>
 <?php if (!empty($category['description'])): ?>
 <p class="text-gray-300 text-lg mb-8"><?php echo htmlspecialchars($category['description']); ?></p>
@@ -369,7 +369,7 @@ if ($sidebarHasMenu):
 <div class="flex flex-col">
 <div class="flex items-center justify-between gap-2 mb-1">
 <h3 class="text-slate-900 text-xl font-bold leading-tight group-hover:text-primary transition-colors"><?php echo htmlspecialchars($item['name']); ?></h3>
-<span class="text-primary text-lg font-bold whitespace-nowrap"><?php echo formatPriceTemplate3($item['price']); ?></span>
+<span class="rm-price text-primary text-lg font-bold whitespace-nowrap"><?php echo formatPriceTemplate3($item['price']); ?></span>
 </div>
 <?php if (!empty($item['description'])): ?>
 <p class="text-gray-600 text-sm mt-1 line-clamp-2"><?php echo htmlspecialchars($item['description']); ?></p>
@@ -416,7 +416,7 @@ if ($sidebarHasMenu):
 <p class="text-gray-600">Sign up for our newsletter to get the latest updates on events, new menu items, and exclusive offers.</p>
 <?php if (!empty($restaurant['email'])): ?>
 <div class="flex gap-2 mt-2">
-<a href="mailto:<?php echo htmlspecialchars($restaurant['email']); ?>" class="bg-primary text-white rounded-full px-6 py-3 font-bold hover:bg-red-600 transition-colors text-center">Contact Us</a>
+<a href="mailto:<?php echo htmlspecialchars($restaurant['email']); ?>" class="bg-primary text-white rounded-full px-6 py-3 font-bold hover:bg-primary/90 transition-colors text-center">Contact Us</a>
 </div>
 <?php endif; ?>
 </div>
@@ -509,7 +509,7 @@ function toggleCategoryMenu() {
 
 </script>
 <!-- Back to top -->
-<a id="scrollToTop" href="#" aria-label="Scroll to top" style="position:fixed;bottom:24px;right:24px;z-index:9999;width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#ea2a33;color:#fff;opacity:0;visibility:hidden;transform:translateY(10px);transition:opacity 0.3s,visibility 0.3s,transform 0.3s;box-shadow:0 4px 12px rgba(0,0,0,0.3);">
+<a id="scrollToTop" href="#" aria-label="Scroll to top" style="position:fixed;bottom:24px;right:24px;z-index:9999;width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--rm-primary,#ea2a33);color:#fff;opacity:0;visibility:hidden;transform:translateY(10px);transition:opacity 0.3s,visibility 0.3s,transform 0.3s;box-shadow:0 4px 12px rgba(0,0,0,0.3);">
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
 </a>
 <script>

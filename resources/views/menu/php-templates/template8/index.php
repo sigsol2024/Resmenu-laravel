@@ -146,7 +146,7 @@ h1, h2, h3 { font-family: 'Fredoka One', cursive; }
 <?php if (!empty($item['image'])): ?><img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="w-full h-40 object-cover rounded-t-xlarge -mx-6 -mt-6 mb-4"/><?php endif; ?>
 <div class="flex justify-between items-start mb-4">
 <h3 class="text-xl text-gray-800"><?php echo htmlspecialchars($item['name']); ?></h3>
-<span class="px-3 py-1 rounded-full font-bold <?php echo $useMint ? 'bg-pastel-mint text-mint-dark' : 'bg-pastel-pink text-soft-berry'; ?>"><?php echo sd_price($item['price']); ?></span>
+<span class="rm-price px-3 py-1 rounded-full font-bold <?php echo $useMint ? 'bg-pastel-mint text-mint-dark' : 'bg-pastel-pink text-soft-berry'; ?>"><?php echo sd_price($item['price']); ?></span>
 </div>
 <p class="text-gray-600 mb-4"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p>
 <?php if (!empty($supportsOrdering) && $itemAvailable): ?><button type="button" class="add-to-bag-btn mt-2 px-4 py-2 rounded-full font-bold bg-black text-white hover:opacity-90" data-item-id="<?php echo (int)$item['id']; ?>" data-item-name="<?php echo htmlspecialchars($item['name']); ?>" data-item-price="<?php echo htmlspecialchars($item['price']); ?>" data-item-image="<?php echo !empty($item['image']) ? htmlspecialchars($item['image']) : ''; ?>">Add to bag</button><?php endif; ?>

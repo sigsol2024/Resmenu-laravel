@@ -221,7 +221,7 @@ $ekCategoryHref = function (string $catSlug) use ($ekSingle, $ekFullUrl, $ekSing
 <?php if (!empty($item['image'])): ?><img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="w-full max-h-36 object-cover rounded border border-terracotta/30 mb-2"/><?php endif; ?>
 <div class="flex justify-between items-baseline gap-3 mb-1">
 <h3 class="text-base md:text-xl font-semibold text-earth menu-item-title"><?php echo htmlspecialchars($item['name']); ?></h3>
-<span class="price-tag font-serif text-base md:text-lg shrink-0"><?php echo ek_price($item['price']); ?></span>
+<span class="rm-price price-tag font-serif text-base md:text-lg shrink-0"><?php echo ek_price($item['price']); ?></span>
 </div>
 <?php if (!empty($item['description'])): ?><p class="text-sm text-earth/80"><?php echo htmlspecialchars($item['description']); ?></p><?php endif; ?>
 <?php if (!empty($supportsOrdering) && !empty($item['is_available'])): ?>

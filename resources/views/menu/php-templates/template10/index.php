@@ -660,7 +660,7 @@ body.snsw-body #scrollToTop {
         <div class="menu-item-row">
           <span class="item-name"><?php echo htmlspecialchars($item['name']); ?></span>
           <span class="item-dots"></span>
-          <span class="item-price"><?php echo snsw_price($item['price']); ?></span>
+          <span class="rm-price item-price"><?php echo snsw_price($item['price']); ?></span>
         </div>
         <?php if (!empty($item['description'])): ?><p class="item-desc mt-1 break-words"><?php echo htmlspecialchars($item['description']); ?></p><?php endif; ?>
         <?php if (!empty($supportsOrdering) && $itemAvailable): ?><button type="button" class="add-to-bag-btn mt-2 rounded border border-menu-text px-3 py-1.5 text-xs font-semibold text-menu-text transition-colors hover:bg-menu-text hover:text-white sm:px-4 sm:py-2 sm:text-sm" data-item-id="<?php echo (int)$item['id']; ?>" data-item-name="<?php echo htmlspecialchars($item['name']); ?>" data-item-price="<?php echo htmlspecialchars($item['price']); ?>" data-item-image="<?php echo !empty($item['image']) ? htmlspecialchars($item['image']) : ''; ?>">Add to bag</button><?php endif; ?>

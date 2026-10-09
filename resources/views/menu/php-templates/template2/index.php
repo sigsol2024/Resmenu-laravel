@@ -231,7 +231,7 @@ endif;
 <?php endif; ?>
 </div>
 <div class="flex flex-wrap gap-4 justify-center z-10 mt-4">
-<?php if (!empty($fullMenuUrl)): ?><a href="<?php echo htmlspecialchars($fullMenuUrl); ?>#menu" class="flex min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-8 bg-primary text-white text-base font-bold shadow-lg shadow-primary/40 transition-all hover:bg-red-600 hover:scale-105"><span class="truncate">View Menu</span></a><?php endif; ?>
+<?php if (!empty($fullMenuUrl)): ?><a href="<?php echo htmlspecialchars($fullMenuUrl); ?>#menu" class="flex min-w-[140px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-8 bg-primary text-white text-base font-bold shadow-lg shadow-primary/40 transition-all hover:bg-primary/90 hover:scale-105"><span class="truncate">View Menu</span></a><?php endif; ?>
 <?php if (!empty($supportsReservations)): ?>
 <a href="<?php echo htmlspecialchars($reservationUrl); ?>" class="flex min-w-[140px] items-center justify-center overflow-hidden rounded-full h-12 px-8 border-2 border-white/80 text-white text-base font-bold transition-all hover:bg-white/20 hover:scale-105">
 <span class="truncate">Reserve Table</span>
@@ -280,7 +280,7 @@ endif;
 <?php if (!empty($item['image'])): ?>
 <div class="w-full aspect-[4/3] overflow-hidden rounded-xl bg-gray-100 relative mb-0">
 <div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style='background-image: url("<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])); ?>");'></div>
-<div class="absolute top-3 right-3 bg-white/90 dark:bg-black/80 backdrop-blur rounded-full px-3 py-1 text-xs font-bold shadow-sm"><?php echo formatPriceTemplate2($item['price']); ?></div>
+<div class="rm-price absolute top-3 right-3 bg-white/90 dark:bg-black/80 backdrop-blur rounded-full px-3 py-1 text-xs font-bold shadow-sm"><?php echo formatPriceTemplate2($item['price']); ?></div>
 <?php if (!$item['is_available']): ?>
 <div class="absolute inset-0 bg-black/60 flex items-center justify-center">
 <span class="text-white font-bold text-lg">Unavailable</span>
@@ -293,7 +293,7 @@ endif;
 <div class="flex items-center justify-between gap-2 mb-1">
 <h3 class="text-[#1b0e0e] dark:text-white text-xl font-bold leading-tight group-hover:text-primary transition-colors"><?php echo htmlspecialchars($item['name']); ?></h3>
 <?php if (empty($item['image'])): ?>
-<span class="text-primary text-lg font-bold whitespace-nowrap"><?php echo formatPriceTemplate2($item['price']); ?></span>
+<span class="rm-price text-primary text-lg font-bold whitespace-nowrap"><?php echo formatPriceTemplate2($item['price']); ?></span>
 <?php endif; ?>
 </div>
 <?php if (!empty($item['description'])): ?>
@@ -341,7 +341,7 @@ endif;
 <p class="text-gray-400">Sign up for our newsletter to get the latest updates on events, new menu items, and exclusive offers.</p>
 <?php if (!empty($restaurant['email'])): ?>
 <div class="flex gap-2 mt-2">
-<a href="mailto:<?php echo htmlspecialchars($restaurant['email']); ?>" class="bg-primary text-white rounded-full px-6 py-3 font-bold hover:bg-red-600 transition-colors text-center">Contact Us</a>
+<a href="mailto:<?php echo htmlspecialchars($restaurant['email']); ?>" class="bg-primary text-white rounded-full px-6 py-3 font-bold hover:bg-primary/90 transition-colors text-center">Contact Us</a>
 </div>
 <?php endif; ?>
 </div>
