@@ -65,7 +65,7 @@ if (!empty($singleSectionView) && !empty($sections[0]['image'])) {
 }
 
 // Format price helper function
-function formatPriceTemplate3($price, $currency = '$') {
+function formatPriceTemplate3($price, $currency = '₦') {
     return formatPrice($price, $currency);
 }
 
