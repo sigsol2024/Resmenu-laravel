@@ -341,10 +341,10 @@ if ($sidebarHasMenu):
 <div class="w-full max-w-[960px]">
 <div class="flex items-center gap-3 mb-6">
 <span class="h-px w-8 bg-gradient-to-r from-primary to-primary/80"></span>
-<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/70 text-base md:text-lg font-black uppercase tracking-widest"><?php echo htmlspecialchars($category['name']); ?></span>
+<span class="rm-category-title text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/70 text-base md:text-lg font-black uppercase tracking-widest"><?php echo htmlspecialchars($category['name']); ?></span>
 </div>
 <?php if (!empty($category['description'])): ?>
-<p class="text-gray-300 text-lg mb-8"><?php echo htmlspecialchars($category['description']); ?></p>
+<p class="rm-description text-gray-300 text-lg mb-8"><?php echo htmlspecialchars($category['description']); ?></p>
 <?php endif; ?>
 </div>
 </div>
@@ -368,11 +368,11 @@ if ($sidebarHasMenu):
 <div class="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-all duration-300 ease-in-out <?php echo !empty($item['image']) ? '-mt-8 relative z-10' : ''; ?>" style="animation: slideUp 0.6s ease-in-out forwards; animation-delay: calc(var(--index, 0) * 0.1s); opacity: 0; transform: translateY(30px);">
 <div class="flex flex-col">
 <div class="flex items-center justify-between gap-2 mb-1">
-<h3 class="text-slate-900 text-xl font-bold leading-tight group-hover:text-primary transition-colors"><?php echo htmlspecialchars($item['name']); ?></h3>
+<h3 class="rm-item-title text-slate-900 text-xl font-bold leading-tight group-hover:text-primary transition-colors"><?php echo htmlspecialchars($item['name']); ?></h3>
 <span class="rm-price text-primary text-lg font-bold whitespace-nowrap"><?php echo formatPriceTemplate3($item['price']); ?></span>
 </div>
 <?php if (!empty($item['description'])): ?>
-<p class="text-gray-600 text-sm mt-1 line-clamp-2"><?php echo htmlspecialchars($item['description']); ?></p>
+<p class="rm-description text-gray-600 text-sm mt-1 line-clamp-2"><?php echo htmlspecialchars($item['description']); ?></p>
 <?php endif; ?>
 <?php if (!$item['is_available'] && empty($item['image'])): ?>
 <span class="mt-2 text-sm font-bold text-red-500">Unavailable</span>

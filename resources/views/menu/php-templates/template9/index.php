@@ -148,7 +148,7 @@ body.sfh-body .sfh-bg { position: absolute; inset: 0; pointer-events: none; back
     if (empty($items)) continue;
 ?>
 <section class="mb-16" id="<?php echo htmlspecialchars($slug); ?>">
-<h3 class="font-chunky text-3xl md:text-4xl uppercase mb-6 comic-border inline-block bg-brandYellow text-brandBlack px-6 py-3 shadow-brutal-sm -rotate-1"><?php echo htmlspecialchars($category['name']); ?></h3>
+<h3 class="rm-category-title font-chunky text-3xl md:text-4xl uppercase mb-6 comic-border inline-block bg-brandYellow text-brandBlack px-6 py-3 shadow-brutal-sm -rotate-1"><?php echo htmlspecialchars($category['name']); ?></h3>
 <div class="masonry-grid">
 <?php foreach ($items as $itemIndex => $item): 
         $masonry = $masonryClasses[$itemIndex % 3];
@@ -158,8 +158,8 @@ body.sfh-body .sfh-bg { position: absolute; inset: 0; pointer-events: none; back
 <article class="<?php echo $masonry; ?> sfh-card bg-white comic-border shadow-brutal flex flex-col relative overflow-hidden group <?php echo $imgUrl ? '' : 'sfh-no-img'; ?>" data-purpose="menu-item">
 <div class="rm-price absolute -top-1 -right-1 sfh-price bg-brandBlack text-white font-chunky comic-border z-10 <?php echo $itemIndex === 0 ? 'animate-wiggle' : ''; ?>"><?php echo sfh_price($item['price']); ?></div>
 <?php if ($imgUrl): ?><img alt="<?php echo htmlspecialchars($item['name']); ?>" class="w-full sfh-img object-cover comic-border group-hover:grayscale transition-all duration-300" src="<?php echo $imgUrl; ?>"/><?php endif; ?>
-<h3 class="font-chunky sfh-title"><?php echo htmlspecialchars($item['name']); ?></h3>
-<p class="sfh-desc font-bold flex-grow min-h-0"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p>
+<h3 class="rm-item-title font-chunky sfh-title"><?php echo htmlspecialchars($item['name']); ?></h3>
+<p class="rm-description sfh-desc font-bold flex-grow min-h-0"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p>
 <?php if (!empty($supportsOrdering) && $itemAvailable): ?><button type="button" class="add-to-bag-btn sfh-btn comic-border font-chunky bg-brandBlack text-white hover:bg-white hover:text-brandBlack transition-colors" data-item-id="<?php echo (int)$item['id']; ?>" data-item-name="<?php echo htmlspecialchars($item['name']); ?>" data-item-price="<?php echo htmlspecialchars($item['price']); ?>" data-item-image="<?php echo !empty($item['image']) ? htmlspecialchars($item['image']) : ''; ?>">Add to bag</button><?php endif; ?>
 </article>
 <?php endforeach; ?>

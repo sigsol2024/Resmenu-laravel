@@ -323,7 +323,7 @@ foreach ($sections as $section):
         </div>
       <?php endif; ?>
       <div class="menu-card">
-        <div class="category-title"><?php echo htmlspecialchars($category['name']); ?></div>
+        <div class="rm-category-title category-title"><?php echo htmlspecialchars($category['name']); ?></div>
         <div class="menu-items">
           <?php foreach ($category['menu_items'] as $item): ?>
             <div class="menu-item">
@@ -334,7 +334,7 @@ foreach ($sections as $section):
                   </div>
                 <?php endif; ?>
                 <div class="item-details">
-                  <div class="item-name">
+                  <div class="item-name rm-item-title">
                     <?php echo htmlspecialchars($item['name']); ?>
                     <?php if (!$item['is_available']): ?>
                       <span class="unavailable-badge">Unavailable</span>
@@ -344,7 +344,7 @@ foreach ($sections as $section):
                     <div class="rm-price item-price"><?php echo 'N' . number_format($item['price'], 0, '.', ','); ?></div>
                   <?php endif; ?>
                   <?php if ($item['description']): ?>
-                    <div class="item-description"><?php echo htmlspecialchars($item['description']); ?></div>
+                    <div class="rm-description item-description"><?php echo htmlspecialchars($item['description']); ?></div>
                   <?php endif; ?>
                   <?php if (!empty($supportsOrdering) && !empty($item['is_available'])): ?>
                   <button type="button" class="add-to-bag-btn btn btn-primary" style="margin-top:8px;"

@@ -192,14 +192,14 @@ foreach ($sections as $section):
 <span class="ornate-symbol"><?php echo $categoryIcon; ?></span>
 </div>
 <?php endif; ?>
-<h3 class="text-left font-serif text-2xl md:text-4xl text-gold mb-10 uppercase tracking-widest"><?php echo htmlspecialchars($category['name']); ?></h3>
+<h3 class="rm-category-title text-left font-serif text-2xl md:text-4xl text-gold mb-10 uppercase tracking-widest"><?php echo htmlspecialchars($category['name']); ?></h3>
 <?php if ($primeCutCatIndex === 1 && count($items) > 0): ?>
 <div class="space-y-12">
 <div class="relative p-8 border border-gold/30 bg-black/20 flex flex-col items-start text-left" data-purpose="featured-item">
 <div class="absolute -top-4 left-0 bg-gold text-burgundy px-4 py-1 text-xs font-bold uppercase tracking-widest">Chef's Recommendation</div>
 <?php $feat = $items[0]; $featAvailable = !isset($feat['is_available']) || $feat['is_available']; ?>
-<h3 class="font-serif text-3xl font-bold mb-2"><?php echo htmlspecialchars($feat['name']); ?></h3>
-<p class="max-w-xl text-sm font-sans italic opacity-80 mb-4 text-left"><?php echo htmlspecialchars($feat['description'] ?? ''); ?></p>
+<h3 class="rm-item-title font-serif text-3xl font-bold mb-2"><?php echo htmlspecialchars($feat['name']); ?></h3>
+<p class="rm-description max-w-xl text-sm font-sans italic opacity-80 mb-4 text-left"><?php echo htmlspecialchars($feat['description'] ?? ''); ?></p>
 <span class="rm-price text-gold font-serif text-2xl"><?php echo the_prime_cut_price($feat['price']); ?></span>
 <?php if (!empty($supportsOrdering) && $featAvailable): ?><button type="button" class="add-to-bag-btn mt-3 font-sans text-sm uppercase text-gold border border-gold/60 px-3 py-1.5 hover:bg-gold/20 transition-colors inline-block w-auto" data-item-id="<?php echo (int)$feat['id']; ?>" data-item-name="<?php echo htmlspecialchars($feat['name']); ?>" data-item-price="<?php echo htmlspecialchars($feat['price']); ?>" data-item-image="<?php echo !empty($feat['image']) ? htmlspecialchars($feat['image']) : ''; ?>">Add to bag</button><?php endif; ?>
 </div>
@@ -207,10 +207,10 @@ foreach ($sections as $section):
 <?php for ($i = 1; $i < count($items); $i++): $item = $items[$i]; $itemAvailable = !isset($item['is_available']) || $item['is_available']; ?>
 <div class="flex flex-col text-left">
 <div class="flex justify-between items-baseline mb-1">
-<h3 class="font-serif text-xl font-bold"><?php echo htmlspecialchars($item['name']); ?></h3>
+<h3 class="rm-item-title font-serif text-xl font-bold"><?php echo htmlspecialchars($item['name']); ?></h3>
 <span class="rm-price text-gold font-serif"><?php echo the_prime_cut_price($item['price']); ?></span>
 </div>
-<p class="text-sm font-sans italic opacity-75 text-left"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p>
+<p class="rm-description text-sm font-sans italic opacity-75 text-left"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p>
 <?php if (!empty($supportsOrdering) && $itemAvailable): ?><button type="button" class="add-to-bag-btn mt-2 font-sans text-xs uppercase text-gold border border-gold/60 px-3 py-1.5 hover:bg-gold/20 transition-colors inline-block w-auto" data-item-id="<?php echo (int)$item['id']; ?>" data-item-name="<?php echo htmlspecialchars($item['name']); ?>" data-item-price="<?php echo htmlspecialchars($item['price']); ?>" data-item-image="<?php echo !empty($item['image']) ? htmlspecialchars($item['image']) : ''; ?>">Add to bag</button><?php endif; ?>
 </div>
 <?php endfor; ?>
@@ -222,10 +222,10 @@ foreach ($sections as $section):
 <div class="flex flex-col text-left">
 <?php if (!empty($item['image'])): ?><div class="mb-3"><img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="w-full max-h-40 object-cover rounded border border-gold/30"/></div><?php endif; ?>
 <div class="flex justify-between items-baseline mb-1">
-<h3 class="font-serif text-xl font-bold"><?php echo htmlspecialchars($item['name']); ?></h3>
+<h3 class="rm-item-title font-serif text-xl font-bold"><?php echo htmlspecialchars($item['name']); ?></h3>
 <span class="rm-price text-gold font-serif"><?php echo the_prime_cut_price($item['price']); ?></span>
 </div>
-<p class="text-sm font-sans italic opacity-75 text-left"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p>
+<p class="rm-description text-sm font-sans italic opacity-75 text-left"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p>
 <?php if (!empty($supportsOrdering) && $itemAvailable): ?><button type="button" class="add-to-bag-btn mt-2 font-sans text-xs uppercase text-gold border border-gold/60 px-3 py-1.5 hover:bg-gold/20 transition-colors inline-block w-auto" data-item-id="<?php echo (int)$item['id']; ?>" data-item-name="<?php echo htmlspecialchars($item['name']); ?>" data-item-price="<?php echo htmlspecialchars($item['price']); ?>" data-item-image="<?php echo !empty($item['image']) ? htmlspecialchars($item['image']) : ''; ?>">Add to bag</button><?php endif; ?>
 </div>
 <?php endforeach; ?>
@@ -243,6 +243,7 @@ foreach ($sections as $section):
 <?php if (!empty($restaurant['phone'])): ?><span><?php if (!empty($restaurant['address'])): ?> • <?php endif; ?><a href="tel:<?php echo htmlspecialchars(preg_replace('/\s+/', '', $restaurant['phone'])); ?>" class="text-gold hover:underline"><?php echo htmlspecialchars($restaurant['phone']); ?></a></span><?php endif; ?>
 <?php if (!empty($restaurant['email'])): ?><span><?php if (!empty($restaurant['address']) || !empty($restaurant['phone'])): ?> • <?php endif; ?><a href="mailto:<?php echo htmlspecialchars($restaurant['email']); ?>" class="text-gold hover:underline"><?php echo htmlspecialchars($restaurant['email']); ?></a></span><?php endif; ?>
 </div>
+<?php echo resmenu_social_links($restaurant, 'mt-6 text-gold'); ?>
 </footer>
 </main>
 <?php if (!empty($supportsOrdering)): ?>

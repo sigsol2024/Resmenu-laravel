@@ -264,7 +264,7 @@ body.nfm-body {
   <?php if (!empty($category['image'])): ?>
     <img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'categories', $category['image'])); ?>" alt="" class="h-11 w-11 shrink-0 rounded-full object-cover ring-2 ring-brandGold/45 md:h-10 md:w-10" width="44" height="44" loading="lazy" decoding="async"/>
   <?php endif; ?>
-  <span class="min-w-0"><?php echo htmlspecialchars($category['name']); ?></span>
+  <span class="rm-category-title min-w-0"><?php echo htmlspecialchars($category['name']); ?></span>
 </h3>
 <div class="flex flex-col gap-3 md:gap-3.5">
 <?php foreach ($items as $item): ?>
@@ -273,12 +273,12 @@ body.nfm-body {
 <div class="flex min-w-0 flex-1 flex-col gap-1.5">
 <div class="flex w-full min-w-0 items-start gap-3">
 <div class="flex min-w-0 flex-1 items-start gap-2">
-<span class="line-clamp-2 min-w-0 shrink text-left text-base font-semibold leading-snug text-white"><?php echo htmlspecialchars($item['name']); ?></span>
+<span class="rm-item-title line-clamp-2 min-w-0 shrink text-left text-base font-semibold leading-snug text-white"><?php echo htmlspecialchars($item['name']); ?></span>
 <span class="nfm-dot-leader mt-[0.55em] min-h-0 min-w-[8px]" aria-hidden="true"></span>
 </div>
 <span class="rm-price shrink-0 rounded-sm bg-white px-2 py-0.5 text-right font-sans text-xs font-semibold tabular-nums leading-none text-black"><?php echo nfm_price($item['price']); ?></span>
 </div>
-<?php if (!empty($item['description'])): ?><p class="text-xs leading-relaxed text-gray-300 sm:text-sm md:text-[11px] md:leading-snug"><?php echo htmlspecialchars($item['description']); ?></p><?php endif; ?>
+<?php if (!empty($item['description'])): ?><p class="rm-description text-xs leading-relaxed text-gray-300 sm:text-sm md:text-[11px] md:leading-snug"><?php echo htmlspecialchars($item['description']); ?></p><?php endif; ?>
 <?php if (!empty($supportsOrdering) && !empty($item['is_available'])): ?><button type="button" class="add-to-bag-btn self-start rounded border border-white/50 px-2.5 py-1 text-xs text-white hover:bg-white/10 md:px-2 md:py-0.5 md:text-[10px]" data-item-id="<?php echo (int)$item['id']; ?>" data-item-name="<?php echo htmlspecialchars($item['name']); ?>" data-item-price="<?php echo htmlspecialchars($item['price']); ?>" data-item-image="<?php echo !empty($item['image']) ? htmlspecialchars($item['image']) : ''; ?>">Add to bag</button><?php endif; ?>
 </div>
 </article>
@@ -311,6 +311,7 @@ body.nfm-body {
   <?php elseif (empty($restaurant['address']) && empty($restaurant['phone']) && empty($restaurant['email'])): ?>
     <p class="mt-6 text-sm text-gray-500">Thank you for dining with us.</p>
   <?php endif; ?>
+  <?php echo resmenu_social_links($restaurant, 'mt-6 text-brandGold'); ?>
 </footer>
 </main>
 </div>

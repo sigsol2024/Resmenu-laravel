@@ -137,7 +137,7 @@ h1, h2, h3 { font-family: 'Fredoka One', cursive; }
 ?>
 <section class="mb-16" id="<?php echo htmlspecialchars($slug); ?>">
 <div class="flex items-center gap-4 mb-8">
-<h3 class="text-3xl <?php echo $useMint ? 'text-mint-dark' : 'text-soft-berry'; ?>"><?php echo htmlspecialchars($category['name']); ?></h3>
+<h3 class="rm-category-title text-3xl <?php echo $useMint ? 'text-mint-dark' : 'text-soft-berry'; ?>"><?php echo htmlspecialchars($category['name']); ?></h3>
 <div class="h-1 flex-grow <?php echo $useMint ? 'bg-pastel-mint' : 'bg-pastel-pink'; ?> rounded-full"></div>
 </div>
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -145,10 +145,10 @@ h1, h2, h3 { font-family: 'Fredoka One', cursive; }
 <div class="bg-white p-6 rounded-xlarge shadow-sm hover:shadow-xl transition-shadow border-4 <?php echo $useMint ? 'border-pastel-mint' : 'border-pastel-pink'; ?> relative overflow-hidden" data-purpose="menu-item-card">
 <?php if (!empty($item['image'])): ?><img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="w-full h-40 object-cover rounded-t-xlarge -mx-6 -mt-6 mb-4"/><?php endif; ?>
 <div class="flex justify-between items-start mb-4">
-<h3 class="text-xl text-gray-800"><?php echo htmlspecialchars($item['name']); ?></h3>
+<h3 class="rm-item-title text-xl text-gray-800"><?php echo htmlspecialchars($item['name']); ?></h3>
 <span class="rm-price px-3 py-1 rounded-full font-bold <?php echo $useMint ? 'bg-pastel-mint text-mint-dark' : 'bg-pastel-pink text-soft-berry'; ?>"><?php echo sd_price($item['price']); ?></span>
 </div>
-<p class="text-gray-600 mb-4"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p>
+<p class="rm-description text-gray-600 mb-4"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p>
 <?php if (!empty($supportsOrdering) && $itemAvailable): ?><button type="button" class="add-to-bag-btn mt-2 px-4 py-2 rounded-full font-bold bg-black text-white hover:opacity-90" data-item-id="<?php echo (int)$item['id']; ?>" data-item-name="<?php echo htmlspecialchars($item['name']); ?>" data-item-price="<?php echo htmlspecialchars($item['price']); ?>" data-item-image="<?php echo !empty($item['image']) ? htmlspecialchars($item['image']) : ''; ?>">Add to bag</button><?php endif; ?>
 </div>
 <?php endforeach; ?>

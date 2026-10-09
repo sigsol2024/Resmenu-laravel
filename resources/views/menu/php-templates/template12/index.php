@@ -63,18 +63,18 @@ if (!empty($sections) && is_array($sections)) {
     if (empty($items)) continue;
 ?>
 <section class="flex gap-6 items-start mb-12" id="<?php echo htmlspecialchars($slug); ?>">
-<div class="hidden md:block"><h3 class="vertical-text text-medBlue font-bold text-3xl border-l-2 border-lemonYellow pl-4 py-4"><?php echo htmlspecialchars($category['name']); ?></h3></div>
+<div class="hidden md:block"><h3 class="rm-category-title vertical-text text-medBlue font-bold text-3xl border-l-2 border-lemonYellow pl-4 py-4"><?php echo htmlspecialchars($category['name']); ?></h3></div>
 <div class="flex-1">
-<h3 class="md:hidden text-3xl text-medBlue font-bold mb-6 border-b-2 border-lemonYellow inline-block"><?php echo htmlspecialchars($category['name']); ?></h3>
+<h3 class="rm-category-title md:hidden text-3xl text-medBlue font-bold mb-6 border-b-2 border-lemonYellow inline-block"><?php echo htmlspecialchars($category['name']); ?></h3>
 <div class="space-y-8">
 <?php foreach ($items as $item): ?>
 <div class="group">
 <?php if (!empty($item['image'])): ?><img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="w-full max-h-36 object-cover rounded border border-lemonYellow/30 mb-2"/><?php endif; ?>
 <div class="flex justify-between items-baseline mb-1">
-<h3 class="text-xl font-bold text-medBlue group-hover:text-lemonYellow transition-colors"><?php echo htmlspecialchars($item['name']); ?></h3>
+<h3 class="rm-item-title text-xl font-bold text-medBlue group-hover:text-lemonYellow transition-colors"><?php echo htmlspecialchars($item['name']); ?></h3>
 <span class="rm-price font-bold text-medBlue"><?php echo mf_price($item['price']); ?></span>
 </div>
-<p class="text-sm text-slate-600 italic"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p>
+<p class="rm-description text-sm text-slate-600 italic"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p>
 <?php if (!empty($supportsOrdering) && !empty($item['is_available'])): ?><button type="button" class="add-to-bag-btn mt-2 text-medBlue border border-medBlue px-4 py-2 rounded hover:bg-medBlue hover:text-white" data-item-id="<?php echo (int)$item['id']; ?>" data-item-name="<?php echo htmlspecialchars($item['name']); ?>" data-item-price="<?php echo htmlspecialchars($item['price']); ?>" data-item-image="<?php echo !empty($item['image']) ? htmlspecialchars($item['image']) : ''; ?>">Add to bag</button><?php endif; ?>
 </div>
 <?php endforeach; ?>
@@ -85,7 +85,7 @@ if (!empty($sections) && is_array($sections)) {
 </div>
 <?php endforeach; ?>
 </main>
-<footer class="max-w-6xl mx-auto py-12 text-center text-slate-500 border-t border-slate-200"><?php echo htmlspecialchars($restaurant['footer_content'] ?? $restaurant['address'] ?? ''); ?></footer>
+<footer class="max-w-6xl mx-auto py-12 text-center text-slate-500 border-t border-slate-200"><?php echo htmlspecialchars($restaurant['footer_content'] ?? $restaurant['address'] ?? ''); ?><?php echo resmenu_social_links($restaurant, 'mt-4 text-medBlue'); ?></footer>
 <?php if (!empty($supportsOrdering)): ?>
 <link rel="stylesheet" href="<?php echo rtrim(defined('SITE_URL') ? SITE_URL : '', '/'); ?>/legacy/assets/css/cart-modal.css">
 <div id="resmenu-cart-widget" class="fixed bottom-6 left-6 z-50 hidden"></div>

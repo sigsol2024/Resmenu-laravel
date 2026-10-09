@@ -32,7 +32,7 @@ class CustomizationService
     }
 
     /**
-     * Primary/price colours the manager changed from the template defaults.
+     * Menu colours the manager changed from the template defaults.
      * Saving the form unchanged stores the defaults, which must not repaint the design.
      *
      * @return array<string, string>
@@ -52,7 +52,7 @@ class CustomizationService
 
         $defaults = $this->templateDefaults($templateId);
         $overrides = [];
-        foreach (['primary_color', 'price_color'] as $key) {
+        foreach (['primary_color', 'price_color', 'menu_title_color', 'category_title_color', 'description_color'] as $key) {
             $value = trim((string) ($row->{$key} ?? ''));
             if ($value !== '' && strcasecmp($value, (string) ($defaults[$key] ?? '')) !== 0) {
                 $overrides[$key] = $value;

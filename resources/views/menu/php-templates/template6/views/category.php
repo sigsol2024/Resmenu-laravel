@@ -15,7 +15,7 @@ if (! empty($category['description'])) {
 <div class="absolute inset-0 lusso-gradient"></div>
 <div class="absolute inset-0 bg-surface/30"></div>
 <div class="absolute bottom-0 left-0 right-0 px-4 md:px-gutter pb-8 md:pb-10 pt-10 max-w-container-max mx-auto">
-<h1 class="font-display-lg text-headline-md md:text-headline-lg text-primary serif mb-2"><?php echo t6_esc($catName); ?></h1>
+<h1 class="rm-category-title font-display-lg text-headline-md md:text-headline-lg text-primary serif mb-2"><?php echo t6_esc($catName); ?></h1>
 <p class="font-body-md md:text-body-lg text-on-surface-variant max-w-xl"><?php echo t6_esc($catSubtitle); ?></p>
 </div>
 </section>
@@ -25,7 +25,7 @@ if (! empty($category['description'])) {
 <?php if (! $catHeroUrl): ?>
 <section class="mb-md md:mb-lg">
 <div class="max-w-2xl">
-<h1 class="font-display-lg text-headline-md md:text-headline-lg mb-2 text-primary serif"><?php echo t6_esc($catName); ?></h1>
+<h1 class="rm-category-title font-display-lg text-headline-md md:text-headline-lg mb-2 text-primary serif"><?php echo t6_esc($catName); ?></h1>
 <p class="font-body-md text-body-md text-on-surface-variant/80"><?php echo t6_esc($catSubtitle); ?></p>
 </div>
 </section>
@@ -61,11 +61,11 @@ if (! empty($category['description'])) {
 <?php endif; ?>
 <div class="p-4 md:p-5 flex flex-col flex-1">
 <div class="flex justify-between items-start gap-3 mb-2">
-<h3 class="font-headline-md text-headline-md serif text-on-surface group-hover:text-primary transition-colors leading-tight min-w-0 flex-1"><?php echo t6_esc($item['name'] ?? ''); ?></h3>
+<h3 class="rm-item-title font-headline-md text-headline-md serif text-on-surface group-hover:text-primary transition-colors leading-tight min-w-0 flex-1"><?php echo t6_esc($item['name'] ?? ''); ?></h3>
 <span class="rm-price font-label-lg text-label-lg text-primary shrink-0 pt-0.5"><?php echo t6_price($item['price'] ?? 0); ?></span>
 </div>
 <?php if (! empty($item['description'])): ?>
-<p class="font-body-sm text-body-sm text-on-surface-variant text-justify leading-relaxed"><?php echo t6_esc($item['description']); ?></p>
+<p class="rm-description font-body-sm text-body-sm text-on-surface-variant text-justify leading-relaxed"><?php echo t6_esc($item['description']); ?></p>
 <?php endif; ?>
 <?php if (! empty($supportsOrdering)): ?>
 <div class="mt-3 pt-2 border-t border-outline-variant/10">

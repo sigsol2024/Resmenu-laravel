@@ -210,7 +210,7 @@ $ekCategoryHref = function (string $catSlug) use ($ekSingle, $ekFullUrl, $ekSing
         : 'mb-6 md:mb-10 bg-white/70 border border-sage/25 rounded-xl shadow-md p-4 md:p-8';
 ?>
 <section class="<?php echo htmlspecialchars($catShellClass); ?>" id="<?php echo htmlspecialchars($slug); ?>">
-<h3 class="text-xl md:text-3xl font-serif font-bold text-earth border-b-2 border-terracotta pb-2 mb-5 md:mb-8"><?php echo htmlspecialchars($category['name']); ?></h3>
+<h3 class="rm-category-title text-xl md:text-3xl font-serif font-bold text-earth border-b-2 border-terracotta pb-2 mb-5 md:mb-8"><?php echo htmlspecialchars($category['name']); ?></h3>
 <div class="space-y-4 md:space-y-5">
 <?php foreach (array_values($items) as $itemIndex => $item):
     $itemCardClass = $isDrinksCat
@@ -220,10 +220,10 @@ $ekCategoryHref = function (string $catSlug) use ($ekSingle, $ekFullUrl, $ekSing
 <article class="<?php echo htmlspecialchars($itemCardClass); ?>">
 <?php if (!empty($item['image'])): ?><img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="w-full max-h-36 object-cover rounded border border-terracotta/30 mb-2"/><?php endif; ?>
 <div class="flex justify-between items-baseline gap-3 mb-1">
-<h3 class="text-base md:text-xl font-semibold text-earth menu-item-title"><?php echo htmlspecialchars($item['name']); ?></h3>
+<h3 class="rm-item-title text-base md:text-xl font-semibold text-earth menu-item-title"><?php echo htmlspecialchars($item['name']); ?></h3>
 <span class="rm-price price-tag font-serif text-base md:text-lg shrink-0"><?php echo ek_price($item['price']); ?></span>
 </div>
-<?php if (!empty($item['description'])): ?><p class="text-sm text-earth/80"><?php echo htmlspecialchars($item['description']); ?></p><?php endif; ?>
+<?php if (!empty($item['description'])): ?><p class="rm-description text-sm text-earth/80"><?php echo htmlspecialchars($item['description']); ?></p><?php endif; ?>
 <?php if (!empty($supportsOrdering) && !empty($item['is_available'])): ?>
 <button type="button" class="add-to-bag-btn ek-order-btn" data-item-id="<?php echo (int)$item['id']; ?>" data-item-name="<?php echo htmlspecialchars($item['name']); ?>" data-item-price="<?php echo htmlspecialchars($item['price']); ?>" data-item-image="<?php echo !empty($item['image']) ? htmlspecialchars($item['image']) : ''; ?>">Order<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
 <?php endif; ?>
@@ -234,7 +234,7 @@ $ekCategoryHref = function (string $catSlug) use ($ekSingle, $ekFullUrl, $ekSing
 <?php endforeach; ?>
 </div>
 <?php endforeach; ?>
-<footer class="mt-10 md:mt-16 pt-6 md:pt-8 border-t border-sage/30 text-center text-earth/60 text-sm"><?php if (!empty($restaurant['footer_content'])): ?><p class="mb-4"><?php echo nl2br(htmlspecialchars($restaurant['footer_content'])); ?></p><?php endif; ?><?php echo htmlspecialchars($restaurant['address'] ?? ''); ?></footer>
+<footer class="mt-10 md:mt-16 pt-6 md:pt-8 border-t border-sage/30 text-center text-earth/60 text-sm"><?php if (!empty($restaurant['footer_content'])): ?><p class="mb-4"><?php echo nl2br(htmlspecialchars($restaurant['footer_content'])); ?></p><?php endif; ?><?php echo htmlspecialchars($restaurant['address'] ?? ''); ?><?php echo resmenu_social_links($restaurant, 'mt-5 text-earth/70'); ?></footer>
 </div>
 <?php if (!empty($supportsOrdering)): ?>
 <link rel="stylesheet" href="<?php echo rtrim(defined('SITE_URL') ? SITE_URL : '', '/'); ?>/legacy/assets/css/cart-modal.css">

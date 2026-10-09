@@ -649,7 +649,7 @@ body.snsw-body #scrollToTop {
     $snswCatDividerIndex++;
   ?>
   <section class="mb-10 min-w-0 md:mb-16" id="<?php echo htmlspecialchars($slug); ?>">
-    <h3 class="section-header <?php echo $snswDividerClass; ?>"><?php echo htmlspecialchars($category['name']); ?></h3>
+    <h3 class="rm-category-title section-header <?php echo $snswDividerClass; ?>"><?php echo htmlspecialchars($category['name']); ?></h3>
     <?php if ($useBox): ?><div class="min-w-0 border border-divider-dark bg-white bg-opacity-40 p-4 md:p-6"><?php endif; ?>
     <div class="snsw-menu-items">
       <?php foreach ($items as $item):
@@ -658,11 +658,11 @@ body.snsw-body #scrollToTop {
       <div class="menu-item">
         <?php if (!empty($item['image'])): ?><div class="mb-2"><img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="max-h-20 w-full max-w-full rounded object-cover md:max-h-24"/></div><?php endif; ?>
         <div class="menu-item-row">
-          <span class="item-name"><?php echo htmlspecialchars($item['name']); ?></span>
+          <span class="rm-item-title item-name"><?php echo htmlspecialchars($item['name']); ?></span>
           <span class="item-dots"></span>
           <span class="rm-price item-price"><?php echo snsw_price($item['price']); ?></span>
         </div>
-        <?php if (!empty($item['description'])): ?><p class="item-desc mt-1 break-words"><?php echo htmlspecialchars($item['description']); ?></p><?php endif; ?>
+        <?php if (!empty($item['description'])): ?><p class="rm-description item-desc mt-1 break-words"><?php echo htmlspecialchars($item['description']); ?></p><?php endif; ?>
         <?php if (!empty($supportsOrdering) && $itemAvailable): ?><button type="button" class="add-to-bag-btn mt-2 rounded border border-menu-text px-3 py-1.5 text-xs font-semibold text-menu-text transition-colors hover:bg-menu-text hover:text-white sm:px-4 sm:py-2 sm:text-sm" data-item-id="<?php echo (int)$item['id']; ?>" data-item-name="<?php echo htmlspecialchars($item['name']); ?>" data-item-price="<?php echo htmlspecialchars($item['price']); ?>" data-item-image="<?php echo !empty($item['image']) ? htmlspecialchars($item['image']) : ''; ?>">Add to bag</button><?php endif; ?>
       </div>
       <?php endforeach; ?>

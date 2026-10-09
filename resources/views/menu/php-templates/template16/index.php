@@ -708,7 +708,7 @@ if (empty($singleSectionView) && !empty($sectionsForNav) && is_array($sectionsFo
 ?>
 <section class="nmc-reveal mb-20 min-w-0 overflow-visible rounded-2xl glass-card p-6 sm:p-8" id="<?php echo htmlspecialchars($slug); ?>">
 <div class="nmc-cat-head mb-8 min-w-0">
-<h3 class="nmc-cat-title block w-full border-b-2 border-orange-500 pb-2 font-bold text-white"><?php echo htmlspecialchars($category['name']); ?></h3>
+<h3 class="rm-category-title nmc-cat-title block w-full border-b-2 border-orange-500 pb-2 font-bold text-white"><?php echo htmlspecialchars($category['name']); ?></h3>
 <?php if (!empty($category['image'])): ?>
 <div class="mt-3 w-full max-w-md overflow-visible">
 <img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'categories', $category['image'])); ?>" alt="" class="<?php echo htmlspecialchars(nmc_img_class('h-auto max-h-48 w-full sm:max-h-52', $category['image'], 'categories', 'rounded-lg ring-1 ring-white/15'), ENT_QUOTES, 'UTF-8'); ?>" loading="lazy" decoding="async"/>
@@ -728,10 +728,10 @@ if (empty($singleSectionView) && !empty($sectionsForNav) && is_array($sectionsFo
 <?php endif; ?>
 <div class="nmc-menu-item__text min-w-0<?php echo $nmcItemHasImage ? ' w-full' : ' flex-1'; ?>">
 <div class="flex min-w-0 items-baseline justify-between gap-3">
-<h4 class="nmc-item-title min-w-0 flex-1 text-left font-semibold text-slate-100"><?php echo htmlspecialchars($item['name']); ?></h4>
+<h4 class="rm-item-title nmc-item-title min-w-0 flex-1 text-left font-semibold text-slate-100"><?php echo htmlspecialchars($item['name']); ?></h4>
 <?php if ($nmcItemPrice !== ''): ?><span class="rm-price shrink-0 font-mono text-sm tabular-nums leading-snug text-red-500 sm:text-base"><?php echo $nmcItemPrice; ?></span><?php endif; ?>
 </div>
-<?php if (!empty($item['description'])): ?><p class="mt-1.5 w-full text-left text-sm leading-relaxed text-slate-400"><?php echo htmlspecialchars($item['description']); ?></p><?php endif; ?>
+<?php if (!empty($item['description'])): ?><p class="rm-description mt-1.5 w-full text-left text-sm leading-relaxed text-slate-400"><?php echo htmlspecialchars($item['description']); ?></p><?php endif; ?>
 <?php if (!empty($supportsOrdering) && !empty($item['is_available'])): ?><button type="button" class="add-to-bag-btn nmc-order-btn" data-item-id="<?php echo (int)$item['id']; ?>" data-item-name="<?php echo htmlspecialchars($item['name']); ?>" data-item-price="<?php echo htmlspecialchars($item['price']); ?>" data-item-image="<?php echo !empty($item['image']) ? htmlspecialchars($item['image']) : ''; ?>">Order</button><?php endif; ?>
 </div>
 </div>
@@ -744,6 +744,7 @@ if (empty($singleSectionView) && !empty($sectionsForNav) && is_array($sectionsFo
 <footer class="mt-16 border-t border-white/10 pt-8 text-center text-sm text-slate-500">
 <?php if (!empty($restaurant['footer_content'])): ?><p class="mb-4"><?php echo nl2br(htmlspecialchars($restaurant['footer_content'])); ?></p><?php endif; ?>
 <?php if (!empty($restaurant['address'])): ?><p><?php echo htmlspecialchars($restaurant['address']); ?></p><?php endif; ?>
+<?php echo resmenu_social_links($restaurant, 'mt-5 text-orange-400'); ?>
 </footer>
 </main>
 </div>

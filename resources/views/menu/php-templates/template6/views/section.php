@@ -49,9 +49,9 @@ $sectionHeroUrl = ! empty($section) ? t6_section_image($uploadBaseUrl ?? '', $se
 <div class="absolute inset-0 z-10 t6-category-img-overlay transition-all duration-500"></div>
 <img class="w-full h-full object-cover transition-transform duration-700 absolute inset-0 group-hover:scale-105" alt="<?php echo t6_esc($cat['name'] ?? ''); ?>" src="<?php echo t6_esc($catImg); ?>" loading="lazy">
 <div class="absolute bottom-0 left-0 p-3 md:p-6 z-20 w-full">
-<h3 class="font-headline-md md:text-headline-lg text-primary mb-1 serif leading-tight"><?php echo t6_esc($cat['name'] ?? ''); ?></h3>
+<h3 class="rm-category-title font-headline-md md:text-headline-lg text-primary mb-1 serif leading-tight"><?php echo t6_esc($cat['name'] ?? ''); ?></h3>
 <?php if (! empty($cat['description']) && $isLarge): ?>
-<p class="font-body-sm md:text-body-md text-on-surface-variant max-w-sm line-clamp-2"><?php echo t6_esc($cat['description']); ?></p>
+<p class="rm-description font-body-sm md:text-body-md text-on-surface-variant max-w-sm line-clamp-2"><?php echo t6_esc($cat['description']); ?></p>
 <?php endif; ?>
 </div>
 <?php else: ?>
@@ -59,9 +59,9 @@ $sectionHeroUrl = ! empty($section) ? t6_section_image($uploadBaseUrl ?? '', $se
 <div class="absolute inset-0 z-10 border border-primary/10 rounded-xl pointer-events-none"></div>
 <div class="relative z-20 h-full flex flex-col justify-center items-center text-center p-3 md:p-6">
 <span class="material-symbols-outlined text-primary/40 text-2xl md:text-4xl mb-1 md:mb-2">restaurant</span>
-<h3 class="font-headline-md md:text-headline-lg text-primary serif leading-tight"><?php echo t6_esc($cat['name'] ?? ''); ?></h3>
+<h3 class="rm-category-title font-headline-md md:text-headline-lg text-primary serif leading-tight"><?php echo t6_esc($cat['name'] ?? ''); ?></h3>
 <?php if (! empty($cat['description'])): ?>
-<p class="font-body-sm text-on-surface-variant mt-1 line-clamp-2 max-w-[160px] md:max-w-xs"><?php echo t6_esc($cat['description']); ?></p>
+<p class="rm-description font-body-sm text-on-surface-variant mt-1 line-clamp-2 max-w-[160px] md:max-w-xs"><?php echo t6_esc($cat['description']); ?></p>
 <?php endif; ?>
 </div>
 <?php endif; ?>

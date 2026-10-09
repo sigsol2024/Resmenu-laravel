@@ -61,16 +61,16 @@ if (!empty($sections) && is_array($sections)) {
     if (empty($items)) continue;
 ?>
 <section class="mb-12" id="<?php echo htmlspecialchars($slug); ?>">
-<h3 class="text-2xl font-raleway border-b-4 border-accent pb-2 mb-6 inline-block"><?php echo htmlspecialchars($category['name']); ?></h3>
+<h3 class="rm-category-title text-2xl font-raleway border-b-4 border-accent pb-2 mb-6 inline-block"><?php echo htmlspecialchars($category['name']); ?></h3>
 <div class="space-y-2">
 <?php foreach ($items as $item): ?>
 <?php if (!empty($item['image'])): ?><div class="mb-2"><img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="max-h-24 w-auto object-cover rounded"/></div><?php endif; ?>
 <div class="item-row">
-<span class="font-bold"><?php echo htmlspecialchars($item['name']); ?></span>
+<span class="rm-item-title font-bold"><?php echo htmlspecialchars($item['name']); ?></span>
 <span class="item-dots"></span>
 <span class="rm-price font-semibold text-accent"><?php echo snsc_price($item['price']); ?></span>
 </div>
-<p class="text-sm text-gray-600 mb-4"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p>
+<p class="rm-description text-sm text-gray-600 mb-4"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p>
 <?php if (!empty($supportsOrdering) && !empty($item['is_available'])): ?><button type="button" class="add-to-bag-btn mb-4 text-accent border border-accent px-4 py-2 rounded hover:bg-accent hover:text-white" data-item-id="<?php echo (int)$item['id']; ?>" data-item-name="<?php echo htmlspecialchars($item['name']); ?>" data-item-price="<?php echo htmlspecialchars($item['price']); ?>" data-item-image="<?php echo !empty($item['image']) ? htmlspecialchars($item['image']) : ''; ?>">Add to bag</button><?php endif; ?>
 <?php endforeach; ?>
 </div>
@@ -78,7 +78,7 @@ if (!empty($sections) && is_array($sections)) {
 <?php endforeach; ?>
 </div>
 <?php endforeach; ?>
-<footer class="mt-16 pt-8 border-t border-gray-200 text-center text-sm text-gray-500"><?php echo htmlspecialchars($restaurant['footer_content'] ?? $restaurant['address'] ?? ''); ?></footer>
+<footer class="mt-16 pt-8 border-t border-gray-200 text-center text-sm text-gray-500"><?php echo htmlspecialchars($restaurant['footer_content'] ?? $restaurant['address'] ?? ''); ?><?php echo resmenu_social_links($restaurant, 'mt-4'); ?></footer>
 </main>
 <?php if (!empty($supportsOrdering)): ?>
 <link rel="stylesheet" href="<?php echo rtrim(defined('SITE_URL') ? SITE_URL : '', '/'); ?>/legacy/assets/css/cart-modal.css">

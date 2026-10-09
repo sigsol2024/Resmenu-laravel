@@ -86,16 +86,16 @@ if (!empty($sections) && is_array($sections)) {
     if (empty($items)) continue;
 ?>
 <section class="mb-24" id="<?php echo htmlspecialchars($slug); ?>">
-<h3 class="text-2xl font-bold text-neonPink mb-8 border-b border-white/20 pb-4"><?php echo htmlspecialchars($category['name']); ?></h3>
+<h3 class="rm-category-title text-2xl font-bold text-neonPink mb-8 border-b border-white/20 pb-4"><?php echo htmlspecialchars($category['name']); ?></h3>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
 <?php foreach ($items as $item): ?>
 <div class="neon-border-pink p-6 rounded-lg hover:bg-white/5 transition-colors">
 <?php if (!empty($item['image'])): ?><img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="w-full h-40 object-cover rounded mb-4"/><?php endif; ?>
 <div class="flex justify-between items-baseline mb-2">
-<h4 class="text-xl font-bold"><?php echo htmlspecialchars($item['name']); ?></h4>
+<h4 class="rm-item-title text-xl font-bold"><?php echo htmlspecialchars($item['name']); ?></h4>
 <span class="rm-price text-neonBlue font-mono"><?php echo bf_price($item['price']); ?></span>
 </div>
-<p class="text-sm text-gray-400"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p>
+<p class="rm-description text-sm text-gray-400"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p>
 </div>
 <?php endforeach; ?>
 </div>

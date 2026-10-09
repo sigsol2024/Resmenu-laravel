@@ -36,7 +36,7 @@ final class MenuBrandColors
     /** Templates that already read customization colours themselves. */
     private const SELF_THEMED = [4];
 
-    /** @param  array<string, mixed>  $colors  keys: primary_color, price_color */
+    /** @param  array<string, mixed>  $colors  keys: primary_color, price_color, menu_title_color, category_title_color, description_color */
     public static function apply(int $templateId, string $html, array $colors): string
     {
         if ($colors === [] || in_array($templateId, self::SELF_THEMED, true)) {
@@ -60,6 +60,21 @@ final class MenuBrandColors
 
         if ($price !== null) {
             $css[] = '.rm-price{color:'.$price.'!important}';
+        }
+
+        $itemTitle = self::hex($colors['menu_title_color'] ?? null);
+        if ($itemTitle !== null) {
+            $css[] = '.rm-item-title{color:'.$itemTitle.'!important}';
+        }
+
+        $categoryTitle = self::hex($colors['category_title_color'] ?? null);
+        if ($categoryTitle !== null) {
+            $css[] = '.rm-category-title,.rm-category-title a{color:'.$categoryTitle.'!important;-webkit-text-fill-color:'.$categoryTitle.'!important}';
+        }
+
+        $description = self::hex($colors['description_color'] ?? null);
+        if ($description !== null) {
+            $css[] = '.rm-description{color:'.$description.'!important}';
         }
 
         if ($css === []) {

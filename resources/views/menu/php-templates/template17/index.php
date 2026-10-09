@@ -88,13 +88,13 @@ foreach ($sections as $section):
     if (empty($items)) continue;
 ?>
 <section class="card-border p-8 bg-black/40" id="<?php echo htmlspecialchars($slug); ?>">
-<h3 class="text-2xl font-serif text-brandGold uppercase tracking-widest mb-6"><?php echo htmlspecialchars($category['name']); ?></h3>
+<h3 class="rm-category-title text-2xl font-serif text-brandGold uppercase tracking-widest mb-6"><?php echo htmlspecialchars($category['name']); ?></h3>
 <div class="space-y-4">
 <?php foreach ($items as $item): ?>
 <div class="flex gap-4 items-start border-b border-gray-700 pb-3">
 <?php if (!empty($item['image'])): ?><img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="w-16 h-16 flex-shrink-0 object-cover rounded"/><?php endif; ?>
 <div class="flex-1 min-w-0 flex justify-between items-baseline">
-<div><h3 class="text-lg font-semibold"><?php echo htmlspecialchars($item['name']); ?></h3><p class="text-sm text-gray-400"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p><?php if (!empty($supportsOrdering) && !empty($item['is_available'])): ?><button type="button" class="add-to-bag-btn mt-2 text-brandGold border border-brandGold px-3 py-1.5 rounded hover:bg-brandGold hover:text-black" data-item-id="<?php echo (int)$item['id']; ?>" data-item-name="<?php echo htmlspecialchars($item['name']); ?>" data-item-price="<?php echo htmlspecialchars($item['price']); ?>" data-item-image="<?php echo !empty($item['image']) ? htmlspecialchars($item['image']) : ''; ?>">Add to bag</button><?php endif; ?></div>
+<div><h3 class="rm-item-title text-lg font-semibold"><?php echo htmlspecialchars($item['name']); ?></h3><p class="rm-description text-sm text-gray-400"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p><?php if (!empty($supportsOrdering) && !empty($item['is_available'])): ?><button type="button" class="add-to-bag-btn mt-2 text-brandGold border border-brandGold px-3 py-1.5 rounded hover:bg-brandGold hover:text-black" data-item-id="<?php echo (int)$item['id']; ?>" data-item-name="<?php echo htmlspecialchars($item['name']); ?>" data-item-price="<?php echo htmlspecialchars($item['price']); ?>" data-item-image="<?php echo !empty($item['image']) ? htmlspecialchars($item['image']) : ''; ?>">Add to bag</button><?php endif; ?></div>
 <span class="rm-price text-brandGold font-serif"><?php echo nfp_price($item['price']); ?></span>
 </div>
 </div>
@@ -106,7 +106,7 @@ foreach ($sections as $section):
 <?php endforeach; ?>
 </div>
 </main>
-<footer class="py-8 text-center text-gray-500 text-sm"><?php echo htmlspecialchars($restaurant['footer_content'] ?? $restaurant['address'] ?? ''); ?></footer>
+<footer class="py-8 text-center text-gray-500 text-sm"><?php echo htmlspecialchars($restaurant['footer_content'] ?? $restaurant['address'] ?? ''); ?><?php echo resmenu_social_links($restaurant, 'mt-4 text-brandGold'); ?></footer>
 <?php if (!empty($supportsOrdering)): ?>
 <link rel="stylesheet" href="<?php echo rtrim(defined('SITE_URL') ? SITE_URL : '', '/'); ?>/legacy/assets/css/cart-modal.css">
 <div id="resmenu-cart-widget" class="fixed bottom-6 left-6 z-50 hidden"></div>

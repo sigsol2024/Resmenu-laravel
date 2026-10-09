@@ -503,6 +503,7 @@ $bodyClass = $menuViewLevel === 'home'
         <?php if (! empty($restaurant['website'])): ?>
         <a href="<?php echo t7_esc($restaurant['website']); ?>" target="_blank" rel="noopener" class="text-white/75 hover:text-champagne-gold transition-colors"><?php echo t7_esc(parse_url($restaurant['website'], PHP_URL_HOST) ?: $restaurant['website']); ?></a>
         <?php endif; ?>
+        <?php echo resmenu_social_links($restaurant, 'text-champagne-gold'); ?>
       </div>
     </div>
     <div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] text-white/40 tracking-wider">

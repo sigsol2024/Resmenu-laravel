@@ -64,14 +64,14 @@ foreach ($sections as $section):
 ?>
 <section class="mb-16" id="<?php echo htmlspecialchars($slug); ?>">
 <?php if ($fisCatIndex > 1): ?><div class="divider"></div><?php endif; ?>
-<h3 class="text-2xl font-art-deco text-copper-light uppercase tracking-widest mb-8"><?php echo htmlspecialchars($category['name']); ?></h3>
+<h3 class="rm-category-title text-2xl font-art-deco text-copper-light uppercase tracking-widest mb-8"><?php echo htmlspecialchars($category['name']); ?></h3>
 <div class="space-y-6">
 <?php foreach ($items as $item): ?>
 <div class="flex gap-4 items-start border-b border-copper/30 pb-4">
 <?php if (!empty($item['image'])): ?><img src="<?php echo htmlspecialchars(resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image'])); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="w-20 h-20 flex-shrink-0 object-cover rounded"/><?php endif; ?>
 <div class="flex-1 min-w-0">
-<h3 class="text-xl font-semibold text-white"><?php echo htmlspecialchars($item['name']); ?></h3>
-<p class="text-sm text-gray-400 italic"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p>
+<h3 class="rm-item-title text-xl font-semibold text-white"><?php echo htmlspecialchars($item['name']); ?></h3>
+<p class="rm-description text-sm text-gray-400 italic"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p>
 <?php if (!empty($supportsOrdering) && !empty($item['is_available'])): ?><button type="button" class="add-to-bag-btn mt-2 text-amber-glow border border-copper px-3 py-1.5 rounded hover:bg-copper/20" data-item-id="<?php echo (int)$item['id']; ?>" data-item-name="<?php echo htmlspecialchars($item['name']); ?>" data-item-price="<?php echo htmlspecialchars($item['price']); ?>" data-item-image="<?php echo !empty($item['image']) ? htmlspecialchars($item['image']) : ''; ?>">Add to bag</button><?php endif; ?>
 </div>
 <span class="rm-price text-amber-glow font-art-deco flex-shrink-0"><?php echo fis_price($item['price']); ?></span>
@@ -82,7 +82,7 @@ foreach ($sections as $section):
 <?php endforeach; ?>
 </div>
 <?php endforeach; ?>
-<footer class="text-center pt-12 border-t border-copper/30 text-gray-500 text-sm"><?php echo htmlspecialchars($restaurant['footer_content'] ?? $restaurant['address'] ?? ''); ?></footer>
+<footer class="text-center pt-12 border-t border-copper/30 text-gray-500 text-sm"><?php echo htmlspecialchars($restaurant['footer_content'] ?? $restaurant['address'] ?? ''); ?><?php echo resmenu_social_links($restaurant, 'mt-4 text-copper-light'); ?></footer>
 </main>
 <?php if (!empty($supportsOrdering)): ?>
 <link rel="stylesheet" href="<?php echo rtrim(defined('SITE_URL') ? SITE_URL : '', '/'); ?>/legacy/assets/css/cart-modal.css">
