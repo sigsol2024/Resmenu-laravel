@@ -286,8 +286,9 @@ body.drawer-open{overflow:hidden}
     <a class="brand" href="<?php echo htmlspecialchars($bfFullUrl !== '' ? $bfFullUrl : '#top'); ?>" aria-label="<?php echo htmlspecialchars($bfName); ?>">
       <?php if ($bfBrandLogo): ?>
         <img src="<?php echo htmlspecialchars($bfBrandLogo); ?>" alt="<?php echo htmlspecialchars($bfName); ?>"/>
+      <?php else: ?>
+        <span class="brand-wordmark"><?php echo htmlspecialchars($bfName); ?></span>
       <?php endif; ?>
-      <span class="brand-wordmark"><?php echo htmlspecialchars($bfName); ?></span>
     </a>
     <div class="header-actions">
       <?php if ($bfAddress !== ''): ?>
