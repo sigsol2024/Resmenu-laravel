@@ -30,6 +30,7 @@ final class MenuBrandColors
     /** Accents that live in plain CSS rather than the Tailwind config; %s is the primary colour. */
     private const PRIMARY_CSS = [
         1 => ':root{--dark:%s}',
+        15 => ':root{--tomato:%s}',
         16 => '.nmc-section-title,.nmc-section-title a{color:%s!important}',
     ];
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * Bold Flavours — Court5-inspired warm hospitality menu
+ * Bold Flavours — Court5-inspired hospitality menu (split hero mockup)
  */
 if (defined('UPLOAD_URL')) { $uploadBaseUrl = rtrim(UPLOAD_URL, '/'); } else {
     $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
@@ -20,12 +20,37 @@ function bf_price($p, $s = '₦') {
     return formatPrice($p, $s);
 }
 
+function bf_feature_class(string $categoryName): string
+{
+    $hay = strtolower(trim($categoryName));
+    if ($hay === '') {
+        return '';
+    }
+    if (preg_match('/\b(main course|main courses|mains|main dish|main dishes|entree|entrees|entrée|entrées)\b/u', $hay)) {
+        return 'feature-main';
+    }
+    if (preg_match('/\b(signature cocktail|signature cocktails|cocktail|cocktails)\b/u', $hay)) {
+        return 'feature-cocktails';
+    }
+
+    return '';
+}
+
+function bf_is_drinks_section(array $section): bool
+{
+    $hay = strtolower(trim(($section['name'] ?? '').' '.($section['slug'] ?? '')));
+
+    return $hay !== '' && (str_contains($hay, 'drink') || str_contains($hay, 'bar') || str_contains($hay, 'beverage') || str_contains($hay, 'wine') || str_contains($hay, 'cocktail'));
+}
+
 $activeCategories = [];
 if (!empty($sections) && is_array($sections)) {
     foreach ($sections as $sec) {
         if (empty($sec['categories']) || !is_array($sec['categories'])) continue;
         foreach ($sec['categories'] as $c) {
-            if (!empty($c['menu_items']) && is_array($c['menu_items']) && !empty($c['is_active'])) $activeCategories[] = $c;
+            if (!empty($c['menu_items']) && is_array($c['menu_items']) && !empty($c['is_active'])) {
+                $activeCategories[] = $c;
+            }
         }
     }
 }
@@ -38,6 +63,9 @@ if (!empty($singleSectionView) && !empty($sections[0]['image'])) {
 } elseif (!empty($restaurant['hero_image']) && empty($isTemplatePreview)) {
     $bfHeroUrl = resmenu_media_url($uploadBaseUrl, 'heroes', $restaurant['hero_image']);
 }
+if ($bfHeroUrl === '') {
+    $bfHeroUrl = $template15AssetBase.'/hero-fallback.webp';
+}
 
 $bfSingle = !empty($singleSectionView);
 $bfFullUrl = (string) ($fullMenuUrl ?? '');
@@ -47,391 +75,406 @@ $bfCategoryHref = function (string $catSlug) use ($bfSingle, $bfFullUrl, $bfSing
         ? $bfFullUrl.'/'.$bfSingleSlug.'#'.$catSlug
         : '#'.$catSlug;
 };
+
 $bfBrandLogo = (!empty($isTemplatePreview)) ? null : resmenu_logo_url($uploadBaseUrl ?? '', $restaurant['logo'] ?? null);
+$bfName = trim((string) ($restaurant['name'] ?? 'Menu'));
+$bfNameParts = preg_split('/\s+/u', $bfName, -1, PREG_SPLIT_NO_EMPTY) ?: [$bfName];
+$bfNameAccent = array_pop($bfNameParts);
+$bfNameLead = trim(implode(' ', $bfNameParts));
+$bfAddress = trim((string) ($restaurant['address'] ?? ''));
+$bfEyebrow = trim((string) ($restaurant['description'] ?? ''));
+if ($bfEyebrow === '') {
+    $bfEyebrow = 'Food and drinks';
+} elseif (mb_strlen($bfEyebrow) > 48) {
+    $bfEyebrow = rtrim(mb_substr($bfEyebrow, 0, 45)).'…';
+}
+$bfLead = trim((string) ($restaurant['description'] ?? ''));
+if ($bfLead === '' && $bfAddress !== '') {
+    $bfLead = $bfAddress;
+}
 $bfDotUrl = $template15AssetBase.'/orange-dot.webp';
-$bfDotMenuUrl = $template15AssetBase.'/orange-dot-menu.webp';
 $bfPatternUrl = $template15AssetBase.'/pattern-dark.png';
+$bfDrinksBannerUrl = $template15AssetBase.'/drinks-banner.webp';
+
+$bfFoodSections = [];
+$bfDrinkSections = [];
+foreach (($sections ?? []) as $section) {
+    if (empty($section['categories']) || !is_array($section['categories'])) {
+        continue;
+    }
+    if (bf_is_drinks_section($section)) {
+        $bfDrinkSections[] = $section;
+    } else {
+        $bfFoodSections[] = $section;
+    }
+}
+$bfUseSplit = !empty($bfDrinkSections) && !empty($bfFoodSections);
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title><?php echo htmlspecialchars($restaurant['name']); ?><?php if (!empty($singleSectionView) && !empty($sections[0]['name'])): ?> - <?php echo htmlspecialchars($sections[0]['name']); ?><?php endif; ?></title>
+<meta name="theme-color" content="#f4f1ec"/>
+<title><?php echo htmlspecialchars($bfName); ?><?php if (!empty($singleSectionView) && !empty($sections[0]['name'])): ?> - <?php echo htmlspecialchars($sections[0]['name']); ?><?php endif; ?></title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script>
-tailwind.config = {
-  theme: {
-    extend: {
-      colors: {
-        cream: '#F4F1EC',
-        parchment: '#FCFBF9',
-        ink: '#1C1C1C',
-        tomato: '#DA2514',
-        flame: '#FF800F',
-      },
-      fontFamily: {
-        display: ['Cormorant Garamond', 'Georgia', 'serif'],
-        sans: ['DM Sans', 'system-ui', 'sans-serif'],
-      },
-    },
-  },
-};
-</script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
-:root {
-  --bf-tomato: #DA2514;
-  --bf-flame: #FF800F;
-  --bf-cream: #F4F1EC;
-  --bf-ink: #1C1C1C;
+:root{
+  --tomato:#da2514;
+  --flame:#ff800f;
+  --amber:#ffb84d;
+  --cream:#f4f1ec;
+  --paper:#fcfbf9;
+  --ink:#1c1c1c;
+  --muted:#686861;
+  --line:rgba(28,28,28,.14);
+  --sans:"DM Sans",system-ui,sans-serif;
+  --display:"Cormorant Garamond",Georgia,serif;
+  --orange-dot:url("<?php echo htmlspecialchars($bfDotUrl, ENT_QUOTES, 'UTF-8'); ?>");
+  --pattern:url("<?php echo htmlspecialchars($bfPatternUrl, ENT_QUOTES, 'UTF-8'); ?>");
 }
-html { scroll-behavior: smooth; }
-body.bf-body {
-  background-color: var(--bf-cream);
-  color: var(--bf-ink);
-  font-family: 'DM Sans', system-ui, sans-serif;
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:96px}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer}
+.site-header{position:sticky;top:0;z-index:30;background:rgba(252,251,249,.94);border-bottom:1px solid rgba(0,0,0,.06);backdrop-filter:blur(14px)}
+.header-inner{max-width:1440px;margin:0 auto;padding:10px clamp(18px,5vw,68px);display:flex;align-items:center;justify-content:space-between;gap:18px}
+.brand{display:flex;align-items:center;gap:13px;min-width:0}
+.brand img{display:block;width:52px;height:52px;object-fit:contain}
+.brand-wordmark{color:var(--ink);font-size:12px;font-weight:700;letter-spacing:.19em;text-transform:uppercase}
+.brand-location{margin-top:4px;color:#77766f;font-size:8px;font-weight:600;letter-spacing:.15em;text-transform:uppercase}
+.header-actions{display:flex;align-items:center;gap:10px}
+.reserve-pill{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:var(--flame);color:white;padding:11px 20px;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;transition:background .18s,transform .18s}
+.reserve-pill:hover{background:var(--tomato);transform:translateY(-1px)}
+.menu-toggle,.drawer-close{width:43px;height:43px;display:grid;place-items:center;border:1px solid rgba(28,28,28,.17);border-radius:50%;background:transparent;color:var(--ink);transition:color .18s,border-color .18s,background .18s}
+.menu-toggle:hover,.drawer-close:hover{color:var(--tomato);border-color:var(--tomato);background:#fff}
+.menu-toggle svg,.drawer-close svg{width:19px;height:19px}
+.hero{min-height:min(730px,78vh);min-height:min(730px,78dvh);display:grid;grid-template-columns:.88fr 1.12fr;background:var(--paper)}
+.hero-copy{padding:clamp(34px,6vw,92px);display:flex;flex-direction:column;align-items:flex-start;justify-content:center;background-color:var(--paper);background-image:var(--pattern),linear-gradient(180deg,rgba(252,251,249,.94),rgba(244,241,236,.97));background-size:280px auto,auto;background-repeat:repeat,no-repeat;background-blend-mode:soft-light,normal}
+.eyebrow{color:var(--tomato);font-size:9px;font-weight:700;letter-spacing:.21em;text-transform:uppercase}
+.eyebrow:before{content:"";display:inline-block;width:8px;height:8px;margin-right:10px;background-image:var(--orange-dot);background-size:contain;vertical-align:0}
+.hero h1{margin:22px 0 16px;color:var(--ink);font-size:clamp(48px,7vw,94px);font-weight:800;font-style:italic;line-height:.88;letter-spacing:-.065em;text-transform:uppercase}
+.hero h1 span{color:var(--tomato)}
+.hero-lead{max-width:430px;margin:0;color:rgba(28,28,28,.68);font-size:13px;line-height:1.8}
+.hero-actions{display:flex;flex-wrap:wrap;align-items:center;gap:20px;margin-top:27px}
+.hero-cta{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:var(--flame);color:#fff;padding:13px 21px;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;transition:background .18s,transform .18s}
+.hero-cta:hover{background:var(--tomato);transform:translateY(-1px)}
+.hero-link{color:var(--ink);font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.hero-link:hover{color:var(--tomato)}
+.hero-photo{position:relative;min-height:430px;overflow:hidden;background:#a79e8e}
+.hero-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 56%}
+.hero-photo:after{content:"";position:absolute;inset:55% 0 0;background:linear-gradient(0deg,rgba(28,28,28,.52),transparent)}
+.photo-caption{position:absolute;z-index:1;left:24px;bottom:19px;color:#fff;font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase}
+.color-rule{height:5px;background:linear-gradient(90deg,var(--tomato) 0 48%,var(--flame) 48% 100%)}
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:12px clamp(20px,5vw,68px);background:var(--paper);color:rgba(28,28,28,.58);font-size:8px;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
+.intro-strip strong{color:var(--ink)}
+.menu-body{max-width:1440px;margin:0 auto;padding:42px clamp(20px,5vw,68px) 76px;background-color:var(--paper);background-image:var(--pattern),linear-gradient(180deg,rgba(252,251,249,.95),rgba(244,241,236,.98));background-size:280px auto,auto;background-repeat:repeat,no-repeat;background-blend-mode:soft-light,normal}
+.section-heading{margin:0 0 45px;text-align:center}
+.section-heading .small-label{display:block;color:var(--flame);font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase}
+.section-heading h2{margin:8px 0 0;color:var(--tomato);font-family:var(--display);font-size:clamp(33px,4vw,47px);font-weight:300;letter-spacing:.08em;text-transform:uppercase}
+.section-count{display:block;margin-top:4px;color:rgba(28,28,28,.45);font-size:8px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+.category-section{margin:0 0 55px;scroll-margin-top:95px}
+.category-title{position:relative;margin:0 0 28px;padding:0 0 15px;border-bottom:1px solid rgba(28,28,28,.16);color:var(--tomato);font-family:var(--display);font-size:29px;font-weight:400;letter-spacing:.08em;text-align:center;text-transform:uppercase}
+.category-title:after{content:"";position:absolute;left:50%;bottom:-5px;width:9px;height:9px;transform:translateX(-50%);background-image:var(--orange-dot);background-size:contain}
+.items-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:42px;row-gap:28px}
+.category-section.feature-main{margin:4px -24px 58px;padding:31px 30px 34px;border-left:5px solid var(--flame);background-color:var(--ink);background-image:linear-gradient(rgba(28,28,28,.86),rgba(28,28,28,.91)),var(--pattern);background-size:auto,280px auto;background-repeat:no-repeat,repeat;background-blend-mode:normal,soft-light}
+.feature-main .category-title{margin-bottom:25px;border-color:rgba(255,255,255,.25);color:#fff;font-size:36px;text-align:left}
+.feature-main .category-title:after{left:auto;right:2px;transform:none}
+.feature-main .dish-title,.feature-main .rm-item-title{color:#fff}
+.feature-main .dish-price,.feature-main .rm-price{color:var(--amber)}
+.feature-main .price-line{border-color:rgba(255,255,255,.3)}
+.feature-main .dish-description,.feature-main .rm-description{color:rgba(255,255,255,.67)}
+.feature-main .bf-order-btn{border-color:rgba(255,184,77,.45);color:var(--amber)}
+.feature-main .bf-order-btn:hover{background:var(--flame);border-color:var(--flame);color:#fff}
+.category-section.feature-cocktails{margin:0 -12px 58px;padding:26px 27px 30px;border:1px solid rgba(255,128,15,.28);border-top:4px solid var(--flame);background:#fff7ec}
+.feature-cocktails .category-title{margin-bottom:23px;border-color:rgba(28,28,28,.17);color:var(--ink);font-size:34px;text-align:left}
+.feature-cocktails .category-title:after{left:auto;right:2px;transform:none}
+.feature-cocktails .dish-image{box-shadow:0 5px 18px rgba(145,75,21,.1)}
+.dish{display:flex;align-items:flex-start;gap:15px;min-width:0}
+.dish.is-unavailable{opacity:.55}
+.dish-image{width:72px;height:72px;flex:0 0 72px;overflow:hidden;border:1px solid rgba(0,0,0,.05);border-radius:50%;background:#fff;box-shadow:0 4px 20px rgba(0,0,0,.06)}
+.dish-image img{display:block;width:100%;height:100%;object-fit:cover}
+.dish-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#fff;color:var(--tomato);font-family:var(--display);font-size:27px;font-weight:300}
+.dish-info{flex:1;min-width:0;padding-top:2px}
+.dish-title-row{display:flex;align-items:baseline;min-width:0;gap:0}
+.dish-title,.rm-item-title{flex:0 1 auto;min-width:0;margin:0;color:var(--tomato);font-size:11px;font-weight:600;letter-spacing:.11em;line-height:1.45;text-transform:uppercase}
+.price-line{flex:1 1 auto;min-width:18px;height:.85em;margin:0 10px;border-bottom:1px dashed rgba(28,28,28,.23)}
+.dish-price,.rm-price{flex:0 0 auto;color:var(--ink);font-size:11px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.dish-description,.rm-description{margin:7px 0 0;color:rgba(28,28,28,.58);font-size:10px;line-height:1.65}
+.bf-order-btn{display:inline-flex;align-items:center;gap:.35rem;margin-top:8px;border-radius:999px;border:1px solid rgba(218,37,20,.35);color:var(--tomato);font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:7px 12px;background:transparent;transition:background .18s,color .18s,border-color .18s}
+.bf-order-btn:hover{background:var(--tomato);border-color:var(--tomato);color:#fff}
+.unavailable-label{display:inline-block;margin-top:8px;color:var(--tomato);font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+.drinks-feature{display:grid;grid-template-columns:1fr .92fr;min-height:230px;margin:5px 0 54px;overflow:hidden;background:var(--ink);color:#fff}
+.drinks-feature-copy{display:flex;flex-direction:column;justify-content:center;padding:32px clamp(24px,4vw,54px);background-image:var(--pattern);background-size:280px auto;background-repeat:repeat;background-blend-mode:soft-light}
+.drinks-feature-copy small{color:var(--flame);font-size:8px;font-weight:700;letter-spacing:.2em;text-transform:uppercase}
+.drinks-feature-copy strong{margin-top:10px;font-family:var(--display);font-size:34px;font-weight:400;line-height:1.05}
+.drinks-feature-copy p{max-width:360px;margin:10px 0 0;color:rgba(255,255,255,.72);font-size:10px;line-height:1.65}
+.drinks-feature img{width:100%;height:100%;min-height:230px;object-fit:cover}
+.footer{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:20px clamp(20px,5vw,68px);background:#fff;border-top:1px solid var(--line);color:rgba(28,28,28,.58);font-size:8px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+.footer strong{color:var(--ink);font-size:10px;letter-spacing:.18em}
+.footer a{color:var(--tomato)}
+.footer-social{width:100%}
+.overlay{position:fixed;inset:0;z-index:48;background:rgba(28,28,28,.48);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,visibility .2s}
+.overlay.open{opacity:1;visibility:visible;pointer-events:auto}
+.drawer{position:fixed;z-index:50;top:0;right:0;display:flex;width:min(calc(100vw - 2.25rem),370px);height:100dvh;flex-direction:column;background:var(--cream);box-shadow:-18px 0 50px rgba(0,0,0,.18);transform:translateX(105%);transition:transform .28s ease}
+.drawer.open{transform:translateX(0)}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:17px 20px;border-bottom:1px solid rgba(0,0,0,.12)}
+.drawer-title{color:rgba(28,28,28,.7);font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase}
+.drawer-nav{display:flex;flex:1;flex-direction:column;gap:8px;overflow-y:auto;padding:16px 16px 22px}
+.drawer-link{display:block;padding:12px 14px;border:1px solid rgba(28,28,28,.1);border-radius:10px;background:rgba(255,255,255,.56);color:rgba(28,28,28,.72);font-size:10px;font-weight:600;letter-spacing:.1em;text-align:center;text-transform:uppercase;transition:border-color .15s,color .15s,background .15s}
+.drawer-link:hover{border-color:var(--tomato);color:var(--tomato);background:#fff}
+.drawer-main{color:var(--ink);font-size:12px;font-weight:700}
+.drawer-separator{display:flex;align-items:center;justify-content:center;gap:9px;padding:7px 0;color:rgba(28,28,28,.2)}
+.drawer-dot{width:8px;height:8px;background-image:var(--orange-dot);background-size:contain}
+.drawer-separator:before,.drawer-separator:after{content:"";width:34px;height:1px;background:rgba(28,28,28,.16)}
+.drawer-reserve{margin:0 16px 16px}
+body.drawer-open{overflow:hidden}
+@media(max-width:900px){.hero{grid-template-columns:.9fr 1.1fr;min-height:600px}.hero-copy{padding:34px}.hero-photo{min-height:400px}.items-grid{column-gap:27px}}
+@media(max-width:680px){
+  .header-inner{padding:8px 15px}
+  .brand img{width:44px;height:44px}
+  .brand-wordmark{font-size:10px}
+  .brand-location{font-size:7px}
+  .reserve-pill{padding:10px 13px;font-size:8px}
+  .menu-toggle{width:40px;height:40px}
+  .hero{min-height:0;grid-template-columns:1fr}
+  .hero-copy{min-height:355px;padding:39px 24px}
+  .hero h1{font-size:64px}
+  .hero-photo{min-height:300px}
+  .intro-strip{padding:10px 16px;font-size:7px}
+  .menu-body{padding:34px 17px 55px}
+  .section-heading{margin-bottom:37px}
+  .category-section{margin-bottom:45px}
+  .category-section.feature-main{margin:0 -7px 46px;padding:23px 16px 26px}
+  .feature-main .category-title{font-size:30px}
+  .category-section.feature-cocktails{margin:0 -5px 46px;padding:21px 15px 24px}
+  .feature-cocktails .category-title{font-size:29px}
+  .items-grid{grid-template-columns:1fr;row-gap:24px}
+  .dish-image{width:66px;height:66px;flex-basis:66px}
+  .dish-title,.rm-item-title{font-size:10px}
+  .dish-price,.rm-price{font-size:10px}
+  .drinks-feature{grid-template-columns:1fr}
+  .drinks-feature img{grid-row:1;height:220px;min-height:0}
+  .drinks-feature-copy{padding:25px}
+  .footer{align-items:flex-start;flex-direction:column;gap:9px}
 }
-.bf-paper {
-  background-color: #FCFBF9;
-  background-image:
-    url('<?php echo htmlspecialchars($bfPatternUrl, ENT_QUOTES, 'UTF-8'); ?>'),
-    linear-gradient(180deg, rgba(252,251,249,0.97) 0%, rgba(244,241,236,0.98) 100%);
-  background-size: 280px auto, auto;
-  background-repeat: repeat, no-repeat;
-  background-blend-mode: soft-light, normal;
-}
-.bf-hero {
-  min-height: 72vh;
-  min-height: 72dvh;
-}
-@media (min-width: 768px) {
-  .bf-hero { min-height: 78vh; min-height: 78dvh; }
-}
-.bf-menu-list-line {
-  flex-grow: 1;
-  margin-left: 12px;
-  margin-right: 12px;
-  border-bottom: 1px dashed rgba(28, 28, 28, 0.22);
-  height: 0.85em;
-  min-width: 1.5rem;
-}
-.bf-dish-image {
-  width: 72px;
-  height: 72px;
-  border-radius: 999px;
-  overflow: hidden;
-  background: #fff;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  flex-shrink: 0;
-}
-.bf-dish-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.bf-dish-fallback {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 1.5rem;
-  font-weight: 300;
-  color: var(--bf-tomato);
-  background: #fff;
-}
-.bf-pill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  background: var(--bf-flame);
-  color: #fff;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  padding: 0.65rem 1.5rem;
-  transition: background 0.2s ease, transform 0.2s ease;
-}
-.bf-pill:hover { background: var(--bf-tomato); transform: translateY(-1px); }
-.bf-order-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  margin-top: 0.65rem;
-  border-radius: 999px;
-  border: 1px solid rgba(218, 37, 20, 0.35);
-  color: var(--bf-tomato);
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 0.4rem 0.9rem;
-  background: transparent;
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-}
-.bf-order-btn:hover {
-  background: var(--bf-tomato);
-  border-color: var(--bf-tomato);
-  color: #fff;
-}
-.bf-tab {
-  position: relative;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(28, 28, 28, 0.55);
-  padding-bottom: 0.4rem;
-  transition: color 0.2s ease;
-}
-.bf-tab:hover, .bf-tab.is-active { color: var(--bf-tomato); }
-.bf-tab.is-active::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 2px;
-  background: var(--bf-tomato);
-}
-.bf-dot {
-  width: 8px;
-  height: 8px;
-  background: url('<?php echo htmlspecialchars($bfDotUrl, ENT_QUOTES, 'UTF-8'); ?>') center / contain no-repeat;
-  flex-shrink: 0;
-  opacity: 0.9;
-}
-.bf-drawer {
-  transform: translateX(100%);
-  transition: transform 0.3s ease;
-}
-.bf-drawer.is-open { transform: translateX(0); }
-.bf-overlay {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity 0.2s ease, visibility 0.2s ease;
-}
-.bf-overlay.is-open {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-}
-.hide-scrollbar::-webkit-scrollbar { display: none; }
-.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  .bf-pill:hover, .bf-drawer, .bf-overlay { transition: none; }
-}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.drawer,.overlay,.reserve-pill,.hero-cta{transition:none}}
 </style>
 </head>
-<body class="bf-body antialiased selection:bg-flame/30 selection:text-ink">
+<body>
 
-<!-- Sticky top bar -->
-<header class="sticky top-0 z-40 border-b border-black/5 bg-cream/90 backdrop-blur-md">
-  <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 md:px-6">
-    <a href="<?php echo htmlspecialchars($bfFullUrl !== '' ? $bfFullUrl : '#'); ?>" class="flex min-w-0 items-center gap-3">
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="<?php echo htmlspecialchars($bfFullUrl !== '' ? $bfFullUrl : '#top'); ?>" aria-label="<?php echo htmlspecialchars($bfName); ?>">
       <?php if ($bfBrandLogo): ?>
-        <img src="<?php echo htmlspecialchars($bfBrandLogo); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="h-10 w-auto max-w-[140px] object-contain md:h-12"/>
-      <?php else: ?>
-        <span class="font-display text-2xl font-light tracking-tight text-tomato md:text-3xl"><?php echo htmlspecialchars($restaurant['name']); ?></span>
+        <img src="<?php echo htmlspecialchars($bfBrandLogo); ?>" alt="<?php echo htmlspecialchars($bfName); ?>"/>
       <?php endif; ?>
+      <span>
+        <span class="brand-wordmark"><?php echo htmlspecialchars($bfName); ?></span>
+        <?php if ($bfAddress !== ''): ?>
+          <span class="brand-location"><?php echo htmlspecialchars($bfAddress); ?></span>
+        <?php endif; ?>
+      </span>
     </a>
-    <div class="flex items-center gap-2 sm:gap-3">
+    <div class="header-actions">
       <?php if (!empty($supportsReservations)): ?>
-        <a href="<?php echo htmlspecialchars($reservationUrl); ?>" class="bf-pill hidden sm:inline-flex">Book a table</a>
+        <a class="reserve-pill" href="<?php echo htmlspecialchars($reservationUrl); ?>">Book a table</a>
       <?php endif; ?>
-      <button type="button" id="bf-menu-toggle" class="flex h-11 w-11 items-center justify-center rounded-full border border-ink/15 text-ink transition-colors hover:border-tomato hover:text-tomato" aria-label="Open menu" aria-expanded="false" aria-controls="bf-drawer">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      <button class="menu-toggle" id="bf-menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="bf-drawer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
     </div>
   </div>
 </header>
 
-<!-- Mobile / nav drawer -->
-<div id="bf-overlay" class="bf-overlay fixed inset-0 z-50 bg-ink/50" aria-hidden="true"></div>
-<aside id="bf-drawer" class="bf-drawer fixed right-0 top-0 z-[60] flex h-full w-[min(100vw-3rem,20rem)] flex-col bg-cream shadow-2xl" aria-label="Menu" aria-hidden="true">
-  <div class="flex items-center justify-between border-b border-black/10 px-4 py-4">
-    <span class="text-xs font-semibold uppercase tracking-[0.25em] text-ink/70">Navigate</span>
-    <button type="button" id="bf-drawer-close" class="flex h-10 w-10 items-center justify-center rounded-full border border-ink/15 text-ink" aria-label="Close menu">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+<div class="overlay" id="bf-overlay" aria-hidden="true"></div>
+<aside class="drawer" id="bf-drawer" aria-label="Menu navigation" aria-hidden="true">
+  <div class="drawer-head">
+    <span class="drawer-title">Navigate</span>
+    <button class="drawer-close" id="bf-drawer-close" type="button" aria-label="Close menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
     </button>
   </div>
-  <nav class="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-4 pb-8 text-sm">
+  <nav class="drawer-nav" id="bf-drawer-nav">
     <?php if ($bfSingle && $bfFullUrl !== ''): ?>
-      <a href="<?php echo htmlspecialchars($bfFullUrl); ?>" class="bf-drawer-link rounded-lg px-3 py-3 text-center font-semibold uppercase tracking-widest text-tomato ring-1 ring-tomato/25 hover:bg-tomato/5">Full menu</a>
+      <a class="drawer-link drawer-main bf-drawer-link" href="<?php echo htmlspecialchars($bfFullUrl); ?>">Full menu</a>
     <?php endif; ?>
-    <a href="#menu" class="bf-drawer-link rounded-lg px-3 py-3 text-center font-semibold uppercase tracking-widest text-ink/80 ring-1 ring-ink/10 hover:text-tomato">View menu</a>
+    <a class="drawer-link drawer-main bf-drawer-link" href="#menu">View menu</a>
     <?php if (!empty($sectionsForNav) && is_array($sectionsForNav) && $bfFullUrl !== ''): ?>
       <?php foreach ($sectionsForNav as $navSection): ?>
-        <a href="<?php echo htmlspecialchars($bfFullUrl); ?>#section-<?php echo htmlspecialchars($navSection['slug'] ?? ''); ?>" class="bf-drawer-link rounded-lg px-3 py-2.5 text-center text-xs font-semibold uppercase tracking-widest text-ink/60 ring-1 ring-ink/10 hover:text-tomato"><?php echo htmlspecialchars($navSection['name'] ?? ''); ?></a>
+        <a class="drawer-link bf-drawer-link" href="<?php echo htmlspecialchars($bfFullUrl); ?>#section-<?php echo htmlspecialchars($navSection['slug'] ?? ''); ?>"><?php echo htmlspecialchars($navSection['name'] ?? ''); ?></a>
       <?php endforeach; ?>
     <?php endif; ?>
-    <div class="my-2 flex items-center justify-center gap-2" aria-hidden="true">
-      <span class="bf-dot"></span>
-      <span class="h-px w-10 bg-ink/15"></span>
-      <span class="bf-dot"></span>
-    </div>
+    <div class="drawer-separator" aria-hidden="true"><span class="drawer-dot"></span></div>
     <?php foreach ($activeCategories as $i => $cat):
       $s = isset($cat['slug']) ? $cat['slug'] : ('cat-'.$i);
     ?>
-      <a href="<?php echo htmlspecialchars($bfCategoryHref($s)); ?>" class="bf-drawer-link rounded-lg px-3 py-2.5 text-center text-xs uppercase tracking-wide text-ink/55 ring-1 ring-ink/10 hover:text-tomato"><?php echo htmlspecialchars($cat['name']); ?></a>
+      <a class="drawer-link bf-drawer-link" href="<?php echo htmlspecialchars($bfCategoryHref($s)); ?>">
+        <span style="color:var(--tomato);font-variant-numeric:tabular-nums;margin-right:8px"><?php echo str_pad((string) ($i + 1), 2, '0', STR_PAD_LEFT); ?></span>
+        <?php echo htmlspecialchars($cat['name']); ?>
+      </a>
     <?php endforeach; ?>
-    <?php if (!empty($supportsReservations)): ?>
-      <a href="<?php echo htmlspecialchars($reservationUrl); ?>" class="bf-drawer-link mt-3 bf-pill text-center">Book a table</a>
-    <?php endif; ?>
   </nav>
+  <?php if (!empty($supportsReservations)): ?>
+    <a class="reserve-pill drawer-reserve bf-drawer-link" href="<?php echo htmlspecialchars($reservationUrl); ?>">Reserve a table</a>
+  <?php endif; ?>
 </aside>
 
-<!-- Hero -->
-<section class="bf-hero relative w-full overflow-hidden" aria-label="Restaurant cover" data-template-preview-hero>
-  <?php if ($bfHeroUrl !== ''): ?>
-    <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image:url('<?php echo htmlspecialchars($bfHeroUrl, ENT_QUOTES, 'UTF-8'); ?>')"></div>
-  <?php else: ?>
-    <div class="absolute inset-0 bg-gradient-to-br from-[#2a1a14] via-[#1c1c1c] to-[#3a2018]"></div>
-    <div class="absolute inset-0 opacity-30" style="background-image:url('<?php echo htmlspecialchars($bfPatternUrl, ENT_QUOTES, 'UTF-8'); ?>'); background-size: 220px auto;"></div>
-  <?php endif; ?>
-  <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/35 to-black/20"></div>
-  <div class="relative mx-auto flex min-h-[inherit] max-w-4xl flex-col items-center justify-center px-6 pb-16 pt-20 text-center sm:pb-20 sm:pt-24">
-    <?php if ($bfBrandLogo): ?>
-      <div class="mb-5"><img src="<?php echo htmlspecialchars($bfBrandLogo); ?>" alt="<?php echo htmlspecialchars($restaurant['name']); ?>" class="mx-auto h-16 w-auto max-w-[200px] object-contain drop-shadow md:h-20"/></div>
-    <?php else: ?>
-      <h1 class="font-display text-5xl font-light leading-none tracking-tight text-white sm:text-6xl md:text-7xl"><?php echo htmlspecialchars($restaurant['name']); ?></h1>
-    <?php endif; ?>
-    <?php if (!empty($restaurant['description'])): ?>
-      <p class="mt-5 max-w-xl text-sm font-light leading-relaxed text-white/85 sm:text-base"><?php echo htmlspecialchars($restaurant['description']); ?></p>
-    <?php endif; ?>
-    <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-      <a href="#menu" class="bf-pill">Explore menu</a>
-      <?php if (!empty($supportsReservations)): ?>
-        <a href="<?php echo htmlspecialchars($reservationUrl); ?>" class="inline-flex items-center justify-center rounded-full border border-white/50 px-6 py-2.5 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:border-white hover:bg-white/10">Reserve</a>
+<main id="top">
+  <section class="hero" aria-label="<?php echo htmlspecialchars($bfName); ?>" data-template-preview-hero>
+    <div class="hero-copy">
+      <div class="eyebrow"><?php echo htmlspecialchars($bfEyebrow); ?></div>
+      <h1>
+        <?php if ($bfNameLead !== ''): ?><?php echo htmlspecialchars($bfNameLead); ?> <?php endif; ?>
+        <span><?php echo htmlspecialchars($bfNameAccent); ?></span>
+      </h1>
+      <?php if ($bfLead !== ''): ?>
+        <p class="hero-lead"><?php echo htmlspecialchars($bfLead); ?></p>
       <?php endif; ?>
-    </div>
-  </div>
-</section>
-
-<!-- Menu -->
-<main id="menu" class="bf-paper relative">
-  <div class="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-16">
-    <div class="mb-10 text-center md:mb-14">
-      <div class="mb-4 flex items-center justify-center gap-3" aria-hidden="true">
-        <span class="bf-dot"></span>
-        <p class="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-flame">Explore our delicious</p>
-        <span class="bf-dot"></span>
-      </div>
-      <h2 class="font-display text-4xl font-light text-tomato md:text-5xl">Menu</h2>
-      <?php if (!empty($bfDotMenuUrl)): ?>
-        <img src="<?php echo htmlspecialchars($bfDotMenuUrl); ?>" alt="" class="mx-auto mt-4 h-3 w-auto opacity-80" aria-hidden="true"/>
-      <?php endif; ?>
-    </div>
-
-    <?php if (!empty($activeCategories)): ?>
-    <nav class="mb-12 flex flex-wrap items-center justify-center gap-x-3 gap-y-3 hide-scrollbar overflow-x-auto pb-1" aria-label="Categories">
-      <?php foreach ($activeCategories as $i => $cat):
-        $s = isset($cat['slug']) ? $cat['slug'] : ('cat-'.$i);
-      ?>
-        <?php if ($i > 0): ?><span class="bf-dot hidden sm:inline-block" aria-hidden="true"></span><?php endif; ?>
-        <a href="<?php echo htmlspecialchars($bfCategoryHref($s)); ?>" class="bf-tab whitespace-nowrap"><?php echo htmlspecialchars($cat['name']); ?></a>
-      <?php endforeach; ?>
-    </nav>
-    <?php endif; ?>
-
-    <?php foreach ($sections as $section):
-      if (empty($section['categories']) || !is_array($section['categories'])) continue;
-    ?>
-    <div id="section-<?php echo htmlspecialchars($section['slug']); ?>" class="mb-16">
-      <h2 class="mb-10 text-center font-display text-3xl font-light text-tomato md:text-4xl">
-        <?php if ($bfFullUrl !== '' && empty($singleSectionView)): ?>
-          <a href="<?php echo htmlspecialchars($bfFullUrl.'/'.$section['slug']); ?>" class="hover:underline"><?php echo htmlspecialchars($section['name']); ?></a>
-        <?php else: ?>
-          <?php echo htmlspecialchars($section['name']); ?>
+      <div class="hero-actions">
+        <a class="hero-cta" href="#menu">View the menu</a>
+        <?php if (!empty($supportsReservations)): ?>
+          <a class="hero-link" href="<?php echo htmlspecialchars($reservationUrl); ?>">Book a table</a>
+        <?php elseif (!empty($bfDrinkSections)): ?>
+          <a class="hero-link" href="#section-<?php echo htmlspecialchars($bfDrinkSections[0]['slug'] ?? 'drinks'); ?>">Drinks menu</a>
         <?php endif; ?>
-      </h2>
-
-      <?php foreach ($section['categories'] as $catIndex => $category):
-        $slug = isset($category['slug']) ? $category['slug'] : ('cat-'.$catIndex);
-        $items = isset($category['menu_items']) ? $category['menu_items'] : [];
-        if (empty($items)) continue;
-      ?>
-      <section class="mb-14" id="<?php echo htmlspecialchars($slug); ?>">
-        <h3 class="rm-category-title mb-8 text-center font-display text-2xl font-light uppercase tracking-[0.08em] text-tomato md:text-3xl"><?php echo htmlspecialchars($category['name']); ?></h3>
-        <div class="grid grid-cols-1 gap-x-10 gap-y-8 md:grid-cols-2">
-          <?php foreach ($items as $item):
-            $itemName = (string) ($item['name'] ?? '');
-            $initial = $itemName !== '' ? mb_strtoupper(mb_substr($itemName, 0, 1)) : '•';
-            $itemImg = !empty($item['image']) ? resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image']) : '';
-            $available = !isset($item['is_available']) || !empty($item['is_available']);
-          ?>
-          <article class="flex gap-4 <?php echo $available ? '' : 'opacity-55'; ?>">
-            <div class="bf-dish-image">
-              <?php if ($itemImg !== ''): ?>
-                <img src="<?php echo htmlspecialchars($itemImg); ?>" alt="<?php echo htmlspecialchars($itemName); ?>" loading="lazy"/>
-              <?php else: ?>
-                <div class="bf-dish-fallback" aria-hidden="true"><?php echo htmlspecialchars($initial); ?></div>
-              <?php endif; ?>
-            </div>
-            <div class="min-w-0 flex-1 pt-0.5">
-              <div class="flex items-baseline">
-                <h4 class="rm-item-title shrink font-sans text-sm font-medium uppercase tracking-[0.12em] text-tomato sm:text-[0.95rem]"><?php echo htmlspecialchars($itemName); ?></h4>
-                <span class="bf-menu-list-line" aria-hidden="true"></span>
-                <span class="rm-price shrink-0 font-sans text-sm font-semibold tabular-nums text-ink"><?php echo bf_price($item['price']); ?></span>
-              </div>
-              <?php if (!empty($item['description'])): ?>
-                <p class="rm-description mt-1.5 text-sm leading-relaxed text-ink/55"><?php echo htmlspecialchars($item['description']); ?></p>
-              <?php endif; ?>
-              <?php if (!$available): ?>
-                <span class="mt-2 inline-block text-xs font-semibold uppercase tracking-wider text-tomato/80">Unavailable</span>
-              <?php elseif (!empty($supportsOrdering)): ?>
-                <button type="button" class="add-to-bag-btn bf-order-btn"
-                  data-item-id="<?php echo (int) $item['id']; ?>"
-                  data-item-name="<?php echo htmlspecialchars($itemName); ?>"
-                  data-item-price="<?php echo htmlspecialchars($item['price']); ?>"
-                  data-item-image="<?php echo !empty($item['image']) ? htmlspecialchars($item['image']) : ''; ?>">
-                  Order
-                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-                </button>
-              <?php endif; ?>
-            </div>
-          </article>
-          <?php endforeach; ?>
-        </div>
-      </section>
-      <?php endforeach; ?>
+      </div>
     </div>
-    <?php endforeach; ?>
+    <div class="hero-photo">
+      <img src="<?php echo htmlspecialchars($bfHeroUrl); ?>" alt="" loading="eager"/>
+      <?php if ($bfAddress !== ''): ?>
+        <div class="photo-caption"><?php echo htmlspecialchars($bfAddress); ?></div>
+      <?php endif; ?>
+    </div>
+  </section>
+
+  <div class="color-rule" aria-hidden="true"></div>
+  <div class="intro-strip">
+    <span><strong>Food and drinks</strong> <span aria-hidden="true">/</span> Menu</span>
+    <?php if ($bfAddress !== ''): ?><span><?php echo htmlspecialchars($bfAddress); ?></span><?php endif; ?>
+  </div>
+
+  <div class="menu-body" id="menu">
+    <?php
+    $renderSectionBlock = function (array $section) use ($bfFullUrl, $bfSingle, $uploadBaseUrl, $supportsOrdering) {
+        $itemCount = 0;
+        foreach ($section['categories'] as $category) {
+            $items = $category['menu_items'] ?? [];
+            if (is_array($items)) {
+                $itemCount += count($items);
+            }
+        }
+        ?>
+        <section id="section-<?php echo htmlspecialchars($section['slug'] ?? ''); ?>" class="menu-section">
+          <header class="section-heading">
+            <span class="small-label"><?php echo htmlspecialchars($section['name'] ?? 'Menu'); ?></span>
+            <h2>
+              <?php if ($bfFullUrl !== '' && empty($bfSingle)): ?>
+                <a href="<?php echo htmlspecialchars($bfFullUrl.'/'.($section['slug'] ?? '')); ?>"><?php echo htmlspecialchars($section['name'] ?? ''); ?></a>
+              <?php else: ?>
+                <?php echo htmlspecialchars($section['name'] ?? ''); ?>
+              <?php endif; ?>
+            </h2>
+            <span class="section-count"><?php echo (int) $itemCount; ?> items</span>
+          </header>
+
+          <?php foreach ($section['categories'] as $catIndex => $category):
+              $slug = isset($category['slug']) ? $category['slug'] : ('cat-'.$catIndex);
+              $items = isset($category['menu_items']) ? $category['menu_items'] : [];
+              if (empty($items)) {
+                  continue;
+              }
+              $feature = bf_feature_class((string) ($category['name'] ?? ''));
+          ?>
+          <section class="category-section <?php echo htmlspecialchars($feature); ?>" id="<?php echo htmlspecialchars($slug); ?>">
+            <h3 class="rm-category-title category-title"><?php echo htmlspecialchars($category['name'] ?? ''); ?></h3>
+            <div class="items-grid">
+              <?php foreach ($items as $item):
+                  $itemName = (string) ($item['name'] ?? '');
+                  $initial = $itemName !== '' ? mb_strtoupper(mb_substr($itemName, 0, 1)) : '•';
+                  $itemImg = !empty($item['image']) ? resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image']) : '';
+                  $available = !isset($item['is_available']) || !empty($item['is_available']);
+              ?>
+              <article class="dish <?php echo $available ? '' : 'is-unavailable'; ?>">
+                <div class="dish-image">
+                  <?php if ($itemImg !== ''): ?>
+                    <img src="<?php echo htmlspecialchars($itemImg); ?>" alt="<?php echo htmlspecialchars($itemName); ?>" loading="lazy"/>
+                  <?php else: ?>
+                    <div class="dish-fallback" aria-hidden="true"><?php echo htmlspecialchars($initial); ?></div>
+                  <?php endif; ?>
+                </div>
+                <div class="dish-info">
+                  <div class="dish-title-row">
+                    <h4 class="rm-item-title dish-title"><?php echo htmlspecialchars($itemName); ?></h4>
+                    <span class="price-line" aria-hidden="true"></span>
+                    <span class="rm-price dish-price"><?php echo bf_price($item['price'] ?? 0); ?></span>
+                  </div>
+                  <?php if (!empty($item['description'])): ?>
+                    <p class="rm-description dish-description"><?php echo htmlspecialchars($item['description']); ?></p>
+                  <?php endif; ?>
+                  <?php if (!$available): ?>
+                    <span class="unavailable-label">Unavailable</span>
+                  <?php elseif (!empty($supportsOrdering)): ?>
+                    <button type="button" class="add-to-bag-btn bf-order-btn"
+                      data-item-id="<?php echo (int) ($item['id'] ?? 0); ?>"
+                      data-item-name="<?php echo htmlspecialchars($itemName); ?>"
+                      data-item-price="<?php echo htmlspecialchars($item['price'] ?? ''); ?>"
+                      data-item-image="<?php echo !empty($item['image']) ? htmlspecialchars($item['image']) : ''; ?>">
+                      Order
+                      <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                    </button>
+                  <?php endif; ?>
+                </div>
+              </article>
+              <?php endforeach; ?>
+            </div>
+          </section>
+          <?php endforeach; ?>
+        </section>
+        <?php
+    };
+
+    if ($bfUseSplit) {
+        foreach ($bfFoodSections as $section) {
+            $renderSectionBlock($section);
+        }
+        ?>
+        <section class="drinks-feature">
+          <div class="drinks-feature-copy">
+            <small>From the bar</small>
+            <strong>Drinks for the table</strong>
+            <p>Classics, signature cocktails, wines, spirits and more.</p>
+          </div>
+          <img src="<?php echo htmlspecialchars($bfDrinksBannerUrl); ?>" alt="" loading="lazy"/>
+        </section>
+        <?php
+        foreach ($bfDrinkSections as $section) {
+            $renderSectionBlock($section);
+        }
+    } else {
+        foreach (($sections ?? []) as $section) {
+            if (empty($section['categories']) || !is_array($section['categories'])) {
+                continue;
+            }
+            $renderSectionBlock($section);
+        }
+    }
+    ?>
   </div>
 </main>
 
-<footer class="border-t border-black/10 bg-cream px-4 py-12 text-center md:px-6">
-  <?php if ($bfBrandLogo): ?>
-    <img src="<?php echo htmlspecialchars($bfBrandLogo); ?>" alt="" class="mx-auto mb-4 h-10 w-auto object-contain opacity-90" aria-hidden="true"/>
-  <?php else: ?>
-    <p class="mb-3 font-display text-2xl font-light text-tomato"><?php echo htmlspecialchars($restaurant['name'] ?? ''); ?></p>
+<footer class="footer">
+  <strong><?php echo htmlspecialchars($bfName); ?></strong>
+  <?php if ($bfAddress !== ''): ?><span><?php echo htmlspecialchars($bfAddress); ?></span><?php endif; ?>
+  <?php if (!empty($supportsReservations)): ?>
+    <a href="<?php echo htmlspecialchars($reservationUrl); ?>">Book a table</a>
+  <?php elseif (!empty($restaurant['phone'])): ?>
+    <a href="tel:<?php echo htmlspecialchars(preg_replace('/\s+/', '', $restaurant['phone'])); ?>"><?php echo htmlspecialchars($restaurant['phone']); ?></a>
   <?php endif; ?>
-  <?php if (!empty($restaurant['footer_content'])): ?>
-    <p class="mx-auto mb-3 max-w-xl text-sm leading-relaxed text-ink/60"><?php echo nl2br(htmlspecialchars($restaurant['footer_content'])); ?></p>
-  <?php endif; ?>
-  <?php if (!empty($restaurant['address'])): ?>
-    <p class="text-sm text-ink/50"><?php echo htmlspecialchars($restaurant['address']); ?></p>
-  <?php endif; ?>
-  <?php if (!empty($restaurant['phone']) || !empty($restaurant['email'])): ?>
-    <div class="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm text-ink/55">
-      <?php if (!empty($restaurant['phone'])): ?>
-        <a href="tel:<?php echo htmlspecialchars(preg_replace('/\s+/', '', $restaurant['phone'])); ?>" class="text-tomato hover:underline"><?php echo htmlspecialchars($restaurant['phone']); ?></a>
-      <?php endif; ?>
-      <?php if (!empty($restaurant['email'])): ?>
-        <a href="mailto:<?php echo htmlspecialchars($restaurant['email']); ?>" class="text-tomato hover:underline"><?php echo htmlspecialchars($restaurant['email']); ?></a>
-      <?php endif; ?>
-    </div>
-  <?php endif; ?>
-  <?php echo resmenu_social_links($restaurant, 'mt-6 text-tomato'); ?>
+  <div class="footer-social"><?php echo resmenu_social_links($restaurant, 'mt-2 text-tomato'); ?></div>
 </footer>
 
 <?php if (!empty($supportsOrdering)): ?>
@@ -443,11 +486,11 @@ body.bf-body {
 <script>
 (function(){
   var baseUrl=<?php echo json_encode($baseUrl); ?>;
-  var slug=<?php echo json_encode($restaurant['slug']??''); ?>;
+  var slug=<?php echo json_encode($restaurant['slug'] ?? ''); ?>;
   var config={
     restaurantSlug:slug,
     currencySymbol:<?php echo json_encode($currencySymbol); ?>,
-    uploadBaseUrl:<?php echo json_encode($uploadBaseUrl??''); ?>,
+    uploadBaseUrl:<?php echo json_encode($uploadBaseUrl ?? ''); ?>,
     checkoutUrl:baseUrl+'/restaurant/'+slug+'/checkout',
     primaryColor:<?php echo json_encode($primaryColor); ?>,
     deliveryFee:0,
@@ -469,7 +512,7 @@ body.bf-body {
 </script>
 <?php endif; ?>
 
-<a id="scrollToTop" href="#" aria-label="Scroll to top" style="position:fixed;bottom:24px;right:24px;z-index:30;width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--bf-flame);color:#fff;opacity:0;visibility:hidden;transform:translateY(10px);transition:opacity 0.3s,visibility 0.3s,transform 0.3s;box-shadow:0 4px 12px rgba(0,0,0,0.2);">
+<a id="scrollToTop" href="#" aria-label="Scroll to top" style="position:fixed;bottom:24px;right:24px;z-index:40;width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--flame);color:#fff;opacity:0;visibility:hidden;transform:translateY(10px);transition:opacity .3s,visibility .3s,transform .3s;box-shadow:0 4px 12px rgba(0,0,0,.2);">
   <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
 </a>
 <script>
@@ -489,30 +532,23 @@ body.bf-body {
   var overlay=document.getElementById('bf-overlay');
   var toggle=document.getElementById('bf-menu-toggle');
   var closeBtn=document.getElementById('bf-drawer-close');
-  function openDrawer(){
+  function setDrawer(open){
     if(!drawer||!overlay||!toggle)return;
-    drawer.classList.add('is-open');
-    overlay.classList.add('is-open');
-    drawer.setAttribute('aria-hidden','false');
-    overlay.setAttribute('aria-hidden','false');
-    toggle.setAttribute('aria-expanded','true');
-    document.body.style.overflow='hidden';
+    drawer.classList.toggle('open',open);
+    overlay.classList.toggle('open',open);
+    document.body.classList.toggle('drawer-open',open);
+    drawer.setAttribute('aria-hidden',String(!open));
+    overlay.setAttribute('aria-hidden',String(!open));
+    toggle.setAttribute('aria-expanded',String(open));
+    toggle.setAttribute('aria-label',open?'Close menu':'Open menu');
   }
-  function closeDrawer(){
-    if(!drawer||!overlay||!toggle)return;
-    drawer.classList.remove('is-open');
-    overlay.classList.remove('is-open');
-    drawer.setAttribute('aria-hidden','true');
-    overlay.setAttribute('aria-hidden','true');
-    toggle.setAttribute('aria-expanded','false');
-    document.body.style.overflow='';
-  }
-  if(toggle)toggle.addEventListener('click',openDrawer);
-  if(closeBtn)closeBtn.addEventListener('click',closeDrawer);
-  if(overlay)overlay.addEventListener('click',closeDrawer);
+  if(toggle)toggle.addEventListener('click',function(){setDrawer(!drawer.classList.contains('open'));});
+  if(closeBtn)closeBtn.addEventListener('click',function(){setDrawer(false);});
+  if(overlay)overlay.addEventListener('click',function(){setDrawer(false);});
   document.querySelectorAll('.bf-drawer-link').forEach(function(link){
-    link.addEventListener('click',closeDrawer);
+    link.addEventListener('click',function(){setDrawer(false);});
   });
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')setDrawer(false);});
 })();
 </script>
 </body>
