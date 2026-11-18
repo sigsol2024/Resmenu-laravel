@@ -82,12 +82,6 @@ $bfNameParts = preg_split('/\s+/u', $bfName, -1, PREG_SPLIT_NO_EMPTY) ?: [$bfNam
 $bfNameAccent = array_pop($bfNameParts);
 $bfNameLead = trim(implode(' ', $bfNameParts));
 $bfAddress = trim((string) ($restaurant['address'] ?? ''));
-$bfEyebrow = trim((string) ($restaurant['description'] ?? ''));
-if ($bfEyebrow === '') {
-    $bfEyebrow = 'Food and drinks';
-} elseif (mb_strlen($bfEyebrow) > 48) {
-    $bfEyebrow = rtrim(mb_substr($bfEyebrow, 0, 45)).'…';
-}
 $bfLead = trim((string) ($restaurant['description'] ?? ''));
 if ($bfLead === '' && $bfAddress !== '') {
     $bfLead = $bfAddress;
@@ -145,18 +139,17 @@ button{font:inherit;cursor:pointer}
 .brand{display:flex;align-items:center;gap:13px;min-width:0}
 .brand img{display:block;width:52px;height:52px;object-fit:contain}
 .brand-wordmark{color:var(--ink);font-size:12px;font-weight:700;letter-spacing:.19em;text-transform:uppercase}
-.brand-location{margin-top:4px;color:#77766f;font-size:8px;font-weight:600;letter-spacing:.15em;text-transform:uppercase}
-.header-actions{display:flex;align-items:center;gap:10px}
+.header-actions{display:flex;align-items:center;gap:14px}
+.header-location{max-width:220px;color:#77766f;font-size:8px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;line-height:1.45;text-align:right}
 .reserve-pill{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:var(--flame);color:white;padding:11px 20px;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;transition:background .18s,transform .18s}
 .reserve-pill:hover{background:var(--tomato);transform:translateY(-1px)}
+.header-reserve{display:inline-flex}
 .menu-toggle,.drawer-close{width:43px;height:43px;display:grid;place-items:center;border:1px solid rgba(28,28,28,.17);border-radius:50%;background:transparent;color:var(--ink);transition:color .18s,border-color .18s,background .18s}
 .menu-toggle:hover,.drawer-close:hover{color:var(--tomato);border-color:var(--tomato);background:#fff}
 .menu-toggle svg,.drawer-close svg{width:19px;height:19px}
 .hero{min-height:min(730px,78vh);min-height:min(730px,78dvh);display:grid;grid-template-columns:.88fr 1.12fr;background:var(--paper)}
 .hero-copy{padding:clamp(34px,6vw,92px);display:flex;flex-direction:column;align-items:flex-start;justify-content:center;background-color:var(--paper);background-image:var(--pattern),linear-gradient(180deg,rgba(252,251,249,.94),rgba(244,241,236,.97));background-size:280px auto,auto;background-repeat:repeat,no-repeat;background-blend-mode:soft-light,normal}
-.eyebrow{color:var(--tomato);font-size:9px;font-weight:700;letter-spacing:.21em;text-transform:uppercase}
-.eyebrow:before{content:"";display:inline-block;width:8px;height:8px;margin-right:10px;background-image:var(--orange-dot);background-size:contain;vertical-align:0}
-.hero h1{margin:22px 0 16px;color:var(--ink);font-size:clamp(48px,7vw,94px);font-weight:800;font-style:italic;line-height:.88;letter-spacing:-.065em;text-transform:uppercase}
+.hero h1{margin:0 0 16px;color:var(--ink);font-size:clamp(48px,7vw,94px);font-weight:800;font-style:italic;line-height:.88;letter-spacing:-.065em;text-transform:uppercase}
 .hero h1 span{color:var(--tomato)}
 .hero-lead{max-width:430px;margin:0;color:rgba(28,28,28,.68);font-size:13px;line-height:1.8}
 .hero-actions{display:flex;flex-wrap:wrap;align-items:center;gap:20px;margin-top:27px}
@@ -221,8 +214,10 @@ button{font:inherit;cursor:pointer}
 .overlay.open{opacity:1;visibility:visible;pointer-events:auto}
 .drawer{position:fixed;z-index:50;top:0;right:0;display:flex;width:min(calc(100vw - 2.25rem),370px);height:100dvh;flex-direction:column;background:var(--cream);box-shadow:-18px 0 50px rgba(0,0,0,.18);transform:translateX(105%);transition:transform .28s ease}
 .drawer.open{transform:translateX(0)}
-.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:17px 20px;border-bottom:1px solid rgba(0,0,0,.12)}
+.drawer-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:17px 20px;border-bottom:1px solid rgba(0,0,0,.12)}
+.drawer-head-copy{min-width:0;display:flex;flex-direction:column;gap:8px}
 .drawer-title{color:rgba(28,28,28,.7);font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase}
+.drawer-address{color:rgba(28,28,28,.55);font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;line-height:1.5}
 .drawer-nav{display:flex;flex:1;flex-direction:column;gap:8px;overflow-y:auto;padding:16px 16px 22px}
 .drawer-link{display:block;padding:12px 14px;border:1px solid rgba(28,28,28,.1);border-radius:10px;background:rgba(255,255,255,.56);color:rgba(28,28,28,.72);font-size:10px;font-weight:600;letter-spacing:.1em;text-align:center;text-transform:uppercase;transition:border-color .15s,color .15s,background .15s}
 .drawer-link:hover{border-color:var(--tomato);color:var(--tomato);background:#fff}
@@ -232,12 +227,27 @@ button{font:inherit;cursor:pointer}
 .drawer-separator:before,.drawer-separator:after{content:"";width:34px;height:1px;background:rgba(28,28,28,.16)}
 .drawer-reserve{margin:0 16px 16px}
 body.drawer-open{overflow:hidden}
+.bf-reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}
+.bf-reveal.is-in{opacity:1;transform:none}
+.hero-copy > *{opacity:0;transform:translateY(16px);animation:bfRise .8s ease forwards}
+.hero-copy h1{animation-delay:.08s}
+.hero-copy .hero-lead{animation-delay:.18s}
+.hero-copy .hero-actions{animation-delay:.28s}
+.hero-photo{opacity:0;transform:scale(1.04);animation:bfPhotoIn 1s ease .15s forwards}
+.hero-photo img{transition:transform 8s ease}
+.hero-photo:hover img{transform:scale(1.04)}
+.dish{transition:transform .25s ease,box-shadow .25s ease}
+.dish:hover{transform:translateY(-2px)}
+.color-rule{transform-origin:left center;animation:bfRule .9s ease .35s both}
+@keyframes bfRise{to{opacity:1;transform:none}}
+@keyframes bfPhotoIn{to{opacity:1;transform:none}}
+@keyframes bfRule{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 @media(max-width:900px){.hero{grid-template-columns:.9fr 1.1fr;min-height:600px}.hero-copy{padding:34px}.hero-photo{min-height:400px}.items-grid{column-gap:27px}}
 @media(max-width:680px){
   .header-inner{padding:8px 15px}
   .brand img{width:44px;height:44px}
   .brand-wordmark{font-size:10px}
-  .brand-location{font-size:7px}
+  .header-location,.header-reserve{display:none !important}
   .reserve-pill{padding:10px 13px;font-size:8px}
   .menu-toggle{width:40px;height:40px}
   .hero{min-height:0;grid-template-columns:1fr}
@@ -261,7 +271,12 @@ body.drawer-open{overflow:hidden}
   .drinks-feature-copy{padding:25px}
   .footer{align-items:flex-start;flex-direction:column;gap:9px}
 }
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.drawer,.overlay,.reserve-pill,.hero-cta{transition:none}}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .drawer,.overlay,.reserve-pill,.hero-cta,.dish,.bf-reveal,.hero-photo img{transition:none}
+  .hero-copy > *,.hero-photo,.color-rule{animation:none !important;opacity:1;transform:none}
+  .bf-reveal{opacity:1;transform:none}
+}
 </style>
 </head>
 <body>
@@ -272,16 +287,14 @@ body.drawer-open{overflow:hidden}
       <?php if ($bfBrandLogo): ?>
         <img src="<?php echo htmlspecialchars($bfBrandLogo); ?>" alt="<?php echo htmlspecialchars($bfName); ?>"/>
       <?php endif; ?>
-      <span>
-        <span class="brand-wordmark"><?php echo htmlspecialchars($bfName); ?></span>
-        <?php if ($bfAddress !== ''): ?>
-          <span class="brand-location"><?php echo htmlspecialchars($bfAddress); ?></span>
-        <?php endif; ?>
-      </span>
+      <span class="brand-wordmark"><?php echo htmlspecialchars($bfName); ?></span>
     </a>
     <div class="header-actions">
+      <?php if ($bfAddress !== ''): ?>
+        <span class="header-location"><?php echo htmlspecialchars($bfAddress); ?></span>
+      <?php endif; ?>
       <?php if (!empty($supportsReservations)): ?>
-        <a class="reserve-pill" href="<?php echo htmlspecialchars($reservationUrl); ?>">Book a table</a>
+        <a class="reserve-pill header-reserve" href="<?php echo htmlspecialchars($reservationUrl); ?>">Book a table</a>
       <?php endif; ?>
       <button class="menu-toggle" id="bf-menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="bf-drawer">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
@@ -293,7 +306,12 @@ body.drawer-open{overflow:hidden}
 <div class="overlay" id="bf-overlay" aria-hidden="true"></div>
 <aside class="drawer" id="bf-drawer" aria-label="Menu navigation" aria-hidden="true">
   <div class="drawer-head">
-    <span class="drawer-title">Navigate</span>
+    <div class="drawer-head-copy">
+      <span class="drawer-title">Navigate</span>
+      <?php if ($bfAddress !== ''): ?>
+        <span class="drawer-address"><?php echo htmlspecialchars($bfAddress); ?></span>
+      <?php endif; ?>
+    </div>
     <button class="drawer-close" id="bf-drawer-close" type="button" aria-label="Close menu">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
     </button>
@@ -326,7 +344,6 @@ body.drawer-open{overflow:hidden}
 <main id="top">
   <section class="hero" aria-label="<?php echo htmlspecialchars($bfName); ?>" data-template-preview-hero>
     <div class="hero-copy">
-      <div class="eyebrow"><?php echo htmlspecialchars($bfEyebrow); ?></div>
       <h1>
         <?php if ($bfNameLead !== ''): ?><?php echo htmlspecialchars($bfNameLead); ?> <?php endif; ?>
         <span><?php echo htmlspecialchars($bfNameAccent); ?></span>
@@ -352,7 +369,7 @@ body.drawer-open{overflow:hidden}
   </section>
 
   <div class="color-rule" aria-hidden="true"></div>
-  <div class="intro-strip">
+  <div class="intro-strip bf-reveal">
     <span><strong>Food and drinks</strong> <span aria-hidden="true">/</span> Menu</span>
     <?php if ($bfAddress !== ''): ?><span><?php echo htmlspecialchars($bfAddress); ?></span><?php endif; ?>
   </div>
@@ -369,7 +386,7 @@ body.drawer-open{overflow:hidden}
         }
         ?>
         <section id="section-<?php echo htmlspecialchars($section['slug'] ?? ''); ?>" class="menu-section">
-          <header class="section-heading">
+          <header class="section-heading bf-reveal">
             <span class="small-label"><?php echo htmlspecialchars($section['name'] ?? 'Menu'); ?></span>
             <h2>
               <?php if ($bfFullUrl !== '' && empty($bfSingle)): ?>
@@ -389,16 +406,17 @@ body.drawer-open{overflow:hidden}
               }
               $feature = bf_feature_class((string) ($category['name'] ?? ''));
           ?>
-          <section class="category-section <?php echo htmlspecialchars($feature); ?>" id="<?php echo htmlspecialchars($slug); ?>">
+          <section class="category-section bf-reveal <?php echo htmlspecialchars($feature); ?>" id="<?php echo htmlspecialchars($slug); ?>">
             <h3 class="rm-category-title category-title"><?php echo htmlspecialchars($category['name'] ?? ''); ?></h3>
             <div class="items-grid">
-              <?php foreach ($items as $item):
+              <?php foreach ($items as $itemIndex => $item):
                   $itemName = (string) ($item['name'] ?? '');
                   $initial = $itemName !== '' ? mb_strtoupper(mb_substr($itemName, 0, 1)) : '•';
                   $itemImg = !empty($item['image']) ? resmenu_media_url($uploadBaseUrl, 'menu-items', $item['image']) : '';
                   $available = !isset($item['is_available']) || !empty($item['is_available']);
+                  $stagger = min((int) $itemIndex, 7) * 45;
               ?>
-              <article class="dish <?php echo $available ? '' : 'is-unavailable'; ?>">
+              <article class="dish bf-reveal <?php echo $available ? '' : 'is-unavailable'; ?>" style="transition-delay:<?php echo $stagger; ?>ms">
                 <div class="dish-image">
                   <?php if ($itemImg !== ''): ?>
                     <img src="<?php echo htmlspecialchars($itemImg); ?>" alt="<?php echo htmlspecialchars($itemName); ?>" loading="lazy"/>
@@ -442,7 +460,7 @@ body.drawer-open{overflow:hidden}
             $renderSectionBlock($section);
         }
         ?>
-        <section class="drinks-feature">
+        <section class="drinks-feature bf-reveal">
           <div class="drinks-feature-copy">
             <small>From the bar</small>
             <strong>Drinks for the table</strong>
@@ -549,6 +567,24 @@ body.drawer-open{overflow:hidden}
     link.addEventListener('click',function(){setDrawer(false);});
   });
   document.addEventListener('keydown',function(e){if(e.key==='Escape')setDrawer(false);});
+
+  var reduceMotion=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var revealNodes=document.querySelectorAll('.bf-reveal');
+  if(reduceMotion){
+    revealNodes.forEach(function(el){el.classList.add('is-in');});
+  }else if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add('is-in');
+          io.unobserve(entry.target);
+        }
+      });
+    },{threshold:0.12,rootMargin:'0px 0px -6% 0px'});
+    revealNodes.forEach(function(el){io.observe(el);});
+  }else{
+    revealNodes.forEach(function(el){el.classList.add('is-in');});
+  }
 })();
 </script>
 </body>
