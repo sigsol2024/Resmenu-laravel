@@ -219,9 +219,9 @@ button{font:inherit;cursor:pointer}
 .drawer-title{color:rgba(28,28,28,.7);font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase}
 .drawer-address{color:rgba(28,28,28,.55);font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;line-height:1.5}
 .drawer-nav{display:flex;flex:1;flex-direction:column;gap:8px;overflow-y:auto;padding:16px 16px 22px}
-.drawer-link{display:block;padding:12px 14px;border:1px solid rgba(28,28,28,.1);border-radius:10px;background:rgba(255,255,255,.56);color:rgba(28,28,28,.72);font-size:10px;font-weight:600;letter-spacing:.1em;text-align:center;text-transform:uppercase;transition:border-color .15s,color .15s,background .15s}
+.drawer-link{display:block;padding:12px 14px;border:1px solid rgba(28,28,28,.1);border-radius:10px;background:rgba(255,255,255,.56);color:rgba(28,28,28,.72);font-size:10px;font-weight:600;letter-spacing:.1em;text-align:left;text-transform:uppercase;transition:border-color .15s,color .15s,background .15s}
 .drawer-link:hover{border-color:var(--tomato);color:var(--tomato);background:#fff}
-.drawer-main{color:var(--ink);font-size:12px;font-weight:700}
+.drawer-main{color:var(--ink);font-size:12px;font-weight:700;text-align:center}
 .drawer-separator{display:flex;align-items:center;justify-content:center;gap:9px;padding:7px 0;color:rgba(28,28,28,.2)}
 .drawer-dot{width:8px;height:8px;background-image:var(--orange-dot);background-size:contain}
 .drawer-separator:before,.drawer-separator:after{content:"";width:34px;height:1px;background:rgba(28,28,28,.16)}
