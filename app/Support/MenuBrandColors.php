@@ -22,7 +22,7 @@ final class MenuBrandColors
         12 => ['medBlue'],
         13 => ['copper', 'amber-glow'],
         14 => ['terracotta'],
-        15 => ['neonPink'],
+        15 => ['tomato'],
         17 => ['brandGold'],
         18 => ['brandGold'],
     ];
